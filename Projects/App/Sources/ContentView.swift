@@ -1,9 +1,10 @@
 import SwiftUI
+
 // MARK: - ContentView
 
 public struct ContentView: View {
   public init() {
-   
+    print("asdf")
   }
 
   public var body: some View {
@@ -19,4 +20,3 @@ struct ContentView_Previews: PreviewProvider {
     ContentView()
   }
 }
-
