@@ -1,22 +1,18 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project(
+let project = Project.makeModule(
   name: "susu",
-  targets: [
-    .target(
-      name: "susu",
-      destinations: .iOS,
-      product: .app,
-      bundleId: ProjectEnvironment.default.prefixBundleID,
-      infoPlist: .extendingDefault(
-        with: [
-          "UILaunchStoryboardName": "LaunchScreen.storyboard",
-        ]
-      ),
-      sources: ["Sources/**"],
-      resources: ["Resources/**"],
-      dependencies: []
-    ),
-  ]
+  targets: .app(
+    name: "susu",
+    testingOptions: .init(arrayLiteral: .uiTest, .unitTest),
+    entitlements: nil,
+    dependencies: [
+      .external(name: "Alamofire", condition: .none)
+    ],
+    testDependencies: [],
+    infoPlist: [
+      "UILaunchStoryboardName": "LaunchScreen.storyboard",
+    ]
+  )
 )

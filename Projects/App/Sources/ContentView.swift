@@ -1,5 +1,4 @@
 import SwiftUI
-
 // MARK: - ContentView
 
 public struct ContentView: View {
