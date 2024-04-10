@@ -5,10 +5,10 @@ let project = Project.makeModule(
   name: "susu",
   targets: .app(
     name: "susu",
-    testingOptions: .init(arrayLiteral: .uiTest, .unitTest),
+    testingOptions: [.unitTest, .uiTest],
     entitlements: nil,
     dependencies: [
-      .thirdParty(.Alamofire)
+      .thirdParty(.Alamofire),
     ],
     testDependencies: [],
     infoPlist: [

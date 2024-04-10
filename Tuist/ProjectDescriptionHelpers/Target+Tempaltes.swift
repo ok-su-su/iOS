@@ -34,14 +34,14 @@ public extension [Target] {
       "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [
         "UIApplicationSupportsMultipleScenes": false,
-        "UISceneConfigurations": [
-          "UIWindowSceneSessionRoleApplication": [
-            [
-              "UISceneConfigurationName": "Default Configuration",
-              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
-            ],
-          ],
-        ],
+//        "UISceneConfigurations": [
+//          "UIWindowSceneSessionRoleApplication": [
+//            [
+//              "UISceneConfigurationName": "Default Configuration",
+//              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
+//            ],
+//          ],
+//        ],
       ],
 //      "UIBackgroundModes": [
 //        "fetch",
