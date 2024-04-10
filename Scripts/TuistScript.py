@@ -72,7 +72,7 @@ def modify_dependency_custom_core_file(feature_name):
 
 
 def create_feature(feature_name):
-    feature_path = f'Projects/Features/{feature_name}/'
+    feature_path = f'Projects/Feature/{feature_name}/'
     os.makedirs(feature_path)
 
     resources_path = os.path.join(feature_path, 'Resources')
@@ -154,7 +154,8 @@ let project = Project.makeModule(
         print(f"Error creating the Project.swift file: {e}")
 
 def create_project_shared_file(feature_name):
-
+    
+    feature_name = feature_name.capitalize()
     create_shared(feature_name)
     
     file_path = f'Projects/share/{feature_name}/Project.swift'
@@ -190,7 +191,7 @@ final class {feature_name}Tests: XCTestCase {{
 }}
 """
 
-    feature_path = f'Projects/Features/{feature_name}/Tests'
+    feature_path = f'Projects/Feature/{feature_name}/Tests'
     os.makedirs(feature_path)
     
     
@@ -206,7 +207,7 @@ def create_project_feature_file(feature_name):
 
     create_feature(feature_name)
     
-    file_path = f'Projects/Features/{feature_name}/Project.swift'
+    file_path = f'Projects/Feature/{feature_name}/Project.swift'
     try:
         # Create the Project.swift file content
         project_content = f"""
