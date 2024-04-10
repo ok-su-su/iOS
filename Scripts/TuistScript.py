@@ -27,7 +27,7 @@ def modify_dependency_file(feature_name):
         print(f"Error modifying the file: {e}")
 
 def modify_dependency_custom_shared_file(feature_name):
-    file_path = 'Tuist/ProjectDescriptionHelpers/Dependency+sharedTarget.swift'
+    file_path = 'Tuist/ProjectDescriptionHelpers/Dependency+shareTarget.swift'
     try:
         # Read the content of the Swift file
         with open(file_path, 'r') as file:
@@ -93,7 +93,7 @@ def create_feature(feature_name):
         keep_sources_file.write('// Content of KeepSources.swift')
 
 def create_shared(feature_name):
-    feature_path = f'Projects/Shared/{feature_name}/'
+    feature_path = f'Projects/Share/{feature_name}/'
     os.makedirs(feature_path)
 
     resources_path = os.path.join(feature_path, 'Resources')
@@ -157,7 +157,7 @@ def create_project_shared_file(feature_name):
 
     create_shared(feature_name)
     
-    file_path = f'Projects/shared/{feature_name}/Project.swift'
+    file_path = f'Projects/share/{feature_name}/Project.swift'
     try:
         # Create the Project.swift file content
         project_content = f"""
@@ -233,7 +233,7 @@ let project = Project.makeModule(
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python TuistScript.py <feature|shared|core>")
+        print("Usage: python TuistScript.py <feature|share|core>")
         sys.exit(1)
 
     
@@ -249,7 +249,7 @@ if __name__ == "__main__":
         create_test_dir(feature_name)
 
         print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
-    elif sys.argv[1] == "shared":
+    elif sys.argv[1] == "share":
         # Modify the Dependency+Target.swift file
         modify_dependency_custom_shared_file(feature_name)
 
@@ -265,6 +265,6 @@ if __name__ == "__main__":
         create_project_core_file(feature_name)
 
     else:
-        print("Invalid feature type. Use <feature|shared|core>")
+        print("Invalid feature type. Use <feature|share|core>")
         sys.exit(1)
 

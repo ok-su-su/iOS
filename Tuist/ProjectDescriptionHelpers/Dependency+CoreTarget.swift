@@ -14,12 +14,15 @@ public enum Core: String {
   case profile
   case profileHamburger
   public var targetName: String {
-    return rawValue.prefix(1).capitalized + rawValue.dropFirst()
+    return rawValue.prefix(1).capitalized
+  }
+  public var path: Path {
+    return .relativeToRoot("Projects/Core/\(self.rawValue)")
   }
 }
 
 public extension TargetDependency {
-  static func core(_ name: Shared) -> TargetDependency {
-    return .external(name: name.rawValue, condition: .none)
+  static func core(_ name: Core) -> TargetDependency {
+    return .project(target: name.targetName, path: name.path, condition: .none)
   }
 }

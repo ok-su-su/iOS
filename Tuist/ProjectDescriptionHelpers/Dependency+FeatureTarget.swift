@@ -16,10 +16,13 @@ public enum Feature: String {
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
+  public var path: Path {
+    return .relativeToRoot("Projects/Feature/\(self.rawValue)")
+  }
 }
 
 public extension TargetDependency {
-  static func feature(_ name: Shared) -> TargetDependency {
-    return .external(name: name.rawValue, condition: .none)
+  static func feature(_ name: Feature) -> TargetDependency {
+    return .project(target: name.targetName, path: name.path, condition: .none)
   }
 }
