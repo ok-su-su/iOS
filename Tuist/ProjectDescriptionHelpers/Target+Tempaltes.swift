@@ -177,7 +177,9 @@ public extension [Target] {
     return targets
   }
 
-  /// Target을 사용자화하여 생성합니다.
+  /// Target을 사용자화하여 생성합니다. 보통 사용자에게 View가 없는 기능들을 정의할 때 쓰입니다.
+  ///
+  /// DesignSystem, Custom Network Layer 등 다양한 target들을 만들 때 쓰입니다.  
   /// - Parameters:
   ///   - name: Target 이름
   ///   - product: Target Product
