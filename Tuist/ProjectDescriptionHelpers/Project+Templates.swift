@@ -10,8 +10,10 @@ public extension Project {
     targets: [Target],
     packages: [Package] = []
   ) -> Project {
-    let settingConfiguration: [Configuration] =
-    [.debug(name: .debug)]
+    let settingConfiguration: [Configuration] = [
+      .debug(name: .debug, xcconfig: .relativeToXCConfig("Server/Debug")),
+      .release(name: .release, xcconfig: .relativeToXCConfig("Server/Debug"))
+    ]
 
     let settings: Settings = .settings(
       base: ["ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES"],

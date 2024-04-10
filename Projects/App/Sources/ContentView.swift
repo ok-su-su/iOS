@@ -3,9 +3,7 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
-  public init() {
-    print("asdf")
-  }
+  public init() {}
 
   public var body: some View {
     Text("Hello, susu!")
