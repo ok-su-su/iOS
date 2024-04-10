@@ -10,11 +10,13 @@ import ProjectDescription
 
 public enum Feature: String {
   case writeBoard
+  case hello
+  case hihello
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
   public var path: Path {
-    return .relativeToRoot("Projects/Feature/\(self.rawValue)")
+    return .relativeToRoot("Projects/Feature/\(self.targetName)/")
   }
 }
 

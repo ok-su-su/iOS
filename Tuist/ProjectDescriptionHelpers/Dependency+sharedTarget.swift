@@ -14,7 +14,7 @@ public enum Shared: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
   public var path: Path {
-    return .relativeToRoot("Projects/Share/\(self.rawValue)")
+    return .relativeToRoot("Projects/Share/\(self.targetName)/")
   }
 }
 public extension TargetDependency {

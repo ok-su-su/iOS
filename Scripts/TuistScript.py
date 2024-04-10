@@ -213,7 +213,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "{feature_name}Feature",
+  name: "{feature_name}",
   targets: .feature(
     .{to_lower_camel_case(feature_name)},
     testingOptions: [.unitTest],

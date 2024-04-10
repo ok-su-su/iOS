@@ -14,7 +14,7 @@ public enum Core: String {
     return rawValue.prefix(1).capitalized
   }
   public var path: Path {
-    return .relativeToRoot("Projects/Core/\(self.rawValue)")
+    return .relativeToRoot("Projects/Core/\(self.targetName)/")
   }
 }
 

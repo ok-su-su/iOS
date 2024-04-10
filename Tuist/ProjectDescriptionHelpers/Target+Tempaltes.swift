@@ -31,7 +31,6 @@ public extension [Target] {
   ) -> [Target] {
     let mergedInfoPlist: [String: Plist.Value] = [
       "BaseURL": "$(BASE_URL)",
-      "SocketURL": "$(SOCKET_URL)",
       "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [
         "UIApplicationSupportsMultipleScenes": false,
@@ -118,7 +117,7 @@ public extension [Target] {
     infoPlist: [String: Plist.Value] = [:],
     resources: ResourceFileElements? = nil
   ) -> [Target] {
-    let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)", "SocketURL": "$(SOCKET_URL)"].merging(infoPlist) { _, new in
+    let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)"].merging(infoPlist) { _, new in
       new
     }
 
@@ -133,10 +132,10 @@ public extension [Target] {
 
     var targets: [Target] = [
       Target.target(
-        name: "\(feature.targetName)Feature",
+        name: "\(feature.targetName)",
         destinations: .iOS,
         product: product,
-        bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)Feature",
+        bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)",
         deploymentTargets: ProjectEnvironment.default.deploymentTargets,
         infoPlist: .extendingDefault(with: mergedInfoPlist),
         sources: "Sources/**",
@@ -156,7 +155,7 @@ public extension [Target] {
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureTests",
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: "\(feature.targetName)Feature")]
+          dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
         )
       )
     }
@@ -170,7 +169,7 @@ public extension [Target] {
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureUITests",
           sources: "UITests/**",
           scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: "\(feature.targetName)Feature")]
+          dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
         )
       )
     }
@@ -198,7 +197,7 @@ public extension [Target] {
     resources: ResourceFileElements? = nil,
     settings: Settings? = nil
   ) -> [Target] {
-    let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)", "SocketURL": "$(SOCKET_URL)"].merging(infoPlist) { _, new in
+    let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)"].merging(infoPlist) { _, new in
       new
     }
 
