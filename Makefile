@@ -1,5 +1,5 @@
 generate:
-	tuist fetch
+	tuist install
 	TUIST_ROOT_DIR=${PWD} TUIST_SCHEME=DEBUG tuist generate
 
 feature:

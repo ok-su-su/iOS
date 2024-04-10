@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def print_current_version():
-    file_path = 'Projects/App/MealGok/Project.swift'
+    file_path = 'Projects/App/Project.swift'
     try:
         # Read the content of the Swift file
         with open(file_path, 'r') as file:

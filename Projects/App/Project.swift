@@ -8,7 +8,7 @@ let project = Project.makeModule(
     testingOptions: .init(arrayLiteral: .uiTest, .unitTest),
     entitlements: nil,
     dependencies: [
-      .external(name: "Alamofire", condition: .none),
+      .thirdParty(.Alamofire)
     ],
     testDependencies: [],
     infoPlist: [
