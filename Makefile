@@ -6,8 +6,8 @@ feature:
 	python Scripts/TuistScript.py feature
 	tuist edit
 
-shared:
-	python Scripts/TuistScript.py shared
+share:
+	python Scripts/TuistScript.py share
 	tuist edit
 
 core:
