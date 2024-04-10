@@ -154,8 +154,6 @@ let project = Project.makeModule(
         print(f"Error creating the Project.swift file: {e}")
 
 def create_project_shared_file(feature_name):
-    
-    feature_name = feature_name.capitalize()
     create_shared(feature_name)
     
     file_path = f'Projects/share/{feature_name}/Project.swift'
@@ -239,6 +237,7 @@ if __name__ == "__main__":
 
     
     feature_name = input("모듈의 이름을 입력하세요: ")
+    feature_name = feature_name.capitalize()
 
     if sys.argv[1] == "feature":
         # Modify the Dependency+Target.swift file
