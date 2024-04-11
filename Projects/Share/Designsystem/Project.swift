@@ -9,7 +9,7 @@ let project = Project.makeModule(
     product: .framework,
     infoPlist: [
       "UIAppFonts": [
-        "Pretendard-Regular.otf"
+        "Pretendard-Regular.otf",
       ],
     ],
     resources: "Resources/**"
