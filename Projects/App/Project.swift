@@ -9,6 +9,7 @@ let project = Project.makeModule(
     entitlements: nil,
     dependencies: [
       .thirdParty(.Alamofire),
+      .share(.designsystem),
     ],
     testDependencies: [],
     infoPlist: [
