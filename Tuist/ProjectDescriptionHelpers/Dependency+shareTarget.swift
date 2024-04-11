@@ -10,6 +10,7 @@ import Foundation
 
 public enum Shared: String {
   case writeBoard
+  case designsystem
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
