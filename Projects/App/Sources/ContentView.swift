@@ -9,6 +9,7 @@ public struct ContentView: View {
   public var body: some View {
     Text("Hello, susu!")
       .padding()
+    //TODO: Delete plz...
     Color(DesignSystemColor.systemBlue)
   }
 }
