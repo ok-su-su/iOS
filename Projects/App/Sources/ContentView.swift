@@ -7,10 +7,15 @@ public struct ContentView: View {
   public init() {}
 
   public var body: some View {
-    Text("Hello, susu!")
-      .padding()
-    //TODO: Delete plz...
-    Color(DesignSystemColor.systemBlue)
+    VStack {
+      
+      Text("Hello, susu!")
+        .padding()
+      
+      Color(DesignSystemColor.asdf)
+        .frame(width: 100, height: 100)
+        .padding()
+    }
   }
 }
 
