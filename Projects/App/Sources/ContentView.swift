@@ -12,7 +12,7 @@ public struct ContentView: View {
       Text("Hello, susu!")
         .padding()
       
-      Color(DesignSystemColor.asdf)
+      Color(SSCOlor.blue60)
         .frame(width: 100, height: 100)
         .padding()
     }
