@@ -11,8 +11,9 @@ public struct ContentView: View {
       
       Text("Hello, susu!")
         .padding()
+        .foregroundStyle(Color(SSColor.blue50))
       
-      Color(SSCOlor.blue60)
+      Color(SSColor.blue100)
         .frame(width: 100, height: 100)
         .padding()
     }
