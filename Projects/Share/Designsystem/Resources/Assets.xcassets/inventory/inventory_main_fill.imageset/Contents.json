@@ -1,6 +1,7 @@
 {
-  "colors" : [
+  "images" : [
     {
+      "filename" : "inventory_main_fill.svg",
       "idiom" : "universal"
     }
   ],
