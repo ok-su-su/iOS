@@ -8,6 +8,17 @@
 
 import SwiftUI
 
+public extension Font {
+  /// susu 의 DesignSystem font 를 가져옵니다.
+  /// - Parameter font: susu의 DesignSystemFont
+  /// - Returns: font
+  ///
+  /// eg) Text("hello World").font(.custom(.title_l))
+  static func custom(_ font: DesignSystemFont) -> Self {
+    return font.font
+  }
+}
+
 // MARK: - DesignSystemFont
 
 public enum DesignSystemFont {

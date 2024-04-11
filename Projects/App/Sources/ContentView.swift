@@ -9,11 +9,9 @@ public struct ContentView: View {
   public var body: some View {
     VStack {
       DesignSystemText(text: "Hello, susu!", designSystemFont: .title_xs)
-      // TODO: Delete plz...
-      Text("Hello, susu!")
-        .font(.custom("asdf", size: 46))
-        .padding()
-      // TODO: Delete plz...
+      
+      Text("Hello, oksusu!")
+        .font(.custom(.title_l))
     }
   }
 }
