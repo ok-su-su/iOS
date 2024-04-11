@@ -5,13 +5,10 @@ import SwiftUI
 
 public struct ContentView: View {
   public init() {}
+  @State var name: String = ""
 
   public var body: some View {
-    VStack {
-      DesignSystemText(text: "Hello, susu!", designSystemFont: .title_xs)
-      Text("Hello, oksusu!")
-        .font(.custom(.title_l))
-    }
+    Text("Hello susu!")
   }
 }
 

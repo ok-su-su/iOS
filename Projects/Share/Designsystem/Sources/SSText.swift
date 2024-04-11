@@ -10,11 +10,11 @@ import SwiftUI
 
 // MARK: - DesignSystemText
 
-public struct DesignSystemText: View {
+public struct SSText: View {
   var text: String
-  var designSystemFont: DesignSystemFont
+  var designSystemFont: SSFont
 
-  public init(text: String, designSystemFont: DesignSystemFont) {
+  public init(text: String, designSystemFont: SSFont) {
     self.text = text
     self.designSystemFont = designSystemFont
   }
@@ -22,6 +22,7 @@ public struct DesignSystemText: View {
   public var body: some View {
     Text(text)
       .font(designSystemFont.font)
-      .tracking(-0.03)
+      .tracking(ssLetterSpacing)
+      .lineSpacing(designSystemFont.lineHeight)
   }
 }

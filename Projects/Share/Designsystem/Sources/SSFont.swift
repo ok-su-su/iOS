@@ -14,14 +14,14 @@ public extension Font {
   /// - Returns: font
   ///
   /// eg) Text("hello World").font(.custom(.title_l))
-  static func custom(_ font: DesignSystemFont) -> Self {
+  static func custom(_ font: SSFont) -> Self {
     return font.font
   }
 }
 
 // MARK: - DesignSystemFont
 
-public enum DesignSystemFont {
+public enum SSFont {
   case title_xxxxl
   case title_xxxl
   case title_xxl
@@ -36,6 +36,27 @@ public enum DesignSystemFont {
 
   public var font: Font {
     return .custom("Pretendard-Regular", size: fontSize)
+  }
+
+  var lineHeight: CGFloat {
+    return switch self {
+    case .title_l,
+         .title_xl,
+         .title_xxl,
+         .title_xxxl,
+         .title_xxxxl:
+      16
+    case .title_m,
+         .title_s,
+         .title_xs:
+      12
+    case .title_xxs:
+      10
+    case .title_xxxs:
+      8
+    case .title_xxxxs:
+      6
+    }
   }
 
   var fontSize: CGFloat {
