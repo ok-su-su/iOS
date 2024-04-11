@@ -10,4 +10,3 @@ let project = Project.makeModule(
     resources: "Resources/**"
   )
 )
-
