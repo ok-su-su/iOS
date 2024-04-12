@@ -6,7 +6,9 @@ let project = Project.makeModule(
   name: "SSAlert",
   targets: .custom(
     name: "SSAlert",
-    product: .framework
+    product: .framework,
+    dependencies: [
+      .share(.designsystem),
+    ]
   )
 )
-

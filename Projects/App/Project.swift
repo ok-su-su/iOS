@@ -10,6 +10,7 @@ let project = Project.makeModule(
     dependencies: [
       .thirdParty(.Alamofire),
       .share(.designsystem),
+      .share(.sSAlert),
     ],
     testDependencies: [],
     infoPlist: [

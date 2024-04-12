@@ -1,5 +1,5 @@
 //
-//  DesignSystemLetterSpacing.swift
+//  SSLetterSpacing.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/11/24.

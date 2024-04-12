@@ -1,4 +1,5 @@
 import Designsystem
+import SSAlert
 import SwiftUI
 
 // MARK: - ContentView
@@ -9,15 +10,15 @@ public struct ContentView: View {
 
   public var body: some View {
     VStack {
-      
+      MessageAlert(titleText: "dd", contentText: "하이용")
       Text("Hello, susu!")
         .padding()
         .foregroundStyle(Color(SSColor.blue50))
-      
+
       Color(SSColor.blue100)
         .frame(width: 100, height: 100)
         .padding()
-      
+
       Image(uiImage: SSImage.commonLogo)
         .frame(width: 400, height: 400, alignment: .center)
     }
