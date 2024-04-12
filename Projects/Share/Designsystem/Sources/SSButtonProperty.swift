@@ -204,6 +204,27 @@ public extension SSButtonProperty {
     case icon(Image)
   }
 
+  var font: SSFont {
+    switch size {
+    case .lh46,
+         .lh54,
+         .lh62:
+      .title_s
+    case .mh44,
+         .mh52,
+         .mh60:
+      .title_xs
+    case .sh32,
+         .sh40,
+         .sh48:
+      .title_xxs
+    case .xsh28,
+         .xsh36,
+         .xsh44:
+      .title_xxxs
+    }
+  }
+
   var backgroundColor: Color {
     return status == .active ? activeBackgroundColor : inactiveBackGroundColor
   }
@@ -220,7 +241,7 @@ public extension SSButtonProperty {
   }
 
   private var inactiveBackGroundColor: Color {
-    let (primaryColor, secondaryColor) = color.color
+    let (primaryColor, secondaryColor) = color.inactiveColor
     return switch style {
     case .filled:
       primaryColor
@@ -255,5 +276,9 @@ public extension SSButtonProperty {
 
   var isLined: Bool {
     return style == .lined
+  }
+
+  var isDisable: Bool {
+    return status == .inactive
   }
 }

@@ -37,7 +37,9 @@ public struct SSButton: View {
         }
 
         Text(property.buttonText)
-          .modifier(SSTextModifier(.))
+          .modifier(SSTextModifier(property.font))
+          .bold()
+          .foregroundStyle(property.textColor)
 
         switch property.rightIcon {
         case .none:
@@ -54,6 +56,7 @@ public struct SSButton: View {
       .clipShape(RoundedRectangle(cornerRadius: SSButtonConstans.cornerRadius))
       .modifier(LinedModifier(isLined: property.isLined))
     }
+    .disabled(property.isDisable)
   }
 }
 

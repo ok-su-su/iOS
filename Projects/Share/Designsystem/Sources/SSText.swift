@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-// MARK: - DesignSystemText
+// MARK: - SSText
 
 public struct SSText: View {
   var text: String
