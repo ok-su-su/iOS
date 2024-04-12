@@ -9,7 +9,6 @@
 import UIKit
 
 public enum SSImage {
-  
   /// 공통 icon
   public static let commonAdd: UIImage = .commonAdd
   public static let commonArrow: UIImage = .commonArrow
@@ -25,15 +24,15 @@ public enum SSImage {
   public static let commonRefresh: UIImage = .commonRefresh
   public static let commonSearch: UIImage = .commonSearch
   public static let commonUnCheckBox: UIImage = .commonUncheckBox
-  
+
   /// 로그인 화면 icon
   public static let signinKakao: UIImage = .signinKakao
   public static let signinMainlogo: UIImage = .signinMainlogo
   public static let signinTrademark: UIImage = .signinTrademark
-  
+
   /// 회원 가입 화면 icon
   public static let signupClose: UIImage = .signupClose
-  
+
   /// 보내요 화면 icon
   public static let envelopeBackArrow: UIImage = .envelopeBackArrow
   public static let envelopeDownArrow: UIImage = .envelopeDownArrow
@@ -42,19 +41,19 @@ public enum SSImage {
   public static let envelopeMainFill: UIImage = .envelopeMainFill
   public static let envelopeUpArrow: UIImage = .envelopeUpArrow
   public static let envelopeOutline: UIImage = .envelopeOutline
-  
+
   /// 받아요 화면 icon
   public static let inventoryAppoint: UIImage = .inventoryAppoint
   public static let inventoryFill: UIImage = .inventoryFill
   public static let inventoryMainFill: UIImage = .inventoryMainFill
   public static let inventoryOutline: UIImage = .inventoryOutline
   public static let inventoryAdd: UIImage = .inventotryAdd
-  
+
   /// 통계 화면 icon
   public static let statisticsArrow: UIImage = .statisticsArrow
   public static let statisticsFill: UIImage = .statisticsFill
   public static let statisticsOutline: UIImage = .statisticsOutline
-  
+
   /// 투표 화면 icon
   public static let voteFill: UIImage = .voteFill
   public static let voteMainFill: UIImage = .voteMainFill
@@ -64,12 +63,10 @@ public enum SSImage {
   public static let voteSystemLogo: UIImage = .voteSystemLogo
   public static let voteWarning: UIImage = .voteWarning
   public static let voteWrite: UIImage = .voteWrite
-  
+
   /// 마이페이지 화면 icon
   public static let mypageCircleKakao: UIImage = .mypageCircleKakao
   public static let mypageFill: UIImage = .mypageFill
   public static let mypageOutline: UIImage = .mypageOutline
   public static let mypageSusu: UIImage = .mypageSusu
-    
 }
-

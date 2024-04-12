@@ -1,5 +1,5 @@
 //
-//  DesignSystemText.swift
+//  SSText.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/11/24.
@@ -22,6 +22,26 @@ public struct SSText: View {
   public var body: some View {
     Text(text)
       .font(designSystemFont.font)
+      .tracking(ssLetterSpacing)
+      .lineSpacing(designSystemFont.lineHeight)
+  }
+}
+
+// MARK: - SSTextModifier
+
+public struct SSTextModifier: ViewModifier {
+  private let designSystemFont: SSFont
+  private let isBold: Bool
+  public init(_ designSystemFont: SSFont, isBold: Bool = false) {
+    self.designSystemFont = designSystemFont
+    self.isBold = isBold
+  }
+
+  @ViewBuilder
+  public func body(content: Content) -> some View {
+    content
+      .font(designSystemFont.font)
+      .bold(isBold)
       .tracking(ssLetterSpacing)
       .lineSpacing(designSystemFont.lineHeight)
   }
