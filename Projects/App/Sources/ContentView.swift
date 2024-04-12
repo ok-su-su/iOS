@@ -8,7 +8,16 @@ public struct ContentView: View {
   @State var name: String = ""
 
   public var body: some View {
-    Text("Hello susu!")
+    VStack {
+      
+      Text("Hello, susu!")
+        .padding()
+        .foregroundStyle(Color(SSColor.blue50))
+      
+      Color(SSColor.blue100)
+        .frame(width: 100, height: 100)
+        .padding()
+    }
   }
 }
 
