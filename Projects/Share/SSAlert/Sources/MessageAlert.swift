@@ -11,25 +11,38 @@ import SwiftUI
 
 // MARK: - MessageAlert
 
+public struct MessageAlertProperty {
+  let titleText: String
+  let contentText: String
+  let checkBoxMessage: CheckBoxMessage
+  let buttonMessage: ButtonMessage
+  public enum CheckBoxMessage {
+    case none
+    case text(String)
+  }
+  public enum ButtonMessage {
+    case singleButton(String)
+    case doubleButton(left: String, right: String)
+  }
+}
+
 public struct MessageAlert: View {
-  var titleText: String
-  var contentText: String
-  public init(titleText: String, contentText: String) {
-    self.titleText = titleText
-    self.contentText = contentText
+  let messageAlertProperty: MessageAlertProperty
+  init(_ messageAlertProperty: MessageAlertProperty) {
+    self.messageAlertProperty = messageAlertProperty
   }
 
   public var body: some View {
     VStack {
       VStack(alignment: .leading, spacing: 24) {
         VStack(alignment: .leading, spacing: 8) {
-          Text(titleText)
+          Text(messageAlertProperty.titleText)
             .multilineTextAlignment(.center)
             .modifier(SSTextModifier(.title_xs, isBold: true))
             .tint(SSColor.gray100)
             .frame(maxWidth: .infinity)
 
-          Text(contentText)
+          Text(messageAlertProperty.contentText)
             .multilineTextAlignment(.center)
             .modifier(SSTextModifier(.title_xxs))
             .frame(maxWidth: .infinity)
@@ -68,13 +81,5 @@ public struct MessageAlert: View {
     .background { SSColor.gray10 }
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     .frame(width: 312)
-  }
-}
-
-// MARK: - ContentView_Previews
-
-struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    MessageAlert(titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요 텍스트 메세지를 입력하세요텍스트 메세지를 입력하세요 텍스트 메세지를 입력하세요 텍스트 메세지를 입력하세요")
   }
 }
