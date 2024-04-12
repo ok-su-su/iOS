@@ -1,5 +1,5 @@
 //
-//  DesignSystemFont.swift
+//  SSFont.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/11/24.
@@ -19,7 +19,7 @@ public extension Font {
   }
 }
 
-// MARK: - DesignSystemFont
+// MARK: - SSFont
 
 public enum SSFont {
   case title_xxxxl
