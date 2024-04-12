@@ -5,6 +5,7 @@ import SwiftUI
 
 public struct ContentView: View {
   public init() {}
+  @State var name: String = ""
 
   public var body: some View {
     VStack {
