@@ -20,53 +20,54 @@ public struct MessageAlert: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: 24) {
-      VStack(alignment: .leading, spacing: 8) {
-        Text(titleText)
-          .multilineTextAlignment(.center)
-          .modifier(SSTextModifier(.title_xs))
-          .frame(maxWidth: .infinity)
+    VStack {
+      VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 8) {
+          Text(titleText)
+            .multilineTextAlignment(.center)
+            .modifier(SSTextModifier(.title_xs, isBold: true))
+            .tint(SSColor.gray100)
+            .frame(maxWidth: .infinity)
 
-        Text(contentText)
-          .multilineTextAlignment(.center)
-          .modifier(SSTextModifier(.title_xxs))
-          .frame(maxWidth: .infinity)
-      }
-
-      HStack(alignment: .center, spacing: 8) {
-        Button(action: {}, label: {
-          Text("닫기")
-            .font(SSFont.title_l.font)
-
-            .tint(Color.black)
-            .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-        })
-        .frame(maxWidth: .infinity)
-        .background {
-          Color.white
+          Text(contentText)
+            .multilineTextAlignment(.center)
+            .modifier(SSTextModifier(.title_xxs))
+            .frame(maxWidth: .infinity)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
 
-        Button(action: {}, label: {
-          Text("닫기")
-            .font(SSFont.title_l.font)
-            .bold()
-            .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-        })
-        .frame(maxWidth: .infinity)
-        .background {
-          Color(SSColor.orange60)
+        HStack(alignment: .center, spacing: 8) {
+          Button(action: {}, label: {
+            Text("버튼 명")
+              .modifier(SSTextModifier(.title_xxs, isBold: true))
+              .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+              .tint(SSColor.gray100)
+          })
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .background {
+            Color.white
+          }
+          .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+          Button(action: {}, label: {
+            Text("닫기")
+              .modifier(SSTextModifier(.title_xxs, isBold: true))
+              .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
+              .tint(SSColor.gray10)
+          })
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .background {
+            SSColor.orange60
+          }
+          .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
         }
-        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .padding(0)
+        .frame(maxWidth: .infinity, maxHeight: 40, alignment: .center)
       }
-      .padding(0)
-      .frame(maxWidth: .infinity, alignment: .center)
+      .padding(24)
     }
-    .padding(24)
+    .background { SSColor.gray10 }
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     .frame(width: 312)
-    .background {
-      Color.blue
-    }
   }
 }
 
