@@ -26,7 +26,7 @@ public struct ContentView: View {
 
         SSButton(
           .init(
-            size: .lh54, status: .active, style: .lined, color: .black,
+            size: .lh54, status: .inactive, style: .lined, color: .black,
             leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
             rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
             buttonText: "Button"
@@ -51,6 +51,25 @@ public struct ContentView: View {
             leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
             rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
             buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh46, status: .inactive, style: .lined, color: .orange,
+            buttonText: "tton"
           ), onTap: {}
         )
       }

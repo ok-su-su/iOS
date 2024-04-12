@@ -226,22 +226,7 @@ public extension SSButtonProperty {
   }
 
   var backgroundColor: Color {
-    return status == .active ? activeBackgroundColor : inactiveBackGroundColor
-  }
-
-  private var activeBackgroundColor: Color {
-    let (primaryColor, secondaryColor) = color.color
-    return switch style {
-    case .filled:
-      primaryColor
-    case .ghost,
-         .lined:
-      secondaryColor
-    }
-  }
-
-  private var inactiveBackGroundColor: Color {
-    let (primaryColor, secondaryColor) = color.inactiveColor
+    let (primaryColor, secondaryColor) = status == .active ? color.color : color.inactiveColor
     return switch style {
     case .filled:
       primaryColor
@@ -252,7 +237,7 @@ public extension SSButtonProperty {
   }
 
   var textColor: Color {
-    let (primaryColor, secondaryColor) = color.color
+    let (primaryColor, secondaryColor) = status == .active ? color.color : color.inactiveColor
     return switch style {
     case .filled:
       secondaryColor
@@ -264,14 +249,27 @@ public extension SSButtonProperty {
 
   var lineColor: Color? {
     if style == .lined {
-      return switch color {
-      case .black:
-        .gray90
-      case .orange:
-        .orange50
-      }
+      return status == .active ? activeLineColor : inactiveLineColor
     }
     return nil
+  }
+
+  var activeLineColor: Color {
+    return switch color {
+    case .black:
+      .gray90
+    case .orange:
+      .orange50
+    }
+  }
+
+  var inactiveLineColor: Color {
+    return switch color {
+    case .black:
+      .gray30
+    case .orange:
+      .orange20
+    }
   }
 
   var isLined: Bool {

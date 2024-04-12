@@ -54,7 +54,7 @@ public struct SSButton: View {
         property.backgroundColor
       }
       .clipShape(RoundedRectangle(cornerRadius: SSButtonConstans.cornerRadius))
-      .modifier(LinedModifier(isLined: property.isLined))
+      .modifier(LinedModifier(lineColor: property.lineColor))
     }
     .disabled(property.isDisable)
   }
@@ -63,15 +63,15 @@ public struct SSButton: View {
 // MARK: - LinedModifier
 
 struct LinedModifier: ViewModifier {
-  var isLined: Bool
+  var lineColor: Color?
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if isLined {
+    if let lineColor {
       content.overlay {
         RoundedRectangle(cornerRadius: 4)
           .inset(by: 0.5)
-          .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1)
+          .stroke(lineColor, lineWidth: 1)
       }
     } else {
       content
