@@ -5,6 +5,7 @@ import SwiftUI
 
 public struct ContentView: View {
   public init() {}
+  @State var name: String = ""
 
   public var body: some View {
     VStack {
@@ -16,6 +17,9 @@ public struct ContentView: View {
       Color(SSColor.blue100)
         .frame(width: 100, height: 100)
         .padding()
+      
+      Image(uiImage: SSImage.commonLogo)
+        .frame(width: 400, height: 400, alignment: .center)
     }
   }
 }

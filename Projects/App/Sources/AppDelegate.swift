@@ -6,6 +6,8 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import Designsystem
+import SwiftUI
 import UIKit
 
 class MyAppDelegate: NSObject, UIApplicationDelegate {
@@ -13,6 +15,7 @@ class MyAppDelegate: NSObject, UIApplicationDelegate {
     _: UIApplication,
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    Font.registerFont()
     return true
   }
 

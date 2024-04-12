@@ -7,6 +7,11 @@ let project = Project.makeModule(
   targets: .custom(
     name: "Designsystem",
     product: .framework,
+    infoPlist: [
+      "UIAppFonts": [
+        "Pretendard-Regular.otf",
+      ],
+    ],
     resources: "Resources/**"
   )
 )
