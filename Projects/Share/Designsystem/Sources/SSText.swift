@@ -37,8 +37,9 @@ public struct SSTextModifier: ViewModifier {
     self.isBold = isBold
   }
 
+  @ViewBuilder
   public func body(content: Content) -> some View {
-    return content
+    content
       .font(designSystemFont.font)
       .bold(isBold)
       .tracking(ssLetterSpacing)

@@ -10,13 +10,74 @@ public struct ContentView: View {
 
   public var body: some View {
     VStack {
-      MessageAlert(titleText: "dd", contentText: "하이용")
       Text("Hello, susu!")
         .padding()
+        .foregroundStyle(Color(SSColor.blue50))
 
-//      Color(SSColor.blue100)
-//        .frame(width: 100, height: 100)
-//        .padding()
+      HStack {
+        SSButton(.init(size: .lh46, status: .active, style: .filled, color: .black, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .inactive, style: .lined, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .lined, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh46, status: .inactive, style: .lined, color: .orange,
+            buttonText: "tton"
+          ), onTap: {}
+        )
+      }
+
+      Color(SSColor.blue100)
+        .frame(width: 100, height: 100)
+        .padding()
 
       Image(uiImage: SSImage.commonLogo)
         .frame(width: 400, height: 400, alignment: .center)
