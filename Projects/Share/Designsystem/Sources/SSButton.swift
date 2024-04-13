@@ -37,8 +37,7 @@ public struct SSButton: View {
         }
 
         Text(property.buttonText)
-          .modifier(SSTextModifier(property.font))
-          .bold()
+          .modifier(SSTextModifier(property.font, isBold: true))
           .foregroundStyle(property.textColor)
 
         switch property.rightIcon {
