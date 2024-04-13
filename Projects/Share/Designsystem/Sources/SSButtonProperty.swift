@@ -18,6 +18,35 @@ public struct SSButtonProperty {
   let leftIcon: LeftIcon
   let rightIcon: RightIcon
   let buttonText: String
+  let frame: SSButtonFrame
+
+  public struct SSButtonFrame {
+    let minWidth: CGFloat?
+    let idealWidth: CGFloat?
+    let maxWidth: CGFloat?
+    let minHeight: CGFloat?
+    let idealHeight: CGFloat?
+    let maxHeight: CGFloat?
+    let alignment: Alignment
+
+    public init(
+      minWidth: CGFloat? = nil,
+      idealWidth: CGFloat? = nil,
+      maxWidth: CGFloat? = nil,
+      minHeight: CGFloat? = nil,
+      idealHeight: CGFloat? = nil,
+      maxHeight: CGFloat? = nil,
+      alignment: Alignment = .center
+    ) {
+      self.minWidth = minWidth
+      self.idealWidth = idealWidth
+      self.maxWidth = maxWidth
+      self.minHeight = minHeight
+      self.idealHeight = idealHeight
+      self.maxHeight = maxHeight
+      self.alignment = alignment
+    }
+  }
 
   /// SusuButton의 Property 입니다.
   /// - Parameters:
@@ -35,7 +64,8 @@ public struct SSButtonProperty {
     color: ButtonColor,
     leftIcon: LeftIcon = .none,
     rightIcon: RightIcon = .none,
-    buttonText: String
+    buttonText: String,
+    frame: SSButtonFrame = .init()
   ) {
     self.size = size
     self.status = status
@@ -44,6 +74,7 @@ public struct SSButtonProperty {
     self.leftIcon = leftIcon
     self.rightIcon = rightIcon
     self.buttonText = buttonText
+    self.frame = frame
   }
 }
 

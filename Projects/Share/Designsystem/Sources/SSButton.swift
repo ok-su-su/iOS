@@ -50,6 +50,15 @@ public struct SSButton: View {
       }
       .padding(.horizontal, property.size.horizontalSpacing)
       .padding(.vertical, property.size.verticalSpacing)
+      .frame(
+        minWidth: property.frame.minWidth,
+        idealWidth: property.frame.idealWidth,
+        maxWidth: property.frame.maxWidth,
+        minHeight: property.frame.minHeight,
+        idealHeight: property.frame.idealHeight,
+        maxHeight: property.frame.maxHeight,
+        alignment: property.frame.alignment
+      )
       .background {
         property.backgroundColor
       }
