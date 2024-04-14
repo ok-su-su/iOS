@@ -16,12 +16,20 @@ public struct MessageAlertProperty {
   let contentText: String
   let checkBoxMessage: CheckBoxMessage
   let buttonMessage: ButtonMessage
+  let animationDuration: TimeInterval
 
-  public init(titleText: String, contentText: String, checkBoxMessage: CheckBoxMessage, buttonMessage: ButtonMessage) {
+  public init(
+    titleText: String,
+    contentText: String,
+    checkBoxMessage: CheckBoxMessage,
+    buttonMessage: ButtonMessage,
+    animationDuration: TimeInterval = 0.3
+  ) {
     self.titleText = titleText
     self.contentText = contentText
     self.checkBoxMessage = checkBoxMessage
     self.buttonMessage = buttonMessage
+    self.animationDuration = animationDuration
   }
 
   public enum CheckBoxMessage: Equatable {
@@ -62,98 +70,130 @@ private struct CheckBoxView: View {
 
 public struct MessageAlert: View {
   let messageAlertProperty: MessageAlertProperty
-  public init(_ messageAlertProperty: MessageAlertProperty) {
+  @Binding private var isPresented: Bool
+  @State private var isAnimating = false
+  @State private var opacity = 0.16
+  public init(_ messageAlertProperty: MessageAlertProperty, isPresented: Binding<Bool>) {
     self.messageAlertProperty = messageAlertProperty
+    _isPresented = isPresented
+  }
+
+  func dismiss() {
+    opacity = 0
+    isAnimating = false
+    isPresented = false
+  }
+
+  func show() {
+    withAnimation(.easeInOut(duration: messageAlertProperty.animationDuration)) {
+      isAnimating = true
+    }
+  }
+  
+  @ViewBuilder
+  func titleView() -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text(messageAlertProperty.titleText)
+        .multilineTextAlignment(.center)
+        .modifier(SSTextModifier(.title_xs, isBold: true))
+        .bold()
+        .tint(SSColor.gray100)
+        .frame(maxWidth: .infinity)
+
+      Text(messageAlertProperty.contentText)
+        .multilineTextAlignment(.center)
+        .modifier(SSTextModifier(.title_xxs))
+        .frame(maxWidth: .infinity)
+    }
+  }
+  
+  @ViewBuilder
+  func singleButtonView(_ buttonText: String) -> some View {
+    SSButton(
+      .init(
+        size: .sh40,
+        status: .active,
+        style: .filled,
+        color: .orange,
+        buttonText: buttonText,
+        frame: .init(maxWidth: .infinity)
+      ),
+      onTap: {
+        dismiss()
+      }
+    )
+  }
+  
+  @ViewBuilder
+  func doubleButtonView(_ leftButtonText: String, _ rightButtonText: String) -> some View {
+    HStack(spacing: 8) {
+      SSButton(
+        .init(
+          size: .sh40,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          buttonText: leftButtonText,
+          frame: .init(maxWidth: .infinity)
+        ),
+        onTap: {
+          dismiss()
+        }
+      )
+      .frame(maxWidth: .infinity)
+
+      SSButton(
+        .init(
+          size: .sh40,
+          status: .active,
+          style: .filled,
+          color: .orange,
+          buttonText: rightButtonText,
+          frame: .init(maxWidth: .infinity)
+        ),
+        onTap: {
+          dismiss()
+        }
+      )
+      .frame(maxWidth: .infinity)
+    }
   }
 
   @ViewBuilder
   public var body: some View {
-    VStack {
-      VStack(alignment: .leading, spacing: 24) {
-        VStack(alignment: .leading, spacing: 8) {
-          Text(messageAlertProperty.titleText)
-            .multilineTextAlignment(.center)
-            .modifier(SSTextModifier(.title_xs, isBold: true))
-            .bold()
-            .tint(SSColor.gray100)
-            .frame(maxWidth: .infinity)
+    ZStack {
+      Color.black
+        .ignoresSafeArea()
+        .opacity(opacity)
+        .zIndex(0)
 
-          Text(messageAlertProperty.contentText)
-            .multilineTextAlignment(.center)
-            .modifier(SSTextModifier(.title_xxs))
-            .frame(maxWidth: .infinity)
-        }
-        if case let .text(text) = messageAlertProperty.checkBoxMessage {
-          CheckBoxView(checkBoxString: text)
-        }
+      if isAnimating {
+        VStack {
+          VStack(alignment: .leading, spacing: 24) {
+           titleView()
+            
+            if case let .text(text) = messageAlertProperty.checkBoxMessage {
+              CheckBoxView(checkBoxString: text)
+            }
 
-        switch messageAlertProperty.buttonMessage {
-        case let .singleButton(buttonText):
-          SSButton(
-            .init(
-              size: .sh40,
-              status: .active,
-              style: .filled,
-              color: .orange,
-              buttonText: buttonText,
-              frame: .init(maxWidth: .infinity)
-            ),
-            onTap: {}
-          )
-        case let .doubleButton(left, right):
-          HStack(spacing: 8) {
-            SSButton(
-              .init(
-                size: .sh40,
-                status: .active,
-                style: .ghost,
-                color: .black,
-                buttonText: left,
-                frame: .init(maxWidth: .infinity)
-              ),
-              onTap: {}
-            )
-            .frame(maxWidth: .infinity)
-
-            SSButton(
-              .init(
-                size: .sh40,
-                status: .active,
-                style: .filled,
-                color: .orange,
-                buttonText: right,
-                frame: .init(maxWidth: .infinity)
-              ),
-              onTap: {}
-            )
-            .frame(maxWidth: .infinity)
+            switch messageAlertProperty.buttonMessage {
+            case let .singleButton(buttonText):
+              singleButtonView(buttonText)
+            case let .doubleButton(leftButtonText, rightButtonText):
+              doubleButtonView(leftButtonText, rightButtonText)
+            }
           }
+          .padding(24)
         }
+        .background { SSColor.gray10 }
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .frame(width: 312)
+        .zIndex(1)
       }
-      .padding(24)
     }
-    .background { SSColor.gray10 }
-    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-    .frame(width: 312)
-  }
-}
-
-#Preview {
-  VStack {
-    MessageAlert(.init(
-      titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요",
-      checkBoxMessage: .text("체크박스 메세지"),
-      buttonMessage: .doubleButton(left: "닫기", right: "버튼명")
-    ))
-
-    MessageAlert(.init(
-      titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요",
-      checkBoxMessage: .text("체크박스 메세지"),
-      buttonMessage: .singleButton("확인했어요")
-    ))
-  }
-  .frame(maxWidth: .infinity, maxHeight: .infinity)
-  .background {
-    Color.blue
+    .onAppear {
+      show()
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 }
