@@ -14,23 +14,77 @@ public struct ContentView: View {
       showingSheet.toggle()
     }
     VStack {
-      MessageAlert(
-        .init(
-          titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요",
-          checkBoxMessage: .text("체크박스 메세지"),
-          buttonMessage: .doubleButton(left: "닫기", right: "버튼명")
-        ),
-        isPresented: $isPresentedValue
-      )
+      Text("Hello, susu!")
+        .padding()
+        .foregroundStyle(Color(SSColor.blue50))
 
-      MessageAlert(
-        .init(
-          titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요",
-          checkBoxMessage: .text("체크박스 메세지"),
-          buttonMessage: .singleButton("확인했어요")
-        ),
-        isPresented: $isPresentedValue
-      )
+      HStack {
+        SSButton(.init(size: .lh46, status: .active, style: .filled, color: .black, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .inactive, style: .lined, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .lined, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh46, status: .inactive, style: .lined, color: .orange,
+            buttonText: "tton"
+          ), onTap: {}
+        )
+      }
+
+      Color(SSColor.blue100)
+        .frame(width: 100, height: 100)
+        .padding()
+
+      Image(uiImage: SSImage.commonLogo)
+        .frame(width: 400, height: 400, alignment: .center)
     }
     .customAlert(isPresented: $showingSheet)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
