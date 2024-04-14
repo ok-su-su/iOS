@@ -89,7 +89,7 @@ public struct MessageAlert: View {
       isAnimating = true
     }
   }
-  
+
   @ViewBuilder
   func titleView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
@@ -106,7 +106,7 @@ public struct MessageAlert: View {
         .frame(maxWidth: .infinity)
     }
   }
-  
+
   @ViewBuilder
   func singleButtonView(_ buttonText: String) -> some View {
     SSButton(
@@ -123,7 +123,7 @@ public struct MessageAlert: View {
       }
     )
   }
-  
+
   @ViewBuilder
   func doubleButtonView(_ leftButtonText: String, _ rightButtonText: String) -> some View {
     HStack(spacing: 8) {
@@ -170,8 +170,8 @@ public struct MessageAlert: View {
       if isAnimating {
         VStack {
           VStack(alignment: .leading, spacing: 24) {
-           titleView()
-            
+            titleView()
+
             if case let .text(text) = messageAlertProperty.checkBoxMessage {
               CheckBoxView(checkBoxString: text)
             }
