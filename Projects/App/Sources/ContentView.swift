@@ -1,16 +1,28 @@
 import ComposableArchitecture
 import Designsystem
 import Moya
+import OSLog
+import RealmSwift
 import SSAlert
 import SwiftUI
 
 // MARK: - ContentView
 
 public struct ContentView: View {
-  public init() {}
+  public init() {
+//    let todo = Todo(name: "Do laundry", ownerId: "123")
+//    try! realm.write {
+//      realm.add(todo)
+//      realm.add(todo)
+//    }
+//    let todos = realm.objects(Todo.self)
+//    os_log("\(todos)")
+  }
+
   @State var name: String = ""
   @State private var showingSheet = false
   @State private var isPresentedValue: Bool = false
+  ///  let realm = try! Realm()
   public var body: some View {
     VStack {
       Button("HelloSusu") {
@@ -107,3 +119,18 @@ struct ContentView_Previews: PreviewProvider {
     ContentView()
   }
 }
+
+
+// MARK: - Todo
+
+ class Todo: Object {
+  @Persisted(primaryKey: true) var _id: ObjectId
+  @Persisted var name: String = ""
+  @Persisted var status: String = ""
+  @Persisted var ownerId: String
+  convenience init(name: String, ownerId: String) {
+    self.init()
+    self.name = name
+    self.ownerId = ownerId
+  }
+ }
