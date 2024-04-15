@@ -8,10 +8,10 @@ let project = Project.makeModule(
     name: "SSDataBase",
     product: .framework,
     dependencies: [
-      
+      .package(product: "ReamSwift", type: .runtime, condition: .none)
     ]
   ),
   packages: [
-    .remote(url: "https://github.com/realm/realm-swift", requirement: .exact("10.45.3")),
+    
   ]
 )
