@@ -1,6 +1,7 @@
 import Designsystem
 import SSAlert
 import SwiftUI
+import Moya
 
 // MARK: - ContentView
 
@@ -89,7 +90,8 @@ public struct ContentView: View {
     .customAlert(
       isPresented: $showingSheet,
       messageAlertProperty:
-          .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .none, buttonMessage: .singleButton("asdf"), didTapCompletionButton: {}))
+      .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .none, buttonMessage: .singleButton("asdf"), didTapCompletionButton: {})
+    )
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background {
       SSColor.gray30
