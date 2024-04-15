@@ -11,6 +11,7 @@ let project = Project.makeModule(
       .share(.designsystem),
       .share(.sSAlert),
       .core(.sSNetwork),
+      .thirdParty(.ComposableArchitecture),
     ],
     testDependencies: [],
     infoPlist: [
