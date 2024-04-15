@@ -2,21 +2,19 @@ import ComposableArchitecture
 import Designsystem
 import Moya
 import OSLog
-import RealmSwift
 import SSAlert
+import SSDataBase
 import SwiftUI
 
 // MARK: - ContentView
 
 public struct ContentView: View {
   public init() {
-//    let todo = Todo(name: "Do laundry", ownerId: "123")
-//    try! realm.write {
-//      realm.add(todo)
-//      realm.add(todo)
-//    }
-//    let todos = realm.objects(Todo.self)
-//    os_log("\(todos)")
+    TodoSingleTone.shared.save()
+    TodoSingleTone.shared.save()
+    TodoSingleTone.shared.save()
+
+    TodoSingleTone.shared.load()
   }
 
   @State var name: String = ""
@@ -120,7 +118,8 @@ struct ContentView_Previews: PreviewProvider {
   }
 }
 
-//// MARK: - Todo
+// MARK: - Todo
+
 //
 // class Todo: Object {
 //  @Persisted(primaryKey: true) var _id: ObjectId
