@@ -16,6 +16,7 @@ let packageSettings = PackageSettings(
 let package = Package(
   name: "IOS",
   dependencies: [
-    .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3")
+    .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.9.2")
   ]
 )

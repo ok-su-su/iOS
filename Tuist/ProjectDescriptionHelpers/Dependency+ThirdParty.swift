@@ -10,10 +10,11 @@ import ProjectDescription
 
 public enum ThirdParty: String, CaseIterable {
   case Moya
+  case ComposableArchitecture
   public var targetName: String {
     switch self {
-    case .Moya:
-      return "Moya"
+    default:
+      return self.rawValue
     }
   }
   
