@@ -82,6 +82,10 @@ public struct ContentView: View {
           ), onTap: {}
         )
       }
+      HStack {
+        SSTextField(isDisplay: false, property: .contact)
+          .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+      }
 
       Color(SSColor.gray15)
         .frame(width: 100, height: 100)
