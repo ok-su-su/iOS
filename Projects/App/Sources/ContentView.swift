@@ -10,10 +10,10 @@ public struct ContentView: View {
   @State private var showingSheet = false
   @State private var isPresentedValue: Bool = false
   public var body: some View {
-    Button("Show Sheet") {
-      showingSheet.toggle()
-    }
     VStack {
+      Button("HelloSusu") {
+        showingSheet.toggle()
+      }
       Text("Hello, susu!")
         .padding()
         .foregroundStyle(Color(SSColor.blue50))
@@ -79,17 +79,20 @@ public struct ContentView: View {
         )
       }
 
-      Color(SSColor.blue100)
+      Color(SSColor.gray15)
         .frame(width: 100, height: 100)
         .padding()
 
       Image(uiImage: SSImage.commonLogo)
         .frame(width: 400, height: 400, alignment: .center)
     }
-    .customAlert(isPresented: $showingSheet)
+    .customAlert(
+      isPresented: $showingSheet,
+      messageAlertProperty:
+          .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .none, buttonMessage: .singleButton("asdf"), didTapCompletionButton: {}))
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background {
-      Color.blue
+      SSColor.gray30
     }
   }
 }

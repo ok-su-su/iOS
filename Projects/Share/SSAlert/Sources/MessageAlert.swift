@@ -17,19 +17,22 @@ public struct MessageAlertProperty {
   let checkBoxMessage: CheckBoxMessage
   let buttonMessage: ButtonMessage
   let animationDuration: TimeInterval
+  let didTapCompletionButton: () -> Void
 
   public init(
     titleText: String,
     contentText: String,
     checkBoxMessage: CheckBoxMessage,
     buttonMessage: ButtonMessage,
-    animationDuration: TimeInterval = 0.3
+    animationDuration: TimeInterval = 0.3,
+    didTapCompletionButton: @escaping () -> Void
   ) {
     self.titleText = titleText
     self.contentText = contentText
     self.checkBoxMessage = checkBoxMessage
     self.buttonMessage = buttonMessage
     self.animationDuration = animationDuration
+    self.didTapCompletionButton = didTapCompletionButton
   }
 
   public enum CheckBoxMessage: Equatable {
@@ -37,7 +40,7 @@ public struct MessageAlertProperty {
     case text(String)
   }
 
-  public enum ButtonMessage: Equatable {
+  public enum ButtonMessage {
     case singleButton(String)
     case doubleButton(left: String, right: String)
   }
@@ -120,6 +123,7 @@ public struct MessageAlert: View {
       ),
       onTap: {
         dismiss()
+        messageAlertProperty.didTapCompletionButton()
       }
     )
   }
@@ -153,6 +157,7 @@ public struct MessageAlert: View {
         ),
         onTap: {
           dismiss()
+          messageAlertProperty.didTapCompletionButton()
         }
       )
       .frame(maxWidth: .infinity)

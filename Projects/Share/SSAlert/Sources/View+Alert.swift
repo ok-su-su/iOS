@@ -10,15 +10,11 @@ import SwiftUI
 
 public extension View {
   func customAlert(
-    isPresented: Binding<Bool>
+    isPresented: Binding<Bool>,
+    messageAlertProperty: MessageAlertProperty
   ) -> some View {
     fullScreenCover(isPresented: isPresented) {
-      MessageAlert(.init(
-        titleText: "모달명 제목", contentText: "텍스트 메세지를 입력하세요",
-        checkBoxMessage: .text("체크박스 메세지"),
-        buttonMessage: .doubleButton(left: "닫기", right: "버튼명")
-      ),
-      isPresented: isPresented)
+      MessageAlert(messageAlertProperty, isPresented: isPresented)
         .presentationBackground(.clear)
     }
     .transaction { transaction in
