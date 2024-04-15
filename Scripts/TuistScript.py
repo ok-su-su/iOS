@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
     
     feature_name = input("모듈의 이름을 입력하세요: ")
-    feature_name = feature_name.capitalize()
+    feature_name = feature_name[0].capitalize() + feature_name[1:]
 
     if sys.argv[1] == "feature":
         # Modify the Dependency+Target.swift file

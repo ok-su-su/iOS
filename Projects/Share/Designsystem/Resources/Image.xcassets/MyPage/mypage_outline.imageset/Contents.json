@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "mypage_outline.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
