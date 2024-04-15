@@ -9,7 +9,6 @@ import ProjectDescription
 import Foundation
 
 public enum Shared: String {
-  case writeBoard
   case designsystem
   case sSAlert
   public var targetName: String {
