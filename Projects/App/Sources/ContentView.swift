@@ -9,6 +9,8 @@ public struct ContentView: View {
   @State var name: String = ""
   @State private var showingSheet = false
   @State private var isPresentedValue: Bool = false
+  @State private var mainText = ""
+  @State private var ishlighted: Bool = true
   public var body: some View {
     Text("Hello, susu!")
       .padding()
@@ -83,8 +85,8 @@ public struct ContentView: View {
         )
       }
       HStack {
-        SSTextField(isDisplay: false, property: .contact)
-          .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+        SSTextField(isDisplay: true, text: $mainText, property: .signUp, isHighlight: $ishlighted)
+          .padding(EdgeInsets(top: 0, leading: 50, bottom: 0, trailing: 50))
       }
 
       Color(SSColor.gray15)
