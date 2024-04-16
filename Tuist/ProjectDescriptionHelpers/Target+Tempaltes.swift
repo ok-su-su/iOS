@@ -65,7 +65,8 @@ public extension [Target] {
         resources: "Resources/**",
         entitlements: entitlements,
         scripts: [.swiftFormat, .swiftLint],
-        dependencies: dependencies
+        dependencies: dependencies,
+        environmentVariables: ["IDEPreferLogStreaming" : "YES"]
       ),
     ]
 

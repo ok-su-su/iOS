@@ -11,6 +11,8 @@ import ProjectDescription
 public enum ThirdParty: String, CaseIterable {
   case Moya
   case ComposableArchitecture
+  case RealmSwift
+  case Realm
   public var targetName: String {
     switch self {
     default:
