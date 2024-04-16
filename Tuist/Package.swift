@@ -3,19 +3,20 @@ import PackageDescription
 
 #if TUIST
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let packageSettings = PackageSettings(
   // Customize the product types for specific package product
   // Default is .staticFramework
   // productTypes: ["Alamofire": .framework,]
-  productTypes: [:]
+  productTypes: ThirdParty.allCasesProductType
 )
 #endif
 
 let package = Package(
   name: "IOS",
   dependencies: [
-    .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.9.1")
-    // You can read more about dependencies here: https://docs.tuist.io/documentation/tuist/dependencies
+    .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.9.2")
   ]
 )

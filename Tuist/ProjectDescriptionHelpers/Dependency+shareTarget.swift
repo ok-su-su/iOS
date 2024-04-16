@@ -9,8 +9,8 @@ import ProjectDescription
 import Foundation
 
 public enum Shared: String {
-  case writeBoard
   case designsystem
+  case sSAlert
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

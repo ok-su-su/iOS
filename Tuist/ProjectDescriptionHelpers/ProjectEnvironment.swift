@@ -26,7 +26,7 @@ public struct ProjectEnvironment {
       appName: "MealGok",
       targetName: "MealGok",
       prefixBundleID: "com.susu",
-      deploymentTargets: .iOS("16.0"),
+      deploymentTargets: .iOS("17.0"),
       baseSetting: [:]
     )
   }
