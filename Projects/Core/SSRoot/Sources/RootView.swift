@@ -14,7 +14,7 @@ public struct RootView: View {
   @Bindable var store: StoreOf<RootViewFeature>
   public var body: some View {
     NavigationView {
-      HeaderView(property: .init(title: "asdf", type: .depth2Default))
+      HeaderView(property: .init(title: "asdf", type: .depthProgressBar(0.5)))
     }
   }
 

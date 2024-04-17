@@ -13,7 +13,7 @@ import SwiftUI
 public struct HeaderViewProperty {
   let title: String
   let type: HeaderViewPropertyType
-  
+
   public enum HeaderViewPropertyType {
     case defaultType
     case depth2Icon
@@ -33,63 +33,37 @@ public struct HeaderViewProperty {
     }
     return false
   }
-  
+
+  var leadingItem: LeadingItem {
+    return switch type {
+    case .defaultType:
+      LeadingItem(isImage: true)
+    default:
+      LeadingItem(isImage: false)
+    }
+  }
+
   var centerItem: CenterItem {
     return switch type {
     case let .depthProgressBar(double):
-        .init(type: .progress(double))
-    default :
-        .init(type: .text(title))
-  }
-}
-
-// MARK: - LeftHeaderButton
-
-struct LeftItem: View {
-  var isImage: Bool
-  var body: some View {
-    if isImage {
-      Image(.commonLogo)
-        .resizable()
-        .scaledToFit()
-    } else {
-      Button {} label: {
-        Image(.commonArrow)
-      }
+      .init(type: .progress(double))
+    default:
+      .init(type: .text(title))
     }
   }
-}
 
-struct CenterItem: View {
-  enum Types {
-    case text(String)
-    case progress(Double)
-  }
-  var type: Types
-  var body: some View {
-    switch type {
-    case let .text(text):
-      Text(text)
-        .modifier(SSTypoModifier(.title_xs))
-        .frame(maxWidth: .infinity, alignment: .center)
-    case let .progress(degree):
-      ZStack(alignment: .top) {
-        Color.orange30
-          .frame(width: 96, height: 4, alignment: .center)
-        Color.orange60
-          .frame(width: progressValue(degree), alignment: .leading)
-      }
-      .frame(width: 96, height: 4)
-      .clipShape(.rect(cornerRadius: Constants.progressCornerRadius))
-      .padding(0)
+  var trailingItem: TrailingItem {
+    return switch type {
+    case .defaultType,
+         .depth2Icon
+         :
+      TrailingItem(type: .icon)
+    case .depth2Default,
+         .depthProgressBar:
+      TrailingItem(type: .none)
+    case let .depth2Text(text):
+      TrailingItem(type: .text(text))
     }
-  }
-  func progressValue(_ value: Double) -> CGFloat {
-    return max(Constants.progressMaxWidth * value, Constants.progressMaxWidth)
-  }
-  private enum Constants {
-    static let progressCornerRadius: CGFloat = 4
-    static let progressMaxWidth: CGFloat = 96
   }
 }
 
@@ -100,29 +74,17 @@ public struct HeaderView: View {
   public var body: some View {
     VStack {
       ZStack {
-        property.centerItem
+        property
+          .centerItem
 
         HStack {
-          LeftItem(isImage: property.isLogoImage)
-            .frame(width: 56, height: 24, alignment: .leading)
-            .padding(.leading, Constants.headerLeftMargin)
+          property
+            .leadingItem
 
           Spacer()
 
-          HStack(spacing: 0) {
-            Button {} label: {
-              Image(uiImage: SSImage.commonSearch)
-                .padding(Constants.imagePadding)
-            }
-            .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
-
-            Button {} label: {
-              Image(uiImage: SSImage.commonSearch)
-                .padding(Constants.imagePadding)
-            }
-            .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
-          }
-          .frame(alignment: .trailing)
+          property
+            .trailingItem
         }
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
       }
@@ -138,11 +100,5 @@ public struct HeaderView: View {
   private enum Constants {
     static let headerViewWidth: CGFloat = 56
     static let headerViewHeight: CGFloat = 24
-
-    static let buttonWidthAndHeight: CGFloat = 44
-
-    static let imagePadding: CGFloat = 10
-
-    static let headerLeftMargin: CGFloat = 10
   }
 }
