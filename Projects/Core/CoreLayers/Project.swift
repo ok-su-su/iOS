@@ -10,7 +10,6 @@ let project = Project.makeModule(
     dependencies: [
       .core(.sSDataBase),
       .core(.sSNetwork),
-      .core(.sSRoot),
       .thirdParty(.ComposableArchitecture),
     ]
   )
