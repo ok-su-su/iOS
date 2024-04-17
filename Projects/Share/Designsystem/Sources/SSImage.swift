@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import SwiftUI
 import UIKit
 
 public enum SSImage {
