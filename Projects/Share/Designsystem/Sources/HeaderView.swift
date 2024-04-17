@@ -11,8 +11,9 @@ import SwiftUI
 // MARK: - HeaderViewProperty
 
 public struct HeaderViewProperty {
-  var title: String
-  var type: HeaderViewPropertyType
+  let title: String
+  let type: HeaderViewPropertyType
+  
   public enum HeaderViewPropertyType {
     case defaultType
     case depth2Icon
@@ -21,18 +22,74 @@ public struct HeaderViewProperty {
     case depth2Text(String)
   }
 
-  public init(title: String, type: HeaderViewPropertyType) {
+  public init(title: String = "", type: HeaderViewPropertyType) {
     self.title = title
     self.type = type
   }
 
-  var leftHeaderImage: Image {
-    return switch type {
-    case .defaultType:
-      Image(.commonLogo)
-    default:
-      Image(.commonArrow)
+  var isLogoImage: Bool {
+    if case .defaultType = type {
+      return true
     }
+    return false
+  }
+  
+  var centerItem: CenterItem {
+    return switch type {
+    case let .depthProgressBar(double):
+        .init(type: .progress(double))
+    default :
+        .init(type: .text(title))
+  }
+}
+
+// MARK: - LeftHeaderButton
+
+struct LeftItem: View {
+  var isImage: Bool
+  var body: some View {
+    if isImage {
+      Image(.commonLogo)
+        .resizable()
+        .scaledToFit()
+    } else {
+      Button {} label: {
+        Image(.commonArrow)
+      }
+    }
+  }
+}
+
+struct CenterItem: View {
+  enum Types {
+    case text(String)
+    case progress(Double)
+  }
+  var type: Types
+  var body: some View {
+    switch type {
+    case let .text(text):
+      Text(text)
+        .modifier(SSTypoModifier(.title_xs))
+        .frame(maxWidth: .infinity, alignment: .center)
+    case let .progress(degree):
+      ZStack(alignment: .top) {
+        Color.orange30
+          .frame(width: 96, height: 4, alignment: .center)
+        Color.orange60
+          .frame(width: progressValue(degree), alignment: .leading)
+      }
+      .frame(width: 96, height: 4)
+      .clipShape(.rect(cornerRadius: Constants.progressCornerRadius))
+      .padding(0)
+    }
+  }
+  func progressValue(_ value: Double) -> CGFloat {
+    return max(Constants.progressMaxWidth * value, Constants.progressMaxWidth)
+  }
+  private enum Constants {
+    static let progressCornerRadius: CGFloat = 4
+    static let progressMaxWidth: CGFloat = 96
   }
 }
 
@@ -43,14 +100,10 @@ public struct HeaderView: View {
   public var body: some View {
     VStack {
       ZStack {
-        Text(property.title)
-          .modifier(SSTypoModifier(.title_xs))
-          .frame(maxWidth: .infinity, alignment: .center)
+        property.centerItem
 
         HStack {
-          property.leftHeaderImage
-            .resizable()
-            .scaledToFit()
+          LeftItem(isImage: property.isLogoImage)
             .frame(width: 56, height: 24, alignment: .leading)
             .padding(.leading, Constants.headerLeftMargin)
 
