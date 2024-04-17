@@ -9,9 +9,11 @@ import Foundation
 import ProjectDescription
 
 public enum Core: String {
-  case writeBoard
+  case sSNetwork
+  case sSDataBase
+  case coreLayers
   public var targetName: String {
-    return rawValue.prefix(1).capitalized
+    return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
   public var path: Path {
     return .relativeToRoot("Projects/Core/\(self.targetName)/")

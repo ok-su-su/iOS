@@ -1,11 +1,24 @@
+import ComposableArchitecture
 import Designsystem
 import SSAlert
+import Moya
+import OSLog
+import SSAlert
+import SSDataBase
 import SwiftUI
+import Moya
 
 // MARK: - ContentView
 
 public struct ContentView: View {
-  public init() {}
+  public init() {
+    TodoSingleTone.shared.save()
+    TodoSingleTone.shared.save()
+    TodoSingleTone.shared.save()
+
+    TodoSingleTone.shared.load()
+  }
+
   @State var name: String = ""
   @State private var showingSheet = false
   @State private var isPresentedValue: Bool = false
@@ -99,7 +112,8 @@ public struct ContentView: View {
     .customAlert(
       isPresented: $showingSheet,
       messageAlertProperty:
-          .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .none, buttonMessage: .singleButton("asdf"), didTapCompletionButton: {}))
+      .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .none, buttonMessage: .singleButton("asdf"), didTapCompletionButton: {})
+    )
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background {
       SSColor.gray30
@@ -114,3 +128,18 @@ struct ContentView_Previews: PreviewProvider {
     ContentView()
   }
 }
+
+// MARK: - Todo
+
+//
+// class Todo: Object {
+//  @Persisted(primaryKey: true) var _id: ObjectId
+//  @Persisted var name: String = ""
+//  @Persisted var status: String = ""
+//  @Persisted var ownerId: String
+//  convenience init(name: String, ownerId: String) {
+//    self.init()
+//    self.name = name
+//    self.ownerId = ownerId
+//  }
+// }

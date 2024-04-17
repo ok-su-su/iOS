@@ -8,9 +8,9 @@ let project = Project.makeModule(
     testingOptions: [.unitTest, .uiTest],
     entitlements: nil,
     dependencies: [
-      .thirdParty(.Alamofire),
       .share(.designsystem),
       .share(.sSAlert),
+      .core(.coreLayers),
     ],
     testDependencies: [],
     infoPlist: [
