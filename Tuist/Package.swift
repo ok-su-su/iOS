@@ -20,3 +20,5 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", exact: "1.9.2")
   ]
 )
+
+

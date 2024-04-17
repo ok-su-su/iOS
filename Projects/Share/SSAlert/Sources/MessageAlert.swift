@@ -50,7 +50,7 @@ public struct MessageAlertProperty {
 
 private struct CheckBoxView: View {
   @State var isTapped: Bool = false
-  var checkBoxImage: Image { isTapped ? Image(uiImage: SSImage.commonArrow) : Image(uiImage: SSImage.commonfilter) }
+  var checkBoxImage: Image { isTapped ? Image(uiImage: SSImage.commonCheckBox) : Image(uiImage: SSImage.commonUnCheckBox) }
   var textColor: Color { isTapped ? SSColor.gray100 : SSColor.gray40 }
   var checkBoxString: String
   var body: some View {
@@ -58,8 +58,7 @@ private struct CheckBoxView: View {
       checkBoxImage
         .frame(width: 24, height: 24)
       Text(checkBoxString)
-        .modifier(SSTextModifier(.title_xxxs))
-        .bold()
+        .modifier(SSTextModifier(.title_xxxs, isBold: true))
         .foregroundStyle(textColor)
     }
     .onTapGesture {
