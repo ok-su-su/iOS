@@ -8,6 +8,7 @@
 
 import SwiftUI
 
+// MARK: - HeaderViewProperty
 
 public struct HeaderViewProperty {
   var title: String
@@ -19,22 +20,35 @@ public struct HeaderViewProperty {
     case depthProgressBar(Double)
     case depth2Text(String)
   }
+
   public init(title: String, type: HeaderViewPropertyType) {
     self.title = title
     self.type = type
   }
+
+  var leftHeaderImage: Image {
+    return switch type {
+    case .defaultType:
+      Image(.commonLogo)
+    default:
+      Image(.commonArrow)
+    }
+  }
 }
+
+// MARK: - HeaderView
+
 public struct HeaderView: View {
   var property: HeaderViewProperty
   public var body: some View {
     VStack {
       ZStack {
-        Text("타이틀")
+        Text(property.title)
           .modifier(SSTypoModifier(.title_xs))
           .frame(maxWidth: .infinity, alignment: .center)
 
         HStack {
-          Image(.commonLogo)
+          property.leftHeaderImage
             .resizable()
             .scaledToFit()
             .frame(width: 56, height: 24, alignment: .leading)
@@ -63,7 +77,7 @@ public struct HeaderView: View {
       Spacer()
     }
   }
-  
+
   public init(property: HeaderViewProperty) {
     self.property = property
   }
