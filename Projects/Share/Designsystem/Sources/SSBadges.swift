@@ -1,5 +1,5 @@
 //
-//  Badges.swift
+//  SSBadges.swift
 //  susu
 //
 //  Created by MaraMincho on 4/15/24.
@@ -8,16 +8,19 @@
 
 import SwiftUI
 
+// MARK: - SmallBadgeProperty
+
 public struct SmallBadgeProperty {
   let badgeString: String
   let badgeColor: BadgeColor
   let size: BadgeSize
-  
+
   public init(size: BadgeSize, badgeString: String, badgeColor: BadgeColor) {
     self.size = size
     self.badgeString = badgeString
     self.badgeColor = badgeColor
   }
+
   public enum BadgeColor {
     case gray20
     case orange60
@@ -27,17 +30,19 @@ public struct SmallBadgeProperty {
     case gray30
     case red60
   }
-  
+
   public enum BadgeSize {
     case small
     case xSmall
   }
+
   var horizontalPaddingValue: CGFloat {
     return switch size {
     default:
       8
     }
   }
+
   var verticalPaddingValue: CGFloat {
     switch size {
     case .small:
@@ -46,7 +51,7 @@ public struct SmallBadgeProperty {
       return 0
     }
   }
-  
+
   var textColor: Color {
     return switch badgeColor {
     case .gray20:
@@ -65,7 +70,7 @@ public struct SmallBadgeProperty {
       SSColor.gray20
     }
   }
-  
+
   var backgroundColor: Color {
     return switch badgeColor {
     case .gray20:
@@ -84,23 +89,25 @@ public struct SmallBadgeProperty {
       SSColor.red60
     }
   }
-  
 }
+
+// MARK: - SmallBadge
 
 public struct SmallBadge: View {
   let property: SmallBadgeProperty
   public init(property: SmallBadgeProperty) {
     self.property = property
   }
+
   public var body: some View {
-    VStack{
+    VStack {
       Text(property.badgeString)
         .modifier(SSTextModifier(.title_xxxs, isBold: true))
         .foregroundStyle(property.textColor)
     }
     .padding(.vertical, property.verticalPaddingValue)
     .padding(.horizontal, property.horizontalPaddingValue)
-    .background{
+    .background {
       property.backgroundColor
     }
     .cornerRadius(4)
@@ -137,5 +144,4 @@ public struct SmallBadge: View {
     Spacer()
     Spacer()
   }
-
 }
