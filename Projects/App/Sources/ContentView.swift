@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import Moya
 import OSLog
 import SSAlert
@@ -19,9 +20,14 @@ public struct ContentView: View {
 
   @State var name: String = ""
   @State private var showingSheet = false
-  @State private var isPresentedValue: Bool = true
-  ///  let realm = try! Realm()
+  @State private var isPresentedValue: Bool = false
+  @State private var mainText = ""
+  @State private var ishlighted: Bool = true
   public var body: some View {
+    Text("Hello, susu!")
+      .padding()
+    //TODO: Delete plz...
+    Color(DesignSystemColor.systemBlue)
     VStack {
       Button("HelloSusu") {
         showingSheet.toggle()
@@ -92,6 +98,10 @@ public struct ContentView: View {
             buttonText: "tton"
           ), onTap: {}
         )
+      }
+      HStack {
+        SSTextField(isDisplay: true, text: $mainText, property: .signUp, isHighlight: $ishlighted)
+          .padding(EdgeInsets(top: 0, leading: 50, bottom: 0, trailing: 50))
       }
 
       Color(SSColor.gray15)
