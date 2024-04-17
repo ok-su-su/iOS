@@ -161,11 +161,11 @@ enum SizeTypes {
     case .s:
       18
     case .xs:
-      15
+      16
     case .xxs:
       14
     case .xxxs:
-      16
+      12
     case .xxxxs:
       10
     }
