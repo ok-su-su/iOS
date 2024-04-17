@@ -3,15 +3,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "CoreLayers",
+  name: "SSRoot",
   targets: .custom(
-    name: "CoreLayers",
+    name: "SSRoot",
     product: .framework,
     dependencies: [
-      .core(.sSDataBase),
-      .core(.sSNetwork),
-      .core(.sSRoot),
+      .share(.designsystem),
       .thirdParty(.ComposableArchitecture),
     ]
   )
 )
+
