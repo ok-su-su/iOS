@@ -34,55 +34,168 @@ public enum SSFont {
   case title_xxxs
   case title_xxxxs
 
-  public var font: Font {
-    return .custom("Pretendard-Regular", size: fontSize)
+  case text_xxxxl
+  case text_xxxl
+  case text_xxl
+  case text_xl
+  case text_l
+  case text_m
+  case text_s
+  case text_xs
+  case text_xxs
+  case text_xxxs
+  case text_xxxxs
+
+  var sizeTypes: SizeTypes {
+    return switch self {
+    case .text_xxxxl,
+         .title_xxxxl
+         :
+      .xxxxl
+    case .text_xxxl,
+         .title_xxxl
+         :
+      .xxxl
+    case .text_xxl,
+         .title_xxl:
+      .xxl
+    case .text_xl,
+         .title_xl:
+      .xl
+    case .text_l,
+         .title_l:
+      .l
+    case .text_m,
+         .title_m:
+      .m
+    case .text_s,
+         .title_s:
+      .s
+    case .text_xs,
+         .title_xs:
+      .xs
+    case .text_xxs,
+         .title_xxs:
+      .xxs
+    case .text_xxxs,
+         .title_xxxs:
+      .xxxs
+    case .text_xxxxs,
+         .title_xxxxs:
+      .xxxxs
+    }
+  }
+
+  var weightType: WeightType {
+    return switch self {
+    case .title_l,
+         .title_m,
+         .title_s,
+         .title_xl,
+         .title_xs,
+         .title_xxl,
+         .title_xxs,
+         .title_xxxl,
+         .title_xxxs,
+         .title_xxxxl,
+         .title_xxxxs:
+      .title
+    case .text_l,
+         .text_m,
+         .text_s,
+         .text_xl,
+         .text_xs,
+         .text_xxl,
+         .text_xxs,
+         .text_xxxl,
+         .text_xxxs,
+         .text_xxxxl,
+         .text_xxxxs:
+      .text
+    }
+  }
+
+  var font: Font {
+    return switch weightType {
+    case .title:
+      .custom("Pretendard-Bold", size: sizeTypes.fontSize)
+    case .text:
+      .custom("Pretendard-Regular", size: sizeTypes.fontSize)
+    }
+  }
+
+  var lineHeight: CGFloat {
+    return sizeTypes.lineHeight
+  }
+}
+
+// MARK: - SizeTypes
+
+enum SizeTypes {
+  case xxxxl
+  case xxxl
+  case xxl
+  case xl
+  case l
+  case m
+  case s
+  case xs
+  case xxs
+  case xxxs
+  case xxxxs
+
+  var fontSize: CGFloat {
+    return switch self {
+    case .xxxxl:
+      40
+    case .xxxl:
+      36
+    case .xxl:
+      32
+    case .xl:
+      28
+    case .l:
+      24
+    case .m:
+      20
+    case .s:
+      18
+    case .xs:
+      15
+    case .xxs:
+      14
+    case .xxxs:
+      16
+    case .xxxxs:
+      10
+    }
   }
 
   var lineHeight: CGFloat {
     return switch self {
-    case .title_l,
-         .title_xl,
-         .title_xxl,
-         .title_xxxl,
-         .title_xxxxl:
+    case .l,
+         .xl,
+         .xxl,
+         .xxxl,
+         .xxxxl:
       16
-    case .title_m,
-         .title_s,
-         .title_xs:
+    case .m,
+         .s,
+         .xs:
       12
-    case .title_xxs:
+    case .xxs:
       10
-    case .title_xxxs:
+    case .xxxs:
       8
-    case .title_xxxxs:
+    case .xxxxs:
       6
     }
   }
+}
 
-  var fontSize: CGFloat {
-    return switch self {
-    case .title_xxxxl:
-      40
-    case .title_xxxl:
-      36
-    case .title_xxl:
-      32
-    case .title_xl:
-      28
-    case .title_l:
-      24
-    case .title_m:
-      20
-    case .title_s:
-      18
-    case .title_xs:
-      15
-    case .title_xxs:
-      14
-    case .title_xxxs:
-      16
-    case .title_xxxxs:
-      10
-    }
-  }
+// MARK: - WeightType
+
+enum WeightType {
+  case title
+  case text
 }
