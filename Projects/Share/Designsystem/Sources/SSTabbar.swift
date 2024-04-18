@@ -9,12 +9,57 @@
 import SwiftUI
 
 // MARK: SSTabbarType
-public enum SSTabType: String {
+public enum SSTabType: String, CaseIterable {
   case envelope
   case inventory
   case statistics
   case vote
   case mypage
+  
+  var title: String {
+    switch self {
+    case .envelope:
+      return "보내요"
+    case .inventory:
+      return "받아요"
+    case .statistics:
+      return "통계"
+    case .vote:
+      return "투표"
+    case .mypage:
+      return "마이페이지"
+    }
+  }
+  
+  var outlineImage: UIImage {
+    switch self {
+    case .envelope:
+      return SSImage.envelopeOutline
+    case .inventory:
+      return SSImage.inventoryOutline
+    case .statistics:
+      return SSImage.statisticsOutline
+    case .vote:
+      return SSImage.voteOutline
+    case .mypage:
+      return SSImage.mypageOutline
+    }
+  }
+  
+  var fillImage: UIImage {
+    switch self {
+    case .envelope:
+      return SSImage.envelopeFill
+    case .inventory:
+      return SSImage.inventoryFill
+    case .statistics:
+      return SSImage.statisticsFill
+    case .vote:
+      return SSImage.voteFill
+    case .mypage:
+      return SSImage.mypageFill
+    }
+  }
 }
 
 
@@ -28,79 +73,21 @@ public struct SSTabbar: View {
   
   public var body: some View {
     HStack(alignment: .center) {
-      Button {
-        selectionType = .envelope
-      } label: {
+        ForEach(SSTabType.allCases, id: \.self) {  tabbarType in
+          Button {
+            selectionType = tabbarType
+          } label: {
         GeometryReader { geometry in
-          VStack(alignment: .center, spacing: 4) {
-            Image(uiImage: selectionType == .envelope ? SSImage.envelopeFill : SSImage.envelopeOutline)
-              .resizable()
-              .frame(width: 24, height: 24, alignment: .center)
-            
-            SSText(text: "보내요", designSystemFont: .title_xxxxs)
-              .bold(true)
-              .foregroundColor(selectionType == .envelope ? SSColor.gray100 : SSColor.gray40)
-          }.frame(width: geometry.size.width, height: geometry.size.height)
-        }
-      }
-      Button {
-        selectionType = .inventory
-      } label: {
-        GeometryReader { geometry in
-          VStack(alignment: .center, spacing: 4) {
-            Image(uiImage: selectionType == .inventory ? SSImage.inventoryFill : SSImage.inventoryOutline)
-              .resizable()
-              .frame(width: 24, height: 24, alignment: .center)
-            SSText(text: "받아요", designSystemFont: .title_xxxxs)
-              .bold(true)
-              .foregroundColor(selectionType == .inventory ? SSColor.gray100 : SSColor.gray40)
-          }.frame(width: geometry.size.width, height: geometry.size.height)
-        }
-        
-      }
-      Button {
-        selectionType = .statistics
-      } label: {
-        GeometryReader { geometry in
-          VStack(alignment: .center, spacing: 4) {
-            Image(uiImage: selectionType == .statistics ? SSImage.statisticsFill : SSImage.statisticsOutline)
-              .resizable()
-              .frame(width: 24, height: 24, alignment: .center)
-            
-            SSText(text: "통계", designSystemFont: .title_xxxxs)
-              .bold(true)
-              .foregroundColor(selectionType == .statistics ? SSColor.gray100 : SSColor.gray40)
-          }.frame(width: geometry.size.width, height: geometry.size.height)
-        }
-      }
-      Button {
-        selectionType = .vote
-      } label: {
-        GeometryReader { geometry in
-          VStack(alignment: .center, spacing: 4) {
-            Image(uiImage: selectionType == .vote ? SSImage.voteFill : SSImage.voteOutline)
-              .resizable()
-              .frame(width: 24, height: 24, alignment: .center)
-            
-            SSText(text: "투표", designSystemFont: .title_xxxxs)
-              .bold(true)
-              .foregroundColor(selectionType == .vote ? SSColor.gray100 : SSColor.gray40)
-          }.frame(width: geometry.size.width, height: geometry.size.height)
-        }
-      }
-      Button {
-        selectionType = .mypage
-      } label: {
-        GeometryReader { geometry in
-          VStack(alignment: .center, spacing: 4) {
-            Image(uiImage: selectionType == .mypage ? SSImage.mypageFill : SSImage.mypageOutline)
-              .resizable()
-              .frame(width: 24, height: 24, alignment: .center)
-            
-            SSText(text: "마이페이지", designSystemFont: .title_xxxxs)
-              .bold(true)
-              .foregroundColor(selectionType == .mypage ? SSColor.gray100 : SSColor.gray40)
-          }.frame(width: geometry.size.width, height: geometry.size.height)
+            VStack(alignment: .center, spacing: 4) {
+              Image(uiImage: selectionType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
+                .resizable()
+                .frame(width: 24, height: 24, alignment: .center)
+              
+              SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
+                .bold(true)
+                .foregroundColor(selectionType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+            }.frame(width: geometry.size.width, height: geometry.size.height)
+          }
         }
       }
     }
