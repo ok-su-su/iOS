@@ -8,14 +8,15 @@
 
 import SwiftUI
 
-// MARK: SSTabbarType
+// MARK: - SSTabType
+
 public enum SSTabType: String, CaseIterable {
   case envelope
   case inventory
   case statistics
   case vote
   case mypage
-  
+
   var title: String {
     switch self {
     case .envelope:
@@ -30,7 +31,7 @@ public enum SSTabType: String, CaseIterable {
       return "마이페이지"
     }
   }
-  
+
   var outlineImage: UIImage {
     switch self {
     case .envelope:
@@ -45,7 +46,7 @@ public enum SSTabType: String, CaseIterable {
       return SSImage.mypageOutline
     }
   }
-  
+
   var fillImage: UIImage {
     switch self {
     case .envelope:
@@ -62,27 +63,29 @@ public enum SSTabType: String, CaseIterable {
   }
 }
 
+// MARK: - SSTabbar
 
-//MARK: SSTabbar
+// MARK: SSTabbar
+
 public struct SSTabbar: View {
   @Binding private var selectionType: SSTabType
 
   public init(selectionType: Binding<SSTabType>) {
-    self._selectionType = selectionType
+    _selectionType = selectionType
   }
-  
+
   public var body: some View {
     HStack(alignment: .center) {
-        ForEach(SSTabType.allCases, id: \.self) {  tabbarType in
-          Button {
-            selectionType = tabbarType
-          } label: {
-        GeometryReader { geometry in
+      ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+        Button {
+          selectionType = tabbarType
+        } label: {
+          GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
               Image(uiImage: selectionType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
                 .resizable()
                 .frame(width: 24, height: 24, alignment: .center)
-              
+
               SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
                 .bold(true)
                 .foregroundColor(selectionType == tabbarType ? SSColor.gray100 : SSColor.gray40)

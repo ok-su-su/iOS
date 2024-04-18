@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-// MARK: SSTextPlaceholderText
+// MARK: - SSTextPlaceholderText
 
 public enum SSTextPlaceholderText {
   case signUp
@@ -18,7 +18,7 @@ public enum SSTextPlaceholderText {
   case contact
   case contents
   case holiday
-  
+
   public var placeholder: Text {
     switch self {
     case .signUp:
@@ -37,38 +37,40 @@ public enum SSTextPlaceholderText {
       Text("경조사명을 입력해주세요")
     }
   }
-  
+
   public var keyboardType: UIKeyboardType {
     switch self {
-    case .signUp, .account:
+    case .account,
+         .signUp:
       return .namePhonePad
-    case .amount, .contact:
+    case .amount,
+         .contact:
       return .numberPad
-    case .contents, .holiday, .gift:
+    case .contents,
+         .gift,
+         .holiday:
       return .default
     }
   }
-
 }
 
-// MARK: SSTextField
+// MARK: - SSTextField
 
 public struct SSTextField: View {
-  
   @Binding private var text: String
   @Binding private var isHighlight: Bool
   @FocusState private var isFocus: Bool
-  
+
   public var isDisplay: Bool
   public var property: SSTextPlaceholderText
-  
+
   public init(isDisplay: Bool, text: Binding<String>, property: SSTextPlaceholderText, isHighlight: Binding<Bool>) {
     self.isDisplay = isDisplay
     self.property = property
-    self._text = text
-    self._isHighlight = isHighlight
+    _text = text
+    _isHighlight = isHighlight
   }
-  
+
   public var body: some View {
     TextField("", text: $text, prompt: property.placeholder)
       .modifier(SSTextFieldModifier())
@@ -89,45 +91,46 @@ public struct SSTextField: View {
         isFocus = false
       }
   }
-  
+
   private func isValidation(text: String) -> Bool {
     let pattern = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]*$"
     if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
       let range = NSRange(location: 0, length: text.utf16.count)
-      
+
       if regex.firstMatch(in: text, options: [], range: range) != nil && text.count <= 10 {
         return true
       }
     }
-    
+
     return false
   }
 }
 
+// MARK: - PlaceHolderModifier
+
 public struct PlaceHolderModifier: ViewModifier {
   private let isHighlight: Bool
-  
+
   init(isHighlight: Bool) {
     self.isHighlight = isHighlight
   }
-  
+
   public func body(content: Content) -> some View {
-      VStack {
-          content
-          if !isHighlight {
-            SSText(text: "한글과 영문 10자이내로 작성해주세요", designSystemFont: .title_s)
-              .foregroundColor(.red60)
-              .padding(.top, -8)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
+    VStack {
+      content
+      if !isHighlight {
+        SSText(text: "한글과 영문 10자이내로 작성해주세요", designSystemFont: .title_s)
+          .foregroundColor(.red60)
+          .padding(.top, -8)
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
+    }
   }
 }
 
-// MARK: SSTextFieldModifier
+// MARK: - SSTextFieldModifier
 
 public struct SSTextFieldModifier: ViewModifier {
-  
   public func body(content: Content) -> some View {
     content
       .background(.clear)
@@ -136,21 +139,21 @@ public struct SSTextFieldModifier: ViewModifier {
   }
 }
 
-// MARK: UnderLineModifier
+// MARK: - UnderLineModifier
 
 public struct UnderLineModifier: ViewModifier {
   @Binding private var textFieldText: String
   private var linePadding: CGFloat
   private var isLine: Bool
   private var isShow: Bool
-  
+
   public init(textFieldText: Binding<String>, isLine: Bool, linePadding: CGFloat, isShow: Bool) {
     self.linePadding = linePadding
     self.isLine = isLine
-    self._textFieldText = textFieldText
+    _textFieldText = textFieldText
     self.isShow = isShow
   }
-  
+
   @ViewBuilder
   public func body(content: Content) -> some View {
     if isLine {
@@ -166,10 +169,10 @@ public struct UnderLineModifier: ViewModifier {
             .padding(.trailing, 8)
         }
       }.background {
-          Rectangle()
+        Rectangle()
           .fill(isShow ? .gray100 : .red60)
-            .frame(height: 1)
-            .padding(.top, linePadding)
+          .frame(height: 1)
+          .padding(.top, linePadding)
       }
     } else {
       content
