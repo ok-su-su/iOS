@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import Moya
 import OSLog
 import SSAlert
@@ -21,8 +22,13 @@ public struct ContentView: View {
   @State var name: String = ""
   @State private var showingSheet = false
   @State private var isPresentedValue: Bool = false
-  ///  let realm = try! Realm()
+  @State private var mainText = ""
+  @State private var ishlighted: Bool = true
   public var body: some View {
+    Text("Hello, susu!")
+      .padding()
+    //TODO: Delete plz...
+    Color(DesignSystemColor.systemBlue)
     VStack {
       Button("HelloSusu") {
         showingSheet.toggle()
@@ -31,14 +37,72 @@ public struct ContentView: View {
         .padding()
         .foregroundStyle(Color(SSColor.blue50))
 
-  public var body: some View {
-    VStack {
-      
-      Text("Hello, susu!")
-        .padding()
-        .foregroundStyle(Color(SSColor.blue50))
-      
-      Color(SSColor.blue100)
+      HStack {
+        SSButton(.init(size: .lh46, status: .active, style: .filled, color: .black, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .inactive, style: .lined, color: .black,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .lined, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+      }
+
+      HStack {
+        SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
+        SSButton(
+          .init(
+            size: .lh54, status: .active, style: .filled, color: .orange,
+            leftIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            rightIcon: .icon(.init(uiImage: SSImage.voteMainFill)),
+            buttonText: "Button"
+          ), onTap: {}
+        )
+
+        SSButton(
+          .init(
+            size: .lh46, status: .inactive, style: .lined, color: .orange,
+            buttonText: "tton"
+          ), onTap: {}
+        )
+      }
+      HStack {
+        SSTextField(isDisplay: true, text: $mainText, property: .signUp, isHighlight: $ishlighted)
+          .padding(EdgeInsets(top: 0, leading: 50, bottom: 0, trailing: 50))
+      }
+
+      Color(SSColor.gray15)
         .frame(width: 100, height: 100)
         .padding()
     }
