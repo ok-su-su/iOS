@@ -191,27 +191,6 @@ enum SizeTypes {
       6
     }
   }
-
-  var lineHeight: CGFloat {
-    return switch self {
-    case .l,
-         .xl,
-         .xxl,
-         .xxxl,
-         .xxxxl:
-      16
-    case .m,
-         .s,
-         .xs:
-      12
-    case .xxs:
-      10
-    case .xxxs:
-      8
-    case .xxxxs:
-      6
-    }
-  }
 }
 
 // MARK: - WeightType
