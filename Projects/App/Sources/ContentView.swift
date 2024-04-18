@@ -6,7 +6,6 @@ import OSLog
 import SSAlert
 import SSDataBase
 import SwiftUI
-import Moya
 
 // MARK: - ContentView
 
@@ -59,6 +58,9 @@ public struct ContentView: View {
       }
 
       HStack {
+        MessageAlert(.init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .text("asdf"),
+                           buttonMessage: .singleButton("asdf"), didTapCompletionButton: {}),
+                     isPresented: $isPresentedValue)
         SSButton(.init(size: .lh46, status: .inactive, style: .filled, color: .orange, buttonText: "Button"), onTap: {})
         SSButton(
           .init(
@@ -106,28 +108,14 @@ public struct ContentView: View {
         .frame(width: 100, height: 100)
         .padding()
     }
+    .customAlert(
+      isPresented: $showingSheet,
+      messageAlertProperty:
+      .init(titleText: "asdf", contentText: "asdf", checkBoxMessage: .text("나는 체크 박스"), buttonMessage: .singleButton("asdf"), didTapCompletionButton: {})
+    )
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background {
+      SSColor.gray30
+    }
   }
 }
-
-// MARK: - ContentView_Previews
-
-struct ContentView_Previews: PreviewProvider {
-  static var previews: some View {
-    ContentView()
-  }
-}
-
-// MARK: - Todo
-
-//
-// class Todo: Object {
-//  @Persisted(primaryKey: true) var _id: ObjectId
-//  @Persisted var name: String = ""
-//  @Persisted var status: String = ""
-//  @Persisted var ownerId: String
-//  convenience init(name: String, ownerId: String) {
-//    self.init()
-//    self.name = name
-//    self.ownerId = ownerId
-//  }
-// }
