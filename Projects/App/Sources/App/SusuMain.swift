@@ -5,7 +5,9 @@ struct SusuApp: App {
   @UIApplicationDelegateAdaptor var delegate: MyAppDelegate
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      ContentView(store: .init(initialState: ContentViewFeature.State()) {
+        ContentViewFeature()
+      })
     }
   }
 }

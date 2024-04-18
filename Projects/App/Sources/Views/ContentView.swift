@@ -10,12 +10,11 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @State var sectionTab: SSTabType = .envelope
-
-  public init() {}
+  @Bindable
+  var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    TabView(selection: $sectionTab) {
+    TabView(selection: $store.sectionType.sending(\.tapSectionButton)) {
       Group {
         EnvelopeRootView()
           .tag(SSTabType.envelope)
@@ -32,17 +31,19 @@ public struct ContentView: View {
         MyPageRootView()
           .tag(SSTabType.mypage)
       }
-    }.toolbar(.hidden, for: .tabBar)
+    }
+    .toolbar(.hidden, for: .tabBar)
+    .onAppear {
+      store.send(.onAppear)
+    }
 
     VStack {
-      SSTabbar(selectionType: $sectionTab)
+      SSTabbar(selectionType: $store.sectionType.sending(\.tapSectionButton))
     }.frame(height: 56)
   }
 }
 
 // MARK: - EnvelopeRootView
-
-// MARK: 보내요 RootView
 
 public struct EnvelopeRootView: View {
   public var body: some View {
@@ -55,9 +56,11 @@ public struct EnvelopeRootView: View {
 
 // MARK: - InventoryRootView
 
-// MARK: 받아요 RootView
-
 public struct InventoryRootView: View {
+  init() {
+    os_log("iam inited")
+  }
+
   public var body: some View {
     NavigationStack {
       Color(.blue)
@@ -67,8 +70,6 @@ public struct InventoryRootView: View {
 }
 
 // MARK: - StatisticsRootView
-
-// MARK: 통계 RootView
 
 public struct StatisticsRootView: View {
   public var body: some View {
@@ -81,8 +82,6 @@ public struct StatisticsRootView: View {
 
 // MARK: - VoteRootView
 
-// MARK: 투표 RootView
-
 public struct VoteRootView: View {
   public var body: some View {
     NavigationStack {
@@ -93,8 +92,6 @@ public struct VoteRootView: View {
 }
 
 // MARK: - MyPageRootView
-
-// MARK: 마이페이지 RootView
 
 public struct MyPageRootView: View {
   public var body: some View {

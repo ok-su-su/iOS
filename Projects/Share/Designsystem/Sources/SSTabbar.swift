@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - SSTabType
 
-public enum SSTabType: String, CaseIterable {
+public enum SSTabType: String, CaseIterable, Equatable {
   case envelope
   case inventory
   case statistics
@@ -64,8 +64,6 @@ public enum SSTabType: String, CaseIterable {
 }
 
 // MARK: - SSTabbar
-
-// MARK: SSTabbar
 
 public struct SSTabbar: View {
   @Binding private var selectionType: SSTabType
