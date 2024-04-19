@@ -9,20 +9,17 @@
 import ComposableArchitecture
 import Foundation
 
-
 @Reducer
 struct SentMain {
   @ObservableState
-  struct State {
-    
-  }
-  
+  struct State {}
+
   enum Action: Equatable {
-    
+    case tappedFirstButton
   }
-  
+
   var body: some Reducer<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
       default:
         return .none

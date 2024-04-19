@@ -86,13 +86,13 @@ struct TrailingItem: View {
     case .icon:
       HStack(spacing: 0) {
         Button {} label: {
-          Image(uiImage: SSImage.commonSearch)
+          SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
 
         Button {} label: {
-          Image(uiImage: SSImage.commonSearch)
+          SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)

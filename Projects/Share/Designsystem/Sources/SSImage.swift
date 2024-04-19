@@ -11,63 +11,63 @@ import UIKit
 
 public enum SSImage {
   /// 공통 icon
-  public static let commonAdd: UIImage = .commonAdd
-  public static let commonArrow: UIImage = .commonArrow
-  public static let commonCheckBox: UIImage = .commonCheckBox
-  public static let commonClose: UIImage = .commonClose
-  public static let commonDeleteGray: UIImage = .commonDeleteGray
-  public static let commonDeleteWhite: UIImage = .commonDeleteWhite
-  public static let commonfilterWhite: UIImage = .commonFilterWhite
-  public static let commonfilter: UIImage = .commonFilter
-  public static let commonLogo: UIImage = .commonLogo
-  public static let commonMainCheckBox: UIImage = .commonMainCheckBox
-  public static let commonOrder: UIImage = .commonOrder
-  public static let commonRefresh: UIImage = .commonRefresh
-  public static let commonSearch: UIImage = .commonSearch
-  public static let commonUnCheckBox: UIImage = .commonUncheckBox
+  public static let commonAdd = Image(.commonAdd)
+  public static let commonAddSource = Image(.commonAdd)
+  public static let commonArrow = Image(.commonArrow)
+  public static let commonCheckBox = Image(.commonCheckBox)
+  public static let commonClose = Image(.commonClose)
+  public static let commonDeleteGray = Image(.commonDeleteGray)
+  public static let commonDeleteWhite = Image(.commonDeleteWhite)
+  public static let commonFilterWhite = Image(.commonFilterWhite)
+  public static let commonFilter = Image(.commonFilter)
+  public static let commonLogo = Image(.commonLogo)
+  public static let commonMainCheckBox = Image(.commonMainCheckBox)
+  public static let commonOrder = Image(.commonOrder)
+  public static let commonRefresh = Image(.commonRefresh)
+  public static let commonSearch = Image(.commonSearch)
+  public static let commonUnCheckBox = Image(.commonUncheckBox)
 
   /// 로그인 화면 icon
-  public static let signinKakao: UIImage = .signinKakao
-  public static let signinMainlogo: UIImage = .signinMainlogo
-  public static let signinTrademark: UIImage = .signinTrademark
+  public static let signInKakao = Image(.signinKakao)
+  public static let signInMainLogo = Image(.signinMainlogo)
+  public static let signInTrademark = Image(.signinTrademark)
 
   /// 회원 가입 화면 icon
-  public static let signupClose: UIImage = .signupClose
+  public static let signupClose = Image(.signupClose)
 
   /// 보내요 화면 icon
-  public static let envelopeBackArrow: UIImage = .envelopeBackArrow
-  public static let envelopeDownArrow: UIImage = .envelopeDownArrow
-  public static let envelopeFill: UIImage = .envelopeFill
-  public static let envelopeFowardArrow: UIImage = .envelopeForwardArrow
-  public static let envelopeMainFill: UIImage = .envelopeMainFill
-  public static let envelopeUpArrow: UIImage = .envelopeUpArrow
-  public static let envelopeOutline: UIImage = .envelopeOutline
-
+  public static let envelopeBackArrow = Image(.envelopeBackArrow)
+  public static let envelopeDownArrow = Image(.envelopeDownArrow)
+  public static let envelopeFill = Image(.envelopeFill)
+  public static let envelopeForwardArrow = Image(.envelopeForwardArrow)
+  public static let envelopeMainFill = Image(.envelopeMainFill)
+  public static let envelopeUpArrow = Image(.envelopeUpArrow)
+  public static let envelopeOutline = Image(.envelopeOutline)
   /// 받아요 화면 icon
-  public static let inventoryAppoint: UIImage = .inventoryAppoint
-  public static let inventoryFill: UIImage = .inventoryFill
-  public static let inventoryMainFill: UIImage = .inventoryMainFill
-  public static let inventoryOutline: UIImage = .inventoryOutline
-  public static let inventoryAdd: UIImage = .inventotryAdd
+  public static let inventoryAppoint = Image(.inventoryAppoint)
+  public static let inventoryFill = Image(.inventoryFill)
+  public static let inventoryMainFill = Image(.inventoryMainFill)
+  public static let inventoryOutline = Image(.inventoryOutline)
+  public static let inventoryAdd = Image(.inventotryAdd)
 
   /// 통계 화면 icon
-  public static let statisticsArrow: UIImage = .statisticsArrow
-  public static let statisticsFill: UIImage = .statisticsFill
-  public static let statisticsOutline: UIImage = .statisticsOutline
+  public static let statisticsArrow = Image(.statisticsArrow)
+  public static let statisticsFill = Image(.statisticsFill)
+  public static let statisticsOutline = Image(.statisticsOutline)
 
   /// 투표 화면 icon
-  public static let voteFill: UIImage = .voteFill
-  public static let voteMainFill: UIImage = .voteMainFill
-  public static let voteMainRightArrow: UIImage = .voteMainRightArrow
-  public static let voteOutline: UIImage = .voteOutline
-  public static let voteRightArrow: UIImage = .voteRightArrow
-  public static let voteSystemLogo: UIImage = .voteSystemLogo
-  public static let voteWarning: UIImage = .voteWarning
-  public static let voteWrite: UIImage = .voteWrite
+  public static let voteFill = Image(.voteFill)
+  public static let voteMainFill = Image(.voteMainFill)
+  public static let voteMainRightArrow = Image(.voteMainRightArrow)
+  public static let voteOutline = Image(.voteOutline)
+  public static let voteRightArrow = Image(.voteRightArrow)
+  public static let voteSystemLogo = Image(.voteSystemLogo)
+  public static let voteWarning = Image(.voteWarning)
+  public static let voteWrite = Image(.voteWrite)
 
   /// 마이페이지 화면 icon
-  public static let mypageCircleKakao: UIImage = .mypageCircleKakao
-  public static let mypageFill: UIImage = .mypageFill
-  public static let mypageOutline: UIImage = .mypageOutline
-  public static let mypageSusu: UIImage = .mypageSusu
+  public static let mypageCircleKakao = Image(.mypageCircleKakao)
+  public static let mypageFill = Image(.mypageFill)
+  public static let mypageOutline = Image(.mypageOutline)
+  public static let mypageSusu = Image(.mypageSusu)
 }
