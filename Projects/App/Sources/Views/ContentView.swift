@@ -17,7 +17,7 @@ public struct ContentView: View {
     .mypage: AnyView(MyPageRootView()),
     .statistics: AnyView(StatisticsRootView()),
   ]
-  
+
   @Bindable
   var store: StoreOf<ContentViewFeature>
 
@@ -25,9 +25,9 @@ public struct ContentView: View {
     VStack {
       HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
       contentView()
-      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabbarView))
-      .frame(height: 56)
-      .toolbar(.hidden, for: .tabBar)
+      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
     }
     .onAppear {
       store.send(.onAppear)

@@ -65,10 +65,10 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   }
 }
 
-// MARK: - SSTabbarFeature
+// MARK: - SSTabBarFeature
 
 @Reducer
-public struct SSTabbarFeature {
+public struct SSTabBarFeature {
   public init() {}
 
   @ObservableState
@@ -91,9 +91,7 @@ public struct SSTabbarFeature {
       case let .switchType(type):
         state.tabbarType = type
         return .none
-
-      case let .tappedSection(type):
-        state.tabbarType = type
+      case .tappedSection:
         return .none
       }
     }
@@ -104,9 +102,9 @@ public struct SSTabbarFeature {
 
 public struct SSTabbar: View {
   @Bindable
-  var store: StoreOf<SSTabbarFeature>
+  var store: StoreOf<SSTabBarFeature>
 
-  public init(store: StoreOf<SSTabbarFeature>) {
+  public init(store: StoreOf<SSTabBarFeature>) {
     self.store = store
   }
 

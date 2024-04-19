@@ -17,7 +17,7 @@ public struct ContentViewFeature {
   public struct State: Equatable {
     public var headerView: HeaderViewFeature.State
     public var sectionType: SSTabType
-    public var tabBarView: SSTabbarFeature.State
+    public var tabBarView: SSTabBarFeature.State
 
     init(headerView: HeaderViewFeature.State) {
       let initialType = SSTabType.envelope
@@ -29,23 +29,25 @@ public struct ContentViewFeature {
 
   public enum Action {
     case headerView(HeaderViewFeature.Action)
-    case tabbarView(SSTabbarFeature.Action)
+    case tabBarView(SSTabBarFeature.Action)
     case onAppear
   }
 
   public var body: some Reducer<State, Action> {
-    Scope(state: \.tabBarView, action: /Action.tabbarView) {
-      SSTabbarFeature()
+    Scope(state: \.tabBarView, action: /Action.tabBarView) {
+      SSTabBarFeature()
     }
     Scope(state: \.headerView, action: /Action.headerView) {
       HeaderViewFeature()
     }
     Reduce { state, action in
       switch action {
-      case let .tabbarView(.tappedSection(type)):
+      case let .tabBarView(.tappedSection(type)):
         state.sectionType = type
-        return .none
-      case .tabbarView:
+        return .run { send in
+          await send(.tabBarView(.switchType(type)))
+        }
+      case .tabBarView:
         return .none
       case .headerView(.tappedDismissButton):
         os_log("did tap headerViewDismiss button")
