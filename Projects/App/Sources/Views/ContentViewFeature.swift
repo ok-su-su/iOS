@@ -16,23 +16,30 @@ public struct ContentViewFeature {
   @ObservableState
   public struct State: Equatable {
     public var headerView: HeaderViewFeature.State
-    public var sectionType: SSTabType = .envelope
+    public var sectionType: SSTabType
+    public var tabbarView: SSTabbarFeature.State
 
     init(headerView: HeaderViewFeature.State) {
+      let initialType = SSTabType.envelope
+      sectionType = initialType
       self.headerView = headerView
-      sectionType = sectionType
+      tabbarView = .init(tabbarType: initialType)
     }
   }
 
   public enum Action {
     case headerView(HeaderViewFeature.Action)
     case tapSectionButton(SSTabType)
+    case tabbarView(SSTabbarFeature.Action)
     case onAppear
   }
 
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
+      case let .tabbarView(.tappedSection(type)):
+        state.sectionType = type
+        return .none
       case .headerView(.tappedDismissButton):
         os_log("did tap headerViewDismiss button")
         return .none

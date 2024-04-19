@@ -18,7 +18,7 @@ public struct ContentView: View {
       WithViewStore(store, observe: { $0.headerView }) { _ in
         HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
       }
-      
+
       WithViewStore(store, observe: { $0.sectionType }) { _ in
         TabView(selection: $store.sectionType.sending(\.tapSectionButton)) {
           Group {
@@ -39,14 +39,16 @@ public struct ContentView: View {
           }
         }
       }
-      .toolbar(.hidden, for: .tabBar)
-      .onAppear {
-        store.send(.onAppear)
-      }
-
       VStack {
-        SSTabbar(selectionType: $store.sectionType.sending(\.tapSectionButton))
-      }.frame(height: 56)
+        SSTabbar(store: .init(initialState: SSTabbarFeature.State(tabbarType: .envelope), reducer: {
+          SSTabbarFeature()
+        }))
+      }
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
+    }
+    .onAppear {
+      store.send(.onAppear)
     }
   }
 }
