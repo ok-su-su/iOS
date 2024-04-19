@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import OSLog
 import SwiftUI
 
 // MARK: - SSTabType
@@ -81,16 +82,19 @@ public struct SSTabbarFeature {
 
   public enum Action: Equatable {
     case tappedSection(SSTabType)
+    case switchType(SSTabType)
   }
 
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
+      case let .switchType(type):
+        state.tabbarType = type
+        return .none
+
       case let .tappedSection(type):
         state.tabbarType = type
-        return .run { send in
-          await send(.tappedSection(type))
-        }
+        return .none
       }
     }
   }
@@ -114,13 +118,13 @@ public struct SSTabbar: View {
         } label: {
           GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
-              Image(uiImage: store.state.tabbarType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
+              Image(uiImage: store.tabbarType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
                 .resizable()
                 .frame(width: 24, height: 24, alignment: .center)
 
               SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
                 .bold(true)
-                .foregroundColor(store.state.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+                .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
             }.frame(width: geometry.size.width, height: geometry.size.height)
           }
         }

@@ -29,16 +29,23 @@ public struct ContentViewFeature {
 
   public enum Action {
     case headerView(HeaderViewFeature.Action)
-    case tapSectionButton(SSTabType)
     case tabbarView(SSTabbarFeature.Action)
     case onAppear
   }
 
   public var body: some Reducer<State, Action> {
+    Scope(state: \.tabbarView, action: /Action.tabbarView) {
+      SSTabbarFeature()._printChanges()
+    }
+    Scope(state: \.headerView, action: /Action.headerView) {
+      HeaderViewFeature()._printChanges()
+    }
     Reduce { state, action in
       switch action {
       case let .tabbarView(.tappedSection(type)):
         state.sectionType = type
+        return .none
+      case .tabbarView:
         return .none
       case .headerView(.tappedDismissButton):
         os_log("did tap headerViewDismiss button")
@@ -53,27 +60,6 @@ public struct ContentViewFeature {
         return .none
       case .onAppear:
         return .none
-      case let .tapSectionButton(type):
-        switch type {
-        case .envelope:
-          state.sectionType = .envelope
-          return .none
-        case .inventory:
-          state.sectionType = .inventory
-          return .none
-        case .statistics:
-          state.sectionType = .statistics
-          return .none
-        case .vote:
-          state.sectionType = .vote
-          return .none
-        case .mypage:
-          state.sectionType = .mypage
-          return .none
-
-        default:
-          return .none
-        }
       }
     }
   }

@@ -13,6 +13,7 @@ import SwiftUI
 
 @Reducer
 public struct HeaderViewFeature {
+  public init() {}
   @ObservableState
   public struct State: Equatable {
     var property: HeaderViewProperty
@@ -32,17 +33,11 @@ public struct HeaderViewFeature {
     Reduce { _, action in
       switch action {
       case .tappedDismissButton:
-        return .run { send in
-          await send(.tappedDismissButton)
-        }
+        return .none
       case .tappedNotificationButton:
-        return .run { send in
-          await send(.tappedNotificationButton)
-        }
+        return .none
       case .tappedSearchButton:
-        return .run { send in
-          await send(.tappedSearchButton)
-        }
+        return .none
       }
     }
   }
@@ -74,35 +69,26 @@ public struct HeaderViewProperty: Equatable, Hashable {
     return false
   }
 
-  var leadingItem: LeadingItem {
-    return switch type {
-    case .defaultType:
-      LeadingItem(isImage: true)
-    default:
-      LeadingItem(isImage: false)
-    }
-  }
-
-  var centerItem: CenterItem {
+  var centerItem: HeaderView.CenterItemTypes {
     return switch type {
     case let .depthProgressBar(double):
-      .init(type: .progress(double))
+      .progress(double)
     default:
-      .init(type: .text(title))
+      .text(title)
     }
   }
 
-  var trailingItem: TrailingItem {
+  var trailingItem: HeaderView.trailingItemTypes {
     return switch type {
     case .defaultType,
          .depth2Icon
          :
-      TrailingItem(type: .icon)
+      .icon
     case .depth2Default,
          .depthProgressBar:
-      TrailingItem(type: .none)
+      .none
     case let .depth2Text(text):
-      TrailingItem(type: .text(text))
+      .text(text)
     }
   }
 }
@@ -114,28 +100,15 @@ public struct HeaderView: View {
   public var body: some View {
     VStack {
       ZStack {
-        store
-          .state
-          .property
-          .centerItem
+        makeCenterItem(type: store.state.property.centerItem)
 
         HStack {
-          store
-            .state
-            .property
-            .leadingItem
-
+          makeLeadingItem(isImage: store.state.property.isLogoImage)
           Spacer()
-
-          store
-            .state
-            .property
-            .trailingItem
+          makeTrailingItem(type: store.state.property.trailingItem)
         }
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
       }
-
-      Spacer()
     }
   }
 

@@ -10,39 +10,28 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @Bindable
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
     VStack {
-      WithViewStore(store, observe: { $0.headerView }) { _ in
-        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-      }
+      HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
 
       WithViewStore(store, observe: { $0.sectionType }) { _ in
-        TabView(selection: $store.sectionType.sending(\.tapSectionButton)) {
-          Group {
-            EnvelopeRootView()
-              .tag(SSTabType.envelope)
-
-            InventoryRootView()
-              .tag(SSTabType.inventory)
-
-            StatisticsRootView()
-              .tag(SSTabType.statistics)
-
-            VoteRootView()
-              .tag(SSTabType.vote)
-
-            MyPageRootView()
-              .tag(SSTabType.mypage)
-          }
+        switch store.sectionType {
+        case .envelope:
+          EnvelopeRootView()
+        case .inventory:
+          EnvelopeRootView()
+        case .statistics:
+          StatisticsRootView()
+        case .vote:
+          VoteRootView()
+        case .mypage:
+          MyPageRootView()
         }
       }
       VStack {
-        SSTabbar(store: .init(initialState: SSTabbarFeature.State(tabbarType: .envelope), reducer: {
-          SSTabbarFeature()
-        }))
+        SSTabbar(store: store.scope(state: \.tabbarView, action: \.tabbarView))
       }
       .frame(height: 56)
       .toolbar(.hidden, for: .tabBar)
