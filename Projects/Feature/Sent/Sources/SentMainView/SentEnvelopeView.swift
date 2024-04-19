@@ -47,12 +47,7 @@ struct EnvelopeView: View {
               store.send(.tappedDetailButton)
             } label: {
               SSImage.envelopeDownArrow
-                .resizable()
             }
-            .frame(
-              width: Constants.detailButtonWidthAndHeight,
-              height: Constants.detailButtonWidthAndHeight
-            )
           }
 
           Spacer()
