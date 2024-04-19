@@ -7,7 +7,9 @@ let project = Project.makeModule(
   targets: .feature(
     .sent,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .core(.coreLayers),
+    ],
     testDependencies: []
   )
 )

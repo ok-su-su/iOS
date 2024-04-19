@@ -12,7 +12,7 @@ let project = Project.makeModule(
       .share(.sSAlert),
       .core(.sSRoot),
       .core(.coreLayers),
-      .feature(.sent)
+      .feature(.sent),
     ],
     testDependencies: [],
     infoPlist: [

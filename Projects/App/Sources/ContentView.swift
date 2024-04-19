@@ -1,6 +1,5 @@
 import ComposableArchitecture
 import Designsystem
-import SSAlert
 import Moya
 import OSLog
 import SSAlert
@@ -12,37 +11,39 @@ import SwiftUI
 
 public struct ContentView: View {
   @State var sectionTab: SSTabType = .envelope
-  
+
   public init() {}
 
   public var body: some View {
-    
     TabView(selection: $sectionTab) {
       Group {
         EnvelopeRootView()
           .tag(SSTabType.envelope)
-        
+
         InventoryRootView()
           .tag(SSTabType.inventory)
-        
+
         StatisticsRootView()
           .tag(SSTabType.statistics)
-        
+
         VoteRootView()
           .tag(SSTabType.vote)
-        
+
         MyPageRootView()
           .tag(SSTabType.mypage)
       }
     }.toolbar(.hidden, for: .tabBar)
-    
+
     VStack {
-        SSTabbar(selectionType: $sectionTab)
+      SSTabbar(selectionType: $sectionTab)
     }.frame(height: 56)
   }
 }
 
-//MARK: 보내요 RootView
+// MARK: - EnvelopeRootView
+
+// MARK: 보내요 RootView
+
 public struct EnvelopeRootView: View {
   public var body: some View {
     NavigationStack {
@@ -52,7 +53,10 @@ public struct EnvelopeRootView: View {
   }
 }
 
-//MARK: 받아요 RootView
+// MARK: - InventoryRootView
+
+// MARK: 받아요 RootView
+
 public struct InventoryRootView: View {
   public var body: some View {
     NavigationStack {
@@ -62,7 +66,10 @@ public struct InventoryRootView: View {
   }
 }
 
-//MARK: 통계 RootView
+// MARK: - StatisticsRootView
+
+// MARK: 통계 RootView
+
 public struct StatisticsRootView: View {
   public var body: some View {
     NavigationStack {
@@ -72,7 +79,10 @@ public struct StatisticsRootView: View {
   }
 }
 
-//MARK: 투표 RootView
+// MARK: - VoteRootView
+
+// MARK: 투표 RootView
+
 public struct VoteRootView: View {
   public var body: some View {
     NavigationStack {
@@ -82,7 +92,10 @@ public struct VoteRootView: View {
   }
 }
 
-//MARK: 마이페이지 RootView
+// MARK: - MyPageRootView
+
+// MARK: 마이페이지 RootView
+
 public struct MyPageRootView: View {
   public var body: some View {
     NavigationStack {
