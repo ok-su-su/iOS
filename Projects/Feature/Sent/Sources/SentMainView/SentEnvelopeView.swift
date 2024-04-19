@@ -17,87 +17,88 @@ struct EnvelopeView: View {
   var store: StoreOf<Envelope>
 
   var body: some View {
-    VStack {
+    ZStack {
       ZStack {
-        ZStack {
-          SSColor.gray10
-          VStack(spacing: 0) {
-            SSColor.red100
-              .frame(maxWidth: .infinity, maxHeight: Constants.topRectangleHeight)
+        SSColor.gray10
+        VStack(spacing: 0) {
+          SSColor.orange5
+            .frame(maxWidth: .infinity, maxHeight: Constants.topRectangleHeight)
 
-            CustomTriangle()
-              .fill(SSColor.red100)
-              .frame(maxWidth: .infinity, maxHeight: Constants.topTriangleHeight)
+          CustomTriangle()
+            .fill(SSColor.orange5)
+            .frame(maxWidth: .infinity, maxHeight: Constants.topTriangleHeight)
+          Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        VStack(spacing: 0) {
+          HStack(spacing: 0) {
+            Text("김철수") // TODO:
+              .modifier(SSTypoModifier(.title_xs))
+              .padding(.trailing, Constants.textAndBadgeSpacing)
+            SmallBadge(property: .init(
+              size: .small,
+              badgeString: "전체: 1,700,000 원", // TODO:
+              badgeColor: .gray20
+            ))
             Spacer()
+
+            Button {
+              store.send(.tappedDetailButton)
+            } label: {
+              SSImage.envelopeDownArrow
+                .resizable()
+            }
+            .frame(
+              width: Constants.detailButtonWidthAndHeight,
+              height: Constants.detailButtonWidthAndHeight
+            )
           }
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-      }
-      VStack {
-        HStack {
-          Text("김철수")
-            .padding(.trailing, Constants.textAndBadgeSpacing)
-          SmallBadge(property: .init(
-            size: .small,
-            badgeString: store.envelopeProperty.id.description,
-            badgeColor: .gray20
-          )
-          )
-          Spacer()
 
-          Button {
-            store.send(.tappedDetailButton)
-          } label: {
-            SSImage.envelopeDownArrow
-              .resizable()
+          Spacer()
+            .frame(height: Constants.topAndMiddleSpacing)
+
+          HStack {
+            Text(Constants.middleLeadingButtonText)
+              .modifier(SSTypoModifier(.text_xxxs))
+              .foregroundColor(SSColor.gray90)
+
+            Spacer()
+
+            Text(Constants.middleTrailingButtonText)
+              .modifier(SSTypoModifier(.text_xxxs))
+              .foregroundColor(SSColor.gray60)
           }
-          .frame(
-            width: Constants.detailButtonWidthAndHeight,
-            height: Constants.detailButtonWidthAndHeight
-          )
+
+          ZStack(alignment: .topLeading) {
+            SSColor.orange20
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+            SSColor.orange60
+              .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
+          }
+          .frame(maxWidth: .infinity, maxHeight: Constants.progressHeightValue)
+          .clipShape(RoundedRectangle(cornerRadius: Constants.progressCornerRadius, style: .continuous))
+          .padding(.vertical, Constants.progressBarVerticalSpacing)
+
+          HStack {
+            // TODO: API 호출 된 Value 로 변경
+            Text("700,000원")
+              .modifier(SSTypoModifier(.text_xxxs))
+              .foregroundColor(SSColor.gray90)
+
+            Spacer()
+
+            // TODO: API 호출 된 Value 로 변경
+            Text("1,000,000원")
+              .modifier(SSTypoModifier(.text_xxxs))
+              .foregroundColor(SSColor.gray60)
+          }
         }
-
-        EmptyView()
-          .frame(height: Constants.topAndMiddleSpacing)
-
-        HStack {
-          Text(Constants.middleLeadingButtonText)
-            .modifier(SSTypoModifier(.text_xxxs))
-            .foregroundColor(SSColor.gray90)
-
-          Spacer()
-
-          Text(Constants.middleTrailingButtonText)
-            .modifier(SSTypoModifier(.text_xxxs))
-            .foregroundColor(SSColor.gray60)
-        }
-
-        ZStack {
-          SSColor.orange20
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-          SSColor.orange60
-            .frame(maxWidth: store.progressValue, maxHeight: .infinity)
-        }
-        .frame(maxWidth: .infinity, maxHeight: Constants.progressHeightValue)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.progressCornerRadius, style: .continuous))
-        .padding(.vertical, Constants.progressBarVerticalSpacing)
-
-        HStack {
-          Text("700,000원")
-            .modifier(SSTypoModifier(.text_xxxs))
-            .foregroundColor(SSColor.gray90)
-
-          Spacer()
-
-          Text("1,000,000원")
-            .modifier(SSTypoModifier(.text_xxxs))
-            .foregroundColor(SSColor.gray60)
-        }
+        .padding(Constants.contentSpacing)
       }
-      .padding(Constants.contentSpacing)
-      Text("asdf")
-      Text("HelloWorld")
     }
+    .frame(maxHeight: Constants.viewMaxHeight)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 
   private enum Constants {
@@ -118,6 +119,8 @@ struct EnvelopeView: View {
     static let progressHeightValue: CGFloat = 4
 
     static let progressBarVerticalSpacing: CGFloat = 4
+
+    static let viewMaxHeight: CGFloat = 124
   }
 }
 
