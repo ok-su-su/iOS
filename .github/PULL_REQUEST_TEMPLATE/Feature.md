@@ -1,3 +1,11 @@
+---
+name: Feature PR
+about: Suggest an idea for this project
+title: "[Feature] "
+labels: Feat
+assignees: ''
+
+---
 
 ## 작업 내용
 
@@ -36,4 +44,5 @@
 
 
 <br/><br/><br/>
+close: #
 close: #
