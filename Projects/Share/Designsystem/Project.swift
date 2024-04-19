@@ -7,6 +7,9 @@ let project = Project.makeModule(
   targets: .custom(
     name: "Designsystem",
     product: .framework,
+    dependencies: [
+      .thirdParty(.ComposableArchitecture),
+    ],
     infoPlist: [
       "UIAppFonts": [
         "Pretendard-Regular.otf",

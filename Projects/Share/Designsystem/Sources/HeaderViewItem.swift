@@ -8,11 +8,19 @@
 
 import SwiftUI
 
-// MARK: - LeadingItem
+extension HeaderView {
+  private enum Constants {
+    static let headerLeftMargin: CGFloat = 10
 
-struct LeadingItem: View {
-  var isImage: Bool
-  var body: some View {
+    static let progressCornerRadius: CGFloat = 4
+    static let progressMaxWidth: CGFloat = 96
+
+    static let buttonWidthAndHeight: CGFloat = 44
+    static let imagePadding: CGFloat = 10
+  }
+
+  @ViewBuilder
+  func makeLeadingItem(isImage: Bool) -> some View {
     if isImage {
       Image(.commonLogo)
         .resizable()
@@ -20,7 +28,9 @@ struct LeadingItem: View {
         .frame(width: 56, height: 24, alignment: .leading)
         .padding(.leading, Constants.headerLeftMargin)
     } else {
-      Button {} label: {
+      Button {
+        store.send(.tappedDismissButton)
+      } label: {
         Image(.commonArrow)
       }
       .frame(width: 56, height: 24, alignment: .leading)
@@ -28,21 +38,17 @@ struct LeadingItem: View {
     }
   }
 
-  private enum Constants {
-    static let headerLeftMargin: CGFloat = 10
+  func progressValue(_ value: Double) -> CGFloat {
+    return min(Constants.progressMaxWidth * value, Constants.progressMaxWidth)
   }
-}
 
-// MARK: - CenterItem
-
-struct CenterItem: View {
-  enum Types {
+  enum CenterItemTypes {
     case text(String)
     case progress(Double)
   }
 
-  var type: Types
-  var body: some View {
+  @ViewBuilder
+  func makeCenterItem(type: CenterItemTypes) -> some View {
     switch type {
     case let .text(text):
       Text(text)
@@ -61,37 +67,28 @@ struct CenterItem: View {
     }
   }
 
-  func progressValue(_ value: Double) -> CGFloat {
-    return min(Constants.progressMaxWidth * value, Constants.progressMaxWidth)
-  }
-
-  private enum Constants {
-    static let progressCornerRadius: CGFloat = 4
-    static let progressMaxWidth: CGFloat = 96
-  }
-}
-
-// MARK: - TrailingItem
-
-struct TrailingItem: View {
-  enum Types {
+  enum trailingItemTypes {
     case icon
     case none
     case text(String)
   }
 
-  var type: Types
-  var body: some View {
+  @ViewBuilder
+  func makeTrailingItem(type: trailingItemTypes) -> some View {
     switch type {
     case .icon:
       HStack(spacing: 0) {
-        Button {} label: {
+        Button {
+          store.send(.tappedNotificationButton)
+        } label: {
           SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
 
-        Button {} label: {
+        Button {
+          store.send(.tappedSearchButton)
+        } label: {
           SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
@@ -108,10 +105,5 @@ struct TrailingItem: View {
       }
       .frame(alignment: .trailing)
     }
-  }
-
-  private enum Constants {
-    static let buttonWidthAndHeight: CGFloat = 44
-    static let imagePadding: CGFloat = 10
   }
 }

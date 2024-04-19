@@ -6,11 +6,13 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import ComposableArchitecture
+import OSLog
 import SwiftUI
 
 // MARK: - SSTabType
 
-public enum SSTabType: String, CaseIterable {
+public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   case envelope
   case inventory
   case statistics
@@ -74,21 +76,56 @@ public enum SSTabType: String, CaseIterable {
   }
 }
 
+// MARK: - SSTabBarFeature
+
+@Reducer
+public struct SSTabBarFeature {
+  public init() {}
+
+  @ObservableState
+  public struct State: Equatable {
+    var tabbarType: SSTabType
+
+    public init(tabbarType: SSTabType) {
+      self.tabbarType = tabbarType
+    }
+  }
+
+  public enum Action: Equatable {
+    case tappedSection(SSTabType)
+    case switchType(SSTabType)
+  }
+
+  public var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case let .switchType(type):
+        state.tabbarType = type
+        return .none
+      case .tappedSection:
+        return .none
+      }
+    }
+  }
+}
+
 // MARK: - SSTabbar
 
 public struct SSTabbar: View {
-  @Binding private var selectionType: SSTabType
+  @Bindable
+  var store: StoreOf<SSTabBarFeature>
 
-  public init(selectionType: Binding<SSTabType>) {
-    _selectionType = selectionType
+  public init(store: StoreOf<SSTabBarFeature>) {
+    self.store = store
   }
 
   public var body: some View {
     HStack(alignment: .center) {
       ForEach(SSTabType.allCases, id: \.self) { tabbarType in
         Button {
-          selectionType = tabbarType
+          store.send(.tappedSection(tabbarType))
         } label: {
+          var selectionType = store.tabbarType
           GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
               selectionType
@@ -97,7 +134,7 @@ public struct SSTabbar: View {
 
               SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
                 .bold(true)
-                .foregroundColor(selectionType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+                .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
             }.frame(width: geometry.size.width, height: geometry.size.height)
           }
         }

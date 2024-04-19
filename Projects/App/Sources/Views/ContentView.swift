@@ -11,35 +11,33 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @State var sectionTab: SSTabType = .envelope
+  var sectionViews: [SSTabType: AnyView] = [
+    .envelope: AnyView(EnvelopeRootView()),
+    .inventory: AnyView(InventoryRootView()),
+    .vote: AnyView(VoteRootView()),
+    .mypage: AnyView(MyPageRootView()),
+    .statistics: AnyView(StatisticsRootView()),
+  ]
 
-  public init() {}
+  @Bindable
+  var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    TabView(selection: $sectionTab) {
-      Group {
-        SentMainView(store: .init(initialState: SentMain.State()) {
-          SentMain()
-        })
-        .tag(SSTabType.envelope)
-
-        InventoryRootView()
-          .tag(SSTabType.inventory)
-
-        StatisticsRootView()
-          .tag(SSTabType.statistics)
-
-        VoteRootView()
-          .tag(SSTabType.vote)
-
-        MyPageRootView()
-          .tag(SSTabType.mypage)
-      }
-    }.toolbar(.hidden, for: .tabBar)
-
     VStack {
-      SSTabbar(selectionType: $sectionTab)
-    }.frame(height: 56)
+      HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+      contentView()
+      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
+    }
+    .onAppear {
+      store.send(.onAppear)
+    }
+  }
+
+  @ViewBuilder
+  func contentView() -> some View {
+    sectionViews[store.sectionType]!
   }
 }
 
@@ -90,10 +88,17 @@ public struct VoteRootView: View {
 // MARK: - MyPageRootView
 
 public struct MyPageRootView: View {
+  init() {
+    os_log("마이 페이지가 나타났어!")
+  }
+
   public var body: some View {
     NavigationStack {
       Color(.blue)
         .edgesIgnoringSafeArea(.all)
+    }
+    .onAppear {
+      os_log("mypage view was appear")
     }
   }
 }
