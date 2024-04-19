@@ -6,15 +6,50 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
+
+// MARK: - HeaderViewFeature
+
+@Reducer
+public struct HeaderViewFeature {
+  public init() {}
+  @ObservableState
+  public struct State: Equatable {
+    var property: HeaderViewProperty
+
+    public init(_ property: HeaderViewProperty) {
+      self.property = property
+    }
+  }
+
+  public enum Action {
+    case tappedDismissButton
+    case tappedNotificationButton
+    case tappedSearchButton
+  }
+
+  public var body: some Reducer<State, Action> {
+    Reduce { _, action in
+      switch action {
+      case .tappedDismissButton:
+        return .none
+      case .tappedNotificationButton:
+        return .none
+      case .tappedSearchButton:
+        return .none
+      }
+    }
+  }
+}
 
 // MARK: - HeaderViewProperty
 
-public struct HeaderViewProperty {
+public struct HeaderViewProperty: Equatable, Hashable {
   let title: String
   let type: HeaderViewPropertyType
 
-  public enum HeaderViewPropertyType {
+  public enum HeaderViewPropertyType: Equatable, Hashable {
     case defaultType
     case depth2Icon
     case depth2Default
@@ -34,35 +69,26 @@ public struct HeaderViewProperty {
     return false
   }
 
-  var leadingItem: LeadingItem {
-    return switch type {
-    case .defaultType:
-      LeadingItem(isImage: true)
-    default:
-      LeadingItem(isImage: false)
-    }
-  }
-
-  var centerItem: CenterItem {
+  var centerItem: HeaderView.CenterItemTypes {
     return switch type {
     case let .depthProgressBar(double):
-      .init(type: .progress(double))
+      .progress(double)
     default:
-      .init(type: .text(title))
+      .text(title)
     }
   }
 
-  var trailingItem: TrailingItem {
+  var trailingItem: HeaderView.trailingItemTypes {
     return switch type {
     case .defaultType,
          .depth2Icon
          :
-      TrailingItem(type: .icon)
+      .icon
     case .depth2Default,
          .depthProgressBar:
-      TrailingItem(type: .none)
+      .none
     case let .depth2Text(text):
-      TrailingItem(type: .text(text))
+      .text(text)
     }
   }
 }
@@ -70,31 +96,24 @@ public struct HeaderViewProperty {
 // MARK: - HeaderView
 
 public struct HeaderView: View {
-  var property: HeaderViewProperty
+  @Bindable var store: StoreOf<HeaderViewFeature>
   public var body: some View {
     VStack {
       ZStack {
-        property
-          .centerItem
+        makeCenterItem(type: store.state.property.centerItem)
 
         HStack {
-          property
-            .leadingItem
-
+          makeLeadingItem(isImage: store.state.property.isLogoImage)
           Spacer()
-
-          property
-            .trailingItem
+          makeTrailingItem(type: store.state.property.trailingItem)
         }
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
       }
-
-      Spacer()
     }
   }
 
-  public init(property: HeaderViewProperty) {
-    self.property = property
+  public init(store: StoreOf<HeaderViewFeature>) {
+    self.store = store
   }
 
   private enum Constants {

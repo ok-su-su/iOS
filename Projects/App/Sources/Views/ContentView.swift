@@ -1,6 +1,5 @@
 import ComposableArchitecture
 import Designsystem
-import SSAlert
 import Moya
 import OSLog
 import SSAlert
@@ -11,38 +10,38 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @State var sectionTab: SSTabType = .envelope
-  
-  public init() {}
+  var sectionViews: [SSTabType: AnyView] = [
+    .envelope: AnyView(EnvelopeRootView()),
+    .inventory: AnyView(InventoryRootView()),
+    .vote: AnyView(VoteRootView()),
+    .mypage: AnyView(MyPageRootView()),
+    .statistics: AnyView(StatisticsRootView()),
+  ]
+
+  @Bindable
+  var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    
-    TabView(selection: $sectionTab) {
-      Group {
-        EnvelopeRootView()
-          .tag(SSTabType.envelope)
-        
-        InventoryRootView()
-          .tag(SSTabType.inventory)
-        
-        StatisticsRootView()
-          .tag(SSTabType.statistics)
-        
-        VoteRootView()
-          .tag(SSTabType.vote)
-        
-        MyPageRootView()
-          .tag(SSTabType.mypage)
-      }
-    }.toolbar(.hidden, for: .tabBar)
-    
     VStack {
-        SSTabbar(selectionType: $sectionTab)
-    }.frame(height: 56)
+      HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+      contentView()
+      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
+    }
+    .onAppear {
+      store.send(.onAppear)
+    }
+  }
+
+  @ViewBuilder
+  func contentView() -> some View {
+    sectionViews[store.sectionType]!
   }
 }
 
-//MARK: 보내요 RootView
+// MARK: - EnvelopeRootView
+
 public struct EnvelopeRootView: View {
   public var body: some View {
     NavigationStack {
@@ -52,7 +51,8 @@ public struct EnvelopeRootView: View {
   }
 }
 
-//MARK: 받아요 RootView
+// MARK: - InventoryRootView
+
 public struct InventoryRootView: View {
   public var body: some View {
     NavigationStack {
@@ -62,7 +62,8 @@ public struct InventoryRootView: View {
   }
 }
 
-//MARK: 통계 RootView
+// MARK: - StatisticsRootView
+
 public struct StatisticsRootView: View {
   public var body: some View {
     NavigationStack {
@@ -72,7 +73,8 @@ public struct StatisticsRootView: View {
   }
 }
 
-//MARK: 투표 RootView
+// MARK: - VoteRootView
+
 public struct VoteRootView: View {
   public var body: some View {
     NavigationStack {
@@ -82,12 +84,20 @@ public struct VoteRootView: View {
   }
 }
 
-//MARK: 마이페이지 RootView
+// MARK: - MyPageRootView
+
 public struct MyPageRootView: View {
+  init() {
+    os_log("마이 페이지가 나타났어!")
+  }
+
   public var body: some View {
     NavigationStack {
       Color(.blue)
         .edgesIgnoringSafeArea(.all)
+    }
+    .onAppear {
+      os_log("mypage view was appear")
     }
   }
 }

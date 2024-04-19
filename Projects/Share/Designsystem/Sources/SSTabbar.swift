@@ -6,16 +6,19 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import ComposableArchitecture
+import OSLog
 import SwiftUI
 
-// MARK: SSTabbarType
-public enum SSTabType: String, CaseIterable {
+// MARK: - SSTabType
+
+public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   case envelope
   case inventory
   case statistics
   case vote
   case mypage
-  
+
   var title: String {
     switch self {
     case .envelope:
@@ -30,7 +33,7 @@ public enum SSTabType: String, CaseIterable {
       return "마이페이지"
     }
   }
-  
+
   var outlineImage: UIImage {
     switch self {
     case .envelope:
@@ -45,7 +48,7 @@ public enum SSTabType: String, CaseIterable {
       return SSImage.mypageOutline
     }
   }
-  
+
   var fillImage: UIImage {
     switch self {
     case .envelope:
@@ -62,30 +65,64 @@ public enum SSTabType: String, CaseIterable {
   }
 }
 
+// MARK: - SSTabBarFeature
 
-//MARK: SSTabbar
-public struct SSTabbar: View {
-  @Binding private var selectionType: SSTabType
+@Reducer
+public struct SSTabBarFeature {
+  public init() {}
 
-  public init(selectionType: Binding<SSTabType>) {
-    self._selectionType = selectionType
+  @ObservableState
+  public struct State: Equatable {
+    var tabbarType: SSTabType
+
+    public init(tabbarType: SSTabType) {
+      self.tabbarType = tabbarType
+    }
   }
-  
+
+  public enum Action: Equatable {
+    case tappedSection(SSTabType)
+    case switchType(SSTabType)
+  }
+
+  public var body: some Reducer<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case let .switchType(type):
+        state.tabbarType = type
+        return .none
+      case .tappedSection:
+        return .none
+      }
+    }
+  }
+}
+
+// MARK: - SSTabbar
+
+public struct SSTabbar: View {
+  @Bindable
+  var store: StoreOf<SSTabBarFeature>
+
+  public init(store: StoreOf<SSTabBarFeature>) {
+    self.store = store
+  }
+
   public var body: some View {
     HStack(alignment: .center) {
-        ForEach(SSTabType.allCases, id: \.self) {  tabbarType in
-          Button {
-            selectionType = tabbarType
-          } label: {
-        GeometryReader { geometry in
+      ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+        Button {
+          store.send(.tappedSection(tabbarType))
+        } label: {
+          GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
-              Image(uiImage: selectionType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
+              Image(uiImage: store.tabbarType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
                 .resizable()
                 .frame(width: 24, height: 24, alignment: .center)
-              
+
               SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
                 .bold(true)
-                .foregroundColor(selectionType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+                .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
             }.frame(width: geometry.size.width, height: geometry.size.height)
           }
         }
