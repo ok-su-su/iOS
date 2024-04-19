@@ -12,7 +12,9 @@ import SwiftUI
 
 public struct ContentView: View {
   var sectionViews: [SSTabType: AnyView] = [
-    .envelope: AnyView(EnvelopeRootView()),
+    .envelope: AnyView(SentMainView(store: .init(initialState: SentMain.State()) {
+      SentMain()
+    })),
     .inventory: AnyView(InventoryRootView()),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(MyPageRootView()),
