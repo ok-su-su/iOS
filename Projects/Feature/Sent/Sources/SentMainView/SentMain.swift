@@ -14,13 +14,15 @@ public struct SentMain {
   public init() {}
   @ObservableState
   public struct State {
-    var envelopes: [String] = []
+    var envelopes: IdentifiedArrayOf<Envelope.State> = [.init(envelopeProperty: .init()), .init(envelopeProperty: .init())]
     public init() {}
   }
 
   public enum Action: Equatable {
     case tappedFirstButton
     case filterButtonTapped
+    case tappedEmptyEnvelopeButton
+    case envelopes(IdentifiedActionOf<Envelope>)
   }
 
   public var body: some Reducer<State, Action> {
@@ -29,6 +31,9 @@ public struct SentMain {
       default:
         return .none
       }
+    }
+    .forEach(\.envelopes, action: \.envelopes) {
+      Envelope()
     }
   }
 }

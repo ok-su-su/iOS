@@ -10,11 +10,56 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
+// MARK: - ReusableCell
+
+struct ReusableCell: View {
+  var text: String
+
+  var body: some View {
+    Text(text)
+
+      .frame(maxWidth: .infinity)
+      .background(Color.blue)
+      .foregroundColor(.white)
+      .cornerRadius(10)
+  }
+}
+
+// MARK: - SentMainView
+
 public struct SentMainView: View {
   @Bindable var store: StoreOf<SentMain>
 
   public init(store: StoreOf<SentMain>) {
     self.store = store
+  }
+
+  @ViewBuilder
+  func makeEnvelope() -> some View {
+    if store.state.envelopes.isEmpty {
+      VStack {
+        Text(Constants.emptyEnvelopesText)
+          .modifier(SSTypoModifier(.text_s))
+        SSButton(Constants.emptyEnvelopeButtonProperty) {
+          store.send(.tappedEmptyEnvelopeButton)
+        }
+      }
+    } else {
+      ScrollView {
+        LazyVGrid(
+          columns: [GridItem(.flexible(minimum: 128, maximum: 320))],
+          spacing: 8
+        ) {
+          ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
+            EnvelopeView(store: store)
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .background {
+                Color.blue
+              }
+          }
+        }
+      }
+    }
   }
 
   public var body: some View {
@@ -29,8 +74,8 @@ public struct SentMainView: View {
       }
       .frame(maxWidth: .infinity, alignment: .topLeading)
       .padding(.bottom, Constants.topButtonsSpacing)
-      
-      
+
+      makeEnvelope()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
@@ -43,6 +88,7 @@ public struct SentMainView: View {
     static let leadingAndTrailingSpacing: CGFloat = 16
     static let filterBadgeTopAndBottomSpacing: CGFloat = 16
     static let topButtonsSpacing: CGFloat = 8
+    static let emptyEnvelopesText: String = "아직 보낸 봉투가 없습니다."
 
     static let latestButtonProperty: SSButtonProperty = .init(
       size: .sh32,
@@ -60,6 +106,14 @@ public struct SentMainView: View {
       color: .black,
       leftIcon: .icon(SSImage.commonFilter),
       buttonText: "필터"
+    )
+
+    static let emptyEnvelopeButtonProperty: SSButtonProperty = .init(
+      size: .sh40,
+      status: .active,
+      style: .ghost,
+      color: .black,
+      buttonText: emptyEnvelopesText
     )
   }
 }
