@@ -10,25 +10,21 @@ import SwiftUI
 // MARK: - ContentView
 
 public struct ContentView: View {
+  var sectionViews: [SSTabType: AnyView] = [
+    .envelope: AnyView(EnvelopeRootView()),
+    .inventory: AnyView(InventoryRootView()),
+    .vote: AnyView(VoteRootView()),
+    .mypage: AnyView(MyPageRootView()),
+    .statistics: AnyView(StatisticsRootView()),
+  ]
+  @Bindable
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
     VStack {
       HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-
       WithViewStore(store, observe: { $0.sectionType }) { _ in
-        switch store.sectionType {
-        case .envelope:
-          EnvelopeRootView()
-        case .inventory:
-          EnvelopeRootView()
-        case .statistics:
-          StatisticsRootView()
-        case .vote:
-          VoteRootView()
-        case .mypage:
-          MyPageRootView()
-        }
+        contentView()
       }
       VStack {
         SSTabbar(store: store.scope(state: \.tabbarView, action: \.tabbarView))
@@ -39,6 +35,11 @@ public struct ContentView: View {
     .onAppear {
       store.send(.onAppear)
     }
+  }
+
+  @ViewBuilder
+  func contentView() -> some View {
+    sectionViews[store.sectionType]!
   }
 }
 
@@ -97,6 +98,9 @@ public struct MyPageRootView: View {
     NavigationStack {
       Color(.blue)
         .edgesIgnoringSafeArea(.all)
+    }
+    .onAppear {
+      os_log("mypage view was appear")
     }
   }
 }

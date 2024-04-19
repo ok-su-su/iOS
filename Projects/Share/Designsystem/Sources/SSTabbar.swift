@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - SSTabType
 
-public enum SSTabType: String, CaseIterable, Equatable {
+public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   case envelope
   case inventory
   case statistics

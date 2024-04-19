@@ -35,10 +35,10 @@ public struct ContentViewFeature {
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.tabbarView, action: /Action.tabbarView) {
-      SSTabbarFeature()._printChanges()
+      SSTabbarFeature()
     }
     Scope(state: \.headerView, action: /Action.headerView) {
-      HeaderViewFeature()._printChanges()
+      HeaderViewFeature()
     }
     Reduce { state, action in
       switch action {

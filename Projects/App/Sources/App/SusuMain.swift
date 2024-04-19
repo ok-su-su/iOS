@@ -7,7 +7,7 @@ struct SusuApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView(store: .init(initialState: ContentViewFeature.State(headerView: .init(.init(type: .defaultType)))) {
-        ContentViewFeature()._printChanges()
+        ContentViewFeature()
       })
     }
   }
