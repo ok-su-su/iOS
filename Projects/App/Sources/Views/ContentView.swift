@@ -17,18 +17,15 @@ public struct ContentView: View {
     .mypage: AnyView(MyPageRootView()),
     .statistics: AnyView(StatisticsRootView()),
   ]
+  
   @Bindable
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
     VStack {
       HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-      WithViewStore(store, observe: { $0.sectionType }) { _ in
-        contentView()
-      }
-      VStack {
-        SSTabbar(store: store.scope(state: \.tabbarView, action: \.tabbarView))
-      }
+      contentView()
+      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabbarView))
       .frame(height: 56)
       .toolbar(.hidden, for: .tabBar)
     }
@@ -57,10 +54,6 @@ public struct EnvelopeRootView: View {
 // MARK: - InventoryRootView
 
 public struct InventoryRootView: View {
-  init() {
-    os_log("iam inited")
-  }
-
   public var body: some View {
     NavigationStack {
       Color(.blue)
@@ -94,6 +87,10 @@ public struct VoteRootView: View {
 // MARK: - MyPageRootView
 
 public struct MyPageRootView: View {
+  init() {
+    os_log("마이 페이지가 나타났어!")
+  }
+
   public var body: some View {
     NavigationStack {
       Color(.blue)

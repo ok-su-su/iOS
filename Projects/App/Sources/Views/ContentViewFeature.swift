@@ -17,13 +17,13 @@ public struct ContentViewFeature {
   public struct State: Equatable {
     public var headerView: HeaderViewFeature.State
     public var sectionType: SSTabType
-    public var tabbarView: SSTabbarFeature.State
+    public var tabBarView: SSTabbarFeature.State
 
     init(headerView: HeaderViewFeature.State) {
       let initialType = SSTabType.envelope
       sectionType = initialType
       self.headerView = headerView
-      tabbarView = .init(tabbarType: initialType)
+      tabBarView = .init(tabbarType: initialType)
     }
   }
 
@@ -34,7 +34,7 @@ public struct ContentViewFeature {
   }
 
   public var body: some Reducer<State, Action> {
-    Scope(state: \.tabbarView, action: /Action.tabbarView) {
+    Scope(state: \.tabBarView, action: /Action.tabbarView) {
       SSTabbarFeature()
     }
     Scope(state: \.headerView, action: /Action.headerView) {
