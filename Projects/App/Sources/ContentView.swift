@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Designsystem
 import Moya
 import OSLog
+import Sent
 import SSAlert
 import SSDataBase
 import SSRoot
@@ -17,8 +18,10 @@ public struct ContentView: View {
   public var body: some View {
     TabView(selection: $sectionTab) {
       Group {
-        EnvelopeRootView()
-          .tag(SSTabType.envelope)
+        SentMainView(store: .init(initialState: SentMain.State()) {
+          SentMain()
+        })
+        .tag(SSTabType.envelope)
 
         InventoryRootView()
           .tag(SSTabType.inventory)
@@ -42,8 +45,6 @@ public struct ContentView: View {
 
 // MARK: - EnvelopeRootView
 
-// MARK: 보내요 RootView
-
 public struct EnvelopeRootView: View {
   public var body: some View {
     NavigationStack {
@@ -54,8 +55,6 @@ public struct EnvelopeRootView: View {
 }
 
 // MARK: - InventoryRootView
-
-// MARK: 받아요 RootView
 
 public struct InventoryRootView: View {
   public var body: some View {
@@ -68,8 +67,6 @@ public struct InventoryRootView: View {
 
 // MARK: - StatisticsRootView
 
-// MARK: 통계 RootView
-
 public struct StatisticsRootView: View {
   public var body: some View {
     NavigationStack {
@@ -81,8 +78,6 @@ public struct StatisticsRootView: View {
 
 // MARK: - VoteRootView
 
-// MARK: 투표 RootView
-
 public struct VoteRootView: View {
   public var body: some View {
     NavigationStack {
@@ -93,8 +88,6 @@ public struct VoteRootView: View {
 }
 
 // MARK: - MyPageRootView
-
-// MARK: 마이페이지 RootView
 
 public struct MyPageRootView: View {
   public var body: some View {

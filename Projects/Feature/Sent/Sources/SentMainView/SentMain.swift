@@ -10,15 +10,20 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-struct SentMain {
+public struct SentMain {
+  public init() {}
   @ObservableState
-  struct State {}
-
-  enum Action: Equatable {
-    case tappedFirstButton
+  public struct State {
+    var envelopes: [String] = []
+    public init() {}
   }
 
-  var body: some Reducer<State, Action> {
+  public enum Action: Equatable {
+    case tappedFirstButton
+    case filterButtonTapped
+  }
+
+  public var body: some Reducer<State, Action> {
     Reduce { _, action in
       switch action {
       default:
