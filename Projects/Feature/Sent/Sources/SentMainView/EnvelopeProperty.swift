@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct EnvelopeProperty: Equatable, Hashable, Identifiable {
-  var id: UUID = .init()
-  init() {}
+public struct EnvelopeProperty: Equatable, Hashable, Identifiable {
+  public var id: UUID = .init()
+
+  public init() {}
 }
