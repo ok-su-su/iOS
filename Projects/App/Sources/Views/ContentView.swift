@@ -14,32 +14,40 @@ public struct ContentView: View {
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    TabView(selection: $store.sectionType.sending(\.tapSectionButton)) {
-      Group {
-        EnvelopeRootView()
-          .tag(SSTabType.envelope)
-
-        InventoryRootView()
-          .tag(SSTabType.inventory)
-
-        StatisticsRootView()
-          .tag(SSTabType.statistics)
-
-        VoteRootView()
-          .tag(SSTabType.vote)
-
-        MyPageRootView()
-          .tag(SSTabType.mypage)
-      }
-    }
-    .toolbar(.hidden, for: .tabBar)
-    .onAppear {
-      store.send(.onAppear)
-    }
-
     VStack {
-      SSTabbar(selectionType: $store.sectionType.sending(\.tapSectionButton))
-    }.frame(height: 56)
+      WithViewStore(store, observe: { $0.headerView }) { _ in
+        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+      }
+      
+      WithViewStore(store, observe: { $0.sectionType }) { _ in
+        TabView(selection: $store.sectionType.sending(\.tapSectionButton)) {
+          Group {
+            EnvelopeRootView()
+              .tag(SSTabType.envelope)
+
+            InventoryRootView()
+              .tag(SSTabType.inventory)
+
+            StatisticsRootView()
+              .tag(SSTabType.statistics)
+
+            VoteRootView()
+              .tag(SSTabType.vote)
+
+            MyPageRootView()
+              .tag(SSTabType.mypage)
+          }
+        }
+      }
+      .toolbar(.hidden, for: .tabBar)
+      .onAppear {
+        store.send(.onAppear)
+      }
+
+      VStack {
+        SSTabbar(selectionType: $store.sectionType.sending(\.tapSectionButton))
+      }.frame(height: 56)
+    }
   }
 }
 

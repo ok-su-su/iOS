@@ -9,22 +9,41 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import OSLog
 
 @Reducer
-struct ContentViewFeature {
+public struct ContentViewFeature {
   @ObservableState
-  struct State: Equatable, Hashable {
-    var sectionType: SSTabType = .envelope
+  public struct State: Equatable {
+    public var headerView: HeaderViewFeature.State
+    public var sectionType: SSTabType = .envelope
+
+    init(headerView: HeaderViewFeature.State) {
+      self.headerView = headerView
+      sectionType = sectionType
+    }
   }
 
-  enum Action {
+  public enum Action {
+    case headerView(HeaderViewFeature.Action)
     case tapSectionButton(SSTabType)
     case onAppear
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
+      case .headerView(.tappedDismissButton):
+        os_log("did tap headerViewDismiss button")
+        return .none
+      case .headerView(.tappedSearchButton):
+        os_log("did Tap Search Button")
+        return .none
+      case .headerView(.tappedNotificationButton):
+        os_log("Did Tap Notification Button")
+        return .none
+      case .headerView:
+        return .none
       case .onAppear:
         return .none
       case let .tapSectionButton(type):
@@ -43,6 +62,9 @@ struct ContentViewFeature {
           return .none
         case .mypage:
           state.sectionType = .mypage
+          return .none
+
+        default:
           return .none
         }
       }

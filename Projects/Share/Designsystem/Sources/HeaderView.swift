@@ -6,15 +6,55 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
+
+// MARK: - HeaderViewFeature
+
+@Reducer
+public struct HeaderViewFeature {
+  @ObservableState
+  public struct State: Equatable {
+    var property: HeaderViewProperty
+
+    public init(_ property: HeaderViewProperty) {
+      self.property = property
+    }
+  }
+
+  public enum Action {
+    case tappedDismissButton
+    case tappedNotificationButton
+    case tappedSearchButton
+  }
+
+  public var body: some Reducer<State, Action> {
+    Reduce { _, action in
+      switch action {
+      case .tappedDismissButton:
+        return .run { send in
+          await send(.tappedDismissButton)
+        }
+      case .tappedNotificationButton:
+        return .run { send in
+          await send(.tappedNotificationButton)
+        }
+      case .tappedSearchButton:
+        return .run { send in
+          await send(.tappedSearchButton)
+        }
+      }
+    }
+  }
+}
 
 // MARK: - HeaderViewProperty
 
-public struct HeaderViewProperty {
+public struct HeaderViewProperty: Equatable, Hashable {
   let title: String
   let type: HeaderViewPropertyType
 
-  public enum HeaderViewPropertyType {
+  public enum HeaderViewPropertyType: Equatable, Hashable {
     case defaultType
     case depth2Icon
     case depth2Default
@@ -70,20 +110,26 @@ public struct HeaderViewProperty {
 // MARK: - HeaderView
 
 public struct HeaderView: View {
-  var property: HeaderViewProperty
+  @Bindable var store: StoreOf<HeaderViewFeature>
   public var body: some View {
     VStack {
       ZStack {
-        property
+        store
+          .state
+          .property
           .centerItem
 
         HStack {
-          property
+          store
+            .state
+            .property
             .leadingItem
 
           Spacer()
 
-          property
+          store
+            .state
+            .property
             .trailingItem
         }
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
@@ -93,8 +139,8 @@ public struct HeaderView: View {
     }
   }
 
-  public init(property: HeaderViewProperty) {
-    self.property = property
+  public init(store: StoreOf<HeaderViewFeature>) {
+    self.store = store
   }
 
   private enum Constants {
