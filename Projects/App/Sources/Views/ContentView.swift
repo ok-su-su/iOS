@@ -25,15 +25,27 @@ public struct ContentView: View {
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    VStack {
-      HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-      contentView()
+    ZStack {
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+        Spacer()
+          .frame(height: 16)
+        contentView()
+      }
+      .background {
+        SSColor.gray15
+      }
+      .onAppear {
+        store.send(.onAppear)
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
       SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
-    }
-    .onAppear {
-      store.send(.onAppear)
+        .background {
+          Color.white
+        }
     }
   }
 

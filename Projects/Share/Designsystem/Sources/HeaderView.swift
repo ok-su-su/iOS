@@ -108,6 +108,9 @@ public struct HeaderView: View {
           makeTrailingItem(type: store.state.property.trailingItem)
         }
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
+        .background {
+          Color.clear
+        }
       }
     }
   }

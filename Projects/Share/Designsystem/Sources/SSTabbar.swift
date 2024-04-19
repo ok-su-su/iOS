@@ -125,7 +125,7 @@ public struct SSTabbar: View {
         Button {
           store.send(.tappedSection(tabbarType))
         } label: {
-          var selectionType = store.tabbarType
+          let selectionType = store.tabbarType
           GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
               selectionType
