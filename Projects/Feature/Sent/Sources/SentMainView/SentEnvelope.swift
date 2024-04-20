@@ -24,6 +24,7 @@ public struct Envelope {
 
   public enum Action: Equatable {
     case tappedDetailButton
+    case tappedFullContentOfEnvelopeButton
   }
 
   public var body: some Reducer<State, Action> {
@@ -31,7 +32,7 @@ public struct Envelope {
 
       switch action {
       case .tappedDetailButton:
-        state.showDetail = true
+        state.showDetail.toggle()
         return .none
       default:
         return .none
