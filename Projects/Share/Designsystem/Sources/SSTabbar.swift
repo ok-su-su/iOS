@@ -128,7 +128,7 @@ public struct SSTabbar: View {
           let selectionType = store.tabbarType
           GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
-              selectionType
+              tabbarType
                 .makeImage(isEqualType: selectionType == tabbarType)
                 .frame(width: 24, height: 24, alignment: .center)
 
