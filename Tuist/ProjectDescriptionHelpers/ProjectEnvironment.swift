@@ -23,9 +23,9 @@ public struct ProjectEnvironment {
 
   public static var `default`: ProjectEnvironment {
     ProjectEnvironment(
-      appName: "MealGok",
-      targetName: "MealGok",
-      prefixBundleID: "com.susu",
+      appName: "susu",
+      targetName: "susu",
+      prefixBundleID: "com.oksusu",
       deploymentTargets: .iOS("17.0"),
       baseSetting: [:]
     )
