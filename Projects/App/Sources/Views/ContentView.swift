@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Designsystem
 import Moya
 import OSLog
+import Sent
 import SSAlert
 import SSDataBase
 import SSRoot
@@ -11,7 +12,9 @@ import SwiftUI
 
 public struct ContentView: View {
   var sectionViews: [SSTabType: AnyView] = [
-    .envelope: AnyView(EnvelopeRootView()),
+    .envelope: AnyView(SentMainView(store: .init(initialState: SentMain.State()) {
+      SentMain()
+    })),
     .inventory: AnyView(InventoryRootView()),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(MyPageRootView()),
@@ -22,15 +25,28 @@ public struct ContentView: View {
   var store: StoreOf<ContentViewFeature>
 
   public var body: some View {
-    VStack {
-      HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-      contentView()
+    ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+        Spacer()
+          .frame(height: 16)
+        contentView()
+      }
+      .onAppear {
+        store.send(.onAppear)
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
       SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
+        .background {
+          Color.white
+        }
+        .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
-    }
-    .onAppear {
-      store.send(.onAppear)
     }
   }
 

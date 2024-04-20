@@ -81,7 +81,7 @@ extension HeaderView {
         Button {
           store.send(.tappedNotificationButton)
         } label: {
-          Image(uiImage: SSImage.commonSearch)
+          SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
@@ -89,7 +89,7 @@ extension HeaderView {
         Button {
           store.send(.tappedSearchButton)
         } label: {
-          Image(uiImage: SSImage.commonSearch)
+          SSImage.commonSearch
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)

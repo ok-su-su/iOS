@@ -34,7 +34,18 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     }
   }
 
-  var outlineImage: UIImage {
+  @ViewBuilder
+  func makeImage(isEqualType: Bool) -> some View {
+    if isEqualType {
+      fillImage
+        .resizable()
+    } else {
+      outlineImage
+        .resizable()
+    }
+  }
+
+  var outlineImage: Image {
     switch self {
     case .envelope:
       return SSImage.envelopeOutline
@@ -49,7 +60,7 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     }
   }
 
-  var fillImage: UIImage {
+  var fillImage: Image {
     switch self {
     case .envelope:
       return SSImage.envelopeFill
@@ -114,10 +125,11 @@ public struct SSTabbar: View {
         Button {
           store.send(.tappedSection(tabbarType))
         } label: {
+          let selectionType = store.tabbarType
           GeometryReader { geometry in
             VStack(alignment: .center, spacing: 4) {
-              Image(uiImage: store.tabbarType == tabbarType ? tabbarType.fillImage : tabbarType.outlineImage)
-                .resizable()
+              tabbarType
+                .makeImage(isEqualType: selectionType == tabbarType)
                 .frame(width: 24, height: 24, alignment: .center)
 
               SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
