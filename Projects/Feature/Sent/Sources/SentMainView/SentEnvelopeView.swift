@@ -16,87 +16,105 @@ struct EnvelopeView: View {
   @Bindable
   var store: StoreOf<Envelope>
 
+  @ViewBuilder
+  private func makeHeaderView() -> some View {
+    HStack(spacing: 0) {
+      Text("김철수") // TODO:
+        .modifier(SSTypoModifier(.title_xs))
+        .padding(.trailing, Metrics.textAndBadgeSpacing)
+      SmallBadge(property: .init(
+        size: .small,
+        badgeString: "전체: 1,700,000 원", // TODO:
+        badgeColor: .gray20
+      ))
+      Spacer()
+
+      Button {
+        store.send(.tappedDetailButton)
+      } label: {
+        SSImage.envelopeDownArrow
+      }
+    }
+  }
+  
+  @ViewBuilder
+  private func makeMiddleView() -> some View {
+    HStack {
+      Text(Metrics.middleLeadingButtonText)
+        .modifier(SSTypoModifier(.text_xxxs))
+        .foregroundColor(SSColor.gray90)
+
+      Spacer()
+
+      Text(Metrics.middleTrailingButtonText)
+        .modifier(SSTypoModifier(.text_xxxs))
+        .foregroundColor(SSColor.gray60)
+    }
+  }
+  
+  @ViewBuilder
+  private func makeProgressBarView() -> some View {
+    ZStack(alignment: .topLeading) {
+      SSColor.orange20
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+      SSColor.orange60
+        .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
+    }
+    .frame(maxWidth: .infinity, maxHeight: Metrics.progressHeightValue)
+    .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))
+    .padding(.vertical, Metrics.progressBarVerticalSpacing)
+  }
+  
+  @ViewBuilder
+  private func makeBottomView() -> some View {
+    HStack {
+      // TODO: API 호출 된 Value 로 변경
+      Text("700,000원")
+        .modifier(SSTypoModifier(.text_xxxs))
+        .foregroundColor(SSColor.gray90)
+
+      Spacer()
+
+      // TODO: API 호출 된 Value 로 변경
+      Text("1,000,000원")
+        .modifier(SSTypoModifier(.text_xxxs))
+        .foregroundColor(SSColor.gray60)
+    }
+  }
+  
   var body: some View {
     ZStack {
       ZStack {
         SSColor.gray10
         VStack(spacing: 0) {
           SSColor.orange5
-            .frame(maxWidth: .infinity, maxHeight: Constants.topRectangleHeight)
+            .frame(maxWidth: .infinity, maxHeight: Metrics.topRectangleHeight)
 
           CustomTriangle()
             .fill(SSColor.orange5)
-            .frame(maxWidth: .infinity, maxHeight: Constants.topTriangleHeight)
+            .frame(maxWidth: .infinity, maxHeight: Metrics.topTriangleHeight)
           Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
         VStack(spacing: 0) {
-          HStack(spacing: 0) {
-            Text("김철수") // TODO:
-              .modifier(SSTypoModifier(.title_xs))
-              .padding(.trailing, Constants.textAndBadgeSpacing)
-            SmallBadge(property: .init(
-              size: .small,
-              badgeString: "전체: 1,700,000 원", // TODO:
-              badgeColor: .gray20
-            ))
-            Spacer()
-
-            Button {
-              store.send(.tappedDetailButton)
-            } label: {
-              SSImage.envelopeDownArrow
-            }
-          }
-
+          makeHeaderView()
+          
           Spacer()
-            .frame(height: Constants.topAndMiddleSpacing)
+            .frame(height: Metrics.topAndMiddleSpacing)
 
-          HStack {
-            Text(Constants.middleLeadingButtonText)
-              .modifier(SSTypoModifier(.text_xxxs))
-              .foregroundColor(SSColor.gray90)
-
-            Spacer()
-
-            Text(Constants.middleTrailingButtonText)
-              .modifier(SSTypoModifier(.text_xxxs))
-              .foregroundColor(SSColor.gray60)
-          }
-
-          ZStack(alignment: .topLeading) {
-            SSColor.orange20
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-            SSColor.orange60
-              .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
-          }
-          .frame(maxWidth: .infinity, maxHeight: Constants.progressHeightValue)
-          .clipShape(RoundedRectangle(cornerRadius: Constants.progressCornerRadius, style: .continuous))
-          .padding(.vertical, Constants.progressBarVerticalSpacing)
-
-          HStack {
-            // TODO: API 호출 된 Value 로 변경
-            Text("700,000원")
-              .modifier(SSTypoModifier(.text_xxxs))
-              .foregroundColor(SSColor.gray90)
-
-            Spacer()
-
-            // TODO: API 호출 된 Value 로 변경
-            Text("1,000,000원")
-              .modifier(SSTypoModifier(.text_xxxs))
-              .foregroundColor(SSColor.gray60)
-          }
+          makeMiddleView()
+          makeProgressBarView()
+          makeBottomView()
         }
-        .padding(Constants.contentSpacing)
+        .padding(Metrics.contentSpacing)
       }
     }
-    .frame(maxHeight: Constants.viewMaxHeight)
+    .frame(maxHeight: Metrics.viewMaxHeight)
     .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 
-  private enum Constants {
+  private enum Metrics {
     static let topRectangleHeight: CGFloat = 40
     static let topTriangleHeight: CGFloat = 24
     static let contentSpacing: CGFloat = 16
