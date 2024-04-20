@@ -10,21 +10,6 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-// MARK: - ReusableCell
-
-struct ReusableCell: View {
-  var text: String
-
-  var body: some View {
-    Text(text)
-
-      .frame(maxWidth: .infinity)
-      .background(Color.blue)
-      .foregroundColor(.white)
-      .cornerRadius(10)
-  }
-}
-
 // MARK: - SentMainView
 
 public struct SentMainView: View {
