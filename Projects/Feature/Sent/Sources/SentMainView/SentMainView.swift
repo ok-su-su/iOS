@@ -20,7 +20,7 @@ public struct SentMainView: View {
   }
 
   @ViewBuilder
-  func makeEnvelope() -> some View {
+  private func makeEnvelope() -> some View {
     if store.state.envelopes.isEmpty {
       VStack {
         Text(Constants.emptyEnvelopesText)

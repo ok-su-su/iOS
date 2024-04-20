@@ -36,7 +36,7 @@ struct EnvelopeView: View {
       }
     }
   }
-  
+
   @ViewBuilder
   private func makeMiddleView() -> some View {
     HStack {
@@ -51,7 +51,7 @@ struct EnvelopeView: View {
         .foregroundColor(SSColor.gray60)
     }
   }
-  
+
   @ViewBuilder
   private func makeProgressBarView() -> some View {
     ZStack(alignment: .topLeading) {
@@ -64,7 +64,7 @@ struct EnvelopeView: View {
     .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))
     .padding(.vertical, Metrics.progressBarVerticalSpacing)
   }
-  
+
   @ViewBuilder
   private func makeBottomView() -> some View {
     HStack {
@@ -81,7 +81,7 @@ struct EnvelopeView: View {
         .foregroundColor(SSColor.gray60)
     }
   }
-  
+
   var body: some View {
     ZStack {
       ZStack {
@@ -99,7 +99,7 @@ struct EnvelopeView: View {
 
         VStack(spacing: 0) {
           makeHeaderView()
-          
+
           Spacer()
             .frame(height: Metrics.topAndMiddleSpacing)
 
