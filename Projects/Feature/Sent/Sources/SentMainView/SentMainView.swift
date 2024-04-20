@@ -76,9 +76,6 @@ public struct SentMainView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
-    .background {
-      SSColor.gray15
-    }
   }
 
   private enum Constants {

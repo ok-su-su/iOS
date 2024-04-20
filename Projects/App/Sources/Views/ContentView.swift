@@ -26,14 +26,14 @@ public struct ContentView: View {
 
   public var body: some View {
     ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
         Spacer()
           .frame(height: 16)
         contentView()
-      }
-      .background {
-        SSColor.gray15
       }
       .onAppear {
         store.send(.onAppear)
@@ -41,11 +41,12 @@ public struct ContentView: View {
     }
     .safeAreaInset(edge: .bottom) {
       SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
-        .frame(height: 56)
-        .toolbar(.hidden, for: .tabBar)
         .background {
           Color.white
         }
+        .ignoresSafeArea()
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
     }
   }
 
