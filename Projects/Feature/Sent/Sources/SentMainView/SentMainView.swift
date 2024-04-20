@@ -23,11 +23,14 @@ public struct SentMainView: View {
   private func makeEnvelope() -> some View {
     if store.state.envelopes.isEmpty {
       VStack {
+        Spacer()
         Text(Constants.emptyEnvelopesText)
           .modifier(SSTypoModifier(.text_s))
+          .foregroundStyle(SSColor.gray50)
         SSButton(Constants.emptyEnvelopeButtonProperty) {
           store.send(.tappedEmptyEnvelopeButton)
         }
+        Spacer()
       }
     } else {
       ScrollView {
@@ -68,6 +71,7 @@ public struct SentMainView: View {
     static let filterBadgeTopAndBottomSpacing: CGFloat = 16
     static let topButtonsSpacing: CGFloat = 8
     static let emptyEnvelopesText: String = "아직 보낸 봉투가 없습니다."
+    static let addNewEnvelopeButtonText: String = "보낸 봉투 추가하기"
 
     static let latestButtonProperty: SSButtonProperty = .init(
       size: .sh32,
@@ -92,7 +96,7 @@ public struct SentMainView: View {
       status: .active,
       style: .ghost,
       color: .black,
-      buttonText: emptyEnvelopesText
+      buttonText: addNewEnvelopeButtonText
     )
   }
 }

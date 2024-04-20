@@ -14,7 +14,7 @@ public struct SentMain {
   public init() {}
   @ObservableState
   public struct State {
-    var envelopes: IdentifiedArrayOf<Envelope.State> = [.init(envelopeProperty: .init()), .init(envelopeProperty: .init())]
+    var envelopes: IdentifiedArrayOf<Envelope.State> = []
     public init() {}
   }
 
