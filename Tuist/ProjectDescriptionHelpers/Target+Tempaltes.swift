@@ -77,6 +77,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())Tests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: name)]
@@ -90,6 +91,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())UITests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: name)]
@@ -154,6 +156,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureTests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
@@ -168,6 +171,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureUITests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
@@ -227,6 +231,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)FeatureTests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
           scripts: [],
           dependencies: testDependencies + [.target(name: name)]
@@ -241,6 +246,7 @@ public extension [Target] {
           destinations: .iOS,
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)FeatureUITests",
+          deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
           scripts: [],
           dependencies: testDependencies + [.target(name: name)]

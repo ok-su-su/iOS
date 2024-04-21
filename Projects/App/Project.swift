@@ -17,6 +17,11 @@ let project = Project.makeModule(
     testDependencies: [],
     infoPlist: [
       "UILaunchStoryboardName": "LaunchScreen.storyboard",
+      "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu",
+      "CFBundleShortVersionString": "0.0.1",
+      "CFBundleVersion": "202404201",
+      "UIUserInterfaceStyle": "Light",
+      "ITSAppUsesNonExemptEncryption": "No",
     ]
   )
 )
