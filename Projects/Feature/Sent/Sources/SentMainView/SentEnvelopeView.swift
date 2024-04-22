@@ -30,7 +30,7 @@ struct EnvelopeView: View {
       Spacer()
 
       Button {
-        store.send(.tappedDetailButton, animation: .default)
+        store.send(.tappedDetailButton)
       } label: {
         if store.showDetail == false {
           SSImage.envelopeDownArrow
