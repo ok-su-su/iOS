@@ -37,18 +37,14 @@ struct SentRouter {
         state.isOnAppear = isAppear
         return .none
 
+      // MARK: - Routing
+
       case .sentMain(.tappedFirstButton):
-        os_log("watchded First Button Tapped")
         return .none
 
       case .sentMain(.filterButtonTapped):
-        os_log("Watched filterButtonTapped")
         state.path.append(.sentEnvelopeFilter())
         return .none
-      case .sentMain:
-        return .none
-
-      // MARK: - Routing
 
       case let .path(action):
         switch action {
