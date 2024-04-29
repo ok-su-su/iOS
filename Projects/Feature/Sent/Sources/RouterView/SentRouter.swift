@@ -19,7 +19,7 @@ struct SentRouter {
     var path = StackState<Path.State>()
     var isOnAppear = false
     var sentMain = SentMain.State()
-    var headerView = HeaderViewFeature.State(.init(type: .depth2Text("asdf")))
+    var headerView = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
   }
 
@@ -83,7 +83,19 @@ extension SentRouter {
     init() {}
     @ObservableState
     enum State {
-      case sentEnvelopeFilter(SentEnvelopeFilter.State = .init())
+      case sentEnvelopeFilter(SentEnvelopeFilter.State = .init(sentPeople: [
+        .init(name: "김철수"),
+        .init(name: "최지환"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+        .init(name: "이민지"),
+      ]))
       case sentMain(SentMain.State = .init())
     }
 

@@ -9,33 +9,44 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-public struct SentEnvelopeFilterView: View {
+struct SentEnvelopeFilterView: View {
   // MARK: Reducer
 
   @Bindable
-  public var store: StoreOf<SentEnvelopeFilter>
+  var store: StoreOf<SentEnvelopeFilter>
 
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeSendTap() -> some View {
+    VStack(spacing: 0) {
+      Text(Constants.searchTextFieldTitle)
+        .modifier(SSTypoModifier(.title_xs))
+      SSTextField(isDisplay: false, text: $store.textFieldText, property: .account, isHighlight: $store.isHighlight)
+      ForEach(store.sentPeople) { person in
+        SSButton(.init(size: .xsh28, status: .inactive, style: .lined, color: .black, buttonText: person.name)) {}
+      }
+    }
+  }
 
-  public var body: some View {
+  @ViewBuilder
+  func makeContentView() -> some View {
+    VStack {
+      makeSendTap()
+    }
+  }
+
+  var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.header))
-        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
         makeContentView()
-        Button {
-          store.send(.tappedButton)
-        } label: {
-          Text("눌러요")
-        }
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.onAppear(true))
     }
@@ -43,11 +54,13 @@ public struct SentEnvelopeFilterView: View {
 
   // MARK: Init
 
-  public init(store: StoreOf<SentEnvelopeFilter>) {
+  init(store: StoreOf<SentEnvelopeFilter>) {
     self.store = store
   }
 
   private enum Metrics {}
 
-  private enum Constants {}
+  private enum Constants {
+    static let searchTextFieldTitle: String = "보낸 사람"
+  }
 }

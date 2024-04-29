@@ -10,31 +10,36 @@ import Designsystem
 import Foundation
 import OSLog
 
+// MARK: - SentEnvelopeFilter
+
 @Reducer
-public struct SentEnvelopeFilter {
+struct SentEnvelopeFilter {
   @ObservableState
-  public struct State {
+  struct State {
     var isOnAppear = false
+    var textFieldText: String = ""
+    var isHighlight: Bool = true
+    var sentPeople: [SentPerson]
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
-    var headerView = HeaderViewFeature.State(.init(type: .depth2Text("asdf")))
+    init(sentPeople: [SentPerson]) {
+      self.sentPeople = sentPeople
+    }
   }
 
-  public enum Action: Equatable {
+  enum Action: BindableAction, Equatable {
     case onAppear(Bool)
+    case binding(BindingAction<State>)
     case header(HeaderViewFeature.Action)
-    case headerView(HeaderViewFeature.Action)
     case tappedButton
   }
 
   @Dependency(\.dismiss) var dismiss
 
-  public var body: some Reducer<State, Action> {
-    Scope(state: \.header, action: /Action.header) {
+  var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
     }
-    Scope(state: \.headerView, action: /Action.headerView) {
-      HeaderViewFeature()
-    }
+    BindingReducer()
     Reduce { state, action in
       switch action {
       case .tappedButton:
@@ -42,15 +47,21 @@ public struct SentEnvelopeFilter {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
-      case .header(.tappedDismissButton):
-        return .run { _ in
-          await dismiss()
-        }
       default:
         return .none
       }
     }
   }
 
-  public init() {}
+  init() {}
+}
+
+// MARK: - SentPerson
+
+struct SentPerson: Identifiable {
+  let id = UUID()
+  let name: String
+  init(name: String) {
+    self.name = name
+  }
 }

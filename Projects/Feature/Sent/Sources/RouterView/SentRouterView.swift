@@ -25,9 +25,6 @@ struct SentRouterView: View {
           .gray15
           .ignoresSafeArea()
         VStack {
-          NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter()) {
-            Text("눌러용가리")
-          }
           HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
           Spacer()
             .frame(height: 16)
