@@ -34,14 +34,9 @@ public struct SentMainView: View {
       }
     } else {
       ScrollView {
-        LazyVGrid(
-          columns: [GridItem(.flexible(minimum: 128))],
-          spacing: 8
-        ) {
-          ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
-            EnvelopeView(store: store)
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          }
+        ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
+          EnvelopeView(store: store)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
       }
     }
