@@ -53,6 +53,24 @@ struct SentEnvelopeFilterView: View {
   }
 
   @ViewBuilder
+  private func makeSelectedPeople() -> some View {
+    VStack {
+      ForEach(store.selectedSentPerson, id: \.id) { person in
+        SSButton(
+          .init(
+            size: .xsh28,
+            status: .active,
+            style: .filled,
+            color: .orange,
+            buttonText: person.name
+          )) {
+            store.send(.tappedSelectedPerson(person.id))
+          }
+      }
+    }
+  }
+
+  @ViewBuilder
   private func makeSendTap() -> some View {
     VStack(alignment: .leading, spacing: 0) {
       Text(Constants.searchTextFieldTitle)
@@ -73,6 +91,7 @@ struct SentEnvelopeFilterView: View {
       Spacer()
         .frame(height: 48)
       makeProgressView()
+      makeSelectedPeople()
     }
   }
 

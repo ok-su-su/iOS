@@ -23,6 +23,7 @@ struct SentEnvelopeFilter {
     var sentPeople: [SentPerson]
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var ssButtonProperties: [SSButtonPropertyState] = []
+    var selectedSentPerson: [SentPerson] = []
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
     init(sentPeople: [SentPerson]) {
       self.sentPeople = sentPeople
@@ -46,6 +47,7 @@ struct SentEnvelopeFilter {
     case header(HeaderViewFeature.Action)
     case tappedButton
     case tappedPerson(Int)
+    case tappedSelectedPerson(UUID)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -57,7 +59,18 @@ struct SentEnvelopeFilter {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case .tappedPerson:
+      case let .tappedPerson(ind):
+        state.ssButtonProperties[ind].toggleStatus()
+        if let person = state.selectedSentPerson.filter({ $0.id == state.sentPeople[ind].id }).first {
+          return .run { send in
+            await send(.tappedSelectedPerson(person.id))
+          }
+        } else {
+          state.selectedSentPerson.append(state.sentPeople[ind])
+          return .none
+        }
+      case let .tappedSelectedPerson(ind):
+        state.selectedSentPerson = state.selectedSentPerson.filter { $0.id != ind }
         return .none
       case .tappedButton:
         return .none
@@ -75,7 +88,7 @@ struct SentEnvelopeFilter {
 
 // MARK: - SentPerson
 
-struct SentPerson: Identifiable {
+struct SentPerson: Identifiable, Equatable {
   let id = UUID()
   let name: String
   init(name: String) {

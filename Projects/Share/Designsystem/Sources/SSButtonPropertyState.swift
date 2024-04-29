@@ -81,9 +81,8 @@ public final class SSButtonPropertyState: ObservableObject {
     self.status = status
   }
 
-  public func toggleStatus() -> Self {
-    status = status == .active ? .active : .inactive
-    return self
+  public func toggleStatus() {
+    status = status == .active ? .inactive : .active
   }
 }
 
