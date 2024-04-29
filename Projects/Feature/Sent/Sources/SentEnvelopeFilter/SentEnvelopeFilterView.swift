@@ -26,14 +26,18 @@ public struct SentEnvelopeFilterView: View {
         .gray15
         .ignoresSafeArea()
       VStack {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
         makeContentView()
+        Button {
+          store.send(.tappedButton)
+        } label: {
+          Text("눌러요")
+        }
       }
     }
     .onAppear {
       store.send(.onAppear(true))
-    }
-    .onDisappear {
-      store.send(.onAppear(false))
     }
   }
 

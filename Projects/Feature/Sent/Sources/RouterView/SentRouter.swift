@@ -19,7 +19,7 @@ struct SentRouter {
     var path = StackState<Path.State>()
     var isOnAppear = false
     var sentMain = SentMain.State()
-    var headerView = HeaderViewFeature.State(.init(type: .defaultType))
+    var headerView = HeaderViewFeature.State(.init(type: .depth2Text("asdf")))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
   }
 
@@ -31,14 +31,14 @@ struct SentRouter {
     case tabBar(SSTabBarFeature.Action)
   }
 
-  var body: some Reducer<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: \.tabBar, action: /Action.tabBar) {
       SSTabBarFeature()
     }
     Scope(state: \.sentMain, action: \.sentMain) {
       SentMain()
     }
-    Scope(state: \.headerView, action: /Action.headerView) {
+    Scope(state: \.headerView, action: \.headerView) {
       HeaderViewFeature()
     }
     Reduce { state, action in
@@ -53,14 +53,12 @@ struct SentRouter {
         return .none
 
       case .sentMain(.filterButtonTapped):
-        state.path.removeAll()
         state.path.append(.sentEnvelopeFilter())
         return .none
 
       case let .path(action):
         switch action {
         case .element(id: _, action: .sentMain(.filterButtonTapped)):
-
           return .none
         default:
           return .none
@@ -68,6 +66,9 @@ struct SentRouter {
       default:
         return .none
       }
+    }
+    .forEach(\.path, action: \.path) {
+      Path()
     }
   }
 
@@ -91,15 +92,12 @@ extension SentRouter {
       case sentMain(SentMain.Action)
     }
 
-    var body: some Reducer<State, Action> {
-      Scope(state: /State.sentEnvelopeFilter, action: /Action.sentEnvelopeFilter) {
+    var body: some ReducerOf<Self> {
+      Scope(state: \.sentEnvelopeFilter, action: \.sentEnvelopeFilter) {
         SentEnvelopeFilter()
       }
-      Scope(state: /State.sentMain, action: /Action.sentMain) {
+      Scope(state: \.sentMain, action: \.sentMain) {
         SentMain()
-      }
-      Reduce { _, _ in
-        return .none
       }
     }
   }
