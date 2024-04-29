@@ -91,6 +91,10 @@ class SliderHandle: ObservableObject {
   var currentValue: Double {
     return sliderValueStart + currentPercentage.wrappedValue * sliderValueRange
   }
+
+  var currentValueBy1000: Int {
+    return Int(sliderValueStart + currentPercentage.wrappedValue * sliderValueRange) / 1000 * 1000
+  }
 }
 
 // MARK: - CustomSlider

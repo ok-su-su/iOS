@@ -15,6 +15,9 @@ struct SentEnvelopeFilterView: View {
   @Bindable
   var store: StoreOf<SentEnvelopeFilter>
 
+  @ObservedObject
+  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
+
   // MARK: Content
 
   @ViewBuilder
@@ -37,14 +40,16 @@ struct SentEnvelopeFilterView: View {
     VStack(alignment: .leading, spacing: 16) {
       Text(Constants.progressTitleText)
         .modifier(SSTypoModifier(.title_xs))
-      VStack(spacing: 8) {
-        Text("0원 ~ 100,000 원")
+      VStack(alignment: .leading, spacing: 8) {
+        Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
+          .modifier(SSTypoModifier(.title_m))
 
         HStack(spacing: 0) {
-          SliderView(slider: .init(start: 0, end: 100_000))
+          SliderView(slider: sliderProperty)
         }
       }
     }
+    .frame(maxWidth: .infinity)
   }
 
   @ViewBuilder
@@ -65,6 +70,8 @@ struct SentEnvelopeFilterView: View {
   func makeContentView() -> some View {
     VStack {
       makeSendTap()
+      Spacer()
+        .frame(height: 48)
       makeProgressView()
     }
   }

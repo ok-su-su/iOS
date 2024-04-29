@@ -14,6 +14,9 @@ import SwiftUI
 
 struct SliderView: View {
   @ObservedObject var slider: CustomSlider
+  init(slider: CustomSlider) {
+    self.slider = slider
+  }
 
   var body: some View {
     RoundedRectangle(cornerRadius: slider.lineWidth)

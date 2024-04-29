@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 import OSLog
+import SwiftUI
 
 // MARK: - SentEnvelopeFilter
 
@@ -22,6 +23,7 @@ struct SentEnvelopeFilter {
     var sentPeople: [SentPerson]
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var ssButtonProperties: [SSButtonPropertyState] = []
+    var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
     init(sentPeople: [SentPerson]) {
       self.sentPeople = sentPeople
       sentPeople.forEach { sentPerson in
