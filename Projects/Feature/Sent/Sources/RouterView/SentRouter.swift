@@ -16,19 +16,36 @@ struct SentRouter {
   struct State {
     var path = StackState<Path.State>()
     var isOnAppear = false
+    var sentMain = SentMain.State()
   }
 
   enum Action {
     case onAppear(Bool)
+    case sentMain(SentMain.Action)
     case path(StackAction<Path.State, Path.Action>)
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.sentMain, action: \.sentMain) {
+      SentMain()
+    }
+
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
+
+      // MARK: - Routing
+
+      case let .path(action):
+        switch action {
+        case .element(id: _, action: .sentMain(.filterButtonTapped)):
+          state.path.append(.sentMain(.init()))
+          return .none
+        default:
+          return .none
+        }
       default:
         return .none
       }
@@ -45,22 +62,22 @@ extension SentRouter {
   struct Path {
     init() {}
     enum State {
-//      case sentMain(SentMain.State = .init())
-//      case sentEnvelopeFilter(SentEnvelopeFilter.State = .init())
+      case sentMain(SentMain.State = .init())
+      case sentEnvelopeFilter(SentEnvelopeFilter.State = .init())
     }
 
     enum Action {
-//      case sentMain(SentMain.Action)
-//      case sentEnvelopeFilter(SentEnvelopeFilter.Action)
+      case sentMain(SentMain.Action)
+      case sentEnvelopeFilter(SentEnvelopeFilter.Action)
     }
 
     var body: some Reducer<State, Action> {
-//      Scope(state: /State.sentMain, action: /Action.sentMain) {
-//        SentMain()
-//      }
-//      Scope(state: /State.sentEnvelopeFilter, action: /Action.sentEnvelopeFilter) {
-//        SentEnvelopeFilter()
-//      }
+      Scope(state: /State.sentMain, action: /Action.sentMain) {
+        SentMain()
+      }
+      Scope(state: /State.sentEnvelopeFilter, action: /Action.sentEnvelopeFilter) {
+        SentEnvelopeFilter()
+      }
       Reduce { _, _ in
         return .none
       }

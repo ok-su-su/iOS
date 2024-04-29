@@ -18,7 +18,9 @@ struct SentRouterView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+  }
 
   var body: some View {
     ZStack {
