@@ -21,8 +21,20 @@ struct SentEnvelopeFilter {
     var isHighlight: Bool = true
     var sentPeople: [SentPerson]
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
+    var ssButtonProperties: [SSButtonPropertyState] = []
     init(sentPeople: [SentPerson]) {
       self.sentPeople = sentPeople
+      sentPeople.forEach { sentPerson in
+        ssButtonProperties.append(
+          .init(
+            size: .xsh28,
+            status: .inactive,
+            style: .lined,
+            color: .black,
+            buttonText: sentPerson.name
+          )
+        )
+      }
     }
   }
 
@@ -31,6 +43,7 @@ struct SentEnvelopeFilter {
     case binding(BindingAction<State>)
     case header(HeaderViewFeature.Action)
     case tappedButton
+    case tappedPerson(Int)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -42,6 +55,8 @@ struct SentEnvelopeFilter {
     BindingReducer()
     Reduce { state, action in
       switch action {
+      case .tappedPerson:
+        return .none
       case .tappedButton:
         return .none
       case let .onAppear(isAppear):
