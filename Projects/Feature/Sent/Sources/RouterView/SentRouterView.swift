@@ -20,7 +20,26 @@ struct SentRouterView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+      ZStack {
+        SSColor
+          .gray15
+          .ignoresSafeArea()
+        VStack {
+          HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
+          Spacer()
+            .frame(height: 16)
+          SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+        }
+      }
+      .safeAreaInset(edge: .bottom) {
+        SSTabbar(store: store.scope(state: \.tabBar, action: \.tabBar))
+          .background {
+            Color.white
+          }
+          .ignoresSafeArea()
+          .frame(height: 56)
+          .toolbar(.hidden, for: .tabBar)
+      }
     } destination: { store in
       switch store.state {
       case .sentEnvelopeFilter:
@@ -36,20 +55,10 @@ struct SentRouterView: View {
   }
 
   var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack {
-        makeContentView()
+    makeContentView()
+      .onAppear {
+        store.send(.onAppear(true))
       }
-    }
-    .onAppear {
-      store.send(.onAppear(true))
-    }
-    .onDisappear {
-      store.send(.onAppear(false))
-    }
   }
 
   // MARK: Init

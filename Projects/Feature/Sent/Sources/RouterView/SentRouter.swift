@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import Foundation
 import OSLog
 
@@ -18,19 +19,28 @@ struct SentRouter {
     var path = StackState<Path.State>()
     var isOnAppear = false
     var sentMain = SentMain.State()
+    var headerView = HeaderViewFeature.State(.init(type: .defaultType))
+    var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
   }
 
   enum Action {
     case onAppear(Bool)
     case sentMain(SentMain.Action)
     case path(StackAction<Path.State, Path.Action>)
+    case headerView(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.tabBar, action: /Action.tabBar) {
+      SSTabBarFeature()
+    }
     Scope(state: \.sentMain, action: \.sentMain) {
       SentMain()
     }
-
+    Scope(state: \.headerView, action: /Action.headerView) {
+      HeaderViewFeature()
+    }
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
@@ -43,11 +53,15 @@ struct SentRouter {
         return .none
 
       case .sentMain(.filterButtonTapped):
+        state.path.removeAll()
         state.path.append(.sentEnvelopeFilter())
         return .none
 
       case let .path(action):
         switch action {
+        case .element(id: _, action: .sentMain(.filterButtonTapped)):
+
+          return .none
         default:
           return .none
         }

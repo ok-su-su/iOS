@@ -8,9 +8,49 @@ import SSDataBase
 import SSRoot
 import SwiftUI
 
+// MARK: - ContentViewObject
+
+final class ContentViewObject: ObservableObject {
+  @Published var type: SSTabType = .envelope
+
+  func setup() {
+    NotificationCenter.default.addObserver(self, selector: #selector(enveloped), name: SSNotificationName.tappedEnveloped, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(inventory), name: SSNotificationName.tappedInventory, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(statics), name: SSNotificationName.tappedStatistics, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(vote), name: SSNotificationName.tappedVote, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(myPage), name: SSNotificationName.tappedMyPage, object: nil)
+  }
+
+  @objc func enveloped() {
+    type = .envelope
+  }
+
+  @objc func inventory() {
+    type = .inventory
+  }
+
+  @objc func statics() {
+    type = .statistics
+  }
+
+  @objc func vote() {
+    type = .vote
+  }
+
+  @objc func myPage() {
+    type = .mypage
+  }
+
+  init() {
+    setup()
+  }
+}
+
 // MARK: - ContentView
 
 public struct ContentView: View {
+  @ObservedObject var ContentViewObject: ContentViewObject
+
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
     .inventory: AnyView(InventoryRootView()),
@@ -19,38 +59,21 @@ public struct ContentView: View {
     .statistics: AnyView(StatisticsRootView()),
   ]
 
-  @Bindable
-  var store: StoreOf<ContentViewFeature>
-
   public var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
       VStack(spacing: 0) {
-        HeaderView(store: store.scope(state: \.headerView, action: \.headerView))
-        Spacer()
-          .frame(height: 16)
         contentView()
       }
-      .onAppear {
-        store.send(.onAppear)
-      }
-    }
-    .safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabBarView, action: \.tabBarView))
-        .background {
-          Color.white
-        }
-        .ignoresSafeArea()
-        .frame(height: 56)
-        .toolbar(.hidden, for: .tabBar)
+      .onAppear {}
     }
   }
 
   @ViewBuilder
   func contentView() -> some View {
-    sectionViews[store.sectionType]!
+    sectionViews[ContentViewObject.type]!
   }
 }
 
