@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 struct SentMain {
@@ -32,6 +33,13 @@ struct SentMain {
   var body: some Reducer<State, Action> {
     Reduce { _, action in
       switch action {
+      case .tappedFirstButton:
+        os_log("Tapped First Button")
+        return .none
+
+      case .filterButtonTapped:
+        os_log("filterButtonTapped")
+        return .none
       default:
         return .none
       }

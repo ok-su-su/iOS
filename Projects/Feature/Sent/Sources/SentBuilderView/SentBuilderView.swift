@@ -11,8 +11,8 @@ import SwiftUI
 public struct SentBuilderView: View {
   public init() {}
   public var body: some View {
-    SentMainView(store: .init(initialState: SentMain.State()) {
-      SentMain()
-    })
+    SentRouterView(store: .init(initialState: SentRouter.State(), reducer: {
+      SentRouter()
+    }))
   }
 }

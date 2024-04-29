@@ -19,7 +19,20 @@ struct SentRouterView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+      SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+    } destination: { store in
+      switch store.state {
+      case .sentEnvelopeFilter:
+        if let store = store.scope(state: \.sentEnvelopeFilter, action: \.sentEnvelopeFilter) {
+          SentEnvelopeFilterView(store: store)
+        }
+      case .sentMain:
+        if let store = store.scope(state: \.sentMain, action: \.sentMain) {
+          SentMainView(store: store)
+        }
+      }
+    }
   }
 
   var body: some View {

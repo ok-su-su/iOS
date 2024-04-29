@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 // MARK: - SentRouter
 
@@ -36,13 +37,21 @@ struct SentRouter {
         state.isOnAppear = isAppear
         return .none
 
+      case .sentMain(.tappedFirstButton):
+        os_log("watchded First Button Tapped")
+        return .none
+
+      case .sentMain(.filterButtonTapped):
+        os_log("Watched filterButtonTapped")
+        state.path.append(.sentEnvelopeFilter())
+        return .none
+      case .sentMain:
+        return .none
+
       // MARK: - Routing
 
       case let .path(action):
         switch action {
-        case .element(id: _, action: .sentMain(.filterButtonTapped)):
-          state.path.append(.sentMain(.init()))
-          return .none
         default:
           return .none
         }
@@ -61,22 +70,23 @@ extension SentRouter {
   @Reducer
   struct Path {
     init() {}
+    @ObservableState
     enum State {
-      case sentMain(SentMain.State = .init())
       case sentEnvelopeFilter(SentEnvelopeFilter.State = .init())
+      case sentMain(SentMain.State = .init())
     }
 
     enum Action {
-      case sentMain(SentMain.Action)
       case sentEnvelopeFilter(SentEnvelopeFilter.Action)
+      case sentMain(SentMain.Action)
     }
 
     var body: some Reducer<State, Action> {
-      Scope(state: /State.sentMain, action: /Action.sentMain) {
-        SentMain()
-      }
       Scope(state: /State.sentEnvelopeFilter, action: /Action.sentEnvelopeFilter) {
         SentEnvelopeFilter()
+      }
+      Scope(state: /State.sentMain, action: /Action.sentMain) {
+        SentMain()
       }
       Reduce { _, _ in
         return .none
