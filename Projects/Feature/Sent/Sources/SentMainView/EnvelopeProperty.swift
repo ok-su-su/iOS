@@ -10,11 +10,11 @@ import Foundation
 
 // MARK: - EnvelopeProperty
 
-public struct EnvelopeProperty: Equatable, Hashable, Identifiable {
-  public var id: UUID = .init()
-  public init() {}
+struct EnvelopeProperty: Equatable, Hashable, Identifiable {
+  var id: UUID = .init()
+  init() {}
 
-  public var envelopeContents: [EnvelopeContent] = [
+  var envelopeContents: [EnvelopeContent] = [
     .init(),
     .init(),
     .init(),
@@ -23,8 +23,8 @@ public struct EnvelopeProperty: Equatable, Hashable, Identifiable {
 
 // MARK: - EnvelopeContent
 
-public struct EnvelopeContent: Equatable, Hashable, Identifiable {
-  public let id: UUID = .init()
+struct EnvelopeContent: Equatable, Hashable, Identifiable {
+  let id: UUID = .init()
 
   var isHighlight: Bool {
     return id.hashValue % 2 == 0

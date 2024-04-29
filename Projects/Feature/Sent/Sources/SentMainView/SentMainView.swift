@@ -12,10 +12,10 @@ import SwiftUI
 
 // MARK: - SentMainView
 
-public struct SentMainView: View {
+struct SentMainView: View {
   @Bindable var store: StoreOf<SentMain>
 
-  public init(store: StoreOf<SentMain>) {
+  init(store: StoreOf<SentMain>) {
     self.store = store
   }
 
@@ -42,7 +42,7 @@ public struct SentMainView: View {
     }
   }
 
-  public var body: some View {
+  var body: some View {
     VStack {
       HStack(spacing: Constants.topButtonsSpacing) {
         SSButton(Constants.latestButtonProperty) {

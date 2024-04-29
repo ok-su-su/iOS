@@ -10,26 +10,26 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-public struct SentMain {
-  public init() {}
+struct SentMain {
+  init() {}
   @ObservableState
-  public struct State {
+  struct State {
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
     ]
-    public init() {}
+    init() {}
   }
 
-  public enum Action: Equatable {
+  enum Action: Equatable {
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
     case envelopes(IdentifiedActionOf<Envelope>)
   }
 
-  public var body: some Reducer<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { _, action in
       switch action {
       default:
