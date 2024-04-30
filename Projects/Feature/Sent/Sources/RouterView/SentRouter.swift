@@ -34,7 +34,16 @@ struct SentRouter {
     Reduce { state, action in
       switch action {
       case .sentMain(.filterButtonTapped):
-        state.path.append(.sentEnvelopeFilter(SentEnvelopeFilter.State(sentPeople: [])))
+        state.path.append(.sentEnvelopeFilter(SentEnvelopeFilter.State(sentPeople: [
+          .init(name: "제제"),
+          .init(name: "다함"),
+          .init(name: "스위치"),
+          .init(name: "누구"),
+          .init(name: "정다한"),
+          .init(name: "스위치"),
+          .init(name: "바보"),
+          .init(name: "보바"),
+        ])))
         return .none
       case let .path(action):
         switch action {

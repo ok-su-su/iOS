@@ -80,19 +80,18 @@ struct SentPeopleAdaptor {
   var sentPeople: [SentPerson]
 
   var selectedPerson: [SentPerson] = []
-  var ssButtonProperties: [SSButtonPropertyState] = []
+  ///  var ssButtonProperties: [SSButtonPropertyState] = []
+  var ssButtonProperties: [UUID: SSButtonPropertyState] = [:]
 
   init(sentPeople: [SentPerson]) {
     self.sentPeople = sentPeople
     sentPeople.forEach { sentPerson in
-      ssButtonProperties.append(
-        .init(
-          size: .xsh28,
-          status: .inactive,
-          style: .lined,
-          color: .black,
-          buttonText: sentPerson.name
-        )
+      ssButtonProperties[sentPerson.id] = .init(
+        size: .xsh28,
+        status: .inactive,
+        style: .lined,
+        color: .black,
+        buttonText: sentPerson.name
       )
     }
   }
@@ -102,9 +101,9 @@ struct SentPeopleAdaptor {
       let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
       let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
       selectedPerson.remove(at: ind)
-      ssButtonProperties[propertyIndex].toggleStatus()
+      ssButtonProperties[sentPeople[propertyIndex].id]?.toggleStatus()
     } else if let ind = sentPeople.firstIndex(where: { $0.id == selectedId }) {
-      ssButtonProperties[ind].toggleStatus()
+      ssButtonProperties[sentPeople[ind].id]?.toggleStatus()
       selectedPerson.append(sentPeople[ind])
     }
   }

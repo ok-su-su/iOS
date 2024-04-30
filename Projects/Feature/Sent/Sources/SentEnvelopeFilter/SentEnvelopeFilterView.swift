@@ -26,12 +26,31 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makePersonButton() -> some View {
-    ForEach(0 ..< store.sentPeopleAdaptor.sentPeople.count, id: \.self) { index in
-      if index % 5 == 0 {
-        GridRow {
-          ForEach(index ..< min(index + 5, store.sentPeopleAdaptor.sentPeople.count), id: \.self) { innerIndex in
-            SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[innerIndex]) {
-              store.send(.tappedPerson(store.sentPeopleAdaptor.sentPeople[innerIndex].id))
+    let filteredPeople = store.filterByTextField
+    if filteredPeople == [] && store.textFieldText == "" {
+      let sentPeople = store.sentPeopleAdaptor.sentPeople
+      ForEach(0 ..< sentPeople.count, id: \.self) { index in
+        if index % 5 == 0 {
+          GridRow {
+            ForEach(index ..< min(index + 5, sentPeople.count), id: \.self) { innerIndex in
+              let current = sentPeople[innerIndex]
+              SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
+                store.send(.tappedPerson(current.id))
+              }
+            }
+          }
+        }
+      }
+    } else {
+      ForEach(0 ..< filteredPeople.count, id: \.self) { index in
+        if index % 5 == 0 && index < filteredPeople.count {
+          GridRow {
+            ForEach(index ..< min(index + 5, filteredPeople.count), id: \.self) { innerIndex in
+              if innerIndex < filteredPeople.count {
+                SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[filteredPeople[innerIndex].id, default: Constants.butonProperty]) {
+                  store.send(.tappedPerson(store.filterByTextField[innerIndex].id))
+                }
+              }
             }
           }
         }
@@ -185,5 +204,6 @@ struct SentEnvelopeFilterView: View {
   private enum Constants {
     static let searchTextFieldTitle: String = "보낸 사람"
     static let progressTitleText: String = "전체 금액"
+    static let butonProperty: SSButtonPropertyState = .init(size: .sh48, status: .active, style: .filled, color: .orange, buttonText: "   ")
   }
 }
