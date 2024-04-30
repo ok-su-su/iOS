@@ -41,15 +41,9 @@ struct SentRouterView: View {
           .toolbar(.hidden, for: .tabBar)
       }
     } destination: { store in
-      switch store.state {
-      case .sentEnvelopeFilter:
-        if let store = store.scope(state: \.sentEnvelopeFilter, action: \.sentEnvelopeFilter) {
-          SentEnvelopeFilterView(store: store)
-        }
-      case .sentMain:
-        if let store = store.scope(state: \.sentMain, action: \.sentMain) {
-          SentMainView(store: store)
-        }
+      switch store.case {
+      case let .sentEnvelopeFilter(store):
+        SentEnvelopeFilterView(store: store)
       }
     }
   }

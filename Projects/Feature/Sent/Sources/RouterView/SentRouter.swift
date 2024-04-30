@@ -43,23 +43,11 @@ struct SentRouter {
     }
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear):
-        state.isOnAppear = isAppear
-        return .none
-
-      // MARK: - Routing
-
-      case .sentMain(.tappedFirstButton):
-        return .none
-
       case .sentMain(.filterButtonTapped):
-        state.path.append(.sentEnvelopeFilter())
+        state.path.append(.sentEnvelopeFilter(SentEnvelopeFilter.State(sentPeople: [])))
         return .none
-
       case let .path(action):
         switch action {
-        case .element(id: _, action: .sentMain(.filterButtonTapped)):
-          return .none
         default:
           return .none
         }
@@ -67,9 +55,7 @@ struct SentRouter {
         return .none
       }
     }
-    .forEach(\.path, action: \.path) {
-      Path()
-    }
+    .forEach(\.path, action: \.path)
   }
 
   init() {}
@@ -79,38 +65,7 @@ struct SentRouter {
 
 extension SentRouter {
   @Reducer
-  struct Path {
-    init() {}
-    @ObservableState
-    enum State {
-      case sentEnvelopeFilter(SentEnvelopeFilter.State = .init(sentPeople: [
-        .init(name: "김철수"),
-        .init(name: "최지환"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-        .init(name: "이민지"),
-      ]))
-      case sentMain(SentMain.State = .init())
-    }
-
-    enum Action {
-      case sentEnvelopeFilter(SentEnvelopeFilter.Action)
-      case sentMain(SentMain.Action)
-    }
-
-    var body: some ReducerOf<Self> {
-      Scope(state: \.sentEnvelopeFilter, action: \.sentEnvelopeFilter) {
-        SentEnvelopeFilter()
-      }
-      Scope(state: \.sentMain, action: \.sentMain) {
-        SentMain()
-      }
-    }
+  enum Path {
+    case sentEnvelopeFilter(SentEnvelopeFilter)
   }
 }
