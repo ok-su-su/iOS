@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import OSLog
 import SwiftUI
 
 struct SentEnvelopeFilterView: View {
@@ -15,19 +16,22 @@ struct SentEnvelopeFilterView: View {
   @Bindable
   var store: StoreOf<SentEnvelopeFilter>
 
+  @State
+  var showSelectedSliderButton: Bool = false
+
   @ObservedObject
-  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
+  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
 
   // MARK: Content
 
   @ViewBuilder
   private func makePersonButton() -> some View {
-    ForEach(0 ..< store.sentPeople.count, id: \.self) { index in
+    ForEach(0 ..< store.sentPeopleAdaptor.sentPeople.count, id: \.self) { index in
       if index % 5 == 0 {
         GridRow {
-          ForEach(index ..< min(index + 5, store.sentPeople.count), id: \.self) { innerIndex in
-            SSButtonWithState(store.ssButtonProperties[innerIndex]) {
-              store.send(.tappedPerson(innerIndex))
+          ForEach(index ..< min(index + 5, store.sentPeopleAdaptor.sentPeople.count), id: \.self) { innerIndex in
+            SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[innerIndex]) {
+              store.send(.tappedPerson(store.sentPeopleAdaptor.sentPeople[innerIndex].id))
             }
           }
         }
@@ -54,19 +58,41 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeSelectedPeople() -> some View {
-    VStack {
-      ForEach(store.selectedSentPerson, id: \.id) { person in
-        SSButton(
-          .init(
-            size: .xsh28,
-            status: .active,
-            style: .filled,
-            color: .orange,
-            buttonText: person.name
-          )) {
-            store.send(.tappedSelectedPerson(person.id))
+    Grid(horizontalSpacing: 8) {
+      ForEach(0 ..< store.sentPeopleAdaptor.selectedPerson.count, id: \.self) { index in
+        if index % 5 == 0 {
+          GridRow {
+            ForEach(index ..< min(index + 5, store.sentPeopleAdaptor.selectedPerson.count), id: \.self) { innerIndex in
+              if innerIndex < store.sentPeopleAdaptor.selectedPerson.count {
+                let person = store.sentPeopleAdaptor.selectedPerson[innerIndex]
+                SSButton(
+                  .init(size: .xsh28, status: .active, style: .filled, color: .orange, rightIcon: .icon(SSImage.commonDeleteWhite), buttonText: person.name)) {
+                    store.send(.tappedSelectedPerson(person.id))
+                  }
+              }
+            }
           }
+        }
       }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  @ViewBuilder
+  private func makeSliderFilterButton() -> some View {
+    if !sliderProperty.isInitialState() {
+      SSButton(
+        .init(
+          size: .xsh28,
+          status: .active,
+          style: .filled,
+          color: .orange,
+          rightIcon: .icon(SSImage.commonDeleteWhite),
+          buttonText: "\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원"
+        )) {
+          sliderProperty.reset()
+        }
+        .frame(alignment: .leading)
     }
   }
 
@@ -91,6 +117,8 @@ struct SentEnvelopeFilterView: View {
       Spacer()
         .frame(height: 48)
       makeProgressView()
+      Spacer()
+      makeSliderFilterButton()
       makeSelectedPeople()
     }
   }

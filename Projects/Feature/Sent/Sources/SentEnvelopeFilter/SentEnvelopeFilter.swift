@@ -20,24 +20,11 @@ struct SentEnvelopeFilter {
     var isOnAppear = false
     var textFieldText: String = ""
     var isHighlight: Bool = true
-    var sentPeople: [SentPerson]
+    var sentPeopleAdaptor: SentPeopleAdaptor
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
-    var ssButtonProperties: [SSButtonPropertyState] = []
-    var selectedSentPerson: [SentPerson] = []
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
     init(sentPeople: [SentPerson]) {
-      self.sentPeople = sentPeople
-      sentPeople.forEach { sentPerson in
-        ssButtonProperties.append(
-          .init(
-            size: .xsh28,
-            status: .inactive,
-            style: .lined,
-            color: .black,
-            buttonText: sentPerson.name
-          )
-        )
-      }
+      sentPeopleAdaptor = .init(sentPeople: sentPeople)
     }
   }
 
@@ -46,7 +33,7 @@ struct SentEnvelopeFilter {
     case binding(BindingAction<State>)
     case header(HeaderViewFeature.Action)
     case tappedButton
-    case tappedPerson(Int)
+    case tappedPerson(UUID)
     case tappedSelectedPerson(UUID)
   }
 
@@ -60,17 +47,10 @@ struct SentEnvelopeFilter {
     Reduce { state, action in
       switch action {
       case let .tappedPerson(ind):
-        state.ssButtonProperties[ind].toggleStatus()
-        if let person = state.selectedSentPerson.filter({ $0.id == state.sentPeople[ind].id }).first {
-          return .run { send in
-            await send(.tappedSelectedPerson(person.id))
-          }
-        } else {
-          state.selectedSentPerson.append(state.sentPeople[ind])
-          return .none
-        }
+        state.sentPeopleAdaptor.select(selectedId: ind)
+        return .none
       case let .tappedSelectedPerson(ind):
-        state.selectedSentPerson = state.selectedSentPerson.filter { $0.id != ind }
+        state.sentPeopleAdaptor.select(selectedId: ind)
         return .none
       case .tappedButton:
         return .none
@@ -84,6 +64,58 @@ struct SentEnvelopeFilter {
   }
 
   init() {}
+}
+
+// MARK: - SentPeopleAdaptor
+
+struct SentPeopleAdaptor {
+  var sentPeople: [SentPerson]
+
+  var selectedPerson: [SentPerson] = []
+  var ssButtonProperties: [SSButtonPropertyState] = []
+
+  init(sentPeople: [SentPerson]) {
+    self.sentPeople = sentPeople
+    sentPeople.forEach { sentPerson in
+      ssButtonProperties.append(
+        .init(
+          size: .xsh28,
+          status: .inactive,
+          style: .lined,
+          color: .black,
+          buttonText: sentPerson.name
+        )
+      )
+    }
+  }
+
+  func isSelected(_ index: Int) -> Bool {
+    return isSelected(sentPeople[index])
+  }
+
+  func isSelected(_ sentPerson: SentPerson) -> Bool {
+    return selectedPerson.contains(sentPerson)
+  }
+
+  mutating func select(sentPerson: SentPerson) {
+    if selectedPerson.contains(sentPerson),
+       let ind = selectedPerson.firstIndex(of: sentPerson) {
+      selectedPerson.remove(at: ind)
+    }
+    selectedPerson.append(sentPerson)
+  }
+
+  mutating func select(selectedId: UUID) {
+    if
+      let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
+      let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
+      selectedPerson.remove(at: ind)
+      ssButtonProperties[propertyIndex].toggleStatus()
+    } else if let ind = sentPeople.firstIndex(where: { $0.id == selectedId }) {
+      ssButtonProperties[ind].toggleStatus()
+      selectedPerson.append(sentPeople[ind])
+    }
+  }
 }
 
 // MARK: - SentPerson

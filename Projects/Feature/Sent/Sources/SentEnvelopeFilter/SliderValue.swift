@@ -157,4 +157,16 @@ class CustomSlider: ObservableObject {
   var valueBetween: String {
     return String(format: "%.2f", highHandle.currentValue - lowHandle.currentValue)
   }
+
+  func isInitialState() -> Bool {
+    return highHandle.currentValueBy1000 == 100_000 && lowHandle.currentValueBy1000 == 0
+  }
+
+  func reset() {
+    highHandle.currentPercentage.wrappedValue = 1
+    highHandle.currentLocation = highHandle.startLocation
+
+    lowHandle.currentPercentage.wrappedValue = 0
+    lowHandle.currentLocation = lowHandle.startLocation
+  }
 }
