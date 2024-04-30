@@ -43,22 +43,41 @@ struct SentMainView: View {
   }
 
   var body: some View {
-    VStack {
-      HStack(spacing: Constants.topButtonsSpacing) {
-        SSButton(Constants.latestButtonProperty) {
-          store.send(.tappedFirstButton)
-        }
-        SSButton(Constants.notSelectedFilterButtonProperty) {
-          store.send(.filterButtonTapped)
+    ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+      VStack {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+        Spacer()
+          .frame(height: 16)
+        VStack {
+          HStack(spacing: Constants.topButtonsSpacing) {
+            SSButton(Constants.latestButtonProperty) {
+              store.send(.tappedFirstButton)
+            }
+            SSButton(Constants.notSelectedFilterButtonProperty) {
+              store.send(.filterButtonTapped)
+            }
+          }
+          .frame(maxWidth: .infinity, alignment: .topLeading)
+          .padding(.bottom, Constants.topButtonsSpacing)
+
+          makeEnvelope()
         }
       }
-      .frame(maxWidth: .infinity, alignment: .topLeading)
-      .padding(.bottom, Constants.topButtonsSpacing)
-
-      makeEnvelope()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+    .safeAreaInset(edge: .bottom) {
+      SSTabbar(store: store.scope(state: \.tabBar, action: \.tabBar))
+        .background {
+          Color.white
+        }
+        .ignoresSafeArea()
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
+    }
   }
 
   private enum Constants {

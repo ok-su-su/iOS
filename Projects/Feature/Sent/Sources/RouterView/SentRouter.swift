@@ -19,27 +19,17 @@ struct SentRouter {
     var path = StackState<Path.State>()
     var isOnAppear = false
     var sentMain = SentMain.State()
-    var headerView = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
-    var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
   }
 
   enum Action {
     case onAppear(Bool)
     case sentMain(SentMain.Action)
     case path(StackAction<Path.State, Path.Action>)
-    case headerView(HeaderViewFeature.Action)
-    case tabBar(SSTabBarFeature.Action)
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.tabBar, action: /Action.tabBar) {
-      SSTabBarFeature()
-    }
     Scope(state: \.sentMain, action: \.sentMain) {
       SentMain()
-    }
-    Scope(state: \.headerView, action: \.headerView) {
-      HeaderViewFeature()
     }
     Reduce { state, action in
       switch action {

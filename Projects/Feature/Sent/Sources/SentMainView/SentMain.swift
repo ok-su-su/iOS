@@ -16,6 +16,8 @@ struct SentMain {
   init() {}
   @ObservableState
   struct State {
+    var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
+    var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
@@ -25,6 +27,8 @@ struct SentMain {
   }
 
   enum Action: Equatable {
+    case header(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
@@ -32,6 +36,12 @@ struct SentMain {
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.header) {
+      HeaderViewFeature()
+    }
+    Scope(state: \.tabBar, action: /Action.tabBar) {
+      SSTabBarFeature()
+    }
     Reduce { _, action in
       switch action {
       case .tappedFirstButton:
