@@ -32,9 +32,9 @@ struct SentEnvelopeFilter {
     case onAppear(Bool)
     case binding(BindingAction<State>)
     case header(HeaderViewFeature.Action)
-    case tappedButton
     case tappedPerson(UUID)
     case tappedSelectedPerson(UUID)
+    case reset
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -52,7 +52,8 @@ struct SentEnvelopeFilter {
       case let .tappedSelectedPerson(ind):
         state.sentPeopleAdaptor.select(selectedId: ind)
         return .none
-      case .tappedButton:
+      case .reset:
+        state.sentPeopleAdaptor.reset()
         return .none
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
@@ -89,22 +90,6 @@ struct SentPeopleAdaptor {
     }
   }
 
-  func isSelected(_ index: Int) -> Bool {
-    return isSelected(sentPeople[index])
-  }
-
-  func isSelected(_ sentPerson: SentPerson) -> Bool {
-    return selectedPerson.contains(sentPerson)
-  }
-
-  mutating func select(sentPerson: SentPerson) {
-    if selectedPerson.contains(sentPerson),
-       let ind = selectedPerson.firstIndex(of: sentPerson) {
-      selectedPerson.remove(at: ind)
-    }
-    selectedPerson.append(sentPerson)
-  }
-
   mutating func select(selectedId: UUID) {
     if
       let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
@@ -114,6 +99,12 @@ struct SentPeopleAdaptor {
     } else if let ind = sentPeople.firstIndex(where: { $0.id == selectedId }) {
       ssButtonProperties[ind].toggleStatus()
       selectedPerson.append(sentPeople[ind])
+    }
+  }
+
+  mutating func reset() {
+    selectedPerson.forEach { person in
+      select(selectedId: person.id)
     }
   }
 }

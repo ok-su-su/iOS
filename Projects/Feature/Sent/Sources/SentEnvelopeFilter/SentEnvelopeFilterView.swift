@@ -66,9 +66,17 @@ struct SentEnvelopeFilterView: View {
               if innerIndex < store.sentPeopleAdaptor.selectedPerson.count {
                 let person = store.sentPeopleAdaptor.selectedPerson[innerIndex]
                 SSButton(
-                  .init(size: .xsh28, status: .active, style: .filled, color: .orange, rightIcon: .icon(SSImage.commonDeleteWhite), buttonText: person.name)) {
-                    store.send(.tappedSelectedPerson(person.id))
-                  }
+                  .init(
+                    size: .xsh28,
+                    status: .active,
+                    style: .filled,
+                    color: .orange,
+                    rightIcon: .icon(SSImage.commonDeleteWhite),
+                    buttonText: person.name
+                  )
+                ) {
+                  store.send(.tappedSelectedPerson(person.id))
+                }
               }
             }
           }
@@ -76,6 +84,28 @@ struct SentEnvelopeFilterView: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  @ViewBuilder
+  private func makeBottom() -> some View {
+    HStack(spacing: 16) {
+      HStack(alignment: .top, spacing: 8) {
+        Button {
+          sliderProperty.reset()
+          store.send(.reset)
+        } label: {
+          SSImage.commonRefresh
+        }
+      }
+      .padding(10)
+      .cornerRadius(100)
+      .overlay(
+        RoundedRectangle(cornerRadius: 100)
+          .inset(by: 0.5)
+          .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
+
+      SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
+    }
   }
 
   @ViewBuilder
@@ -120,6 +150,7 @@ struct SentEnvelopeFilterView: View {
       Spacer()
       makeSliderFilterButton()
       makeSelectedPeople()
+      makeBottom()
     }
   }
 
