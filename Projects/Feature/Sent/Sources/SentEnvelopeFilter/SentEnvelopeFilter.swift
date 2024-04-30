@@ -26,6 +26,12 @@ struct SentEnvelopeFilter {
     init(sentPeople: [SentPerson]) {
       sentPeopleAdaptor = .init(sentPeople: sentPeople)
     }
+    var filterByTextField: [SentPerson] {
+      guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
+        return []
+      }
+      return sentPeopleAdaptor.sentPeople.filter{$0.name.contains(regex)}
+    }
   }
 
   enum Action: BindableAction, Equatable {

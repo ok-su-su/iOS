@@ -106,6 +106,7 @@ struct SentEnvelopeFilterView: View {
 
       SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
     }
+    .padding(.vertical, 8)
   }
 
   @ViewBuilder
