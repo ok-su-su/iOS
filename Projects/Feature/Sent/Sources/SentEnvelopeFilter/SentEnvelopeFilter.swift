@@ -42,6 +42,10 @@ struct SentEnvelopeFilter {
     case tappedPerson(UUID)
     case tappedSelectedPerson(UUID)
     case reset
+    case delegate(Delegate)
+    enum Delegate: Equatable {
+      case tappedApplyButton(SentPeopleAdaptor)
+    }
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -76,7 +80,11 @@ struct SentEnvelopeFilter {
 
 // MARK: - SentPeopleAdaptor
 
-struct SentPeopleAdaptor {
+struct SentPeopleAdaptor: Equatable {
+  static func == (lhs: SentPeopleAdaptor, rhs: SentPeopleAdaptor) -> Bool {
+    lhs.sentPeople == rhs.sentPeople
+  }
+
   var sentPeople: [SentPerson]
 
   var selectedPerson: [SentPerson] = []

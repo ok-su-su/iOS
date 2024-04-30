@@ -47,6 +47,8 @@ struct SentRouter {
         return .none
       case let .path(action):
         switch action {
+        case .element(id: _, action: .sentEnvelopeFilter):
+          return .none
         default:
           return .none
         }
@@ -66,5 +68,6 @@ extension SentRouter {
   @Reducer
   enum Path {
     case sentEnvelopeFilter(SentEnvelopeFilter)
+    case sentMain(SentMain)
   }
 }

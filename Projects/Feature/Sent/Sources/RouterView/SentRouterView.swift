@@ -23,6 +23,8 @@ struct SentRouterView: View {
       SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
     } destination: { store in
       switch store.case {
+      case let .sentMain(store):
+        SentMainView(store: store)
       case let .sentEnvelopeFilter(store):
         SentEnvelopeFilterView(store: store)
       }
@@ -31,9 +33,7 @@ struct SentRouterView: View {
 
   var body: some View {
     makeContentView()
-      .onAppear {
-//        store.send(.onAppear(true))
-      }
+      .onAppear {}
   }
 
   // MARK: Init

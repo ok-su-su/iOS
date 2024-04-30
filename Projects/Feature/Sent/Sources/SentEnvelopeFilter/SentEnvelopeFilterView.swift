@@ -123,7 +123,12 @@ struct SentEnvelopeFilterView: View {
           .inset(by: 0.5)
           .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
 
-      SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
+      ZStack {
+        NavigationLink(state: SentRouter.Path.State.sentMain(SentMain.State())) {
+          SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
+            .allowsHitTesting(false)
+        }
+      }
     }
     .padding(.vertical, 8)
   }
@@ -142,7 +147,6 @@ struct SentEnvelopeFilterView: View {
         )) {
           sliderProperty.reset()
         }
-        .frame(alignment: .leading)
     }
   }
 
@@ -168,8 +172,10 @@ struct SentEnvelopeFilterView: View {
         .frame(height: 48)
       makeProgressView()
       Spacer()
-      makeSliderFilterButton()
-      makeSelectedPeople()
+      VStack(alignment: .leading, spacing: 8) {
+        makeSliderFilterButton()
+        makeSelectedPeople()
+      }
       makeBottom()
     }
   }

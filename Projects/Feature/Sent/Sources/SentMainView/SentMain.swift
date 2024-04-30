@@ -16,6 +16,7 @@ struct SentMain {
   init() {}
   @ObservableState
   struct State {
+    var filterProperty: FilterProperty?
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
@@ -23,7 +24,13 @@ struct SentMain {
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
     ]
-    init() {}
+    init() {
+      self.filterProperty = nil
+    }
+    
+    init(filterProperty: FilterProperty) {
+      self.filterProperty = filterProperty
+    }
   }
 
   enum Action: Equatable {
