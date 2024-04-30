@@ -56,8 +56,22 @@ struct SentMainView: View {
             SSButton(Constants.latestButtonProperty) {
               store.send(.tappedFirstButton)
             }
-            SSButton(Constants.notSelectedFilterButtonProperty) {
-              store.send(.filterButtonTapped)
+            ZStack {
+              // TODO: Navigation 변경
+              NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter(.init(sentPeople: [
+                .init(name: "춘자"),
+                .init(name: "복자"),
+                .init(name: "흑자"),
+                .init(name: "헬자"),
+                .init(name: "함자"),
+                .init(name: "귀자"),
+                .init(name: "사귀자"),
+              ]))) {
+                SSButton(Constants.notSelectedFilterButtonProperty) {
+                  store.send(.filterButtonTapped)
+                }
+                .allowsHitTesting(false)
+              }
             }
           }
           .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -67,6 +81,7 @@ struct SentMainView: View {
         }
       }
     }
+    .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     .safeAreaInset(edge: .bottom) {

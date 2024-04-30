@@ -22,6 +22,16 @@ struct SentEnvelopeFilterView: View {
   @ObservedObject
   var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
 
+  var filterProperty: FilterProperty? {
+    if store.state.sentPeopleAdaptor.selectedPerson == [] || sliderProperty.isInitialState() {
+      return nil
+    }
+    return .init(
+      filteredPeople: store.state.sentPeopleAdaptor.selectedPerson,
+      filterEnvelopePrice: .init(maximum: sliderProperty.highHandle.currentValueBy1000, minimum: sliderProperty.lowHandle.currentValueBy1000)
+    )
+  }
+
   // MARK: Content
 
   @ViewBuilder
@@ -124,7 +134,7 @@ struct SentEnvelopeFilterView: View {
           .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
 
       ZStack {
-        NavigationLink(state: SentRouter.Path.State.sentMain(SentMain.State())) {
+        NavigationLink(state: SentRouter.Path.State.sentMain(SentMain.State(filterProperty: filterProperty))) {
           SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
             .allowsHitTesting(false)
         }

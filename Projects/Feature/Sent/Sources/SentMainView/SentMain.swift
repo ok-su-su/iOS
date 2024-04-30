@@ -25,10 +25,10 @@ struct SentMain {
       .init(envelopeProperty: .init()),
     ]
     init() {
-      self.filterProperty = nil
+      filterProperty = nil
     }
-    
-    init(filterProperty: FilterProperty) {
+
+    init(filterProperty: FilterProperty?) {
       self.filterProperty = filterProperty
     }
   }
@@ -52,7 +52,6 @@ struct SentMain {
     Reduce { _, action in
       switch action {
       case .tappedFirstButton:
-        os_log("Tapped First Button")
         return .none
 
       case .filterButtonTapped:

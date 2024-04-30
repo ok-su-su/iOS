@@ -8,21 +8,20 @@
 
 import Foundation
 
-
 struct FilterProperty: Equatable {
   var filteredPeople: [SentPerson]
   var filterEnvelopePrice: FilterEnvelopePrice?
-  
+
   init() {
     filteredPeople = []
     filterEnvelopePrice = nil
   }
-  
+
   init(filteredPeople: [SentPerson], filterEnvelopePrice: FilterEnvelopePrice? = nil) {
     self.filteredPeople = filteredPeople
     self.filterEnvelopePrice = filterEnvelopePrice
   }
-  
+
   struct FilterEnvelopePrice: Equatable {
     var maximum: Int
     var minimum: Int
