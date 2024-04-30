@@ -15,7 +15,9 @@ public struct ContentView: View {
     .envelope: AnyView(SentMainView(store: .init(initialState: SentMain.State()) {
       SentMain()
     })),
-    .inventory: AnyView(InventoryRootView()),
+    .inventory: AnyView(InventoryView(inventoryStore: .init(initialState: InventoryViewFeature.State(inventorys: [])) {
+        InventoryViewFeature()
+    })),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(MyPageRootView()),
     .statistics: AnyView(StatisticsRootView()),
