@@ -18,6 +18,7 @@ struct SentMain {
   struct State {
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
+    var floatingButton: FloatingButton.State = .init()
     var isDialPresented = false
     var filterProperty: FilterProperty?
     var filterDialProperty: FilterDialProperty
@@ -40,6 +41,7 @@ struct SentMain {
   enum Action: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
+    case floatingButton(FloatingButton.Action)
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
@@ -57,6 +59,9 @@ struct SentMain {
     }
     Scope(state: \.filterDial, action: \.filterDial) {
       FilterDial()
+    }
+    Scope(state: \.floatingButton, action: \.floatingButton) {
+      FloatingButton()
     }
     .onChange(of: \.filterDial.filterDialProperty) { _, newValue in
       Reduce { state, _ in
@@ -87,6 +92,8 @@ struct SentMain {
       case .filterDial:
         return .none
       case .tappedEmptyEnvelopeButton:
+        return .none
+      case .floatingButton:
         return .none
       }
     }

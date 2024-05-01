@@ -48,14 +48,17 @@ struct SentMainView: View {
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray15
         .ignoresSafeArea()
+
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.header))
+
         Spacer()
           .frame(height: 16)
+
         VStack {
           HStack(spacing: Constants.topButtonsSpacing) {
             SSButton(.init(
@@ -91,6 +94,8 @@ struct SentMainView: View {
 
           makeEnvelope()
         }
+
+        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.floatingButton))
       }
     }
     .navigationBarBackButtonHidden()

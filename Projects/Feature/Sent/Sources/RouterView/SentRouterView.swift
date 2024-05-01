@@ -29,6 +29,8 @@ struct SentRouterView: View {
         SentEnvelopeFilterView(store: store)
       case let .searchEnvelope(store):
         SearchEnvelopeView(store: store)
+      case let .envelopeDetail(store):
+        EnvelopeDetailView(store: store)
       }
     }
     .onAppear {
