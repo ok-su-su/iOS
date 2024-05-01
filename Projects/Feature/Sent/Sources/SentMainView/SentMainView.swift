@@ -12,10 +12,10 @@ import SwiftUI
 
 // MARK: - SentMainView
 
-public struct SentMainView: View {
+struct SentMainView: View {
   @Bindable var store: StoreOf<SentMain>
 
-  public init(store: StoreOf<SentMain>) {
+  init(store: StoreOf<SentMain>) {
     self.store = store
   }
 
@@ -34,36 +34,82 @@ public struct SentMainView: View {
       }
     } else {
       ScrollView {
-        LazyVGrid(
-          columns: [GridItem(.flexible(minimum: 128))],
-          spacing: 8
-        ) {
-          ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
-            EnvelopeView(store: store)
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          }
+        ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
+          EnvelopeView(store: store)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
       }
     }
   }
 
-  public var body: some View {
-    VStack {
-      HStack(spacing: Constants.topButtonsSpacing) {
-        SSButton(Constants.latestButtonProperty) {
-          store.send(.tappedFirstButton)
-        }
-        SSButton(Constants.notSelectedFilterButtonProperty) {
-          store.send(.filterButtonTapped)
+  @ViewBuilder
+  func showFilterDialView() -> some View {
+    FilterDialView(store: store.scope(state: \.filterDial, action: \.filterDial))
+  }
+
+  var body: some View {
+    ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+      VStack {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+        Spacer()
+          .frame(height: 16)
+        VStack {
+          HStack(spacing: Constants.topButtonsSpacing) {
+            SSButton(.init(
+              size: .sh32,
+              status: .active,
+              style: .ghost,
+              color: .black,
+              leftIcon: .icon(SSImage.commonFilter),
+              buttonText: store.filterDialProperty.currentType.name
+            )) {
+              store.send(.setFilterDialSheet(true))
+            }
+            ZStack {
+              // TODO: Navigation 변경
+              NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter(.init(sentPeople: [
+                .init(name: "춘자"),
+                .init(name: "복자"),
+                .init(name: "흑자"),
+                .init(name: "헬자"),
+                .init(name: "함자"),
+                .init(name: "귀자"),
+                .init(name: "사귀자"),
+              ]))) {
+                SSButton(Constants.notSelectedFilterButtonProperty) {
+                  store.send(.filterButtonTapped)
+                }
+                .allowsHitTesting(false)
+              }
+            }
+          }
+          .frame(maxWidth: .infinity, alignment: .topLeading)
+          .padding(.bottom, Constants.topButtonsSpacing)
+
+          makeEnvelope()
         }
       }
-      .frame(maxWidth: .infinity, alignment: .topLeading)
-      .padding(.bottom, Constants.topButtonsSpacing)
-
-      makeEnvelope()
     }
+    .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+    .safeAreaInset(edge: .bottom) {
+      SSTabbar(store: store.scope(state: \.tabBar, action: \.tabBar))
+        .background {
+          Color.white
+        }
+        .ignoresSafeArea()
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
+    }
+    .sheet(isPresented: $store.isDialPresented.sending(\.setFilterDialSheet)) {
+      showFilterDialView()
+        .presentationDetents([.height(240), .medium, .large])
+        .presentationDragIndicator(.automatic)
+    }
   }
 
   private enum Constants {
