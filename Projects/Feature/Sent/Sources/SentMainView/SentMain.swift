@@ -66,20 +66,27 @@ struct SentMain {
     }
     Reduce { state, action in
       switch action {
+      case .header(.tappedSearchButton):
+        return .none
+      case .header:
+        return .none
       case .setFilterDialSheet(true):
         state.isDialPresented = true
         return .none
-
       case .setFilterDialSheet(false):
         state.isDialPresented = false
         return .none
-
       case .tappedFirstButton:
         return .none
-
       case .filterButtonTapped:
         return .none
-      default:
+      case .tabBar:
+        return .none
+      case .envelopes:
+        return .none
+      case .filterDial:
+        return .none
+      case .tappedEmptyEnvelopeButton:
         return .none
       }
     }

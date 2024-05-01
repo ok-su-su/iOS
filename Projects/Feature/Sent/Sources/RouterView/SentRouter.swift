@@ -31,16 +31,24 @@ struct SentRouter {
     Scope(state: \.sentMain, action: \.sentMain) {
       SentMain()
     }
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case let .path(action):
         switch action {
         case .element(id: _, action: .sentEnvelopeFilter):
           return .none
+        case .element(id: _, action: .sentMain(.header(.tappedSearchButton))):
+          state.path.append(.searchEnvelope(SearchEnvelope.State()))
+          return .none
         default:
           return .none
         }
-      default:
+      case .onAppear(true):
+        state.path.append(.sentMain(SentMain.State()))
+        return .none
+      case .onAppear(false):
+        return .none
+      case .sentMain:
         return .none
       }
     }
@@ -57,5 +65,6 @@ extension SentRouter {
   enum Path {
     case sentEnvelopeFilter(SentEnvelopeFilter)
     case sentMain(SentMain)
+    case searchEnvelope(SearchEnvelope)
   }
 }

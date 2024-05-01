@@ -18,13 +18,15 @@ struct SentEnvelopeFilter {
   @ObservableState
   struct State {
     var isOnAppear = false
-    var textFieldText: String = ""
+    @Shared var textFieldText: String
     var sentPeopleAdaptor: SentPeopleAdaptor
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
-    var customTextField = CustomTextField.State()
+    var customTextField: CustomTextField.State
     init(sentPeople: [SentPerson]) {
       sentPeopleAdaptor = .init(sentPeople: sentPeople)
+      _textFieldText = Shared("")
+      customTextField = .init(text: _textFieldText)
     }
 
     var filterByTextField: [SentPerson] {
@@ -58,12 +60,6 @@ struct SentEnvelopeFilter {
 
     Scope(state: \.customTextField, action: \.customTextField) {
       CustomTextField()
-    }
-    .onChange(of: \.customTextField.text) { _, newValue in
-      Reduce { state, _ in
-        state.textFieldText = newValue
-        return .none
-      }
     }
 
     BindingReducer()
