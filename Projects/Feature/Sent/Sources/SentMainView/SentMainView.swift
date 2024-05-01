@@ -94,9 +94,8 @@ struct SentMainView: View {
 
           makeEnvelope()
         }
-
-        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.floatingButton))
       }
+      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.floatingButton))
     }
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
