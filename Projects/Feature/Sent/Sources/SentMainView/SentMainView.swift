@@ -108,7 +108,7 @@ struct SentMainView: View {
     .sheet(isPresented: $store.isDialPresented.sending(\.setFilterDialSheet)) {
       showFilterDialView()
         .presentationDetents([.height(240), .medium, .large])
-        .presentationDragIndicator(.automatic) 
+        .presentationDragIndicator(.automatic)
     }
   }
 
