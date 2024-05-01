@@ -19,7 +19,6 @@ struct SentEnvelopeFilter {
   struct State {
     var isOnAppear = false
     var textFieldText: String = ""
-    var isHighlight: Bool = true
     var sentPeopleAdaptor: SentPeopleAdaptor
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
@@ -71,6 +70,10 @@ struct SentEnvelopeFilter {
 
     Reduce { state, action in
       switch action {
+      case .header(.tappedDismissButton):
+        return .run { send in
+          await send(.reset)
+        }
       case let .tappedPerson(ind):
         state.sentPeopleAdaptor.select(selectedId: ind)
         return .none
