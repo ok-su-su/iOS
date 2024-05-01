@@ -99,9 +99,7 @@ struct SentPeopleAdaptor: Equatable {
   }
 
   var sentPeople: [SentPerson]
-
   var selectedPerson: [SentPerson] = []
-  ///  var ssButtonProperties: [SSButtonPropertyState] = []
   var ssButtonProperties: [UUID: SSButtonPropertyState] = [:]
 
   init(sentPeople: [SentPerson]) {

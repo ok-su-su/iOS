@@ -19,7 +19,7 @@ struct FilterDialView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    ForEach(0 ..< store.filterDialProperty.types.count) { ind in
+    ForEach(0 ..< store.filterDialProperty.types.count, id: \.self) { ind in
       let curSelected = store.filterDialProperty.currentType
       let cur = store.filterDialProperty.types[ind]
       SSButton(

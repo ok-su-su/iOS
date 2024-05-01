@@ -17,7 +17,7 @@ struct SearchEnvelope {
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2Default))
     var customTextField: CustomTextField.State
     @Shared var textFieldText: String
-    var latestSearch: [String] = ["김그남", "김그자", "김사랑"]
+    var searchProperty: SearchViewAdaptor = .init()
 
     init() {
       _textFieldText = .init("")
@@ -25,11 +25,11 @@ struct SearchEnvelope {
     }
 
     var latestSearchCount: Int {
-      return latestSearch.count
+      return searchProperty.latestSearch.count
     }
 
     var isEmptySearchHistory: Bool {
-      return latestSearch.isEmpty
+      return searchProperty.latestSearch.isEmpty
     }
   }
 
@@ -52,10 +52,10 @@ struct SearchEnvelope {
     Reduce { state, action in
       switch action {
       case let .tappedLatestSearchNameDelete(name):
-        var latestSearch = state.latestSearch
+        var latestSearch = state.searchProperty.latestSearch
         if let ind = latestSearch.firstIndex(of: name) {
           latestSearch.remove(at: ind)
-          state.latestSearch = latestSearch
+          state.searchProperty.latestSearch = latestSearch
         }
         return .none
       case let .tappedLatestSearchName(name):
@@ -70,5 +70,22 @@ struct SearchEnvelope {
         return .none
       }
     }
+  }
+}
+
+
+struct SearchViewAdaptor {
+  init () {}
+  init (sentPeople: [SentPerson]) {
+    self.sentPeople = sentPeople
+  }
+  var sentPeople: [SentPerson] = [.init(name: "김그남"), .init(name:"김그자"), .init(name: "김사랑")]
+  var latestSearch: [String] = ["김그남", "김그자", "김사랑"]
+  
+  func filterByTextField(_ textFieldText: String) -> [SentPerson] {
+    guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
+      return []
+    }
+    return sentPeople.filter { $0.name.contains(regex) }
   }
 }

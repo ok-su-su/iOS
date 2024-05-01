@@ -48,19 +48,20 @@ struct SearchEnvelopeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       ForEach(0 ..< max(store.latestSearchCount, 5), id: \.self) { ind in
-        if store.latestSearch.indices.contains(ind) {
+        let latestSearch = store.searchProperty.latestSearch
+        if latestSearch.indices.contains(ind) {
           HStack(spacing: 0) {
-            Text(store.latestSearch[ind])
+            Text(latestSearch[ind])
               .modifier(SSTypoModifier(.title_s))
               .foregroundStyle(SSColor.gray100)
               .frame(maxWidth: .infinity, alignment: .leading)
               .onTapGesture {
-                store.send(.tappedLatestSearchName(store.latestSearch[ind]))
+                store.send(.tappedLatestSearchName(latestSearch[ind]))
               }
             SSImage
               .commonDeleteGray
               .onTapGesture {
-                store.send(.tappedLatestSearchNameDelete(store.latestSearch[ind]))
+                store.send(.tappedLatestSearchNameDelete(store.searchProperty.latestSearch[ind]))
               }
           }
         }
