@@ -1,5 +1,5 @@
 //
-//  SSButtonProperty.swift
+//  SSButtonPropertyState.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/12/24.
@@ -8,16 +8,16 @@
 
 import SwiftUI
 
-// MARK: - SSButtonProperty
+// MARK: - SSButtonPropertyState
 
-public struct SSButtonProperty {
+public final class SSButtonPropertyState: ObservableObject {
   let size: Size
-  let status: Status
+  @Published var status: Status
   let style: Style
   let color: ButtonColor
   let leftIcon: LeftIcon
   let rightIcon: RightIcon
-  var buttonText: String
+  let buttonText: String
   let frame: SSButtonFrame
 
   public struct SSButtonFrame {
@@ -77,16 +77,16 @@ public struct SSButtonProperty {
     self.frame = frame
   }
 
-  public func toggleProperty() -> Self {
-    return .init(size: size, status: status == .active ? .inactive : .active, style: style, color: color, leftIcon: leftIcon, rightIcon: rightIcon, buttonText: buttonText, frame: frame)
+  public func setStatus(_ status: Status) {
+    self.status = status
   }
 
-  public mutating func update(text: String) {
-    buttonText = text
+  public func toggleStatus() {
+    status = status == .active ? .inactive : .active
   }
 }
 
-public extension SSButtonProperty {
+public extension SSButtonPropertyState {
   // size: Button의 사이즈 입니다.
   enum Size {
     case lh62

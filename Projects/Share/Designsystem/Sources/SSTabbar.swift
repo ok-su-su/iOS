@@ -85,6 +85,7 @@ public struct SSTabBarFeature {
   @ObservableState
   public struct State: Equatable {
     var tabbarType: SSTabType
+    var isAppear = true
 
     public init(tabbarType: SSTabType) {
       self.tabbarType = tabbarType
@@ -97,12 +98,23 @@ public struct SSTabBarFeature {
   }
 
   public var body: some Reducer<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
-      case let .switchType(type):
-        state.tabbarType = type
+      case let .tappedSection(type):
+        switch type {
+        case .envelope:
+          NotificationCenter.default.post(name: SSNotificationName.tappedEnveloped, object: nil)
+        case .inventory:
+          NotificationCenter.default.post(name: SSNotificationName.tappedInventory, object: nil)
+        case .statistics:
+          NotificationCenter.default.post(name: SSNotificationName.tappedInventory, object: nil)
+        case .vote:
+          NotificationCenter.default.post(name: SSNotificationName.tappedVote, object: nil)
+        case .mypage:
+          NotificationCenter.default.post(name: SSNotificationName.tappedMyPage, object: nil)
+        }
         return .none
-      case .tappedSection:
+      case .switchType:
         return .none
       }
     }
@@ -120,22 +132,24 @@ public struct SSTabbar: View {
   }
 
   public var body: some View {
-    HStack(alignment: .center) {
-      ForEach(SSTabType.allCases, id: \.self) { tabbarType in
-        Button {
-          store.send(.tappedSection(tabbarType))
-        } label: {
-          let selectionType = store.tabbarType
-          GeometryReader { geometry in
-            VStack(alignment: .center, spacing: 4) {
-              tabbarType
-                .makeImage(isEqualType: selectionType == tabbarType)
-                .frame(width: 24, height: 24, alignment: .center)
+    if store.state.isAppear {
+      HStack(alignment: .center) {
+        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+          Button {
+            store.send(.tappedSection(tabbarType))
+          } label: {
+            let selectionType = store.tabbarType
+            GeometryReader { geometry in
+              VStack(alignment: .center, spacing: 4) {
+                tabbarType
+                  .makeImage(isEqualType: selectionType == tabbarType)
+                  .frame(width: 24, height: 24, alignment: .center)
 
-              SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
-                .bold(true)
-                .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
-            }.frame(width: geometry.size.width, height: geometry.size.height)
+                SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
+                  .bold(true)
+                  .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+              }.frame(width: geometry.size.width, height: geometry.size.height)
+            }
           }
         }
       }

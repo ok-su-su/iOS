@@ -10,28 +10,29 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-public struct Envelope {
+struct Envelope {
   @ObservableState
-  public struct State: Identifiable {
-    public var id = UUID()
-    public var envelopeProperty: EnvelopeProperty
-    public var showDetail: Bool = false
+  struct State: Identifiable {
+    var id = UUID()
+    var envelopeProperty: EnvelopeProperty
+    var showDetail: Bool = false
 
-    public var progressValue: CGFloat {
+    var progressValue: CGFloat {
       return 150
     }
   }
 
-  public enum Action: Equatable {
+  enum Action: Equatable {
     case tappedDetailButton
+    case tappedFullContentOfEnvelopeButton
   }
 
-  public var body: some Reducer<State, Action> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
 
       switch action {
       case .tappedDetailButton:
-        state.showDetail = true
+        state.showDetail.toggle()
         return .none
       default:
         return .none

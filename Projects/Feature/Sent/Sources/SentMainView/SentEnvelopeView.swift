@@ -32,7 +32,12 @@ struct EnvelopeView: View {
       Button {
         store.send(.tappedDetailButton)
       } label: {
-        SSImage.envelopeDownArrow
+        if store.showDetail == false {
+          SSImage.envelopeDownArrow
+        } else {
+          SSImage.envelopeDownArrow
+            .rotationEffect(.degrees(180))
+        }
       }
     }
   }
@@ -82,36 +87,107 @@ struct EnvelopeView: View {
     }
   }
 
-  var body: some View {
-    ZStack {
-      ZStack {
-        SSColor.gray10
-        VStack(spacing: 0) {
-          SSColor.orange5
-            .frame(maxWidth: .infinity, maxHeight: Metrics.topRectangleHeight)
-
-          CustomTriangle()
-            .fill(SSColor.orange5)
-            .frame(maxWidth: .infinity, maxHeight: Metrics.topTriangleHeight)
-          Spacer()
+  @ViewBuilder
+  private func makeDetailContentView(_ isHighlight: Bool) -> some View {
+    if isHighlight {
+      HStack {
+        HStack(spacing: 12) {
+          SSImage.envelopeBackArrow
+          SmallBadge(property: .init(size: .small, badgeString: "돌잔치", badgeColor: .gray90)) // TODO: 수정
+          Text("23.07.18") // TODO: 수정
+            .modifier(SSTypoModifier(.title_xxxs))
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        VStack(spacing: 0) {
-          makeHeaderView()
-
-          Spacer()
-            .frame(height: Metrics.topAndMiddleSpacing)
-
-          makeMiddleView()
-          makeProgressBarView()
-          makeBottomView()
-        }
-        .padding(Metrics.contentSpacing)
+        Spacer()
+        Text("50,000 원")
+          .modifier(SSTypoModifier(.title_xxs))
       }
+    } else {
+      HStack {
+        HStack(spacing: 12) {
+          SSImage.envelopeForwardArrow
+          SmallBadge(property: .init(size: .small, badgeString: "돌잔치", badgeColor: .gray40)) // TODO: 수정
+          Text("23.07.18") // TODO: 수정
+            .modifier(SSTypoModifier(.title_xxxs))
+            .foregroundStyle(SSColor.gray50)
+        }
+        Spacer()
+        Text("50,000 원")
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray50)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeEnvelopeDetailView() -> some View {
+    if store.showDetail {
+      VStack {
+        ForEach(store.envelopeProperty.envelopeContents) { property in
+          makeDetailContentView(property.isHighlight)
+        }
+        Spacer()
+          .frame(height: 16)
+
+        SSButton(
+          .init(
+            size: .xsh44,
+            status: .active,
+            style: .filled,
+            color: .black,
+            buttonText: "전체 보기",
+            frame: .init(maxWidth: .infinity)
+          )) {
+            store.send(.tappedFullContentOfEnvelopeButton)
+          }
+      }
+      .padding(.top, 24)
+      .padding(.horizontal, 16)
+      .padding(.bottom, 16)
+      .background {
+        SSColor.gray10
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+  }
+
+  @ViewBuilder
+  func makeEnvelopeTotalView() -> some View {
+    ZStack {
+      SSColor.gray10
+      VStack(spacing: 0) {
+        SSColor.orange5
+          .frame(maxWidth: .infinity, maxHeight: Metrics.topRectangleHeight)
+
+        CustomTriangle()
+          .fill(SSColor.orange5)
+          .frame(maxWidth: .infinity, maxHeight: Metrics.topTriangleHeight)
+        Spacer()
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+      VStack(spacing: 0) {
+        makeHeaderView()
+
+        Spacer()
+          .frame(height: Metrics.topAndMiddleSpacing)
+
+        makeMiddleView()
+        makeProgressBarView()
+        makeBottomView()
+      }
+      .padding(Metrics.contentSpacing)
     }
     .frame(maxHeight: Metrics.viewMaxHeight)
     .clipShape(RoundedRectangle(cornerRadius: 8))
+  }
+
+  var body: some View {
+    VStack(spacing: 0) {
+      makeEnvelopeTotalView()
+      Spacer()
+        .frame(height: 8)
+      makeEnvelopeDetailView()
+    }
   }
 
   private enum Metrics {
