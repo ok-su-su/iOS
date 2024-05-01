@@ -23,6 +23,7 @@ public struct HeaderViewFeature {
     }
   }
 
+  @Dependency(\.dismiss) var dismiss
   public enum Action {
     case tappedDismissButton
     case tappedNotificationButton
@@ -33,7 +34,9 @@ public struct HeaderViewFeature {
     Reduce { _, action in
       switch action {
       case .tappedDismissButton:
-        return .none
+        return .run { _ in
+          await dismiss()
+        }
       case .tappedNotificationButton:
         return .none
       case .tappedSearchButton:

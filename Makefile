@@ -16,5 +16,4 @@ core:
 
 archive:
 	python Scripts/EditArchiveVersion.py
-	tuist fetch
 	TUIST_ROOT_DIR=${PWD} TUIST_SCHEME=DEBUG tuist generate

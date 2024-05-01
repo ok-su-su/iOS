@@ -7,27 +7,56 @@
 //
 
 import ComposableArchitecture
+import Designsystem
 import Foundation
+import OSLog
 
 @Reducer
-public struct SentMain {
-  public init() {}
+struct SentMain {
+  init() {}
   @ObservableState
-  public struct State {
-    var envelopes: IdentifiedArrayOf<Envelope.State> = []
-    public init() {}
+  struct State {
+    var filterProperty: FilterProperty?
+    var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
+    var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
+    var envelopes: IdentifiedArrayOf<Envelope.State> = [
+      .init(envelopeProperty: .init()),
+      .init(envelopeProperty: .init()),
+      .init(envelopeProperty: .init()),
+    ]
+    init() {
+      filterProperty = nil
+    }
+
+    init(filterProperty: FilterProperty?) {
+      self.filterProperty = filterProperty
+    }
   }
 
-  public enum Action: Equatable {
+  enum Action: Equatable {
+    case header(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
     case envelopes(IdentifiedActionOf<Envelope>)
   }
 
-  public var body: some Reducer<State, Action> {
+  var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.header) {
+      HeaderViewFeature()
+    }
+    Scope(state: \.tabBar, action: /Action.tabBar) {
+      SSTabBarFeature()
+    }
     Reduce { _, action in
       switch action {
+      case .tappedFirstButton:
+        return .none
+
+      case .filterButtonTapped:
+        os_log("filterButtonTapped")
+        return .none
       default:
         return .none
       }

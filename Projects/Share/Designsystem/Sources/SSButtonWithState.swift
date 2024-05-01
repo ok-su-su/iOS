@@ -1,5 +1,5 @@
 //
-//  SSButton.swift
+//  SSButtonWithState.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/12/24.
@@ -8,24 +8,19 @@
 
 import SwiftUI
 
-// MARK: - SSButtonConstans
+// MARK: - SSButtonWithState
 
-enum SSButtonConstans {
-  static let cornerRadius: CGFloat = 4
-}
-
-// MARK: - SSButton
-
-public struct SSButton: View {
+public struct SSButtonWithState: View {
   let onTap: () -> Void
-  let property: SSButtonProperty
-  public init(_ property: SSButtonProperty, onTap: @escaping () -> Void) {
+  @ObservedObject var property: SSButtonPropertyState
+  public init(_ property: SSButtonPropertyState, onTap: @escaping () -> Void) {
     self.property = property
     self.onTap = onTap
   }
 
   public var body: some View {
     Button {
+//      property.status = property.status == .active ? .inactive : .active
       onTap()
     } label: {
       HStack(spacing: 6) {
@@ -65,24 +60,5 @@ public struct SSButton: View {
       .modifier(LinedModifier(lineColor: property.lineColor))
     }
     .disabled(property.isDisable)
-  }
-}
-
-// MARK: - LinedModifier
-
-struct LinedModifier: ViewModifier {
-  var lineColor: Color?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let lineColor {
-      content.overlay {
-        RoundedRectangle(cornerRadius: 4)
-          .inset(by: 0.5)
-          .stroke(lineColor, lineWidth: 1)
-      }
-    } else {
-      content
-    }
   }
 }
