@@ -58,7 +58,14 @@ struct SentMainView: View {
           .frame(height: 16)
         VStack {
           HStack(spacing: Constants.topButtonsSpacing) {
-            SSButton(Constants.latestButtonProperty) {
+            SSButton(.init(
+              size: .sh32,
+              status: .active,
+              style: .ghost,
+              color: .black,
+              leftIcon: .icon(SSImage.commonFilter),
+              buttonText: store.filterDialProperty.currentType.name
+            )) {
               store.send(.setFilterDialSheet(true))
             }
             ZStack {
