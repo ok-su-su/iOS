@@ -18,19 +18,14 @@ struct SentRouter {
   struct State {
     var path = StackState<Path.State>()
     var isOnAppear = false
-    var sentMain = SentMain.State()
   }
 
   enum Action {
     case onAppear(Bool)
-    case sentMain(SentMain.Action)
     case path(StackAction<Path.State, Path.Action>)
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.sentMain, action: \.sentMain) {
-      SentMain()
-    }
     Reduce { state, action in
       switch action {
       case let .path(action):
@@ -47,8 +42,6 @@ struct SentRouter {
         state.path.append(.sentMain(SentMain.State()))
         return .none
       case .onAppear(false):
-        return .none
-      case .sentMain:
         return .none
       }
     }

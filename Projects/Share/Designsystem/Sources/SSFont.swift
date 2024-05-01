@@ -178,17 +178,17 @@ enum SizeTypes {
          .xxl,
          .xxxl,
          .xxxxl:
-      16
+      8
     case .m,
          .s,
          .xs:
-      12
-    case .xxs:
-      10
-    case .xxxs:
-      8
-    case .xxxxs:
       6
+    case .xxs:
+      5
+    case .xxxs:
+      4
+    case .xxxxs:
+      3
     }
   }
 }
