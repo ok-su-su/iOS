@@ -22,6 +22,7 @@ struct FilterDial {
 
   enum Action: Equatable {
     case onAppear(Bool)
+    case tappedDial(FilterDialType)
   }
 
   var body: some Reducer<State, Action> {
@@ -30,7 +31,9 @@ struct FilterDial {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
-      default:
+
+      case let .tappedDial(type):
+        state.filterDialProperty.currentType = type
         return .none
       }
     }
