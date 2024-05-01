@@ -42,6 +42,11 @@ struct SentMainView: View {
     }
   }
 
+  @ViewBuilder
+  func showFilterDialView() -> some View {
+    FilterDialView(store: store.scope(state: \.filterDial, action: \.filterDial))
+  }
+
   var body: some View {
     ZStack {
       SSColor
@@ -54,7 +59,7 @@ struct SentMainView: View {
         VStack {
           HStack(spacing: Constants.topButtonsSpacing) {
             SSButton(Constants.latestButtonProperty) {
-              store.send(.tappedFirstButton)
+              store.send(.setFilterDialSheet(true))
             }
             ZStack {
               // TODO: Navigation 변경
@@ -92,6 +97,11 @@ struct SentMainView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
+    }
+    .sheet(isPresented: $store.isDialPresented.sending(\.setFilterDialSheet)) {
+      showFilterDialView()
+        .presentationDetents([.height(200), .medium, .large])
+        .presentationDragIndicator(.automatic)
     }
   }
 

@@ -13,6 +13,11 @@ struct FilterDial {
   @ObservableState
   struct State {
     var isOnAppear = false
+    var filterDialProperty: FilterDialProperty
+
+    init(filterDialProperty: FilterDialProperty) {
+      self.filterDialProperty = filterDialProperty
+    }
   }
 
   enum Action: Equatable {

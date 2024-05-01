@@ -16,20 +16,24 @@ struct SentMain {
   init() {}
   @ObservableState
   struct State {
-    var filterProperty: FilterProperty?
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
+    var isDialPresented = false
+    var filterProperty: FilterProperty?
+    var filterDialProperty: FilterDialProperty
+    var filterDial: FilterDial.State
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
     ]
-    init() {
-      filterProperty = nil
-    }
 
-    init(filterProperty: FilterProperty?) {
+    init(filterProperty: FilterProperty? = nil) {
       self.filterProperty = filterProperty
+
+      let initialType: FilterDialProperty = .init(currentType: .newest)
+      filterDialProperty = initialType
+      filterDial = .init(filterDialProperty: initialType)
     }
   }
 
@@ -40,6 +44,8 @@ struct SentMain {
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
     case envelopes(IdentifiedActionOf<Envelope>)
+    case filterDial(FilterDial.Action)
+    case setFilterDialSheet(Bool)
   }
 
   var body: some Reducer<State, Action> {
@@ -49,13 +55,29 @@ struct SentMain {
     Scope(state: \.tabBar, action: /Action.tabBar) {
       SSTabBarFeature()
     }
-    Reduce { _, action in
+    Scope(state: \.filterDial, action: \.filterDial) {
+      FilterDial()
+    }
+    .onChange(of: \.filterDial.filterDialProperty) { _, newValue in
+      Reduce { state, _ in
+        state.filterDialProperty = newValue
+        return .none
+      }
+    }
+    Reduce { state, action in
       switch action {
+      case .setFilterDialSheet(true):
+        state.isDialPresented = true
+        return .none
+
+      case .setFilterDialSheet(false):
+        state.isDialPresented = false
+        return .none
+
       case .tappedFirstButton:
         return .none
 
       case .filterButtonTapped:
-        os_log("filterButtonTapped")
         return .none
       default:
         return .none
