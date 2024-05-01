@@ -23,6 +23,7 @@ struct SentEnvelopeFilter {
     var sentPeopleAdaptor: SentPeopleAdaptor
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
+    var customTextField = CustomTextField.State()
     init(sentPeople: [SentPerson]) {
       sentPeopleAdaptor = .init(sentPeople: sentPeople)
     }
@@ -43,6 +44,7 @@ struct SentEnvelopeFilter {
     case tappedSelectedPerson(UUID)
     case reset
     case delegate(Delegate)
+    case customTextField(CustomTextField.Action)
     enum Delegate: Equatable {
       case tappedApplyButton(SentPeopleAdaptor)
     }
@@ -54,7 +56,19 @@ struct SentEnvelopeFilter {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
     }
+
+    Scope(state: \.customTextField, action: \.customTextField) {
+      CustomTextField()
+    }
+    .onChange(of: \.customTextField.text) { _, newValue in
+      Reduce { state, _ in
+        state.textFieldText = newValue
+        return .none
+      }
+    }
+
     BindingReducer()
+
     Reduce { state, action in
       switch action {
       case let .tappedPerson(ind):
