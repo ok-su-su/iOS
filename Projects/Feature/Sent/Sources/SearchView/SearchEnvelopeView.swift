@@ -19,10 +19,49 @@ struct SearchEnvelopeView: View {
 
   @ViewBuilder
   private func makeMiddleContent() -> some View {
-    if store.isEmptySearchHistory {
+    if store.textFieldText != "" {
+      makeSearch()
+    } else if store.isEmptySearchHistory {
       makeNoSearchHistory()
     } else {
       makeSearchHistory()
+    }
+  }
+
+  @ViewBuilder
+  private func makeSearch() -> some View {
+    VStack(spacing: 16) {
+      Text(Constants.searchResult)
+        .modifier(SSTypoModifier(.title_xxs))
+        .foregroundStyle(SSColor.gray60)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+      let searchResult = store.searchResult
+      if !searchResult.isEmpty {
+        ForEach(0 ..< min(searchResult.count, 5), id: \.self) { ind in
+          if ind < searchResult.count {
+            HStack(spacing: 16) {
+              SSImage
+                .envelopeMainFill
+
+              Text("\(searchResult[ind].name)의 봉투")
+                .modifier(SSTypoModifier(.title_s))
+                .foregroundStyle(SSColor.gray100)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+          }
+        }
+      } else {
+        VStack(alignment: .center, spacing: 4) {
+          Text(Constants.emptySearchResultTitle)
+            .modifier(SSTypoModifier(.title_xs))
+            .foregroundStyle(SSColor.gray80)
+          Text(Constants.emptySearchResultDescription)
+            .modifier(SSTypoModifier(.text_xxs))
+            .foregroundStyle(SSColor.gray80)
+            .multilineTextAlignment(.center)
+        }
+      }
     }
   }
 
@@ -47,7 +86,7 @@ struct SearchEnvelopeView: View {
         .foregroundStyle(SSColor.gray60)
         .frame(maxWidth: .infinity, alignment: .leading)
 
-      ForEach(0 ..< max(store.latestSearchCount, 5), id: \.self) { ind in
+      ForEach(0 ..< min(store.latestSearchCount, 5), id: \.self) { ind in
         let latestSearch = store.searchProperty.latestSearch
         if latestSearch.indices.contains(ind) {
           HStack(spacing: 0) {
@@ -105,5 +144,10 @@ struct SearchEnvelopeView: View {
     static let emptySearchViewDescription: String = "사람 이름, 보낸 금액, 경조사 명 등을\n검색해볼 수 있어요"
 
     static let latestSearchTitle: String = "최근 검색"
+
+    static let searchResult: String = "검색 결과"
+
+    static let emptySearchResultTitle: String = "원하는 검색 결과가 없나요?"
+    static let emptySearchResultDescription = "사람 이름, 보낸 금액, 경조사 명 등을\n검색해볼 수 있어요"
   }
 }
