@@ -29,8 +29,7 @@ struct CreateEnvelopeRouter {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case .path(.element(id: _, action: .createEnvelopePrice(.view(.dismissButtonTapped)))):
-
+      case .path(.element(id: _, action: .createEnvelopePrice(.delegate(.dismissCreateFlow)))):
         return .run { _ in
           await dismiss()
         }
