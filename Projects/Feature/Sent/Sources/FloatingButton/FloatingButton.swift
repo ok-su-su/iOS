@@ -20,7 +20,7 @@ struct FloatingButton {
   }
 
   var body: some Reducer<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
       case .tapped:
         return .none
