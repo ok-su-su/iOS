@@ -7,8 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
-import SwiftUI
 import SSRoot
+import SwiftUI
 
 struct CreateEnvelopeRouterView: View {
   // MARK: Reducer
@@ -24,14 +24,14 @@ struct CreateEnvelopeRouterView: View {
   var body: some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       EmptyView()
-        .onAppear {
-          store.send(.onAppear(true))
-        }
     } destination: { store in
       switch store.case {
-      case let .createEnvelopePrice(store) :
+      case let .createEnvelopePrice(store):
         CreateEnvelopePriceView(store: store)
       }
+    }
+    .onAppear {
+      store.send(.onAppear(true))
     }
   }
 

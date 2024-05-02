@@ -20,6 +20,7 @@ struct SentMain {
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var isDialPresented = false
     var filterProperty: FilterProperty?
+    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     var filterDialProperty: FilterDialProperty
     var filterDial: FilterDial.State
     var floatingButton: FloatingButton.State = .init()
@@ -56,7 +57,9 @@ struct SentMain {
   }
 
   @CasePathable
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case showCreateEnvelopRouter
+  }
 
   @CasePathable
   enum AsyncAction: Equatable {}
@@ -67,6 +70,8 @@ struct SentMain {
     case tabBar(SSTabBarFeature.Action)
     case filterDial(FilterDial.Action)
     case floatingButton(FloatingButton.Action)
+
+    case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
     case setFilterDialSheet(Bool)
@@ -133,15 +138,24 @@ struct SentMain {
       case .scope(.setFilterDialSheet):
         return .none
       case .scope(.floatingButton(.tapped)):
-
-        return .none
+        return .run { send in
+          await send(.inner(.showCreateEnvelopRouter))
+        }
 
       case .delegate(.pushSearchEnvelope):
         return .none
 
       case .binding:
         return .none
+      case .inner(.showCreateEnvelopRouter):
+        state.createEnvelopeRouter = .init()
+        return .none
+      case .scope(.createEnvelopeRouter):
+        return .none
       }
+    }
+    .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
+      CreateEnvelopeRouter()
     }
     .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()

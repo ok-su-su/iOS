@@ -8,8 +8,12 @@
 import ComposableArchitecture
 import Foundation
 
+// MARK: - CreateEnvelopeRouter
+
 @Reducer
 struct CreateEnvelopeRouter {
+  @Dependency(\.dismiss) var dismiss
+
   @ObservableState
   struct State {
     var isOnAppear = false
@@ -17,7 +21,7 @@ struct CreateEnvelopeRouter {
     init() {}
   }
 
-  enum Action {
+  enum Action: Equatable {
     case onAppear(Bool)
     case path(StackActionOf<Path>)
   }
@@ -25,6 +29,11 @@ struct CreateEnvelopeRouter {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
+      case .path(.element(id: _, action: .createEnvelopePrice(.view(.dismissButtonTapped)))):
+
+        return .run { _ in
+          await dismiss()
+        }
       case .onAppear(true):
         state.path.append(.createEnvelopePrice(.init()))
         return .none
@@ -36,9 +45,10 @@ struct CreateEnvelopeRouter {
   }
 }
 
+// MARK: CreateEnvelopeRouter.Path
+
 extension CreateEnvelopeRouter {
-  
-  @Reducer
+  @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case createEnvelopePrice(CreateEnvelopePrice)
   }

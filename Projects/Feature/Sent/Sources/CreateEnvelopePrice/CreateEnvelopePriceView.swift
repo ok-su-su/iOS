@@ -27,6 +27,12 @@ struct CreateEnvelopePriceView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
+        Button {
+          store.send(.view(.dismissButtonTapped))
+        } label: {
+          Text("끝내")
+        }
+        Text("HelloWorld")
       }
     }
     .onAppear {

@@ -114,6 +114,9 @@ struct SentMainView: View {
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
+      CreateEnvelopeRouterView(store: store)
+    }
     .sheet(isPresented: $store.isDialPresented) {
       showFilterDialView()
         .presentationDetents([.height(240), .medium, .large])

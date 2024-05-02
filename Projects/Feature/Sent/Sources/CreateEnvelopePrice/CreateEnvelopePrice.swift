@@ -11,7 +11,7 @@ import Foundation
 @Reducer
 struct CreateEnvelopePrice {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var isOnAppear = false
 
     init() {}
@@ -27,6 +27,7 @@ struct CreateEnvelopePrice {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case dismissButtonTapped
   }
 
   enum InnerAction: Equatable {}
