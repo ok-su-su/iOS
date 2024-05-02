@@ -25,6 +25,8 @@ struct CreateEnvelopePriceView: View {
       Spacer()
         .frame(height: 34)
 
+      // MARK: - TextFieldTitleView
+
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
@@ -32,10 +34,14 @@ struct CreateEnvelopePriceView: View {
       Spacer()
         .frame(height: 34)
 
+      // MARK: - TextFieldView
+
       SSTextField(isDisplay: true, text: $store.textFieldText, property: .amount, isHighlight: $store.textFieldIsHighlight)
 
       Spacer()
         .frame(height: 32)
+
+      // MARK: - Price Guid View
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(store.formattedGuidPrices, id: \.self) { item in
@@ -45,9 +51,24 @@ struct CreateEnvelopePriceView: View {
             }
         }
       }
-      Text(store.textFieldText)
+
+      Spacer()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
+  }
+
+  @ViewBuilder
+  func makeNextButton() -> some View {
+    SSButton(
+      .init(
+        size: .mh60,
+        status: store.isAbleToPush ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )
+    ) {}
   }
 
   var body: some View {
@@ -58,8 +79,7 @@ struct CreateEnvelopePriceView: View {
       VStack(alignment: .leading) {
         HeaderView(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         makeContentView()
-
-        Spacer()
+        makeNextButton()
       }
     }
     .navigationBarBackButtonHidden()

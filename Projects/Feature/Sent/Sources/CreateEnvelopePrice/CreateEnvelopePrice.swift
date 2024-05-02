@@ -27,6 +27,10 @@ struct CreateEnvelopePrice {
       return guidPrices.compactMap { CustomNumberFormatter.formattedByThreeZero($0) }
     }
 
+    var isAbleToPush: Bool {
+      return textFieldText != ""
+    }
+
     init() {}
   }
 
