@@ -59,7 +59,6 @@ extension SentRouter {
     case sentEnvelopeFilter(SentEnvelopeFilter)
     case sentMain(SentMain)
     case searchEnvelope(SearchEnvelope)
+    case envelopeDetail(EnvelopeDetail)
   }
 }
-
-    case envelopeDetail(EnvelopeDetail)

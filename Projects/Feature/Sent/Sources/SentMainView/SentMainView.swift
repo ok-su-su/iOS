@@ -48,7 +48,7 @@ struct SentMainView: View {
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray15
         .ignoresSafeArea()
@@ -92,6 +92,7 @@ struct SentMainView: View {
           makeEnvelope()
         }
       }
+      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
     }
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
