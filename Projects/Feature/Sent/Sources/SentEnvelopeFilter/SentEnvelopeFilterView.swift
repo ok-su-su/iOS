@@ -165,7 +165,10 @@ struct SentEnvelopeFilterView: View {
     VStack(alignment: .leading, spacing: 0) {
       Text(Constants.searchTextFieldTitle)
         .modifier(SSTypoModifier(.title_xs))
-      SSTextField(isDisplay: false, text: $store.textFieldText, property: .account, isHighlight: $store.isHighlight)
+
+      CustomTextFieldView(store: store.scope(state: \.customTextField, action: \.customTextField))
+        .padding(.vertical, 16)
+
       Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 8) {
         makePersonButton()
       }

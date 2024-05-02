@@ -18,14 +18,32 @@ struct FilterDialView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    ForEach(0 ..< store.filterDialProperty.types.count) { ind in
+      let curSelected = store.filterDialProperty.currentType
+      let cur = store.filterDialProperty.types[ind]
+      SSButton(
+        .init(
+          size: .sh48,
+          status: cur == curSelected ? .active : .inactive,
+          style: .ghost,
+          color: .black,
+          buttonText: cur.name,
+          frame: .init(maxWidth: .infinity)
+        )) {
+          store.send(.tappedDial(cur))
+        }
+    }
+  }
 
   var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
       VStack {
+        Spacer()
+          .frame(height: 16)
         makeContentView()
       }
     }
