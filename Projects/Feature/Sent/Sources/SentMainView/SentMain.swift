@@ -132,7 +132,8 @@ struct SentMain {
         return .none
       case .scope(.setFilterDialSheet):
         return .none
-      case .scope(.floatingButton):
+      case .scope(.floatingButton(.tapped)):
+        
         return .none
 
       case .delegate(.pushSearchEnvelope):

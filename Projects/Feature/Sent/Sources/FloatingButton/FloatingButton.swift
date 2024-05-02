@@ -16,16 +16,13 @@ struct FloatingButton {
   }
 
   enum Action: Equatable {
-    case onAppear(Bool)
+    case tapped
   }
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear):
-        state.isOnAppear = isAppear
-        return .none
-      default:
+      case .tapped:
         return .none
       }
     }

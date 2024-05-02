@@ -93,27 +93,26 @@ struct SentMainView: View {
       .toolbar(.hidden, for: .tabBar)
   }
 
-  
-  //MARK: - View Body
+  // MARK: - View Body
+
   var body: some View {
-    ZStack(alignment: .bottomTrailing) {
+    ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        Spacer()
-          .frame(height: 16)
+      ZStack(alignment: .bottomTrailing) {
         VStack {
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          Spacer()
+            .frame(height: 16)
           makeFilterSection()
           makeEnvelope()
         }
-      }
-      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+      }.padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     .safeAreaInset(edge: .bottom) { makeTabBar() }
     .sheet(isPresented: $store.isDialPresented) {
       showFilterDialView()

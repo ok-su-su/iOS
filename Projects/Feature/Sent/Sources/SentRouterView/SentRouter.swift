@@ -33,7 +33,7 @@ struct SentRouter {
         case .element(id: _, action: .sentEnvelopeFilter):
           return .none
         case .element(id: _, action: .sentMain(.delegate(.pushSearchEnvelope))):
-          state.path.append(.searchEnvelope(SearchEnvelope.State()))
+//          state.path.append(.searchEnvelope(SearchEnvelope.State()))
           return .none
         default:
           return .none
