@@ -53,7 +53,9 @@ public struct ContentView: View {
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .inventory: AnyView(InventoryRootView()),
+    .inventory: AnyView(InventoryView(inventoryStore: .init(initialState: InventoryViewFeature.State(inventorys: [])) {
+      InventoryViewFeature()
+    })),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(MyPageRootView()),
     .statistics: AnyView(StatisticsRootView()),

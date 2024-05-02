@@ -28,13 +28,13 @@ struct SentMainView: View {
           .modifier(SSTypoModifier(.text_s))
           .foregroundStyle(SSColor.gray50)
         SSButton(Constants.emptyEnvelopeButtonProperty) {
-          store.send(.tappedEmptyEnvelopeButton)
+          store.send(.view(.tappedEmptyEnvelopeButton))
         }
         Spacer()
       }
     } else {
       ScrollView {
-        ForEach(store.scope(state: \.envelopes, action: \.envelopes)) { store in
+        ForEach(store.scope(state: \.envelopes, action: \.scope.envelopes)) { store in
           EnvelopeView(store: store)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -44,21 +44,18 @@ struct SentMainView: View {
 
   @ViewBuilder
   func showFilterDialView() -> some View {
-    FilterDialView(store: store.scope(state: \.filterDial, action: \.filterDial))
+    FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
   }
 
   var body: some View {
-    ZStack(alignment: .bottomTrailing) {
+    ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
-
       VStack {
-        HeaderView(store: store.scope(state: \.header, action: \.header))
-
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         Spacer()
           .frame(height: 16)
-
         VStack {
           HStack(spacing: Constants.topButtonsSpacing) {
             SSButton(.init(
@@ -69,7 +66,7 @@ struct SentMainView: View {
               leftIcon: .icon(SSImage.commonFilter),
               buttonText: store.filterDialProperty.currentType.name
             )) {
-              store.send(.setFilterDialSheet(true))
+              store.send(.view(.setFilterDialSheet(true)))
             }
             ZStack {
               // TODO: Navigation 변경
@@ -83,7 +80,7 @@ struct SentMainView: View {
                 .init(name: "사귀자"),
               ]))) {
                 SSButton(Constants.notSelectedFilterButtonProperty) {
-                  store.send(.filterButtonTapped)
+                  store.send(.view(.filterButtonTapped))
                 }
                 .allowsHitTesting(false)
               }
@@ -95,13 +92,12 @@ struct SentMainView: View {
           makeEnvelope()
         }
       }
-      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.floatingButton))
     }
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     .safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabBar, action: \.tabBar))
+      SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         .background {
           Color.white
         }
@@ -109,7 +105,7 @@ struct SentMainView: View {
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
     }
-    .sheet(isPresented: $store.isDialPresented.sending(\.setFilterDialSheet)) {
+    .sheet(isPresented: $store.isDialPresented.sending(\.view.setFilterDialSheet)) {
       showFilterDialView()
         .presentationDetents([.height(240), .medium, .large])
         .presentationDragIndicator(.automatic)

@@ -32,7 +32,7 @@ struct SentRouter {
         switch action {
         case .element(id: _, action: .sentEnvelopeFilter):
           return .none
-        case .element(id: _, action: .sentMain(.header(.tappedSearchButton))):
+        case .element(id: _, action: .sentMain(.delegate(.pushSearchEnvelope))):
           state.path.append(.searchEnvelope(SearchEnvelope.State()))
           return .none
         default:
@@ -59,6 +59,7 @@ extension SentRouter {
     case sentEnvelopeFilter(SentEnvelopeFilter)
     case sentMain(SentMain)
     case searchEnvelope(SearchEnvelope)
-    case envelopeDetail(EnvelopeDetail)
   }
 }
+
+    case envelopeDetail(EnvelopeDetail)
