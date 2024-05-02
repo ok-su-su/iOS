@@ -66,11 +66,12 @@ struct SentMain {
     case filterDial(FilterDial.Action)
 
     case envelopes(IdentifiedActionOf<Envelope>)
-    case filterDial(FilterDial.Action)
     case setFilterDialSheet(Bool)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case pushSearchEnvelope
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -98,27 +99,31 @@ struct SentMain {
         state.isDialPresented = false
         return .none
 
-      default:
+      case .view(.tappedFirstButton):
         return .none
-      case .header:
+
+      case .view(.filterButtonTapped):
         return .none
-      case .setFilterDialSheet(true):
-        state.isDialPresented = true
+
+      case .view(.tappedEmptyEnvelopeButton):
         return .none
-      case .setFilterDialSheet(false):
-        state.isDialPresented = false
+
+      case .scope(.tabBar):
         return .none
-      case .tappedFirstButton:
+      case .scope(.envelopes):
         return .none
-      case .filterButtonTapped:
+      case .scope(.filterDial):
         return .none
-      case .tabBar:
+      case .scope(.header(.tappedSearchButton)):
+        return .run { send in
+          await send(.delegate(.pushSearchEnvelope))
+        }
+      case .scope(.header):
         return .none
-      case .envelopes:
+      case .scope(.setFilterDialSheet):
         return .none
-      case .filterDial:
-        return .none
-      case .tappedEmptyEnvelopeButton:
+
+      case .delegate(.pushSearchEnvelope):
         return .none
       }
     }
