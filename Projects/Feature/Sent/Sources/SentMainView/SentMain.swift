@@ -22,6 +22,7 @@ struct SentMain {
     var filterProperty: FilterProperty?
     var filterDialProperty: FilterDialProperty
     var filterDial: FilterDial.State
+    var floatingButton: FloatingButton.State = .init()
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
@@ -64,6 +65,7 @@ struct SentMain {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
     case filterDial(FilterDial.Action)
+    case floatingButton(FloatingButton.Action)
 
     case envelopes(IdentifiedActionOf<Envelope>)
     case setFilterDialSheet(Bool)
@@ -121,6 +123,8 @@ struct SentMain {
       case .scope(.header):
         return .none
       case .scope(.setFilterDialSheet):
+        return .none
+      case .scope(.floatingButton):
         return .none
 
       case .delegate(.pushSearchEnvelope):
