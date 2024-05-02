@@ -45,7 +45,6 @@ struct CreateEnvelopePrice {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case dismissButtonTapped
     case tappedGuidValue(String)
   }
 
@@ -73,7 +72,7 @@ struct CreateEnvelopePrice {
         state.isOnAppear = isAppear
         return .none
 
-      case .view(.dismissButtonTapped):
+      case .scope(.tabBar(.tappedDismissButton)):
         return .run { send in
           await send(.delegate(.dismissCreateFlow))
         }
