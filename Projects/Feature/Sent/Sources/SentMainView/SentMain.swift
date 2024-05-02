@@ -37,25 +37,49 @@ struct SentMain {
     }
   }
 
-  enum Action: Equatable {
-    case header(HeaderViewFeature.Action)
-    case tabBar(SSTabBarFeature.Action)
+  enum Action: Equatable, FeatureAction {
+    case view(ViewAction)
+    case inner(InnerAction)
+    case async(AsyncAction)
+    case scope(ScopeAction)
+    case delegate(DelegateAction)
+  }
+
+  @CasePathable
+  enum ViewAction: Equatable {
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
+    case setFilterDialSheet(Bool)
+  }
+
+  @CasePathable
+  enum InnerAction: Equatable {}
+
+  @CasePathable
+  enum AsyncAction: Equatable {}
+
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
+    case filterDial(FilterDial.Action)
+
     case envelopes(IdentifiedActionOf<Envelope>)
     case filterDial(FilterDial.Action)
     case setFilterDialSheet(Bool)
   }
 
+  enum DelegateAction: Equatable {}
+
   var body: some Reducer<State, Action> {
-    Scope(state: \.header, action: \.header) {
+    Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
-    Scope(state: \.tabBar, action: /Action.tabBar) {
+    Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
-    Scope(state: \.filterDial, action: \.filterDial) {
+    Scope(state: \.filterDial, action: \.scope.filterDial) {
       FilterDial()
     }
     .onChange(of: \.filterDial.filterDialProperty) { _, newValue in
@@ -66,7 +90,15 @@ struct SentMain {
     }
     Reduce { state, action in
       switch action {
-      case .header(.tappedSearchButton):
+      case .view(.setFilterDialSheet(true)):
+        state.isDialPresented = true
+        return .none
+
+      case .view(.setFilterDialSheet(false)):
+        state.isDialPresented = false
+        return .none
+
+      default:
         return .none
       case .header:
         return .none
@@ -90,7 +122,7 @@ struct SentMain {
         return .none
       }
     }
-    .forEach(\.envelopes, action: \.envelopes) {
+    .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()
     }
   }
