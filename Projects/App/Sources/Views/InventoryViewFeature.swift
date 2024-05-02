@@ -6,9 +6,11 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 import OSLog
+
+// MARK: - InventoryCellFeature
 
 @Reducer
 public struct InventoryCellFeature {
@@ -19,7 +21,7 @@ public struct InventoryCellFeature {
     public var inventoryTitle: String
     public var inventoryAmount: String
     public var inventoryCount: Int
-    
+
     public init(id: UUID, inventoryType: String, inventoryTitle: String, inventoryAmount: String, inventoryCount: Int) {
       self.id = id
       self.inventoryType = inventoryType
@@ -28,20 +30,17 @@ public struct InventoryCellFeature {
       self.inventoryCount = inventoryCount
     }
   }
-  
-  public enum Action {
-    
-  }
-  
+
+  public enum Action {}
+
   public var body: some Reducer<State, Action> {
-    Reduce { state, action in
-      switch action {
-        
-      }
+    Reduce { _, action in
+      switch action {}
     }
   }
 }
 
+// MARK: - InventoryViewFeature
 
 @Reducer
 public struct InventoryViewFeature: Equatable {
@@ -49,20 +48,20 @@ public struct InventoryViewFeature: Equatable {
   public struct State {
     public var inventorys: IdentifiedArrayOf<InventoryCellFeature.State>
     public var isLoading: Bool
-    
+
     init(inventorys: IdentifiedArrayOf<InventoryCellFeature.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading
     }
   }
-  
+
   public enum Action {
     case reloadInvetoryItems(IdentifiedActionOf<InventoryCellFeature>)
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
   }
-  
+
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {

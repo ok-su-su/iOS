@@ -13,7 +13,7 @@ struct CustomTextField {
   @ObservableState
   struct State {
     var isOnAppear = false
-    var text: String = ""
+    @Shared var text: String
   }
 
   enum Action: Equatable, BindableAction {
