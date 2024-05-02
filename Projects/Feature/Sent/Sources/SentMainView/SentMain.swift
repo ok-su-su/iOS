@@ -38,7 +38,8 @@ struct SentMain {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, BindableAction {
+    case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -76,6 +77,8 @@ struct SentMain {
   }
 
   var body: some Reducer<State, Action> {
+    // MARK: - Scope Child Reducers
+
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
@@ -91,6 +94,11 @@ struct SentMain {
         return .none
       }
     }
+
+    BindingReducer()
+
+    // MARK: - Reducer
+
     Reduce { state, action in
       switch action {
       case .view(.setFilterDialSheet(true)):
@@ -128,6 +136,9 @@ struct SentMain {
         return .none
 
       case .delegate(.pushSearchEnvelope):
+        return .none
+
+      case .binding:
         return .none
       }
     }
