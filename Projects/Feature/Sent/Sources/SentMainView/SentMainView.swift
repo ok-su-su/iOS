@@ -47,66 +47,77 @@ struct SentMainView: View {
     FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
   }
 
+  @ViewBuilder
+  func makeFilterSection() -> some View {
+    HStack(spacing: Constants.topButtonsSpacing) {
+      SSButton(.init(
+        size: .sh32,
+        status: .active,
+        style: .ghost,
+        color: .black,
+        leftIcon: .icon(SSImage.commonFilter),
+        buttonText: store.filterDialProperty.currentType.name
+      )) {
+        store.send(.view(.setFilterDialSheet(true)))
+      }
+      ZStack {
+        // TODO: Navigation 변경
+        NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter(.init(sentPeople: [
+          .init(name: "춘자"),
+          .init(name: "복자"),
+          .init(name: "흑자"),
+          .init(name: "헬자"),
+          .init(name: "함자"),
+          .init(name: "귀자"),
+          .init(name: "사귀자"),
+        ]))) {
+          SSButton(Constants.notSelectedFilterButtonProperty) {
+            store.send(.view(.filterButtonTapped))
+          }
+          .allowsHitTesting(false)
+        }
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .padding(.bottom, Constants.topButtonsSpacing)
+  }
+
+  @ViewBuilder
+  func makeTabBar() -> some View {
+    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
+      .background {
+        Color.white
+      }
+      .ignoresSafeArea()
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
+  }
+
+  // MARK: - View Body
+
   var body: some View {
     ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        Spacer()
-          .frame(height: 16)
+      ZStack(alignment: .bottomTrailing) {
         VStack {
-          HStack(spacing: Constants.topButtonsSpacing) {
-            SSButton(.init(
-              size: .sh32,
-              status: .active,
-              style: .ghost,
-              color: .black,
-              leftIcon: .icon(SSImage.commonFilter),
-              buttonText: store.filterDialProperty.currentType.name
-            )) {
-              store.send(.view(.setFilterDialSheet(true)))
-            }
-            ZStack {
-              // TODO: Navigation 변경
-              NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter(.init(sentPeople: [
-                .init(name: "춘자"),
-                .init(name: "복자"),
-                .init(name: "흑자"),
-                .init(name: "헬자"),
-                .init(name: "함자"),
-                .init(name: "귀자"),
-                .init(name: "사귀자"),
-              ]))) {
-                SSButton(Constants.notSelectedFilterButtonProperty) {
-                  store.send(.view(.filterButtonTapped))
-                }
-                .allowsHitTesting(false)
-              }
-            }
-          }
-          .frame(maxWidth: .infinity, alignment: .topLeading)
-          .padding(.bottom, Constants.topButtonsSpacing)
-
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          Spacer()
+            .frame(height: 16)
+          makeFilterSection()
           makeEnvelope()
         }
-      }
-      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+      }.padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
     .navigationBarBackButtonHidden()
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    .padding(.horizontal, Constants.leadingAndTrailingSpacing)
-    .safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-        .background {
-          Color.white
-        }
-        .ignoresSafeArea()
-        .frame(height: 56)
-        .toolbar(.hidden, for: .tabBar)
+    .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
+      CreateEnvelopeRouterView(store: store)
     }
-    .sheet(isPresented: $store.isDialPresented.sending(\.view.setFilterDialSheet)) {
+    .sheet(isPresented: $store.isDialPresented) {
       showFilterDialView()
         .presentationDetents([.height(240), .medium, .large])
         .presentationDragIndicator(.automatic)

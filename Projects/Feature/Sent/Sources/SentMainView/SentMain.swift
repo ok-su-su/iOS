@@ -20,6 +20,7 @@ struct SentMain {
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var isDialPresented = false
     var filterProperty: FilterProperty?
+    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     var filterDialProperty: FilterDialProperty
     var filterDial: FilterDial.State
     var floatingButton: FloatingButton.State = .init()
@@ -38,7 +39,8 @@ struct SentMain {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, BindableAction {
+    case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -55,7 +57,9 @@ struct SentMain {
   }
 
   @CasePathable
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case showCreateEnvelopRouter
+  }
 
   @CasePathable
   enum AsyncAction: Equatable {}
@@ -67,6 +71,8 @@ struct SentMain {
     case filterDial(FilterDial.Action)
     case floatingButton(FloatingButton.Action)
 
+    case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
+
     case envelopes(IdentifiedActionOf<Envelope>)
     case setFilterDialSheet(Bool)
   }
@@ -76,6 +82,8 @@ struct SentMain {
   }
 
   var body: some Reducer<State, Action> {
+    // MARK: - Scope Child Reducers
+
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
@@ -91,6 +99,11 @@ struct SentMain {
         return .none
       }
     }
+
+    BindingReducer()
+
+    // MARK: - Reducer
+
     Reduce { state, action in
       switch action {
       case .view(.setFilterDialSheet(true)):
@@ -124,12 +137,25 @@ struct SentMain {
         return .none
       case .scope(.setFilterDialSheet):
         return .none
-      case .scope(.floatingButton):
-        return .none
+      case .scope(.floatingButton(.tapped)):
+        return .run { send in
+          await send(.inner(.showCreateEnvelopRouter))
+        }
 
       case .delegate(.pushSearchEnvelope):
         return .none
+
+      case .binding:
+        return .none
+      case .inner(.showCreateEnvelopRouter):
+        state.createEnvelopeRouter = .init()
+        return .none
+      case .scope(.createEnvelopeRouter):
+        return .none
       }
+    }
+    .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
+      CreateEnvelopeRouter()
     }
     .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()

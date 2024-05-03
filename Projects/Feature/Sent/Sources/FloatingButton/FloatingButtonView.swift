@@ -22,6 +22,9 @@ struct FloatingButtonView: View {
   private func makeContentView() -> some View {
     HStack(alignment: .center, spacing: 0) {
       SSImage.commonAdd
+        .onTapGesture {
+          store.send(.tapped)
+        }
     }
     .padding(12)
     .frame(width: 48, height: 48, alignment: .center)
@@ -31,14 +34,7 @@ struct FloatingButtonView: View {
   }
 
   var body: some View {
-    ZStack {
-      NavigationLink(state: SentRouter.Path.State.envelopeDetail(.init())) {
-        makeContentView()
-      }
-    }
-    .onAppear {
-      store.send(.onAppear(true))
-    }
+    makeContentView()
   }
 
   private enum Metrics {}
