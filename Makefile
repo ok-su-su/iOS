@@ -3,7 +3,7 @@ generate:
 	TUIST_ROOT_DIR=${PWD} TUIST_SCHEME=DEBUG tuist generate
 
 feature:
-	python Scripts/TuistScript.py feature
+	python3 Scripts/TuistScript.py feature
 	tuist edit
 
 share:

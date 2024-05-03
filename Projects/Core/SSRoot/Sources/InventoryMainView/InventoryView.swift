@@ -14,6 +14,7 @@ import Designsystem
 
 public struct InventoryView: View {
   @Bindable var inventoryStore: StoreOf<InventoryViewFeature>
+  private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
   
   public init(inventoryStore: StoreOf<InventoryViewFeature>) {
     self.inventoryStore = inventoryStore
@@ -57,10 +58,19 @@ public struct InventoryView: View {
           Spacer()
         }
       } else {
-        //TODO: Server Network 통신 State 추가시 코드 추가
+        ScrollView {
+          LazyVGrid(columns: inventoryColumns) {
+            ForEach(inventoryStore.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { store in
+              InventoryBoxView(inventoryBoxstore: store)
+                .padding(.trailing, InventoryFilterConstants.commonSpacing)
+            }
+            VStack {
+              makeDotLineButton()
+                .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
+            }
+          }
+        }
       }
-
-
     }
     
   }
@@ -84,10 +94,21 @@ public struct InventoryView: View {
   
   public var body: some View {
     VStack {
+      HeaderView(store: inventoryStore.scope(state: \.headerType, action: \.setHeaderView))
+      Spacer()
+        .frame(height: 16)
+      
       makeFilterView()
         .frame(height: 32)
       makeEmptyView()
     }
+    SSTabbar(store: inventoryStore.scope(state: \.tabbarType, action: \.setTabbarView))
+      .background {
+        Color.white
+      }
+      .ignoresSafeArea()
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
     
   }
   
