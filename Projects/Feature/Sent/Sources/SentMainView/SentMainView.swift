@@ -96,7 +96,7 @@ struct SentMainView: View {
   // MARK: - View Body
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray15
         .ignoresSafeArea()
