@@ -18,29 +18,30 @@ struct SentRouter {
   struct State {
     var path = StackState<Path.State>()
     var isOnAppear = false
-    var sentMain = SentMain.State()
   }
 
   enum Action {
     case onAppear(Bool)
-    case sentMain(SentMain.Action)
     case path(StackAction<Path.State, Path.Action>)
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.sentMain, action: \.sentMain) {
-      SentMain()
-    }
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case let .path(action):
         switch action {
         case .element(id: _, action: .sentEnvelopeFilter):
           return .none
+        case .element(id: _, action: .sentMain(.delegate(.pushSearchEnvelope))):
+//          state.path.append(.searchEnvelope(SearchEnvelope.State()))
+          return .none
         default:
           return .none
         }
-      default:
+      case .onAppear(true):
+        state.path.append(.sentMain(SentMain.State()))
+        return .none
+      case .onAppear(false):
         return .none
       }
     }
@@ -57,5 +58,7 @@ extension SentRouter {
   enum Path {
     case sentEnvelopeFilter(SentEnvelopeFilter)
     case sentMain(SentMain)
+    case searchEnvelope(SearchEnvelope)
+    case envelopeDetail(EnvelopeDetail)
   }
 }

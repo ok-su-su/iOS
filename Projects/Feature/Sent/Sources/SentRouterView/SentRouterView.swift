@@ -20,14 +20,21 @@ struct SentRouterView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      SentMainView(store: store.scope(state: \.sentMain, action: \.sentMain))
+      EmptyView()
     } destination: { store in
       switch store.case {
       case let .sentMain(store):
         SentMainView(store: store)
       case let .sentEnvelopeFilter(store):
         SentEnvelopeFilterView(store: store)
+      case let .searchEnvelope(store):
+        SearchEnvelopeView(store: store)
+      case let .envelopeDetail(store):
+        EnvelopeDetailView(store: store)
       }
+    }
+    .onAppear {
+      store.send(.onAppear(true))
     }
   }
 

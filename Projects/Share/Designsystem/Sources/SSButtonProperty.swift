@@ -17,7 +17,7 @@ public struct SSButtonProperty {
   let color: ButtonColor
   let leftIcon: LeftIcon
   let rightIcon: RightIcon
-  let buttonText: String
+  var buttonText: String
   let frame: SSButtonFrame
 
   public struct SSButtonFrame {
@@ -79,6 +79,10 @@ public struct SSButtonProperty {
 
   public func toggleProperty() -> Self {
     return .init(size: size, status: status == .active ? .inactive : .active, style: style, color: color, leftIcon: leftIcon, rightIcon: rightIcon, buttonText: buttonText, frame: frame)
+  }
+
+  public mutating func update(text: String) {
+    buttonText = text
   }
 }
 

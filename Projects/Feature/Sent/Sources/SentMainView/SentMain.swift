@@ -16,52 +16,148 @@ struct SentMain {
   init() {}
   @ObservableState
   struct State {
-    var filterProperty: FilterProperty?
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
+    var isDialPresented = false
+    var filterProperty: FilterProperty?
+    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
+    var filterDialProperty: FilterDialProperty
+    var filterDial: FilterDial.State
+    var floatingButton: FloatingButton.State = .init()
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
     ]
-    init() {
-      filterProperty = nil
-    }
 
-    init(filterProperty: FilterProperty?) {
+    init(filterProperty: FilterProperty? = nil) {
       self.filterProperty = filterProperty
+
+      let initialType: FilterDialProperty = .init(currentType: .newest)
+      filterDialProperty = initialType
+      filterDial = .init(filterDialProperty: initialType)
     }
   }
 
-  enum Action: Equatable {
-    case header(HeaderViewFeature.Action)
-    case tabBar(SSTabBarFeature.Action)
+  enum Action: Equatable, FeatureAction, BindableAction {
+    case binding(BindingAction<State>)
+    case view(ViewAction)
+    case inner(InnerAction)
+    case async(AsyncAction)
+    case scope(ScopeAction)
+    case delegate(DelegateAction)
+  }
+
+  @CasePathable
+  enum ViewAction: Equatable {
     case tappedFirstButton
     case filterButtonTapped
     case tappedEmptyEnvelopeButton
+    case setFilterDialSheet(Bool)
+  }
+
+  @CasePathable
+  enum InnerAction: Equatable {
+    case showCreateEnvelopRouter
+  }
+
+  @CasePathable
+  enum AsyncAction: Equatable {}
+
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
+    case filterDial(FilterDial.Action)
+    case floatingButton(FloatingButton.Action)
+
+    case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
+
     case envelopes(IdentifiedActionOf<Envelope>)
+    case setFilterDialSheet(Bool)
+  }
+
+  enum DelegateAction: Equatable {
+    case pushSearchEnvelope
   }
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.header, action: \.header) {
+    // MARK: - Scope Child Reducers
+
+    Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
-    Scope(state: \.tabBar, action: /Action.tabBar) {
+    Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
-    Reduce { _, action in
-      switch action {
-      case .tappedFirstButton:
-        return .none
-
-      case .filterButtonTapped:
-        os_log("filterButtonTapped")
-        return .none
-      default:
+    Scope(state: \.filterDial, action: \.scope.filterDial) {
+      FilterDial()
+    }
+    .onChange(of: \.filterDial.filterDialProperty) { _, newValue in
+      Reduce { state, _ in
+        state.filterDialProperty = newValue
         return .none
       }
     }
-    .forEach(\.envelopes, action: \.envelopes) {
+
+    BindingReducer()
+
+    // MARK: - Reducer
+
+    Reduce { state, action in
+      switch action {
+      case .view(.setFilterDialSheet(true)):
+        state.isDialPresented = true
+        return .none
+
+      case .view(.setFilterDialSheet(false)):
+        state.isDialPresented = false
+        return .none
+
+      case .view(.tappedFirstButton):
+        return .none
+
+      case .view(.filterButtonTapped):
+        return .none
+
+      case .view(.tappedEmptyEnvelopeButton):
+        return .none
+
+      case .scope(.tabBar):
+        return .none
+      case .scope(.envelopes):
+        return .none
+      case .scope(.filterDial):
+        return .none
+      case .scope(.header(.tappedSearchButton)):
+        return .run { send in
+          await send(.delegate(.pushSearchEnvelope))
+        }
+      case .scope(.header):
+        return .none
+      case .scope(.setFilterDialSheet):
+        return .none
+      case .scope(.floatingButton(.tapped)):
+        return .run { send in
+          await send(.inner(.showCreateEnvelopRouter))
+        }
+
+      case .delegate(.pushSearchEnvelope):
+        return .none
+
+      case .binding:
+        return .none
+      case .inner(.showCreateEnvelopRouter):
+        state.createEnvelopeRouter = .init()
+        return .none
+      case .scope(.createEnvelopeRouter):
+        return .none
+      }
+    }
+    .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
+      CreateEnvelopeRouter()
+    }
+    .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()
     }
   }

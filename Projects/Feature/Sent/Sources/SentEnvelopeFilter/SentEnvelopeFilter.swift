@@ -18,13 +18,15 @@ struct SentEnvelopeFilter {
   @ObservableState
   struct State {
     var isOnAppear = false
-    var textFieldText: String = ""
-    var isHighlight: Bool = true
+    @Shared var textFieldText: String
     var sentPeopleAdaptor: SentPeopleAdaptor
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
+    var customTextField: CustomTextField.State
     init(sentPeople: [SentPerson]) {
       sentPeopleAdaptor = .init(sentPeople: sentPeople)
+      _textFieldText = Shared("")
+      customTextField = .init(text: _textFieldText)
     }
 
     var filterByTextField: [SentPerson] {
@@ -43,6 +45,7 @@ struct SentEnvelopeFilter {
     case tappedSelectedPerson(UUID)
     case reset
     case delegate(Delegate)
+    case customTextField(CustomTextField.Action)
     enum Delegate: Equatable {
       case tappedApplyButton(SentPeopleAdaptor)
     }
@@ -54,9 +57,19 @@ struct SentEnvelopeFilter {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
     }
+
+    Scope(state: \.customTextField, action: \.customTextField) {
+      CustomTextField()
+    }
+
     BindingReducer()
+
     Reduce { state, action in
       switch action {
+      case .header(.tappedDismissButton):
+        return .run { send in
+          await send(.reset)
+        }
       case let .tappedPerson(ind):
         state.sentPeopleAdaptor.select(selectedId: ind)
         return .none
@@ -86,9 +99,7 @@ struct SentPeopleAdaptor: Equatable {
   }
 
   var sentPeople: [SentPerson]
-
   var selectedPerson: [SentPerson] = []
-  ///  var ssButtonProperties: [SSButtonPropertyState] = []
   var ssButtonProperties: [UUID: SSButtonPropertyState] = [:]
 
   init(sentPeople: [SentPerson]) {
