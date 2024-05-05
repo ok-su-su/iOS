@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/2/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import Combine
 import ComposableArchitecture
 import Designsystem
 import Foundation
@@ -13,6 +14,9 @@ import Foundation
 struct CreateEnvelopePrice {
   @ObservableState
   struct State: Equatable {
+    var subscriptions: Set<AnyCancellable> = .init()
+
+    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
     var tabBar: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(12 / 96)))
 
@@ -31,7 +35,9 @@ struct CreateEnvelopePrice {
       return textFieldText != ""
     }
 
-    init() {}
+    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+    }
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
@@ -46,6 +52,7 @@ struct CreateEnvelopePrice {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedGuidValue(String)
+    case changeText(String)
   }
 
   enum InnerAction: Equatable {
@@ -91,6 +98,12 @@ struct CreateEnvelopePrice {
         }
       case let .inner(.convertPrice(value)):
         state.textFieldText = value
+        return .none
+
+      case let .view(.changeText(value)):
+        if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
+          state.textFieldText = formattedValue
+        }
         return .none
       }
     }

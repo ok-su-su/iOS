@@ -18,7 +18,11 @@ struct CreateEnvelopeRouter {
   struct State {
     var isOnAppear = false
     var path = StackState<Path.State>()
-    init() {}
+    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+
+    init() {
+      _createEnvelopeProperty = Shared(.init())
+    }
   }
 
   enum Action: Equatable {
@@ -34,7 +38,7 @@ struct CreateEnvelopeRouter {
           await dismiss()
         }
       case .onAppear(true):
-        state.path.append(.createEnvelopePrice(.init()))
+        state.path.append(.createEnvelopePrice(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .none
       default:
         return .none
@@ -50,5 +54,6 @@ extension CreateEnvelopeRouter {
   @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case createEnvelopePrice(CreateEnvelopePrice)
+    case createEnvelopeName(CreateEnvelopeName)
   }
 }

@@ -28,6 +28,8 @@ struct CreateEnvelopeRouterView: View {
       switch store.case {
       case let .createEnvelopePrice(store):
         CreateEnvelopePriceView(store: store)
+      case let .createEnvelopeName(store):
+        CreateEnvelopeNameView(store: store)
       }
     }
     .onAppear {
