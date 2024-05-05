@@ -18,6 +18,37 @@ struct CreateEnvelopeNameView: View {
   // MARK: Content
 
   @ViewBuilder
+  private func makeFilteredView() -> some View {
+    VStack {
+      let filteredPrevEnvelopes = store.filteredPrevEnvelopes
+      ForEach(0 ..< filteredPrevEnvelopes.count, id: \.self) { ind in
+        let current = filteredPrevEnvelopes[ind]
+        HStack(alignment: .top, spacing: 8) {
+          Text(current.name)
+            .modifier(SSTypoModifier(.title_xs))
+            .foregroundStyle(SSColor.gray100)
+
+          Text(current.relationShip)
+            .modifier(SSTypoModifier(.title_xs))
+            .foregroundStyle(SSColor.gray60)
+
+          Text(current.eventName)
+            .modifier(SSTypoModifier(.text_xs))
+            .foregroundStyle(SSColor.gray40)
+
+          Text(current.eventDate.description)
+            .modifier(SSTypoModifier(.text_xs))
+            .foregroundStyle(SSColor.gray40)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+      }
+    }
+  }
+
+  @ViewBuilder
   private func makeContentView() -> some View {
     VStack {
       Spacer()
@@ -35,7 +66,10 @@ struct CreateEnvelopeNameView: View {
       // MARK: - TextFieldView
 
       SSTextField(isDisplay: true, text: $store.textFieldText, property: .account, isHighlight: $store.textFieldIsHighlight)
+      Spacer()
+        .frame(height: 24)
 
+      makeFilteredView()
       Spacer()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)

@@ -22,6 +22,10 @@ struct CreateEnvelopeName {
       return textFieldText != ""
     }
 
+    var filteredPrevEnvelopes: [PrevEnvelope] {
+      return textFieldText == "" ? [] : createEnvelopeProperty.filteredName(textFieldText)
+    }
+
     init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
     }
