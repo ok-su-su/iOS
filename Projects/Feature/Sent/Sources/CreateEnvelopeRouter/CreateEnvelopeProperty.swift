@@ -9,5 +9,6 @@
 import Foundation
 
 struct CreateEnvelopeProperty: Equatable {
+  var viewDepth = 1
   init() {}
 }

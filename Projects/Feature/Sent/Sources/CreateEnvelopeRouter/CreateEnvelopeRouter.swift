@@ -31,6 +31,7 @@ struct CreateEnvelopeRouter {
     case onAppear(Bool)
     case path(StackActionOf<Path>)
     case header(HeaderViewFeature.Action)
+    case changedPath
   }
 
   var body: some Reducer<State, Action> {
@@ -39,20 +40,26 @@ struct CreateEnvelopeRouter {
     }
     Reduce { state, action in
       switch action {
-      case .path(.element(id: _, action: .createEnvelopePrice(.delegate(.dismissCreateFlow)))):
-        return .run { _ in
-          await dismiss()
+      case .path(.element(id: _, action: .createEnvelopePrice(.delegate(.push)))):
+        state.path.append(.createEnvelopeName(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        return .run { send in
+          await send(.changedPath, animation: .default)
         }
-        
+
       case .onAppear(true):
         state.path.append(.createEnvelopePrice(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .none
-        
+
       case .header(.tappedDismissButton):
         if state.path.count == 1 {
           return .run { _ in await dismiss() }
         }
         _ = state.path.popLast()
+        return .run { send in
+          await send(.changedPath, animation: .default)
+        }
+      case .changedPath:
+        state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
       default:
         return .none

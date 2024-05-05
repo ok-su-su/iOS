@@ -66,21 +66,17 @@ struct CreateEnvelopePriceView: View {
 
   @ViewBuilder
   private func makeNextButton() -> some View {
-    ZStack {
-      NavigationLink(
-        state: CreateEnvelopeRouter.Path.State.createEnvelopeName(CreateEnvelopeName.State(createEnvelopeProperty: store.$createEnvelopeProperty))) {
-          SSButton(
-            .init(
-              size: .mh60,
-              status: store.isAbleToPush ? .active : .inactive,
-              style: .filled,
-              color: .black,
-              buttonText: "다음",
-              frame: .init(maxWidth: .infinity)
-            )
-          ) {}
-            .allowsHitTesting(false)
-        }
+    SSButton(
+      .init(
+        size: .mh60,
+        status: store.isAbleToPush ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )
+    ) {
+      store.send(.view(.tappedNextButton))
     }
   }
 

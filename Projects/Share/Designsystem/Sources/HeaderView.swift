@@ -25,6 +25,10 @@ public struct HeaderViewFeature {
     public init(_ property: HeaderViewProperty) {
       self.property = property
     }
+
+    public mutating func updateProperty(_ property: HeaderViewProperty) {
+      self.property = property
+    }
   }
 
   @Dependency(\.dismiss) var dismiss

@@ -53,6 +53,7 @@ struct CreateEnvelopePrice {
     case onAppear(Bool)
     case tappedGuidValue(String)
     case changeText(String)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {
@@ -68,6 +69,7 @@ struct CreateEnvelopePrice {
 
   enum DelegateAction: Equatable {
     case dismissCreateFlow
+    case push
   }
 
   var body: some Reducer<State, Action> {
@@ -96,6 +98,10 @@ struct CreateEnvelopePrice {
         return .run { send in
           await send(.inner(.convertPrice(value)))
         }
+      case .view(.tappedNextButton):
+        return .run { send in
+          await send(.delegate(.push))
+        }
       case let .inner(.convertPrice(value)):
         state.textFieldText = value
         return .none
@@ -104,6 +110,9 @@ struct CreateEnvelopePrice {
         if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
           state.textFieldText = formattedValue
         }
+        return .none
+
+      case .delegate(.push):
         return .none
       }
     }
