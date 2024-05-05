@@ -43,14 +43,16 @@ struct CreateEnvelopeRouter {
         return .run { _ in
           await dismiss()
         }
+        
       case .onAppear(true):
         state.path.append(.createEnvelopePrice(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .none
+        
       case .header(.tappedDismissButton):
-        _ = state.path.popLast()
-        if state.path.isEmpty {
+        if state.path.count == 1 {
           return .run { _ in await dismiss() }
         }
+        _ = state.path.popLast()
         return .none
       default:
         return .none
