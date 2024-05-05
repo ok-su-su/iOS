@@ -14,7 +14,6 @@ struct CreateEnvelopeName {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(24 / 96)))
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
@@ -45,10 +44,7 @@ struct CreateEnvelopeName {
 
   enum AsyncAction: Equatable {}
 
-  @CasePathable
-  enum ScopeAction: Equatable {
-    case header(HeaderViewFeature.Action)
-  }
+  enum ScopeAction: Equatable {}
 
   enum DelegateAction: Equatable {}
 
@@ -57,23 +53,12 @@ struct CreateEnvelopeName {
   var body: some Reducer<State, Action> {
     BindingReducer()
 
-    Scope(state: \.header, action: \.scope.header) {
-      HeaderViewFeature()
-    }
-
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
 
-      case .scope(.header(.tappedDismissButton)):
-        return .run { _ in
-          await dismiss()
-        }
-
-      case .scope:
-        return .none
       case .binding:
         return .none
       }

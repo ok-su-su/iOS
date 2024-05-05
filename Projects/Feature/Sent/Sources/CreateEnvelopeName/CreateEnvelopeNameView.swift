@@ -61,7 +61,6 @@ struct CreateEnvelopeNameView: View {
         .gray15
         .ignoresSafeArea()
       VStack {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
         makeNextButton()
       }

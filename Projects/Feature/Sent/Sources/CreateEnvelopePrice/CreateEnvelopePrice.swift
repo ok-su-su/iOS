@@ -18,7 +18,6 @@ struct CreateEnvelopePrice {
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
-    var tabBar: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(12 / 96)))
 
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
@@ -63,9 +62,7 @@ struct CreateEnvelopePrice {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
-    case tabBar(HeaderViewFeature.Action)
-  }
+  enum ScopeAction: Equatable {}
 
   enum DelegateAction: Equatable {
     case dismissCreateFlow
@@ -80,11 +77,6 @@ struct CreateEnvelopePrice {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-
-      case .scope(.tabBar(.tappedDismissButton)):
-        return .run { send in
-          await send(.delegate(.dismissCreateFlow))
-        }
 
       case .scope:
         return .none

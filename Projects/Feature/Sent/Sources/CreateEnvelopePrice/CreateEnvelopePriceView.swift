@@ -86,7 +86,6 @@ struct CreateEnvelopePriceView: View {
         .gray15
         .ignoresSafeArea()
       VStack(alignment: .leading) {
-        HeaderView(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         makeContentView()
         makeNextButton()
       }
