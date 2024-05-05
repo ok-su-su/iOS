@@ -22,18 +22,21 @@ struct CreateEnvelopeRouterView: View {
   private func makeContentView() -> some View {}
 
   var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      EmptyView()
-    } destination: { store in
-      switch store.case {
-      case let .createEnvelopePrice(store):
-        CreateEnvelopePriceView(store: store)
-      case let .createEnvelopeName(store):
-        CreateEnvelopeNameView(store: store)
+    VStack {
+      HeaderView(store: store.scope(state: \.header, action: \.header))
+      NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+        EmptyView()
+      } destination: { store in
+        switch store.case {
+        case let .createEnvelopePrice(store):
+          CreateEnvelopePriceView(store: store)
+        case let .createEnvelopeName(store):
+          CreateEnvelopeNameView(store: store)
+        }
       }
-    }
-    .onAppear {
-      store.send(.onAppear(true))
+      .onAppear {
+        store.send(.onAppear(true))
+      }
     }
   }
 
