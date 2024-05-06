@@ -16,8 +16,7 @@ struct CreateEnvelopeDateView: View {
   var store: StoreOf<CreateEnvelopeDate>
 
   // MARK: Content
-  
-  
+
   @ViewBuilder
   private func makeNextButton() -> some View {
     SSButton(
@@ -58,7 +57,7 @@ struct CreateEnvelopeDateView: View {
         Text("년 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100) as? Text
-        
+
         TextField(
           "",
           text: $store.monthTextFieldText,
@@ -69,8 +68,7 @@ struct CreateEnvelopeDateView: View {
         Text("월 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100) as? Text
-        
-        
+
         TextField(
           "",
           text: $store.dayTextFieldText,
@@ -81,12 +79,11 @@ struct CreateEnvelopeDateView: View {
         Text("일 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100) as? Text
-        
+
         Spacer()
       }
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
-
   }
 
   var body: some View {
@@ -107,12 +104,12 @@ struct CreateEnvelopeDateView: View {
   private enum Metrics {
     static let horizontalSpacing: CGFloat = 16
   }
+
   private enum Constants {
     static let nameDescriptionText: String = "언제 보냈나요"
-    
-    static let yearTextFieldTextPrompt: Text = Text("2024")
-    static let monthTextFieldTextPrompt: Text = Text("11")
-    static let dayTextFieldTextPrompt: Text = Text("24")
-    
+
+    static let yearTextFieldTextPrompt: Text = .init("2024")
+    static let monthTextFieldTextPrompt: Text = .init("11")
+    static let dayTextFieldTextPrompt: Text = .init("24")
   }
 }

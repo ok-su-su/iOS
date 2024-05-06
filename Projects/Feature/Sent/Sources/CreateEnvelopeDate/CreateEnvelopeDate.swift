@@ -17,25 +17,26 @@ struct CreateEnvelopeDate {
     var yearTextFieldText: String = ""
     var monthTextFieldText: String = ""
     var dayTextFieldText: String = ""
-    
+
     var yearTextFieldValid: Bool {
       // some logic
       return true
     }
-    
+
     var monthTextFieldValid: Bool {
       // some logic
       return true
     }
-    
+
     var dayTextFieldValid: Bool {
       // some logic
       return true
     }
-    
+
     var isAbleToPush: Bool {
       return yearTextFieldValid && monthTextFieldValid && dayTextFieldValid
     }
+
     init() {}
   }
 
@@ -71,12 +72,12 @@ struct CreateEnvelopeDate {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-        
+
       case .binding:
         return .none
-        
+
       case .view(.tappedNextButton):
-        return .run {send in
+        return .run { send in
           await send(.delegate(.push))
         }
       case .delegate(.push):
