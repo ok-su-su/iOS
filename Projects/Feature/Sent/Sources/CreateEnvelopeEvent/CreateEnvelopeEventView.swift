@@ -57,12 +57,12 @@ struct CreateEnvelopeEventView: View {
         .init(
           size: .mh60,
           status: .active,
-          style: store.selectedRelationString == current ? .filled : .ghost,
-          color: store.selectedRelationString == current ? .orange : .black,
+          style: store.selectedString == current ? .filled : .ghost,
+          color: store.selectedString == current ? .orange : .black,
           buttonText: current,
           frame: .init(maxWidth: .infinity)
         )) {
-          store.send(.view(.tappedRelation(name: current)))
+          store.send(.view(.tappedItem(name: current)))
         }
     }
   }
@@ -74,31 +74,31 @@ struct CreateEnvelopeEventView: View {
         .init(
           size: .mh60,
           status: .active,
-          style: store.selectedRelationString == current ? .filled : .ghost,
-          color: store.selectedRelationString == current ? .orange : .black,
+          style: store.selectedString == current ? .filled : .ghost,
+          color: store.selectedString == current ? .orange : .black,
           buttonText: current,
           frame: .init(maxWidth: .infinity)
         )) {
-          store.send(.view(.tappedRelation(name: current)))
+          store.send(.view(.tappedItem(name: current)))
         }
     }
   }
 
   @ViewBuilder
   private func makeAddCustomRelationButton() -> some View {
-    if store.isAddingNewRelation {
+    if store.isAddingNewItem {
       SSTextFieldButton(
         .init(
           size: .mh60,
-          status: store.customRelationSaved ? .saved : .filled,
+          status: store.isSavedCustomItem ? .saved : .filled,
           style: .filled,
-          color: store.addingCustomRelationText == store.selectedRelationString ? .orange : .black,
-          textFieldText: $store.addingCustomRelationText,
+          color: store.addingCustomItemText == store.selectedString ? .orange : .black,
+          textFieldText: $store.addingCustomItemText,
           showCloseButton: true,
           showDeleteButton: true,
           prompt: Constants.addNewRelationTextFieldPrompt
         )) {
-          store.send(.view(.tappedRelation(name: store.addingCustomRelationText)))
+          store.send(.view(.tappedItem(name: store.addingCustomItemText)))
         } onTapCloseButton: {
           store.send(.view(.tappedTextFieldCloseButton))
         } onTapSaveButton: {
@@ -114,7 +114,7 @@ struct CreateEnvelopeEventView: View {
           buttonText: Constants.makeAddCustomRelationButtonText,
           frame: .init(maxWidth: .infinity)
         )) {
-          store.send(.view(.tappedAddCustomRelation))
+          store.send(.view(.tappedAddCustomItemButton))
         }
     }
   }
@@ -160,7 +160,7 @@ struct CreateEnvelopeEventView: View {
   }
 
   private enum Constants {
-    static let titleText: String = "나와는\n어떤 사이 인가요"
+    static let titleText: String = "어떤 경조사였나요"
     static let makeAddCustomRelationButtonText = "직접 입력"
     static let addNewRelationTextFieldPrompt = "입력해주세요"
     static let addNewRelationTextFieldPromptText: some View = Text(Constants.addNewRelationTextFieldPrompt)

@@ -14,26 +14,25 @@ struct CreateEnvelopeEvent {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var selectedRelationString: String? = nil
-    var isAddingNewRelation: Bool = false
+    var selectedString: String? = nil
+    var isAddingNewItem: Bool = false
 
-    var addingCustomRelationText = ""
-    var addingCustomRelationHighlight = false
-    var customRelationSaved: Bool = false
+    var addingCustomItemText = ""
+    var isSavedCustomItem: Bool = false
 
-    var isAvailableAddingCustomRelationSaveButton: Bool {
-      return addingCustomRelationText != ""
+    var isAvailableAddingCustomItemSaveButton: Bool {
+      return addingCustomItemText != ""
     }
 
     var isAbleToPush: Bool {
-      return selectedRelationString != "" && selectedRelationString != nil
+      return selectedString != "" && selectedString != nil
     }
 
     var defaultRelationString: [String] = [
-      "친구",
-      "가족",
-      "친척",
-      "동료",
+      "결혼식",
+      "돌잔치",
+      "장례식",
+      "생일기념일",
     ]
   }
 
@@ -48,16 +47,16 @@ struct CreateEnvelopeEvent {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedRelation(name: String)
+    case tappedItem(name: String)
     case tappedNextButton
-    case tappedAddCustomRelation
+    case tappedAddCustomItemButton
     case tappedTextFieldCloseButton
     case tappedTextFieldSaveAndEditButton
   }
 
   enum InnerAction: Equatable {
-    case startAddCustomRelation
-    case endAddCustomRelation
+    case startAddCustomItem
+    case endAddCustomItem
   }
 
   enum AsyncAction: Equatable {}
@@ -78,8 +77,8 @@ struct CreateEnvelopeEvent {
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedRelation(name: name)):
-        state.selectedRelationString = name
+      case let .view(.tappedItem(name: name)):
+        state.selectedString = name
         return .none
 
       case .view(.tappedNextButton):
@@ -90,36 +89,36 @@ struct CreateEnvelopeEvent {
       case .delegate:
         return .none
 
-      case .view(.tappedAddCustomRelation):
+      case .view(.tappedAddCustomItemButton):
         return .run { send in
-          await send(.inner(.startAddCustomRelation))
+          await send(.inner(.startAddCustomItem))
         }
 
-      case .inner(.startAddCustomRelation):
-        state.selectedRelationString = nil
-        state.isAddingNewRelation = true
-        state.addingCustomRelationText = ""
-        state.customRelationSaved = false
+      case .inner(.startAddCustomItem):
+        state.selectedString = nil
+        state.isAddingNewItem = true
+        state.addingCustomItemText = ""
+        state.isSavedCustomItem = false
         return .none
 
       case .binding:
         return .none
 
       case .view(.tappedTextFieldCloseButton):
-        state.addingCustomRelationText = ""
-        if state.customRelationSaved {
+        state.addingCustomItemText = ""
+        if state.isSavedCustomItem {
           return .run { send in
-            await send(.inner(.endAddCustomRelation))
+            await send(.inner(.endAddCustomItem))
           }
         }
         return .none
 
       case .view(.tappedTextFieldSaveAndEditButton):
-        state.customRelationSaved.toggle()
+        state.isSavedCustomItem.toggle()
         return .none
 
-      case .inner(.endAddCustomRelation):
-        state.isAddingNewRelation = false
+      case .inner(.endAddCustomItem):
+        state.isAddingNewItem = false
         return .none
       }
     }
