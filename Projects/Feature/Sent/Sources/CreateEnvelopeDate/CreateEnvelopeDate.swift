@@ -13,6 +13,7 @@ struct CreateEnvelopeDate {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
     var yearTextFieldText: String = ""
     var monthTextFieldText: String = ""
@@ -37,7 +38,6 @@ struct CreateEnvelopeDate {
       return yearTextFieldValid && monthTextFieldValid && dayTextFieldValid
     }
 
-    init() {}
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
