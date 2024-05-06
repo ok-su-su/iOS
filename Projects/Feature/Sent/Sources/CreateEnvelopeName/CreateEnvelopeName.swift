@@ -43,6 +43,7 @@ struct CreateEnvelopeName {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedNextButton
+    case tappedFilterItem(name: String)
   }
 
   enum InnerAction: Equatable {}
@@ -68,13 +69,17 @@ struct CreateEnvelopeName {
 
       case .binding:
         return .none
-        
+
       case .view(.tappedNextButton):
-        return .run {send in
+        return .run { send in
           await send(.delegate(.push))
         }
-        
-      case .delegate(_):
+
+      case .delegate:
+        return .none
+
+      case let .view(.tappedFilterItem(name: name)):
+        state.textFieldText = name
         return .none
       }
     }

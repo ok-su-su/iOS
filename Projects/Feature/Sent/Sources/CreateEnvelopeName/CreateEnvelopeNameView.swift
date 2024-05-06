@@ -40,6 +40,9 @@ struct CreateEnvelopeNameView: View {
             .modifier(SSTypoModifier(.text_xs))
             .foregroundStyle(SSColor.gray40)
         }
+        .onTapGesture {
+          store.send(.view(.tappedFilterItem(name: current.name)))
+        }
         .padding(.horizontal, 24)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
