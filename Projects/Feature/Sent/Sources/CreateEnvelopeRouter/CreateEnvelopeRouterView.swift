@@ -31,7 +31,7 @@ struct CreateEnvelopeRouterView: View {
       case let .createEnvelopeRelation(store):
         CreateEnvelopeRelationView(store: store)
       case let .createEnvelopeEvent(store: store):
-        CreateEnvelopeEventView(store: store) 
+        CreateEnvelopeEventView(store: store)
       }
     }
   }
