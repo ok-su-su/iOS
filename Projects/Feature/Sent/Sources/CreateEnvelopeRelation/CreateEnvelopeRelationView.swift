@@ -95,39 +95,18 @@ struct CreateEnvelopeRelationView: View {
           store.send(.view(.tappedAddCustomRelation))
         }
       if store.isAddingNewRelation {
-        HStack(spacing: 8) {
-          Spacer()
-            .frame(width: 24)
-
-          TextField(
-            "",
-            text: $store.addingCustomRelationText,
-            prompt: Constants.addNewRelationTextFieldPromptText as? Text
+        SSTextFieldButton(
+          .init(
+            size: .mh60,
+            status: store.addingCustomRelationText == "" ? .focused : .filled,
+            style: .filled,
+            color: .black,
+            textFieldText: $store.addingCustomRelationText,
+            showCloseButton: true,
+            showDeleteButton: true,
+            prompt: Constants.addNewRelationTextFieldPrompt
           )
-          .frame(maxWidth: .infinity)
-
-          Button {
-            store.send(.view(.tappedDeleteCurrentAddingRelation))
-          } label: {
-            SSImage.commonClose
-          }
-
-          // TODO: add new TextFieldButton
-          Button {
-            store.send(.view(.tappedSaveCurrentAddingRelation))
-          } label: {
-            Text("저장")
-              .modifier(SSTypoModifier(.title_xxs))
-              .foregroundStyle(SSColor.gray10)
-          }
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .background(Color(red: 0.14, green: 0.14, blue: 0.14))
-          .cornerRadius(4)
-
-          Spacer()
-            .frame(width: 16)
-        }
+        )
       }
     }
   }

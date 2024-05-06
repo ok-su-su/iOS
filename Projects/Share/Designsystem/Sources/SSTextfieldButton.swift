@@ -1,5 +1,5 @@
 //
-//  SSButton.swift
+//  SSTextfieldButton.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/12/24.
@@ -8,13 +8,13 @@
 
 import SwiftUI
 
-// MARK: - SSButtonConstans
+// MARK: - SSTextFieldButtonConstans
 
 enum SSTextFieldButtonConstans {
   static let cornerRadius: CGFloat = 4
 }
 
-// MARK: - SSButton
+// MARK: - SSTextFieldButton
 
 public struct SSTextFieldButton: View {
   let onTapCloseButton: (() -> Void)?
@@ -22,8 +22,8 @@ public struct SSTextFieldButton: View {
   let property: SSTextFieldButtonProperty
   public init(
     _ property: SSTextFieldButtonProperty,
-    onTapCloseButton: (() -> Void)?,
-    onTapSaveButton: (() -> Void)?
+    onTapCloseButton: (() -> Void)? = nil,
+    onTapSaveButton: (() -> Void)? = nil
   ) {
     self.property = property
     self.onTapCloseButton = onTapCloseButton
@@ -32,31 +32,69 @@ public struct SSTextFieldButton: View {
 
   public var body: some View {
     HStack(spacing: 6) {
+      TextField(
+        "",
+        text: property.$textFieldText,
+        prompt: Text(property.prompt)
+          .modifier(SSTypoModifier(property.font)) as? Text
+      )
+      .modifier(SSTypoModifier(property.font))
+      .foregroundStyle(SSColor.gray100)
+      .background(.clear)
+      .frame(maxWidth: .infinity, alignment: .center)
 
-      TextField("", text: property.$textFieldText, prompt: Text(property.prompt))
-        .background(.clear)
-        .foregroundStyle(property.textColor)
-        .frame(maxWidth: .infinity)
-      
-      if property.showCloseButton{
-        Button {
-          if let onTapCloseButton {
-            onTapCloseButton()
+      if property.isEditingMode {
+        if property.showDeleteButton {
+          Button {
+            if let onTapCloseButton {
+              onTapCloseButton()
+            }
+          } label: {
+            SSImage.commonClose
           }
-        } label: {
-          SSImage.commonClose
         }
-      }
-    
-      
-      Button {
-        if let onTapSaveButton {
-          onTapSaveButton()
+
+        if property.showCloseButton {
+          Button {
+            if let onTapSaveButton {
+              onTapSaveButton()
+            }
+          } label: {
+            Text(property.buttonText)
+              .modifier(property.buttonTextModifierProperty)
+              .foregroundStyle(SSColor.gray10)
+              .padding(.vertical, property.buttonVerticalSpacing)
+              .padding(.horizontal, property.buttonHorizontalSpacing)
+          }
+          .background(property.buttonBackgroundColor)
+          .clipShape(RoundedRectangle(cornerRadius: 4))
         }
-      } label: {
-        Text("저장")
-          .modifier(property.saveButtonTextModifierProperty)
-          .foregroundStyle(SSColor.gray10)
+      } else {
+        if property.showCloseButton {
+          Button {
+            if let onTapSaveButton {
+              onTapSaveButton()
+            }
+          } label: {
+            Text(property.buttonText)
+              .modifier(property.buttonTextModifierProperty)
+              .foregroundStyle(SSColor.gray10)
+              .padding(.vertical, property.buttonVerticalSpacing)
+              .padding(.horizontal, property.buttonHorizontalSpacing)
+          }
+          .background(property.buttonBackgroundColor)
+          .clipShape(RoundedRectangle(cornerRadius: 4))
+        }
+
+        if property.showDeleteButton {
+          Button {
+            if let onTapCloseButton {
+              onTapCloseButton()
+            }
+          } label: {
+            SSImage.commonDeleteGray
+          }
+        }
       }
     }
     .padding(.leading, property.leadingSpacing)
