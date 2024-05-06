@@ -21,6 +21,10 @@ struct CreateEnvelopeProperty: Equatable {
     .init(name: "김채소", relationShip: "동창", eventName: "결혼식", eventDate: .now),
   ]
 
+  var customRelation: [String] = [
+    "동창",
+  ]
+
   // TODO: - change Names
   func filteredName(_ value: String) -> [PrevEnvelope] {
     guard let regex: Regex = try? .init("[\\w\\p{L}]*\(value)[\\w\\p{L}]*") else {

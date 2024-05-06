@@ -14,9 +14,29 @@ struct CreateEnvelopeRelation {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+    var selectedRelationString = ""
+    var isAddingNewRelation: Bool = false
+
+    var addingCustomRelationText = ""
+    var addingCustomRelationHighlight = false
+    var isAvailableAddingCustomRelationSaveButton: Bool {
+      return addingCustomRelationText != ""
+    }
+
+    var isAbleToPush: Bool {
+      return selectedRelationString != ""
+    }
+
+    var defaultRelationString: [String] = [
+      "친구",
+      "가족",
+      "친척",
+      "동료",
+    ]
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, BindableAction {
+    case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -26,24 +46,73 @@ struct CreateEnvelopeRelation {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedRelation(name: String)
+    case tappedNextButton
+    case tappedAddCustomRelation
+    case tappedDeleteCurrentAddingRelation
+    case tappedSaveCurrentAddingRelation
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case startAddCustomRelation
+    case endAddCustomRelation
+  }
 
   enum AsyncAction: Equatable {}
 
   @CasePathable
   enum ScopeAction: Equatable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case push
+  }
 
   var body: some Reducer<State, Action> {
+    BindingReducer()
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case let .view(.tappedRelation(name: name)):
+        state.selectedRelationString = name
+        return .none
+
+      case .view(.tappedNextButton):
+        return .run { send in
+          await send(.delegate(.push))
+        }
+
+      case .delegate:
+        return .none
+
+      case .view(.tappedAddCustomRelation):
+        return .run { send in
+          await send(.inner(.startAddCustomRelation))
+        }
+
+      case .inner(.startAddCustomRelation):
+        state.selectedRelationString = ""
+        state.isAddingNewRelation = true
+        return .none
+
+      case .binding:
+        return .none
+
+      case .view(.tappedDeleteCurrentAddingRelation):
+        state.addingCustomRelationText = ""
+        return .none
+
+      case .view(.tappedSaveCurrentAddingRelation):
+        return .run { send in
+          await send(.inner(.endAddCustomRelation))
+        }
+
+      case .inner(.endAddCustomRelation):
+        state.createEnvelopeProperty.customRelation.append(state.addingCustomRelationText)
+        state.isAddingNewRelation = false
+        state.addingCustomRelationText = ""
         return .none
       }
     }
