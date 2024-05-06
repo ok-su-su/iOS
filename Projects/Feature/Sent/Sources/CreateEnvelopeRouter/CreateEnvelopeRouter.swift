@@ -40,6 +40,11 @@ struct CreateEnvelopeRouter {
     }
     Reduce { state, action in
       switch action {
+      case .path(.element(id: _, action: .createEnvelopeRelation(.delegate(.push)))):
+        state.path.append(.createEnvelopeEvent(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        return .run { send in
+          await send(.changedPath, animation: .default)
+        }
       case .path(.element(id: _, action: .createEnvelopeName(.delegate(.push)))):
         state.path.append(.createEnvelopeRelation(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .run { send in
@@ -83,5 +88,6 @@ extension CreateEnvelopeRouter {
     case createEnvelopePrice(CreateEnvelopePrice)
     case createEnvelopeName(CreateEnvelopeName)
     case createEnvelopeRelation(CreateEnvelopeRelation)
+    case createEnvelopeEvent(CreateEnvelopeEvent)
   }
 }
