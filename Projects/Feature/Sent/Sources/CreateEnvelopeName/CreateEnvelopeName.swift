@@ -42,6 +42,7 @@ struct CreateEnvelopeName {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {}
@@ -50,7 +51,9 @@ struct CreateEnvelopeName {
 
   enum ScopeAction: Equatable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case push
+  }
 
   @Dependency(\.dismiss) var dismiss
 
@@ -64,6 +67,14 @@ struct CreateEnvelopeName {
         return .none
 
       case .binding:
+        return .none
+        
+      case .view(.tappedNextButton):
+        return .run {send in
+          await send(.delegate(.push))
+        }
+        
+      case .delegate(_):
         return .none
       }
     }

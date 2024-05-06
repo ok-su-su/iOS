@@ -86,7 +86,9 @@ struct CreateEnvelopeNameView: View {
         buttonText: "다음",
         frame: .init(maxWidth: .infinity)
       )
-    ) {}
+    ) {
+      store.send(.view(.tappedNextButton))
+    }
   }
 
   var body: some View {
