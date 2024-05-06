@@ -37,7 +37,6 @@ struct CreateEnvelopeDate {
     var isAbleToPush: Bool {
       return yearTextFieldValid && monthTextFieldValid && dayTextFieldValid
     }
-
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {

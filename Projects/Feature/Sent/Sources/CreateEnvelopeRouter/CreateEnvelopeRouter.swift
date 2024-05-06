@@ -42,7 +42,9 @@ struct CreateEnvelopeRouter {
       switch action {
       case .path(.element(id: _, action: .createEnvelopeEvent(.delegate(.push)))):
         state.path.append(.createEnvelopeDate(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
-        return .none
+        return .run { send in
+          await send(.changedPath, animation: .default)
+        }
       case .path(.element(id: _, action: .createEnvelopeRelation(.delegate(.push)))):
         state.path.append(.createEnvelopeEvent(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .run { send in

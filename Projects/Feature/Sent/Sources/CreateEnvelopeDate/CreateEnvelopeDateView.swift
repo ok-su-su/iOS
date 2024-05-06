@@ -35,7 +35,7 @@ struct CreateEnvelopeDateView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack {
+    VStack(alignment: .leading) {
       HStack(spacing: 4) {
         // TODO: change Property
         Text("김철수님에게")
@@ -51,37 +51,46 @@ struct CreateEnvelopeDateView: View {
           "",
           text: $store.yearTextFieldText,
           prompt: Constants.yearTextFieldTextPrompt
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(SSColor.gray30) as? Text
+            .foregroundStyle(SSColor.gray30)
         )
+        .multilineTextAlignment(.trailing)
+        .modifier(SSTypoModifier(.title_xl))
+        .keyboardType(.numberPad)
+
         Text("년 ")
           .modifier(SSTypoModifier(.title_xl))
-          .foregroundStyle(SSColor.gray100) as? Text
+          .foregroundStyle(SSColor.gray100)
 
         TextField(
           "",
           text: $store.monthTextFieldText,
           prompt: Constants.monthTextFieldTextPrompt
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(SSColor.gray30) as? Text
+            .foregroundStyle(SSColor.gray30)
         )
+        .multilineTextAlignment(.trailing)
+        .modifier(SSTypoModifier(.title_xl))
+        .keyboardType(.numberPad)
+
         Text("월 ")
           .modifier(SSTypoModifier(.title_xl))
-          .foregroundStyle(SSColor.gray100) as? Text
+          .foregroundStyle(SSColor.gray100)
 
         TextField(
           "",
           text: $store.dayTextFieldText,
           prompt: Constants.dayTextFieldTextPrompt
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(SSColor.gray30) as? Text
+            .foregroundStyle(SSColor.gray30)
         )
+        .multilineTextAlignment(.trailing)
+        .modifier(SSTypoModifier(.title_xl))
+        .keyboardType(.numberPad)
+
         Text("일 ")
           .modifier(SSTypoModifier(.title_xl))
-          .foregroundStyle(SSColor.gray100) as? Text
-
-        Spacer()
+          .foregroundStyle(SSColor.gray100)
       }
+
+      Spacer()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
@@ -96,6 +105,7 @@ struct CreateEnvelopeDateView: View {
         makeNextButton()
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
