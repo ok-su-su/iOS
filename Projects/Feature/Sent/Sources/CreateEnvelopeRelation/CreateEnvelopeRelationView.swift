@@ -19,7 +19,7 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack {
+    VStack(alignment: .leading) {
       Spacer()
         .frame(height: 34)
 
@@ -31,6 +31,10 @@ struct CreateEnvelopeRelationView: View {
 
       Spacer()
         .frame(height: 34)
+
+      // MARK: - Buttons
+
+      makeRelationButton()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
@@ -82,32 +86,36 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeAddCustomRelationButton() -> some View {
-    ZStack {
+    if store.isAddingNewRelation {
+      SSTextFieldButton(
+        .init(
+          size: .mh60,
+          status: store.customRelationSaved ? .saved : .filled,
+          style: .filled,
+          color: store.addingCustomRelationText == store.selectedRelationString ? .orange : .black,
+          textFieldText: $store.addingCustomRelationText,
+          showCloseButton: true,
+          showDeleteButton: true,
+          prompt: Constants.addNewRelationTextFieldPrompt
+        )) {
+          store.send(.view(.tappedRelation(name: store.addingCustomRelationText)))
+        } onTapCloseButton: {
+          store.send(.view(.tappedTextFieldCloseButton))
+        } onTapSaveButton: {
+          store.send(.view(.tappedTextFieldSaveAndEditButton))
+        }
+    } else {
       SSButton(
         .init(
           size: .mh60,
           status: .active,
           style: .ghost,
           color: .black,
-          buttonText: store.isAddingNewRelation ? "" : Constants.makeAddCustomRelationButtonText,
+          buttonText: Constants.makeAddCustomRelationButtonText,
           frame: .init(maxWidth: .infinity)
         )) {
           store.send(.view(.tappedAddCustomRelation))
         }
-      if store.isAddingNewRelation {
-        SSTextFieldButton(
-          .init(
-            size: .mh60,
-            status: store.addingCustomRelationText == "" ? .focused : .filled,
-            style: .filled,
-            color: .black,
-            textFieldText: $store.addingCustomRelationText,
-            showCloseButton: true,
-            showDeleteButton: true,
-            prompt: Constants.addNewRelationTextFieldPrompt
-          )
-        )
-      }
     }
   }
 
@@ -137,7 +145,7 @@ struct CreateEnvelopeRelationView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
-        makeRelationButton()
+
         makeNextButton()
       }
     }

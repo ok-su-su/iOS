@@ -93,6 +93,10 @@ public extension SSTextFieldButtonProperty {
     return status == .filled || status == .focused
   }
 
+  var disableTextField: Bool {
+    return status == .saved || status == .unfocused
+  }
+
   // size: Button의 사이즈 입니다.
   enum Size {
     case lh62
@@ -223,10 +227,6 @@ public extension SSTextFieldButtonProperty {
       color.unfocused
     }
     return targetColor
-  }
-
-  var isDisable: Bool {
-    return false
   }
 
   var buttonTextModifierProperty: SSTypoModifier {

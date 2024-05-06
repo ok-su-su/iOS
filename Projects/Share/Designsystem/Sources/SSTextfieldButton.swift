@@ -17,102 +17,112 @@ enum SSTextFieldButtonConstans {
 // MARK: - SSTextFieldButton
 
 public struct SSTextFieldButton: View {
+  let onTap: (() -> Void)?
   let onTapCloseButton: (() -> Void)?
   let onTapSaveButton: (() -> Void)?
   let property: SSTextFieldButtonProperty
   public init(
     _ property: SSTextFieldButtonProperty,
+    onTap: (() -> Void)? = nil,
     onTapCloseButton: (() -> Void)? = nil,
     onTapSaveButton: (() -> Void)? = nil
   ) {
     self.property = property
     self.onTapCloseButton = onTapCloseButton
     self.onTapSaveButton = onTapSaveButton
+    self.onTap = onTap
   }
 
   public var body: some View {
-    HStack(spacing: 6) {
-      TextField(
-        "",
-        text: property.$textFieldText,
-        prompt: Text(property.prompt)
-          .modifier(SSTypoModifier(property.font)) as? Text
-      )
-      .modifier(SSTypoModifier(property.font))
-      .foregroundStyle(SSColor.gray100)
-      .background(.clear)
-      .frame(maxWidth: .infinity, alignment: .center)
+    Button {
+      if let onTap {
+        onTap()
+      }
+    } label: {
+      HStack(spacing: 6) {
+        TextField(
+          "",
+          text: property.$textFieldText,
+          prompt: Text(property.prompt)
+            .modifier(SSTypoModifier(property.font)) as? Text
+        )
+        .multilineTextAlignment(.center)
+        .modifier(SSTypoModifier(property.font))
+        .foregroundStyle(property.textColor)
+        .background(.clear)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .disabled(property.disableTextField)
 
-      if property.isEditingMode {
-        if property.showDeleteButton {
-          Button {
-            if let onTapCloseButton {
-              onTapCloseButton()
+        if property.isEditingMode {
+          if property.showDeleteButton {
+            Button {
+              if let onTapCloseButton {
+                onTapCloseButton()
+              }
+            } label: {
+              SSImage.commonClose
             }
-          } label: {
-            SSImage.commonClose
           }
-        }
 
-        if property.showCloseButton {
-          Button {
-            if let onTapSaveButton {
-              onTapSaveButton()
+          if property.showCloseButton {
+            Button {
+              if let onTapSaveButton {
+                onTapSaveButton()
+              }
+            } label: {
+              Text(property.buttonText)
+                .modifier(property.buttonTextModifierProperty)
+                .foregroundStyle(SSColor.gray10)
+                .padding(.vertical, property.buttonVerticalSpacing)
+                .padding(.horizontal, property.buttonHorizontalSpacing)
             }
-          } label: {
-            Text(property.buttonText)
-              .modifier(property.buttonTextModifierProperty)
-              .foregroundStyle(SSColor.gray10)
-              .padding(.vertical, property.buttonVerticalSpacing)
-              .padding(.horizontal, property.buttonHorizontalSpacing)
+            .background(property.buttonBackgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
           }
-          .background(property.buttonBackgroundColor)
-          .clipShape(RoundedRectangle(cornerRadius: 4))
-        }
-      } else {
-        if property.showCloseButton {
-          Button {
-            if let onTapSaveButton {
-              onTapSaveButton()
+        } else {
+          if property.showCloseButton {
+            Button {
+              if let onTapSaveButton {
+                onTapSaveButton()
+              }
+            } label: {
+              Text(property.buttonText)
+                .modifier(property.buttonTextModifierProperty)
+                .foregroundStyle(SSColor.gray10)
+                .padding(.vertical, property.buttonVerticalSpacing)
+                .padding(.horizontal, property.buttonHorizontalSpacing)
             }
-          } label: {
-            Text(property.buttonText)
-              .modifier(property.buttonTextModifierProperty)
-              .foregroundStyle(SSColor.gray10)
-              .padding(.vertical, property.buttonVerticalSpacing)
-              .padding(.horizontal, property.buttonHorizontalSpacing)
+            .background(property.buttonBackgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
           }
-          .background(property.buttonBackgroundColor)
-          .clipShape(RoundedRectangle(cornerRadius: 4))
-        }
 
-        if property.showDeleteButton {
-          Button {
-            if let onTapCloseButton {
-              onTapCloseButton()
+          if property.showDeleteButton {
+            Button {
+              if let onTapCloseButton {
+                onTapCloseButton()
+              }
+            } label: {
+              SSImage.commonDeleteGray
             }
-          } label: {
-            SSImage.commonDeleteGray
           }
         }
       }
+      .padding(.leading, property.leadingSpacing)
+      .padding(.trailing, property.trailingSpacing)
+      .padding(.vertical, property.verticalSpacing)
+      .frame(
+        minWidth: property.frame.minWidth,
+        idealWidth: property.frame.idealWidth,
+        maxWidth: property.frame.maxWidth,
+        minHeight: property.frame.minHeight,
+        idealHeight: property.frame.idealHeight,
+        maxHeight: property.frame.maxHeight,
+        alignment: property.frame.alignment
+      )
+      .background {
+        property.backgroundColor
+      }
+      .clipShape(RoundedRectangle(cornerRadius: SSTextFieldButtonConstans.cornerRadius))
     }
-    .padding(.leading, property.leadingSpacing)
-    .padding(.trailing, property.trailingSpacing)
-    .padding(.vertical, property.verticalSpacing)
-    .frame(
-      minWidth: property.frame.minWidth,
-      idealWidth: property.frame.idealWidth,
-      maxWidth: property.frame.maxWidth,
-      minHeight: property.frame.minHeight,
-      idealHeight: property.frame.idealHeight,
-      maxHeight: property.frame.maxHeight,
-      alignment: property.frame.alignment
-    )
-    .background {
-      property.backgroundColor
-    }
-    .clipShape(RoundedRectangle(cornerRadius: SSTextFieldButtonConstans.cornerRadius))
-    .disabled(property.isDisable)
   }
 }
