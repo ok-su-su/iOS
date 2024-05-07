@@ -6,19 +6,20 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import OSLog
 import SwiftUI
 
 // MARK: - SSTextFieldButtonProperty
 
 public struct SSTextFieldButtonProperty {
   let size: Size
-  let status: Status
-  let style: Style
-  let color: ButtonColor
+  var status: Status
+  var style: Style
+  var color: ButtonColor
   @Binding var textFieldText: String
   var showCloseButton: Bool
   var showDeleteButton: Bool
-  let prompt: String
+  var prompt: String
   let frame: SSButtonFrame
 
   public struct SSButtonFrame {
@@ -90,7 +91,7 @@ public struct SSTextFieldButtonProperty {
 
 public extension SSTextFieldButtonProperty {
   var isEditingMode: Bool {
-    return status == .filled || status == .focused
+    return status == .filled
   }
 
   var disableTextField: Bool {
@@ -117,7 +118,6 @@ public extension SSTextFieldButtonProperty {
   }
 
   enum Status {
-    case focused
     case filled
     case saved
     case unfocused
@@ -204,8 +204,6 @@ public extension SSTextFieldButtonProperty {
       switch status {
     case .filled:
       color.filled
-    case .focused:
-      color.focusedColor
     case .saved:
       color.saved
     case .unfocused:
@@ -219,8 +217,6 @@ public extension SSTextFieldButtonProperty {
       switch status {
     case .filled:
       color.filled
-    case .focused:
-      color.focusedColor
     case .saved:
       color.saved
     case .unfocused:
@@ -238,10 +234,15 @@ public extension SSTextFieldButtonProperty {
     }
   }
 
+  var disableSaveButton: Bool { return textFieldText == "" }
+
   var buttonBackgroundColor: Color {
+    os_log("textFieldText = \(_textFieldText.wrappedValue)")
+    if $textFieldText.wrappedValue == "" {
+      return SSColor.gray40
+    }
     switch status {
-    case .focused,
-         .unfocused:
+    case .unfocused:
       return SSColor.gray40
     case .filled,
          .saved:
@@ -250,6 +251,7 @@ public extension SSTextFieldButtonProperty {
   }
 
   var buttonHorizontalSpacing: CGFloat { 8 }
+
   var buttonVerticalSpacing: CGFloat {
     switch size {
     case .lh46,
@@ -265,9 +267,7 @@ public extension SSTextFieldButtonProperty {
 
   var buttonText: String {
     switch status {
-    case .filled,
-         .focused
-         :
+    case .filled:
       return "저장"
     case
       .saved,

@@ -20,7 +20,7 @@ public struct SSTextFieldButton: View {
   let onTap: (() -> Void)?
   let onTapCloseButton: (() -> Void)?
   let onTapSaveButton: (() -> Void)?
-  let property: SSTextFieldButtonProperty
+  var property: SSTextFieldButtonProperty
   public init(
     _ property: SSTextFieldButtonProperty,
     onTap: (() -> Void)? = nil,
@@ -41,10 +41,9 @@ public struct SSTextFieldButton: View {
     } label: {
       HStack(spacing: 6) {
         TextField(
-          "",
+          "ㅇㅇ",
           text: property.$textFieldText,
           prompt: Text(property.prompt)
-            .modifier(SSTypoModifier(property.font)) as? Text
         )
         .multilineTextAlignment(.center)
         .modifier(SSTypoModifier(property.font))
@@ -53,7 +52,9 @@ public struct SSTextFieldButton: View {
         .frame(maxWidth: .infinity, alignment: .center)
         .disabled(property.disableTextField)
 
+        // 에디팅 모드 일 때
         if property.isEditingMode {
+          // DeleteButton
           if property.showDeleteButton {
             Button {
               if let onTapCloseButton {
@@ -64,6 +65,7 @@ public struct SSTextFieldButton: View {
             }
           }
 
+          // SaveBUtton
           if property.showCloseButton {
             Button {
               if let onTapSaveButton {
@@ -78,8 +80,9 @@ public struct SSTextFieldButton: View {
             }
             .background(property.buttonBackgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 4))
+            .disabled(property.disableSaveButton)
           }
-        } else {
+        } else { // 버튼이 saved되었을 때
           if property.showCloseButton {
             Button {
               if let onTapSaveButton {
