@@ -6,18 +6,19 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import SwiftUI
+import OSLog
 import ComposableArchitecture
 import Designsystem
-import OSLog
-import SwiftUI
 
 public struct InventoryView: View {
   @Bindable var inventoryStore: StoreOf<InventoryViewFeature>
-
+  private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
+  
   public init(inventoryStore: StoreOf<InventoryViewFeature>) {
     self.inventoryStore = inventoryStore
   }
-
+  
   @ViewBuilder
   public func makeDotLineButton() -> some View {
     Rectangle()
@@ -35,16 +36,17 @@ public struct InventoryView: View {
         inventoryStore.send(.didTapAddInventoryButton)
       }
   }
-
+  
   @ViewBuilder
   public func makeEmptyView() -> some View {
+    
     GeometryReader { geometry in
       if inventoryStore.inventorys.isEmpty {
         VStack {
           makeDotLineButton()
             .padding(.horizontal, InventoryFilterConstants.commonSpacing)
         }.frame(width: geometry.size.width, height: 160, alignment: .topLeading)
-
+        
         VStack {
           Spacer()
           Text(InventoryFilterConstants.emptyInventoryText)
@@ -54,11 +56,24 @@ public struct InventoryView: View {
           Spacer()
         }
       } else {
-        // TODO: Server Network 통신 State 추가시 코드 추가
+        ScrollView {
+          LazyVGrid(columns: inventoryColumns) {
+            ForEach(inventoryStore.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { store in
+              InventoryBoxView(inventoryBoxstore: store)
+                .padding(.trailing, InventoryFilterConstants.commonSpacing)
+            }
+            VStack {
+              makeDotLineButton()
+                .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
+            }
+          }
+        }
       }
+      
     }
+    
   }
-
+  
   @ViewBuilder
   public func makeFilterView() -> some View {
     GeometryReader { geometry in
@@ -66,7 +81,7 @@ public struct InventoryView: View {
         SSButton(InventoryFilterConstants.latestButtonProperty) {
           inventoryStore.send(.didTapLatestButton)
         }
-
+        
         SSButton(InventoryFilterConstants.filterButtonProperty) {
           inventoryStore.send(.didTapFilterButton)
         }
@@ -75,22 +90,40 @@ public struct InventoryView: View {
       .padding(.horizontal, InventoryFilterConstants.commonSpacing)
     }
   }
-
+  
   public var body: some View {
-    VStack {
-      makeFilterView()
-        .frame(height: 32)
-      makeEmptyView()
+    ZStack(alignment: .bottomTrailing) {
+      VStack {
+        HeaderView(store: inventoryStore.scope(state: \.headerType, action: \.setHeaderView))
+        Spacer()
+          .frame(height: 16)
+        
+        makeFilterView()
+          .frame(height: 32)
+        makeEmptyView()
+      }
+      InventoryFloatingButton(floatingStore: inventoryStore.scope(state: \.floatingState, action: \.setFloatingView))
+        .padding(.trailing,  20)
+        .padding(.bottom, 20)
+  
+    }.safeAreaInset(edge: .bottom) {
+      SSTabbar(store: inventoryStore.scope(state: \.tabbarType, action: \.setTabbarView))
+        .background {
+          Color.white
+        }
+        .ignoresSafeArea()
+        .frame(height: 56)
+        .toolbar(.hidden, for: .tabBar)
     }
+    
   }
-
+  
   private enum InventoryFilterConstants {
-    // MARK: Property
-
+    //MARK: Property
     static let commonSpacing: CGFloat = 16
     static let filterSpacing: CGFloat = 8
     static let emptyInventoryText: String = "아직 받은 장부가 없어요"
-
+    
     static let latestButtonProperty: SSButtonProperty = .init(
       size: .sh32,
       status: .active,
@@ -99,7 +132,7 @@ public struct InventoryView: View {
       leftIcon: .icon(SSImage.commonOrder),
       buttonText: "최신순"
     )
-
+    
     static let filterButtonProperty: SSButtonProperty = .init(
       size: .sh32,
       status: .active,
@@ -108,7 +141,7 @@ public struct InventoryView: View {
       leftIcon: .icon(SSImage.commonFilter),
       buttonText: "필터"
     )
-
+    
     static let inventoryAddButtonProperty: SSButtonProperty = .init(
       size: .sh40,
       status: .active,
@@ -117,5 +150,6 @@ public struct InventoryView: View {
       leftIcon: .icon(SSImage.commonAdd),
       buttonText: ""
     )
+    
   }
 }

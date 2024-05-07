@@ -7,7 +7,6 @@
 //
 import ComposableArchitecture
 import Designsystem
-import SSRoot
 import SwiftUI
 
 struct CreateEnvelopeRouterView: View {

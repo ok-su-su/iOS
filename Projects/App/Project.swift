@@ -13,6 +13,7 @@ let project = Project.makeModule(
       .core(.sSRoot),
       .core(.coreLayers),
       .feature(.sent),
+      .feature(.inventory)
     ],
     testDependencies: [],
     infoPlist: [
