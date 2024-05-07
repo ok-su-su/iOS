@@ -1,0 +1,1 @@
+// Content of KeepResources.swift
