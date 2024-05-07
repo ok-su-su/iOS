@@ -19,19 +19,39 @@ struct CreateEnvelopeRouterView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
-
-  var body: some View {
+  private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       EmptyView()
     } destination: { store in
       switch store.case {
       case let .createEnvelopePrice(store):
         CreateEnvelopePriceView(store: store)
+      case let .createEnvelopeName(store):
+        CreateEnvelopeNameView(store: store)
+      case let .createEnvelopeRelation(store):
+        CreateEnvelopeRelationView(store: store)
+      case let .createEnvelopeEvent(store):
+        CreateEnvelopeEventView(store: store)
+      case let .createEnvelopeDate(store):
+        CreateEnvelopeDateView(store: store)
+      case let .createEnvelopeAdditionalSection(store):
+        CreateEnvelopeAdditionalSectionView(store: store)
       }
     }
-    .onAppear {
-      store.send(.onAppear(true))
+  }
+
+  var body: some View {
+    ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+      VStack {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+        makeNavigationView()
+      }
+      .onAppear {
+        store.send(.onAppear(true))
+      }
     }
   }
 

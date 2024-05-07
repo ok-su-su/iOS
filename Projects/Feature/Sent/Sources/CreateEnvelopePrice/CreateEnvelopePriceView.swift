@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import OSLog
 import SwiftUI
 
 // MARK: - CreateEnvelopePriceView
@@ -37,6 +38,12 @@ struct CreateEnvelopePriceView: View {
       // MARK: - TextFieldView
 
       SSTextField(isDisplay: true, text: $store.textFieldText, property: .amount, isHighlight: $store.textFieldIsHighlight)
+        .onChange(of: store.textFieldText) { oldValue, newValue in
+          if oldValue == newValue {
+            return
+          }
+          store.send(.view(.changeText(newValue)))
+        }
 
       Spacer()
         .frame(height: 32)
@@ -58,7 +65,7 @@ struct CreateEnvelopePriceView: View {
   }
 
   @ViewBuilder
-  func makeNextButton() -> some View {
+  private func makeNextButton() -> some View {
     SSButton(
       .init(
         size: .mh60,
@@ -68,7 +75,9 @@ struct CreateEnvelopePriceView: View {
         buttonText: "다음",
         frame: .init(maxWidth: .infinity)
       )
-    ) {}
+    ) {
+      store.send(.view(.tappedNextButton))
+    }
   }
 
   var body: some View {
@@ -77,7 +86,6 @@ struct CreateEnvelopePriceView: View {
         .gray15
         .ignoresSafeArea()
       VStack(alignment: .leading) {
-        HeaderView(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         makeContentView()
         makeNextButton()
       }

@@ -21,4 +21,10 @@ enum CustomNumberFormatter {
     let converted = val.map { String($0) }.compactMap { Int($0) }.map { String($0) }.joined()
     return Int(converted)
   }
+
+  static func formattedByThreeZero(_ val: String) -> String? {
+    let val = val.map { String($0) }.compactMap { Int($0) }.map { String($0) }
+    numberFormatter.numberStyle = .decimal
+    return numberFormatter.string(for: Int(val.joined()))
+  }
 }
