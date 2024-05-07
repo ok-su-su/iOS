@@ -7,7 +7,10 @@ let project = Project.makeModule(
   targets: .feature(
     .inventory,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .core(.coreLayers),
+      .share(.designsystem),
+    ],
     testDependencies: []
   )
 )

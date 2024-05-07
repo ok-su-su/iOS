@@ -1,5 +1,5 @@
 //
-//  InventoryBoxFeature.swift
+//  InventoryBox.swift
 //  SSRoot
 //
 //  Created by Kim dohyun on 5/3/24.
@@ -10,9 +10,9 @@ import Foundation
 
 import ComposableArchitecture
 
-
 @Reducer
-public struct InventoryBoxFeature {
+public struct InventoryBox {
+  
   @ObservableState
   public struct State: Equatable, Identifiable {
     public var id: UUID = .init()

@@ -58,27 +58,9 @@ public struct ContentView: View {
       inventoryStore:
           .init(
             initialState: InventoryViewFeature.State(
-              inventorys: [
-                .init(inventoryType: .Wedding,
-                      inventoryTitle: "123",
-                      inventoryAmount: "123",
-                      inventoryCount: 1
-                     ),
-                .init(inventoryType: .Wedding,
-                      inventoryTitle: "123",
-                      inventoryAmount: "123",
-                      inventoryCount: 1
-                     ),
-                .init(inventoryType: .Wedding,
-                      inventoryTitle: "123",
-                      inventoryAmount: "123",
-                      inventoryCount: 1
-                     ),
-                .init(inventoryType: .Wedding,
-                      inventoryTitle: "123",
-                      inventoryAmount: "123",
-                      inventoryCount: 1
-                     )
+              inventorys: [ 
+                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
+                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
               ]
             )
           ) {

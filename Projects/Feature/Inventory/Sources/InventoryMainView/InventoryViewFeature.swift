@@ -11,9 +11,6 @@ import Designsystem
 import ComposableArchitecture
 import OSLog
 
-
-
-
 @Reducer
 public struct InventoryViewFeature: Equatable {
   
@@ -21,11 +18,12 @@ public struct InventoryViewFeature: Equatable {
   
   @ObservableState
   public struct State {
-    public var inventorys: IdentifiedArrayOf<InventoryBoxFeature.State>
-    public var isLoading: Bool
-    public var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
-    public var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
-    public init(inventorys: IdentifiedArrayOf<InventoryBoxFeature.State>, isLoading: Bool = false) {
+    var inventorys: IdentifiedArrayOf<InventoryBox.State>
+    var isLoading: Bool
+    var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
+    var floatingState = InventoryFloating.State()
+    var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+    public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading
     }
@@ -34,7 +32,8 @@ public struct InventoryViewFeature: Equatable {
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
-    case reloadInvetoryItems(IdentifiedActionOf<InventoryBoxFeature>)
+    case setFloatingView(InventoryFloating.Action)
+    case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -47,6 +46,10 @@ public struct InventoryViewFeature: Equatable {
     
     Scope(state: \.tabbarType, action: /Action.setTabbarView) {
       SSTabBarFeature()
+    }
+    
+    Scope(state: \.floatingState, action: /Action.setFloatingView) {
+        InventoryFloating()
     }
     
     Reduce { state, action in
@@ -65,7 +68,7 @@ public struct InventoryViewFeature: Equatable {
         return .none
       }
     }.forEach(\.inventorys, action: \.reloadInvetoryItems) {
-      InventoryBoxFeature()
+        InventoryBox()
     }
   }
 }

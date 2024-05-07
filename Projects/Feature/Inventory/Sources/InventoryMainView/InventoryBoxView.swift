@@ -11,19 +11,14 @@ import SwiftUI
 import ComposableArchitecture
 import Designsystem
 
-
-
-
-
 public enum InventoryType: String {
   case Wedding = "결혼식"
   case Funeral = "장례식"
 }
 
-
 public struct InventoryBoxView: View {
   
-  @Bindable var inventoryBoxstore: StoreOf<InventoryBoxFeature>
+  @Bindable var inventoryBoxstore: StoreOf<InventoryBox>
   
   @ViewBuilder
   public func makeContentView() -> some View {
@@ -39,7 +34,6 @@ public struct InventoryBoxView: View {
           .foregroundColor(SSColor.gray100)
           .padding(.top, 8)
           .padding(.leading, 16)
-        
         
         Text("전체 4,3350,0원")
           .modifier(SSTypoModifier(.title_xxxs))
