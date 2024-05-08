@@ -17,7 +17,6 @@ struct CreateEnvelopeRelation {
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var selectedRelationString: String? = nil
     var isAddingNewRelation: Bool = false
 
     var addingCustomRelationText = ""
@@ -28,16 +27,12 @@ struct CreateEnvelopeRelation {
       return addingCustomRelationText != ""
     }
 
-    var isAbleToPush: Bool {
-      return selectedRelationString != "" && selectedRelationString != nil
-    }
-
     init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
-        items:
-        createEnvelopeProperty.relationAdaptor.defaultRelations,
-        selectedID: createEnvelopeProperty.relationAdaptor.selectedID
+        items: createEnvelopeProperty.relationAdaptor.defaultRelations,
+        selectedID: createEnvelopeProperty.relationAdaptor.selectedID,
+        isCustomItem: createEnvelopeProperty.relationAdaptor.customRelation
       )
     }
 
@@ -60,16 +55,9 @@ struct CreateEnvelopeRelation {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedRelation(name: String)
-    case tappedAddCustomRelation
-    case tappedTextFieldCloseButton
-    case tappedTextFieldSaveAndEditButton
   }
 
-  enum InnerAction: Equatable {
-    case startAddCustomRelation
-    case endAddCustomRelation
-  }
+  enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
@@ -98,46 +86,10 @@ struct CreateEnvelopeRelation {
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedRelation(name: name)):
-        state.selectedRelationString = name
-        let pushable = state.selectedRelationString != ""
-        return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
-
       case .delegate:
         return .none
 
-      case .view(.tappedAddCustomRelation):
-        return .run { send in
-          await send(.inner(.startAddCustomRelation))
-        }
-
-      case .inner(.startAddCustomRelation):
-        state.selectedRelationString = nil
-        state.isAddingNewRelation = true
-        state.addingCustomRelationText = ""
-        state.customRelationSaved = false
-        return .none
-
       case .binding:
-        return .none
-
-      case .view(.tappedTextFieldCloseButton):
-        state.addingCustomRelationText = ""
-        if state.customRelationSaved {
-          return .run { send in
-            await send(.inner(.endAddCustomRelation))
-          }
-        }
-        return .none
-
-      case .view(.tappedTextFieldSaveAndEditButton):
-        state.customRelationSaved.toggle()
-        return .none
-
-      case .inner(.endAddCustomRelation):
-        state.isAddingNewRelation = false
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
@@ -148,7 +100,12 @@ struct CreateEnvelopeRelation {
       case .scope(.nextButton):
         return .none
 
-      case .scope(.createEnvelopeSelectionItems(_)):
+      case .scope(.createEnvelopeSelectionItems(.delegate(.selected))):
+        let pushable = !state.createEnvelopeProperty.relationAdaptor.selectedID.isEmpty
+        return .run { send in
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
+      case .scope(.createEnvelopeSelectionItems):
         return .none
       }
     }

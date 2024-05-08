@@ -11,12 +11,16 @@ import Foundation
 // MARK: - CreateEnvelopeRelationItemProperty
 
 struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: UUID
+  let id: UUID
   var title: String
 
   init(id: UUID, title: String) {
     self.id = id
     self.title = title
+  }
+
+  mutating func setTitle(_ val: String) {
+    title = val
   }
 }
 
@@ -31,6 +35,8 @@ struct CreateEnvelopeRelationItemPropertyAdapter: Equatable {
     .init(id: UUID(4), title: "동료"),
     .init(id: UUID(5), title: "직장"),
   ]
+
+  var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: UUID(6), title: "")
 
   init() {}
 }

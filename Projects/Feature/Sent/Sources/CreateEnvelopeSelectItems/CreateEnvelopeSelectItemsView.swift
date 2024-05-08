@@ -25,7 +25,14 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
   private func makeContentView() -> some View {}
 
   var body: some View {
-    EmptyView()
+    VStack(alignment: .leading, spacing: 8) {
+      makeDefaultItems()
+      makeCustomItem()
+    }
+  }
+
+  @ViewBuilder
+  private func makeDefaultItems() -> some View {
     ForEach(store.items) { item in
       SSButton(
         .init(
@@ -41,7 +48,47 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
     }
   }
 
+  @ViewBuilder
+  private func makeCustomItem() -> some View {
+    if
+      store.isAddingNewRelation,
+      let item = store.isCustomItem {
+      SSTextFieldButton(
+        .init(
+          size: .mh60,
+          status: store.customRelationSaved ? .saved : .filled,
+          style: .filled,
+          color: store.selectedID.contains(item.id) ? .orange : .black,
+          textFieldText: $store.customTitleText,
+          showCloseButton: true,
+          showDeleteButton: true,
+          prompt: Constants.addNewRelationTextFieldPrompt
+        )) {
+          store.send(.view(.tappedItem(id: item.id)))
+        } onTapCloseButton: {
+          store.send(.view(.tappedTextFieldCloseButton))
+        } onTapSaveButton: {
+          store.send(.view(.tappedTextFieldSaveAndEditButton))
+        }
+    } else {
+      SSButton(
+        .init(
+          size: .mh60,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          buttonText: Constants.makeAddCustomRelationButtonText,
+          frame: .init(maxWidth: .infinity)
+        )) {
+          store.send(.view(.tappedAddCustomRelation))
+        }
+    }
+  }
+
   private enum Metrics {}
 
-  private enum Constants {}
+  private enum Constants {
+    static var makeAddCustomRelationButtonText: String { "직접 입력" }
+    static var addNewRelationTextFieldPrompt: String { "입력해주세요" }
+  }
 }

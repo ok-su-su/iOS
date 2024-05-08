@@ -54,7 +54,6 @@ struct CreateEnvelopePrice {
     case onAppear(Bool)
     case tappedGuidValue(String)
     case changeText(String)
-    case tappedNextButton
     case changedTextfield(String)
   }
 
@@ -96,10 +95,15 @@ struct CreateEnvelopePrice {
         return .run { send in
           await send(.inner(.convertPrice(value)))
         }
-      case .view(.tappedNextButton):
+
+      case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
           await send(.delegate(.push))
         }
+
+      case .scope(.nextButton):
+        return .none
+
       case let .inner(.convertPrice(value)):
         state.textFieldText = value
         return .none
@@ -113,13 +117,6 @@ struct CreateEnvelopePrice {
         }
 
       case .delegate(.push):
-        return .none
-
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .run { send in
-          await send(.delegate(.push))
-        }
-      case .scope(.nextButton):
         return .none
 
       case let .view(.changedTextfield(text)):
