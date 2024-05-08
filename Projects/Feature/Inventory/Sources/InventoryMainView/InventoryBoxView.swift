@@ -11,22 +11,25 @@ import SwiftUI
 import ComposableArchitecture
 import Designsystem
 
+// MARK: - InventoryType
+
 public enum InventoryType: String {
   case Wedding = "결혼식"
   case Funeral = "장례식"
 }
 
+// MARK: - InventoryBoxView
+
 public struct InventoryBoxView: View {
-  
   @Bindable var inventoryBoxstore: StoreOf<InventoryBox>
-  
+
   @ViewBuilder
   public func makeContentView() -> some View {
     ZStack {
       VStack(alignment: .leading, spacing: 8) {
         SmallBadge(property: .init(size: .small, badgeString: InventoryType.Wedding.rawValue, badgeColor: .orange60))
           .padding([.leading, .top], 16)
-        
+
         Text("나의 결혼식")
           .modifier(SSTypoModifier(.title_m))
           .lineLimit(1)
@@ -34,13 +37,13 @@ public struct InventoryBoxView: View {
           .foregroundColor(SSColor.gray100)
           .padding(.top, 8)
           .padding(.leading, 16)
-        
+
         Text("전체 4,3350,0원")
           .modifier(SSTypoModifier(.title_xxxs))
           .foregroundColor(SSColor.gray70)
           .padding(.top, 20)
           .padding(.leading, 16)
-        
+
         Text("총 164개")
           .modifier(SSTypoModifier(.title_xxxs))
           .foregroundColor(SSColor.gray50)
@@ -54,9 +57,8 @@ public struct InventoryBoxView: View {
     .background(SSColor.gray10)
     .padding(.leading, 16)
   }
-  
+
   public var body: some View {
     makeContentView()
   }
-  
 }

@@ -1,11 +1,11 @@
 import ComposableArchitecture
 import Designsystem
+import Inventory
 import Moya
 import OSLog
 import Sent
 import SSAlert
 import SSDataBase
-import Inventory
 import SSRoot
 import SwiftUI
 
@@ -13,7 +13,7 @@ import SwiftUI
 
 final class ContentViewObject: ObservableObject {
   @Published var type: SSTabType = .envelope
-  
+
   func setup() {
     NotificationCenter.default.addObserver(self, selector: #selector(enveloped), name: SSNotificationName.tappedEnveloped, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(inventory), name: SSNotificationName.tappedInventory, object: nil)
@@ -21,27 +21,27 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(self, selector: #selector(vote), name: SSNotificationName.tappedVote, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(myPage), name: SSNotificationName.tappedMyPage, object: nil)
   }
-  
+
   @objc func enveloped() {
     type = .envelope
   }
-  
+
   @objc func inventory() {
     type = .inventory
   }
-  
+
   @objc func statics() {
     type = .statistics
   }
-  
+
   @objc func vote() {
     type = .vote
   }
-  
+
   @objc func myPage() {
     type = .mypage
   }
-  
+
   init() {
     setup()
   }
@@ -51,26 +51,26 @@ final class ContentViewObject: ObservableObject {
 
 public struct ContentView: View {
   @ObservedObject var ContentViewObject: ContentViewObject
-  
+
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
     .inventory: AnyView(InventoryView(
       inventoryStore:
-          .init(
-            initialState: InventoryViewFeature.State(
-              inventorys: [ 
-                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-              ]
-            )
-          ) {
-            InventoryViewFeature()
-          })),
+      .init(
+        initialState: InventoryViewFeature.State(
+          inventorys: [
+            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
+            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
+          ]
+        )
+      ) {
+        InventoryViewFeature()
+      })),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(MyPageRootView()),
     .statistics: AnyView(StatisticsRootView()),
   ]
-  
+
   public var body: some View {
     ZStack {
       SSColor
@@ -82,7 +82,7 @@ public struct ContentView: View {
       .onAppear {}
     }
   }
-  
+
   @ViewBuilder
   func contentView() -> some View {
     sectionViews[ContentViewObject.type]!
@@ -139,7 +139,7 @@ public struct MyPageRootView: View {
   init() {
     os_log("마이 페이지가 나타났어!")
   }
-  
+
   public var body: some View {
     NavigationStack {
       Color(.blue)
