@@ -30,7 +30,6 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
       if store.isCustomItem != nil {
         makeCustomItem()
       }
-      
     }
   }
 

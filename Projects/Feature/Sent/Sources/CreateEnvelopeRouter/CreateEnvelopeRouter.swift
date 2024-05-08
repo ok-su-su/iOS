@@ -33,7 +33,14 @@ struct CreateEnvelopeRouter {
     case header(HeaderViewFeature.Action)
     case changedPath
     case pushCreateEnvelopeAdditional
+    case dismissScreen
   }
+
+  private enum CancelID {
+    case dismiss
+  }
+
+  @Dependency(\.mainQueue) var mainQueue
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
@@ -82,10 +89,13 @@ struct CreateEnvelopeRouter {
         if state.path.count == 1 {
           return .run { _ in await dismiss() }
         }
+        return .send(.dismissScreen)
+          .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
+
+      case .dismissScreen:
         _ = state.path.popLast()
-        return .run { send in
-          await send(.changedPath, animation: .default)
-        }
+        return .send(.changedPath, animation: .default)
+
       case .changedPath:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none

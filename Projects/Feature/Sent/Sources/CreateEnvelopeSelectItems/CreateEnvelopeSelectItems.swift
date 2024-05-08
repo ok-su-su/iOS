@@ -17,21 +17,21 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
 
     /// Add Custom Item TextField Button 의 TextField Text입니다.
     var customTitleText: String = ""
-    
+
     /// customItem이 저장되거나 혹은 실행될 변수 입니다.
     @Shared var isCustomItem: Item?
-    
+
     /// defaults로 펴현될 아이템들 입니다.
     @Shared var items: [Item]
-    
+
     /// 선택된 ID들 입니다.
     @Shared var selectedID: [UUID]
-    
+
     /// CustomItem을 저장했는지 나타내는 변수 입니다.
     /// 만약 사용자가 CustomItem을 저장했다면 변수가 True바뀝니다.
     /// 저장한 변수를 제거하는 버튼을 누를 경우 false로 바뀝니다.
     var customItemSaved: Bool = false
-    
+
     /// 현재 TextFieldButton을 통해서 수정되고 있는지 여부를 나타냅니다.
     /// TextFieldButton을 통해 수정할 경우 True로 바뀝니다.
     var isAddingNewItem: Bool = false
