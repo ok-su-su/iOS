@@ -27,7 +27,10 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       makeDefaultItems()
-      makeCustomItem()
+      if store.isCustomItem != nil {
+        makeCustomItem()
+      }
+      
     }
   }
 
