@@ -17,7 +17,7 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   init() {}
 
   var selectedID: [UUID] = []
-  private var defaultItems: [CreateEnvelopeAdditionalSectionProperty] { CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) } }
+  var defaultItems: [CreateEnvelopeAdditionalSectionProperty] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
 
   private var pushedItem: [Item] = []
   var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
