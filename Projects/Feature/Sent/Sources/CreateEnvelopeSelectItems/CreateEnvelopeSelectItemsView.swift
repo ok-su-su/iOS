@@ -31,8 +31,8 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
         .init(
           size: .mh60,
           status: .active,
-          style: store.selectedID == item.id ? .filled : .ghost,
-          color: store.selectedID == item.id ? .orange : .black,
+          style: store.selectedID.contains(item.id) ? .filled : .ghost,
+          color: store.selectedID.contains(item.id) ? .orange : .black,
           buttonText: item.title,
           frame: .init(maxWidth: .infinity)
         )) {

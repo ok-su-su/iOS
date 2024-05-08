@@ -13,10 +13,11 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var items: [Item]
-    var selectedID: [UUID] = []
-    init(items: [Item]) {
-      self.items = items
+    @Shared var items: [Item]
+    @Shared var selectedID: [UUID]
+    init(items: Shared<[Item]>, selectedID: Shared<[UUID]>) {
+      _items = items
+      _selectedID = selectedID
     }
   }
 
