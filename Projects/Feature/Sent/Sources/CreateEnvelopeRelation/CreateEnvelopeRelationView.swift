@@ -121,18 +121,9 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeNextButton() -> some View {
-    SSButton(
-      .init(
-        size: .mh60,
-        status: store.isAbleToPush ? .active : .inactive,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )
-    ) {
-      store.send(.view(.tappedNextButton))
-    }
+    CreateEnvelopeBottomOfNextButtonView(
+      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
+    )
   }
 
   @ViewBuilder

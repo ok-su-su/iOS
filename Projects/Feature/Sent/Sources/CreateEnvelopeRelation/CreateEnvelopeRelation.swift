@@ -13,6 +13,7 @@ struct CreateEnvelopeRelation {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var selectedRelationString: String? = nil
     var isAddingNewRelation: Bool = false
@@ -49,7 +50,6 @@ struct CreateEnvelopeRelation {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedRelation(name: String)
-    case tappedNextButton
     case tappedAddCustomRelation
     case tappedTextFieldCloseButton
     case tappedTextFieldSaveAndEditButton
@@ -63,7 +63,9 @@ struct CreateEnvelopeRelation {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+  }
 
   enum DelegateAction: Equatable {
     case push
@@ -72,6 +74,9 @@ struct CreateEnvelopeRelation {
   var body: some Reducer<State, Action> {
     BindingReducer()
 
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -80,11 +85,9 @@ struct CreateEnvelopeRelation {
 
       case let .view(.tappedRelation(name: name)):
         state.selectedRelationString = name
-        return .none
-
-      case .view(.tappedNextButton):
+        let pushable = state.selectedRelationString != ""
         return .run { send in
-          await send(.delegate(.push))
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
 
       case .delegate:
@@ -120,6 +123,14 @@ struct CreateEnvelopeRelation {
 
       case .inner(.endAddCustomRelation):
         state.isAddingNewRelation = false
+        return .none
+
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .run { send in
+          await send(.delegate(.push))
+        }
+
+      case .scope(.nextButton):
         return .none
       }
     }
