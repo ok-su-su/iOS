@@ -31,6 +31,14 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
     /// TextFieldButton을 통해 수정할 경우 True로 바뀝니다.
     var isAddingNewItem: Bool = false
 
+    /// 버튼을 통한 아이템을 선택하는 Reducer입니다.
+    /// 생성자에 모든 변수들은 @Shared처리 되어서 부모에서 Shared로 선언되어야 합니다.
+    /// - Parameters:
+    ///   - items: defaults아이템들을 나타냅니다. 이는 CreateEnvelopeSelectItemable을 따라야 합니다.
+    ///   - selectedID: 선택된 아이템들의 UUID를 나타내는 함수 입니다.
+    ///   - isCustomItem: 사용자 입력을 통한 새로운 아이템을 받을지 여부를 나타냅니다.
+    ///
+    ///    isCustomItem을 Nil로 할 경우 "직접 입력" 버튼이 추가되지 않습니다.
     init(items: Shared<[Item]>, selectedID: Shared<[UUID]>, isCustomItem: Shared<Item?>) {
       _items = items
       _selectedID = selectedID
