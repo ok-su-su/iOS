@@ -104,7 +104,7 @@ struct SentPeopleAdaptor: Equatable {
 
   init(sentPeople: [SentPerson]) {
     self.sentPeople = sentPeople
-    sentPeople.forEach { sentPerson in
+    for sentPerson in sentPeople {
       ssButtonProperties[sentPerson.id] = .init(
         size: .xsh28,
         status: .inactive,
@@ -128,7 +128,7 @@ struct SentPeopleAdaptor: Equatable {
   }
 
   mutating func reset() {
-    selectedPerson.forEach { person in
+    for person in selectedPerson {
       select(selectedId: person.id)
     }
   }
