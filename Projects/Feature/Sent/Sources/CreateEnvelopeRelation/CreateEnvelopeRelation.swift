@@ -26,13 +26,6 @@ struct CreateEnvelopeRelation {
         isCustomItem: createEnvelopeProperty.relationHelper.customRelation
       )
     }
-
-    var defaultRelationString: [String] = [
-      "친구",
-      "가족",
-      "친척",
-      "동료",
-    ]
   }
 
   enum Action: Equatable, FeatureAction {

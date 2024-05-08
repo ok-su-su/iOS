@@ -78,8 +78,5 @@ struct CreateEnvelopeEventView: View {
     static let titleText: String = "어떤 경조사였나요"
     static let makeAddCustomRelationButtonText = "직접 입력"
     static let addNewRelationTextFieldPrompt = "입력해주세요"
-    static let addNewRelationTextFieldPromptText: some View = Text(Constants.addNewRelationTextFieldPrompt)
-      .modifier(SSTypoModifier(.title_xs))
-      .foregroundStyle(SSColor.gray30)
   }
 }
