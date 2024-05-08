@@ -26,7 +26,7 @@ struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelo
 
 // MARK: - CreateEnvelopeRelationItemPropertyAdapter
 
-struct CreateEnvelopeRelationItemPropertyAdapter: Equatable {
+struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var selectedID: [UUID] = []
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = [
     .init(id: UUID(1), title: "친구"),

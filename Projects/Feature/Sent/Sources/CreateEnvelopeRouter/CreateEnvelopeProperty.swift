@@ -12,8 +12,9 @@ import Foundation
 
 struct CreateEnvelopeProperty: Equatable {
   var viewDepth = 1
-  var createEnvelopeAdditionalSectionManager: CreateEnvelopeAdditionalSectionManager = .init()
-  var relationAdaptor: CreateEnvelopeRelationItemPropertyAdapter = .init()
+  var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
+  var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
+  var eventHelper: CreateEnvelopeEventPropertyHelper = .init()
   init() {}
 
   var prevNames: [PrevEnvelope] = [
@@ -48,7 +49,7 @@ struct PrevEnvelope: Equatable {
 
 // MARK: - CreateEnvelopeAdditionalSectionManager
 
-struct CreateEnvelopeAdditionalSectionManager: Equatable {
+struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   // TODO: DTO 변경
   typealias Item = CreateEnvelopeAdditionalSectionProperty
 
