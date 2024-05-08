@@ -17,15 +17,6 @@ struct CreateEnvelopeRelation {
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var isAddingNewRelation: Bool = false
-
-    var addingCustomRelationText = ""
-    var addingCustomRelationHighlight = false
-    var customRelationSaved: Bool = false
-
-    var isAvailableAddingCustomRelationSaveButton: Bool {
-      return addingCustomRelationText != ""
-    }
 
     init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
@@ -44,8 +35,7 @@ struct CreateEnvelopeRelation {
     ]
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -72,8 +62,6 @@ struct CreateEnvelopeRelation {
   }
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
@@ -87,9 +75,6 @@ struct CreateEnvelopeRelation {
         return .none
 
       case .delegate:
-        return .none
-
-      case .binding:
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):

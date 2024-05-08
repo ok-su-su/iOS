@@ -34,12 +34,12 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
     "장례식",
     "생일기념일",
   ]
-  var defaultEvent: [CreateEnvelopeRelationItemProperty]
+  var defaultEvent: [CreateEnvelopeEventProperty]
 
-  var customRelation: CreateEnvelopeRelationItemProperty?
+  var customEvent: CreateEnvelopeEventProperty?
 
   init() {
     defaultEvent = defaultEventStrings.enumerated().map { .init(id: UUID($0.offset), title: $0.element) }
-    customRelation = .init(id: UUID(defaultEventStrings.count), title: "")
+    customEvent = .init(id: UUID(defaultEventStrings.count), title: "")
   }
 }
