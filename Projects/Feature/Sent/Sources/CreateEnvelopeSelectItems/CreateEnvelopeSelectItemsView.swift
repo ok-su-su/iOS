@@ -51,12 +51,12 @@ struct CreateEnvelopeSelectItemsView<Item: CreateEnvelopeSelectItemable>: View {
   @ViewBuilder
   private func makeCustomItem() -> some View {
     if
-      store.isAddingNewRelation,
+      store.isAddingNewItem,
       let item = store.isCustomItem {
       SSTextFieldButton(
         .init(
           size: .mh60,
-          status: store.customRelationSaved ? .saved : .filled,
+          status: store.customItemSaved ? .saved : .filled,
           style: .filled,
           color: store.selectedID.contains(item.id) ? .orange : .black,
           textFieldText: $store.customTitleText,
