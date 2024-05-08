@@ -92,7 +92,6 @@ struct CreateEnvelopeRouter {
 
       case .pushCreateEnvelopeAdditional:
         state.createEnvelopeProperty.additionalSectionHelper.pushNextSection()
-        // 고르는 화면일 경우
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
           // end additionSection
           return .none
