@@ -17,18 +17,11 @@ struct CreateEnvelopeAdditionalSection {
     var isAddingNewItem: Bool = false
 
     var isSavedCustomItem: Bool = false
-    var selectedItem: Set<String> = .init()
+    var selectedItem: [String] { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.selectedItemTitles }
 
-    var isAbleToPush: Bool {
-      return !selectedItem.isEmpty
-    }
+    var defaultItems: [String] { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.defaultItemTitles }
 
-    var defaultItems: [String] = [
-      "방문 여부",
-      "선물",
-      "메모",
-      "받은 이의 연락처",
-    ]
+    var isAbleToPush: Bool { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.isSelected() }
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
@@ -68,9 +61,9 @@ struct CreateEnvelopeAdditionalSection {
 
       case let .view(.tappedItem(name: name)):
         if state.selectedItem.contains(name) {
-          state.selectedItem.remove(name)
+          state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.removeItem(name)
         } else {
-          state.selectedItem.insert(name)
+          state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.addItem(name)
         }
 
         return .none

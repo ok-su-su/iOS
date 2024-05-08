@@ -32,6 +32,7 @@ struct CreateEnvelopeRouter {
     case path(StackActionOf<Path>)
     case header(HeaderViewFeature.Action)
     case changedPath
+    case pushCreateEnvelopeAdditional
   }
 
   var body: some Reducer<State, Action> {
@@ -40,6 +41,11 @@ struct CreateEnvelopeRouter {
     }
     Reduce { state, action in
       switch action {
+      case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
       case .path(.element(id: _, action: .createEnvelopeDate(.delegate(.push)))):
         state.path.append(.createEnvelopeAdditionalSection(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .run { send in
@@ -83,12 +89,36 @@ struct CreateEnvelopeRouter {
       case .changedPath:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
+
+      case .pushCreateEnvelopeAdditional:
+        state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.pushNextSection()
+        // 고르는 화면일 경우
+        guard let currentSection = state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.currentSection else {
+          // end additionSection
+          return .none
+        }
+        switch currentSection {
+        case .isVisited:
+          state.path.append(.createEnvelopeAdditionalIsVisitedEvent(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        case .gift:
+          state.path.append(.createEnvelopeAdditionalIsGift(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        case .memo:
+          state.path.append(.createEnvelopeAdditionalMemo(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        case .contacts:
+          state.path.append(.createEnvelopeAdditionalContact(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+        }
+        return .run { send in
+          await send(.changedPath, animation: .default)
+        }
+
       default:
         return .none
       }
     }
     .forEach(\.path, action: \.path)
   }
+
+  private mutating func temp() {}
 }
 
 // MARK: CreateEnvelopeRouter.Path

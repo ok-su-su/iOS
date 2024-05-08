@@ -13,8 +13,7 @@ struct CreateEnvelopeAdditionalMemo {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-
-    init() {}
+    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
   }
 
   enum Action: Equatable, FeatureAction {

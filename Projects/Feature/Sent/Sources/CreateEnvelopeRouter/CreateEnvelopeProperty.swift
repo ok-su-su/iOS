@@ -12,6 +12,7 @@ import Foundation
 
 struct CreateEnvelopeProperty: Equatable {
   var viewDepth = 1
+  var createEnvelopeAdditionalSectionManager: CreateEnvelopeAdditionalSectionManager = .init()
   init() {}
 
   var prevNames: [PrevEnvelope] = [
@@ -42,4 +43,65 @@ struct PrevEnvelope: Equatable {
   let relationShip: String
   let eventName: String
   let eventDate: Date
+}
+
+// MARK: - CreateEnvelopeAdditionalSectionManager
+
+struct CreateEnvelopeAdditionalSectionManager: Equatable {
+  // TODO: DTO 변경
+  typealias Item = CreateEnvelopeAdditionalSectionProperty
+
+  init() {
+    defaultItems = Item.allCases
+  }
+
+  var defaultItemTitles: [String] { Item.allCases.map(\.title) }
+  var selectedItemTitles: [String] { selectedItem.map(\.title) }
+
+  private var defaultItems: [CreateEnvelopeAdditionalSectionProperty]
+  private var selectedItem: [Item] = []
+  private var pushedItem: [Item] = []
+  var currentSection: CreateEnvelopeAdditionalSectionProperty? = nil
+  private var currentSectionIndex = 0
+
+  mutating func removeItem(_ item: String) {
+    selectedItem = selectedItem.filter { $0.title != item }
+  }
+
+  mutating func addItem(_ value: String) {
+    if let curItem = CreateEnvelopeAdditionalSectionProperty(rawValue: value) {
+      selectedItem.append(curItem)
+    }
+  }
+
+  mutating func sortItems() {
+    selectedItem = CreateEnvelopeAdditionalSectionProperty.allCases.filter { selectedItem.contains($0) }
+  }
+
+  func isSelected() -> Bool {
+    return !selectedItem.isEmpty
+  }
+
+  mutating func pushNextSection() {
+    if currentSection == nil {
+      currentSectionIndex = 0
+      currentSection = selectedItem[currentSectionIndex]
+    } else if selectedItem.indices.contains(currentSectionIndex + 1) {
+      currentSectionIndex += 1
+      currentSection = selectedItem[currentSectionIndex]
+    } else {
+      currentSection = nil
+    }
+  }
+}
+
+// MARK: - CreateEnvelopeAdditionalSectionProperty
+
+enum CreateEnvelopeAdditionalSectionProperty: String, Equatable, CaseIterable {
+  case isVisited = "방문 여부"
+  case gift = "선물"
+  case memo = "메모"
+  case contacts = "받은 이의 연락처"
+
+  var title: String { return rawValue }
 }
