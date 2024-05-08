@@ -1,5 +1,5 @@
 //
-//  CreateEnvelope.swift
+//  CreateEnvelopeEventProperty.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/8/24.
@@ -8,20 +8,23 @@
 
 import Foundation
 
+// MARK: - CreateEnvelopeEventProperty
+
 struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
   var id: UUID
   var title: String
-  
+
   mutating func setTitle(_ val: String) {
-    self.title = val
+    title = val
   }
-  
+
   init(id: UUID, title: String) {
     self.id = id
     self.title = title
   }
 }
 
+// MARK: - CreateEnvelopeEventPropertyHelper
 
 struct CreateEnvelopeEventPropertyHelper: Equatable {
   var selectedID: [UUID] = []
@@ -36,7 +39,7 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
   var customRelation: CreateEnvelopeRelationItemProperty?
 
   init() {
-    defaultEvent = defaultEventStrings.enumerated().map{.init(id: UUID($0.offset), title: $0.element)}
+    defaultEvent = defaultEventStrings.enumerated().map { .init(id: UUID($0.offset), title: $0.element) }
     customRelation = .init(id: UUID(defaultEventStrings.count), title: "")
   }
 }

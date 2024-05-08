@@ -24,7 +24,7 @@ struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelo
   }
 }
 
-// MARK: - CreateEnvelopeRelationItemPropertyAdapter
+// MARK: - CreateEnvelopeRelationItemPropertyHelper
 
 struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var selectedID: [UUID] = []

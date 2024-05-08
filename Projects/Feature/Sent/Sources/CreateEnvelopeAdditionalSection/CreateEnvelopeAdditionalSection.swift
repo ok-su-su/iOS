@@ -17,11 +17,11 @@ struct CreateEnvelopeAdditionalSection {
     var isAddingNewItem: Bool = false
 
     var isSavedCustomItem: Bool = false
-    var selectedItem: [String] { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.selectedItemTitles }
+    var selectedItem: [String] { return createEnvelopeProperty.additionalSectionHelper.selectedItemTitles }
 
-    var defaultItems: [String] { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.defaultItemTitles }
+    var defaultItems: [String] { return createEnvelopeProperty.additionalSectionHelper.defaultItemTitles }
 
-    var isAbleToPush: Bool { return createEnvelopeProperty.createEnvelopeAdditionalSectionManager.isSelected() }
+    var isAbleToPush: Bool { return createEnvelopeProperty.additionalSectionHelper.isSelected() }
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
@@ -61,9 +61,9 @@ struct CreateEnvelopeAdditionalSection {
 
       case let .view(.tappedItem(name: name)):
         if state.selectedItem.contains(name) {
-          state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.removeItem(name)
+          state.createEnvelopeProperty.additionalSectionHelper.removeItem(name)
         } else {
-          state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.addItem(name)
+          state.createEnvelopeProperty.additionalSectionHelper.addItem(name)
         }
 
         return .none

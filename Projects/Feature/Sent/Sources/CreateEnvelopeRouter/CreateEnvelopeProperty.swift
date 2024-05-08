@@ -47,7 +47,7 @@ struct PrevEnvelope: Equatable {
   let eventDate: Date
 }
 
-// MARK: - CreateEnvelopeAdditionalSectionManager
+// MARK: - CreateEnvelopeAdditionalSectionHelper
 
 struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   // TODO: DTO 변경

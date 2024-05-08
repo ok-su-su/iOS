@@ -30,9 +30,9 @@ struct CreateEnvelopeRelation {
     init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
-        items: createEnvelopeProperty.relationAdaptor.defaultRelations,
-        selectedID: createEnvelopeProperty.relationAdaptor.selectedID,
-        isCustomItem: createEnvelopeProperty.relationAdaptor.customRelation
+        items: createEnvelopeProperty.relationHelper.defaultRelations,
+        selectedID: createEnvelopeProperty.relationHelper.selectedID,
+        isCustomItem: createEnvelopeProperty.relationHelper.customRelation
       )
     }
 
@@ -101,7 +101,7 @@ struct CreateEnvelopeRelation {
         return .none
 
       case .scope(.createEnvelopeSelectionItems(.delegate(.selected))):
-        let pushable = !state.createEnvelopeProperty.relationAdaptor.selectedID.isEmpty
+        let pushable = !state.createEnvelopeProperty.relationHelper.selectedID.isEmpty
         return .run { send in
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }

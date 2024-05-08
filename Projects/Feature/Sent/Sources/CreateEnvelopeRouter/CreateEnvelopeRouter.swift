@@ -91,9 +91,9 @@ struct CreateEnvelopeRouter {
         return .none
 
       case .pushCreateEnvelopeAdditional:
-        state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.pushNextSection()
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection()
         // 고르는 화면일 경우
-        guard let currentSection = state.createEnvelopeProperty.createEnvelopeAdditionalSectionManager.currentSection else {
+        guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
           // end additionSection
           return .none
         }
