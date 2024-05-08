@@ -15,6 +15,7 @@ struct CreateEnvelopePrice {
   @ObservableState
   struct State: Equatable {
     var subscriptions: Set<AnyCancellable> = .init()
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
@@ -48,11 +49,13 @@ struct CreateEnvelopePrice {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedGuidValue(String)
     case changeText(String)
     case tappedNextButton
+    case changedTextfield(String)
   }
 
   enum InnerAction: Equatable {
@@ -62,7 +65,9 @@ struct CreateEnvelopePrice {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+  }
 
   enum DelegateAction: Equatable {
     case dismissCreateFlow
@@ -72,13 +77,14 @@ struct CreateEnvelopePrice {
   var body: some Reducer<State, Action> {
     BindingReducer()
 
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
-
-      case .scope:
         return .none
 
       case .delegate(.dismissCreateFlow):
@@ -102,10 +108,25 @@ struct CreateEnvelopePrice {
         if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
           state.textFieldText = formattedValue
         }
-        return .none
+        return .run { send in
+          await send(.view(.changedTextfield(value)))
+        }
 
       case .delegate(.push):
         return .none
+
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .run { send in
+          await send(.delegate(.push))
+        }
+      case .scope(.nextButton):
+        return .none
+
+      case let .view(.changedTextfield(text)):
+        let pushable = text != ""
+        return .run { send in
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
       }
     }
   }

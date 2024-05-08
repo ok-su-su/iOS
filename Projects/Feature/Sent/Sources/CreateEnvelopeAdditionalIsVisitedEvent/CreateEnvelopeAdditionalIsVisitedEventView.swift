@@ -18,7 +18,18 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    HStack(spacing: 4) {
+      // TODO: change Property
+//      Text("김철수님에게")
+//        .modifier(SSTypoModifier(.title_m))
+//        .foregroundStyle(SSColor.gray60)
+//
+//      Text(Constants.nameDescriptionText)
+//        .modifier(SSTypoModifier(.title_m))
+//        .foregroundStyle(SSColor.gray100)
+    }
+  }
 
   var body: some View {
     ZStack {
