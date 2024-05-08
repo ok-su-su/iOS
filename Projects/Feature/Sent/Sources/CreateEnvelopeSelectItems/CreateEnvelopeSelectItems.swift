@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
@@ -65,7 +66,8 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
         if state.selectedID.contains(id) {
           state.selectedID = state.selectedID.filter { $0 != id }
         } else { // not contains
-          if state.selectedID.count + 1 < multipleSelectionCount {
+          let ccc = state.selectedID.count.description
+          if state.selectedID.count + 1 <= multipleSelectionCount {
             state.selectedID.append(id)
           } else {
             // TODO: Some Logic to depend multipleSelection

@@ -13,6 +13,7 @@ import Foundation
 struct CreateEnvelopeProperty: Equatable {
   var viewDepth = 1
   var createEnvelopeAdditionalSectionManager: CreateEnvelopeAdditionalSectionManager = .init()
+  var relationAdaptor: CreateEnvelopeRelationItemPropertyAdapter = .init()
   init() {}
 
   var prevNames: [PrevEnvelope] = [

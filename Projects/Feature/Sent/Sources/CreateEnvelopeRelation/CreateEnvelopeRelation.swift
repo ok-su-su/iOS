@@ -14,6 +14,8 @@ struct CreateEnvelopeRelation {
   struct State: Equatable {
     var isOnAppear = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
+
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var selectedRelationString: String? = nil
     var isAddingNewRelation: Bool = false
@@ -28,6 +30,15 @@ struct CreateEnvelopeRelation {
 
     var isAbleToPush: Bool {
       return selectedRelationString != "" && selectedRelationString != nil
+    }
+
+    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+      createEnvelopeSelectionItems = .init(
+        items:
+        createEnvelopeProperty.relationAdaptor.defaultRelations,
+        selectedID: createEnvelopeProperty.relationAdaptor.selectedID
+      )
     }
 
     var defaultRelationString: [String] = [
@@ -65,6 +76,7 @@ struct CreateEnvelopeRelation {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.Action)
   }
 
   enum DelegateAction: Equatable {
@@ -76,6 +88,9 @@ struct CreateEnvelopeRelation {
 
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
+    }
+    Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
+      CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
     }
     Reduce { state, action in
       switch action {
@@ -131,6 +146,9 @@ struct CreateEnvelopeRelation {
         }
 
       case .scope(.nextButton):
+        return .none
+
+      case .scope(.createEnvelopeSelectionItems(_)):
         return .none
       }
     }

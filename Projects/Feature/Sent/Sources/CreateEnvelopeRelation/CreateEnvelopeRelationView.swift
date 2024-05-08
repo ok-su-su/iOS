@@ -44,7 +44,7 @@ struct CreateEnvelopeRelationView: View {
     ScrollView {
       VStack(alignment: .leading, spacing: 8) {
         makeDefaultRelationButton()
-        makeCustomRelationButton()
+//        makeCustomRelationButton()
         makeAddCustomRelationButton()
       }
     }
@@ -52,19 +52,7 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeDefaultRelationButton() -> some View {
-    ForEach(store.defaultRelationString, id: \.self) { current in
-      SSButton(
-        .init(
-          size: .mh60,
-          status: .active,
-          style: store.selectedRelationString == current ? .filled : .ghost,
-          color: store.selectedRelationString == current ? .orange : .black,
-          buttonText: current,
-          frame: .init(maxWidth: .infinity)
-        )) {
-          store.send(.view(.tappedRelation(name: current)))
-        }
-    }
+    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
   }
 
   @ViewBuilder
