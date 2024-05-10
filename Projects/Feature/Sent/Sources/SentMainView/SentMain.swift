@@ -25,6 +25,7 @@ struct SentMain {
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterDial: FilterDial.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
+    @Presents var searchEnvelope: SearchEnvelope.State?
 
     @Shared var sentMainProperty: SentMainProperty
 
@@ -74,6 +75,7 @@ struct SentMain {
     case filterDial(PresentationAction<FilterDial.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
+    case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
   }
@@ -109,9 +111,9 @@ struct SentMain {
       case .scope(.filterDial):
         return .none
       case .scope(.header(.tappedSearchButton)):
-        return .run { send in
-          await send(.delegate(.pushSearchEnvelope))
-        }
+        state.searchEnvelope = SearchEnvelope.State(searchHelper: state.$sentMainProperty.searchHelper)
+        return .none
+
       case .scope(.header):
         return .none
 
@@ -129,24 +131,30 @@ struct SentMain {
       case .inner(.showCreateEnvelopRouter):
         state.createEnvelopeRouter = .init()
         return .none
-//
+
       case .scope(.createEnvelopeRouter):
         return .none
-//
+
       case .delegate(.pushFilter):
         return .none
-//
+
       case .view(.tappedSortButton):
         state.filterDial = .init(filterDialProperty: state.$sentMainProperty.filterDialProperty)
         return .none
-      // TODO: FilterRouting
+
       case .view(.tappedFilterButton):
         state.sentEnvelopeFilter = .init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
-//        state.createEnvelopeRouter = .init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
         return .none
+
       case .scope(.sentEnvelopeFilter):
         return .none
+
+      case .scope(.searchEnvelope):
+        return .none
       }
+    }
+    .ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
+      SearchEnvelope()
     }
     .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
       SentEnvelopeFilter()

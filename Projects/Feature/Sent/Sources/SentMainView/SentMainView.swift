@@ -111,6 +111,9 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
       SentEnvelopeFilterView(store: store)
     }
+    .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
+      SearchEnvelopeView(store: store)
+    }
     .sheet(item: $store.scope(state: \.filterDial, action: \.scope.filterDial)) { store in
       FilterDialView(store: store)
         .presentationDetents([.height(240), .medium, .large])
