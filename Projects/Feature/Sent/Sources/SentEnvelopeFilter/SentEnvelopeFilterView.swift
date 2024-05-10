@@ -50,9 +50,9 @@ struct SentEnvelopeFilterView: View {
     } else {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(0 ..< filteredPeople.count, id: \.self) { index in
-          let current = sentPeople[index]
-          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[filteredPeople[index].id, default: Constants.butonProperty]) {
-            store.send(.tappedPerson(store.filterByTextField[index].id))
+          let current = filteredPeople[index]
+          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
+            store.send(.tappedPerson(current.id))
           }
         }
       }
@@ -78,27 +78,21 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeSelectedPeople() -> some View {
-    Grid(horizontalSpacing: 8) {
+    WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
       ForEach(0 ..< store.sentPeopleAdaptor.selectedPerson.count, id: \.self) { index in
-        if index % 5 == 0 {
-          GridRow {
-            ForEach(index ..< min(index + 5, store.sentPeopleAdaptor.selectedPerson.count), id: \.self) { innerIndex in
-              if innerIndex < store.sentPeopleAdaptor.selectedPerson.count {
-                let person = store.sentPeopleAdaptor.selectedPerson[innerIndex]
-                SSButton(
-                  .init(
-                    size: .xsh28,
-                    status: .active,
-                    style: .filled,
-                    color: .orange,
-                    rightIcon: .icon(SSImage.commonDeleteWhite),
-                    buttonText: person.name
-                  )
-                ) {
-                  store.send(.tappedSelectedPerson(person.id))
-                }
-              }
-            }
+        if index < store.sentPeopleAdaptor.selectedPerson.count {
+          let person = store.sentPeopleAdaptor.selectedPerson[index]
+          SSButton(
+            .init(
+              size: .xsh28,
+              status: .active,
+              style: .filled,
+              color: .orange,
+              rightIcon: .icon(SSImage.commonDeleteWhite),
+              buttonText: person.name
+            )
+          ) {
+            store.send(.tappedSelectedPerson(person.id))
           }
         }
       }
