@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import Foundation
 
 @Reducer
@@ -13,6 +14,8 @@ struct SpecificEnvelopeHistoryList {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    /// Some Logic
+    var header: HeaderViewFeature.State = .init(.init(title: "김철수", type: .depth2Text("삭제")))
 
     init() {}
   }
@@ -34,9 +37,13 @@ struct SpecificEnvelopeHistoryList {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+  }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case pushDeleteScene
+  }
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -44,7 +51,13 @@ struct SpecificEnvelopeHistoryList {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case .scope(.header(.tappedTextButton)):
+        return .none
+        
+      case .scope(.header):
+        return .none
+        
+      case .delegate(.pushDeleteScene):
         return .none
       }
     }

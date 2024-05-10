@@ -36,6 +36,7 @@ public struct HeaderViewFeature {
     case tappedDismissButton
     case tappedNotificationButton
     case tappedSearchButton
+    case tappedTextButton
   }
 
   public var body: some Reducer<State, Action> {
@@ -50,6 +51,8 @@ public struct HeaderViewFeature {
       case .tappedNotificationButton:
         return .none
       case .tappedSearchButton:
+        return .none
+      case .tappedTextButton:
         return .none
       }
     }

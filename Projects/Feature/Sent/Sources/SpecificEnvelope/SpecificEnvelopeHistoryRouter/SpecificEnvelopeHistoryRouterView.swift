@@ -21,12 +21,12 @@ struct SpecificEnvelopeHistoryRouterView: View {
   private func makeContentView() -> some View {}
 
   var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack {
-        makeContentView()
+    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+      EmptyView()
+    } destination: { store in
+      switch store.case {
+      case let .specificEnvelopeHistoryList(store) :
+        SpecificEnvelopeHistoryListView(store: store)
       }
     }
     .onAppear {

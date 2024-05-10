@@ -31,12 +31,19 @@ struct SpecificEnvelopeHistoryRouter {
         state.isOnAppear = isAppear
         state.path.append(.specificEnvelopeHistoryList(.init()))
         return .none
-        
-      case let .path(.push(id: _, state: _)):
+
+      case .path(.push(id: _, state: _)):
         return .none
 
-      case let .path(.element(id: id, action: action)):
-        return .none
+      case let .path(.element(id: _, action: action)):
+        switch action {
+        case .specificEnvelopeHistoryList(.delegate(.pushDeleteScene)) :
+          state.path.append(<#T##newElement: Path.State##Path.State#>)
+          return .none
+        case .specificEnvelopeHistoryList:
+          return .none
+        }
+        
 
       case let .path(.popFrom(id: id)):
         return .none
