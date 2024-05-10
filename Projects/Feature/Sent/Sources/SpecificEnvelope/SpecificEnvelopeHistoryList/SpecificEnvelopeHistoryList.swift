@@ -14,10 +14,14 @@ struct SpecificEnvelopeHistoryList {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var envelopePriceProgress: EnvelopePriceProgress.State = .init(envelopePriceProgressProperty: .makeFakeData())
     /// Some Logic
     var header: HeaderViewFeature.State = .init(.init(title: "김철수", type: .depth2Text("삭제")))
+    @Shared var envelopeHistoryHelper: SpecificEnvelopeHistoryListProperty
 
-    init() {}
+    init(envelopeHistoryHelper: Shared<SpecificEnvelopeHistoryListProperty>) {
+      self._envelopeHistoryHelper = envelopeHistoryHelper
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -30,6 +34,7 @@ struct SpecificEnvelopeHistoryList {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedEnvelope(UUID)
   }
 
   enum InnerAction: Equatable {}
@@ -53,6 +58,8 @@ struct SpecificEnvelopeHistoryList {
         return .none
 
       case .scope(.header):
+        return .none
+      case let .view(.tappedEnvelope(id)):
         return .none
       }
     }

@@ -16,7 +16,10 @@ struct SpecificEnvelopeHistoryRouter {
   struct State {
     var isOnAppear = false
     var path: StackState<Path.State> = .init()
-    init() {}
+    @Shared var envelopeHistoryRouterHelper: SpecificEnvelopeHistoryRouterHelper
+    init() {
+      _envelopeHistoryRouterHelper = .init(.init())
+    }
   }
 
   enum Action: Equatable {
@@ -29,7 +32,9 @@ struct SpecificEnvelopeHistoryRouter {
       switch action {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
-        state.path.append(.specificEnvelopeHistoryList(.init()))
+        state.path.append(.specificEnvelopeHistoryList(
+          .init(envelopeHistoryHelper: state.$envelopeHistoryRouterHelper.specificEnvelopeHistoryListProperty)
+        ))
         return .none
 
       case .path(.push(id: _, state: _)):

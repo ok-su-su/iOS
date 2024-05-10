@@ -8,4 +8,15 @@
 
 import Foundation
 
-struct SpecificEnvelopeHistoryRouterHelper: Equatable {}
+struct SpecificEnvelopeHistoryRouterHelper: Equatable {
+  var specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty
+  
+  //TODO: API Logic
+  init() {
+    self.specificEnvelopeHistoryListProperty = .init(envelopePriceProgressProperty: .makeFakeData(), envelopeContent: .fakeData())
+  }
+  
+  init(specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty) {
+    self.specificEnvelopeHistoryListProperty = specificEnvelopeHistoryListProperty
+  }
+}
