@@ -23,11 +23,11 @@ struct SentEnvelopeFilterView: View {
   var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
 
   var filterProperty: FilterProperty? {
-    if store.state.sentPeopleAdaptor.selectedPerson == [] || sliderProperty.isInitialState() {
+    if store.state.filterHelper.selectedPerson == [] || sliderProperty.isInitialState() {
       return nil
     }
     return .init(
-      filteredPeople: store.state.sentPeopleAdaptor.selectedPerson,
+      filteredPeople: store.state.filterHelper.selectedPerson,
       filterEnvelopePrice: .init(maximum: sliderProperty.highHandle.currentValueBy1000, minimum: sliderProperty.lowHandle.currentValueBy1000)
     )
   }
@@ -37,12 +37,12 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makePersonButton() -> some View {
     let filteredPeople = store.filterByTextField
-    let sentPeople = store.sentPeopleAdaptor.sentPeople
+    let sentPeople = store.filterHelper.sentPeople
     if filteredPeople == [] && store.textFieldText == "" {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(0 ..< sentPeople.count, id: \.self) { index in
           let current = sentPeople[index]
-          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
+          SSButtonWithState(store.filterHelper.ssButtonProperties[current.id, default: Constants.butonProperty]) {
             store.send(.tappedPerson(current.id))
           }
         }
@@ -51,7 +51,7 @@ struct SentEnvelopeFilterView: View {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(0 ..< filteredPeople.count, id: \.self) { index in
           let current = filteredPeople[index]
-          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
+          SSButtonWithState(store.filterHelper.ssButtonProperties[current.id, default: Constants.butonProperty]) {
             store.send(.tappedPerson(current.id))
           }
         }
@@ -79,9 +79,9 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makeSelectedPeople() -> some View {
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-      ForEach(0 ..< store.sentPeopleAdaptor.selectedPerson.count, id: \.self) { index in
-        if index < store.sentPeopleAdaptor.selectedPerson.count {
-          let person = store.sentPeopleAdaptor.selectedPerson[index]
+      ForEach(0 ..< store.filterHelper.selectedPerson.count, id: \.self) { index in
+        if index < store.filterHelper.selectedPerson.count {
+          let person = store.filterHelper.selectedPerson[index]
           SSButton(
             .init(
               size: .xsh28,
@@ -119,10 +119,7 @@ struct SentEnvelopeFilterView: View {
           .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
 
       ZStack {
-        NavigationLink(state: SentRouter.Path.State.sentMain(SentMain.State(filterProperty: filterProperty))) {
-          SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
-            .allowsHitTesting(false)
-        }
+        SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
       }
     }
     .padding(.vertical, 8)

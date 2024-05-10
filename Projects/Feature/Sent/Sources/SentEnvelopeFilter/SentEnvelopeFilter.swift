@@ -7,7 +7,6 @@
 //
 import ComposableArchitecture
 import Designsystem
-import Foundation
 import OSLog
 import SwiftUI
 
@@ -19,7 +18,7 @@ struct SentEnvelopeFilter {
   struct State {
     var isOnAppear = false
     @Shared var textFieldText: String
-    var sentPeopleAdaptor: SentPeopleAdaptor
+    var filterHelper: SentPeopleFilterHelper
 
     // MARK: - Scope
 
@@ -27,7 +26,7 @@ struct SentEnvelopeFilter {
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
     var customTextField: CustomTextField.State
     init(sentPeople: [SentPerson]) {
-      sentPeopleAdaptor = .init(sentPeople: sentPeople)
+      filterHelper = .init(sentPeople: sentPeople)
       _textFieldText = Shared("")
       customTextField = .init(text: _textFieldText)
     }
@@ -36,7 +35,7 @@ struct SentEnvelopeFilter {
       guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
         return []
       }
-      return sentPeopleAdaptor.sentPeople.filter { $0.name.contains(regex) }
+      return filterHelper.sentPeople.filter { $0.name.contains(regex) }
     }
   }
 
@@ -50,7 +49,7 @@ struct SentEnvelopeFilter {
     case delegate(Delegate)
     case customTextField(CustomTextField.Action)
     enum Delegate: Equatable {
-      case tappedApplyButton(SentPeopleAdaptor)
+      case tappedApplyButton(SentPeopleFilterHelper)
     }
   }
 
@@ -74,13 +73,13 @@ struct SentEnvelopeFilter {
           await send(.reset)
         }
       case let .tappedPerson(ind):
-        state.sentPeopleAdaptor.select(selectedId: ind)
+        state.filterHelper.select(selectedId: ind)
         return .none
       case let .tappedSelectedPerson(ind):
-        state.sentPeopleAdaptor.select(selectedId: ind)
+        state.filterHelper.select(selectedId: ind)
         return .none
       case .reset:
-        state.sentPeopleAdaptor.reset()
+        state.filterHelper.reset()
         return .none
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
@@ -92,57 +91,4 @@ struct SentEnvelopeFilter {
   }
 
   init() {}
-}
-
-// MARK: - SentPeopleAdaptor
-
-struct SentPeopleAdaptor: Equatable {
-  static func == (lhs: SentPeopleAdaptor, rhs: SentPeopleAdaptor) -> Bool {
-    lhs.sentPeople == rhs.sentPeople
-  }
-
-  var sentPeople: [SentPerson]
-  var selectedPerson: [SentPerson] = []
-  var ssButtonProperties: [UUID: SSButtonPropertyState] = [:]
-
-  init(sentPeople: [SentPerson]) {
-    self.sentPeople = sentPeople
-    sentPeople.forEach { sentPerson in
-      ssButtonProperties[sentPerson.id] = .init(
-        size: .xsh28,
-        status: .inactive,
-        style: .lined,
-        color: .black,
-        buttonText: sentPerson.name
-      )
-    }
-  }
-
-  mutating func select(selectedId: UUID) {
-    if
-      let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
-      let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
-      selectedPerson.remove(at: ind)
-      ssButtonProperties[sentPeople[propertyIndex].id]?.toggleStatus()
-    } else if let ind = sentPeople.firstIndex(where: { $0.id == selectedId }) {
-      ssButtonProperties[sentPeople[ind].id]?.toggleStatus()
-      selectedPerson.append(sentPeople[ind])
-    }
-  }
-
-  mutating func reset() {
-    selectedPerson.forEach { person in
-      select(selectedId: person.id)
-    }
-  }
-}
-
-// MARK: - SentPerson
-
-struct SentPerson: Identifiable, Equatable {
-  let id = UUID()
-  let name: String
-  init(name: String) {
-    self.name = name
-  }
 }
