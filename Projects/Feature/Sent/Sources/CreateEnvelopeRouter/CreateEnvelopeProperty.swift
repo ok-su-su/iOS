@@ -16,6 +16,7 @@ struct CreateEnvelopeProperty: Equatable {
   var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
   var eventHelper: CreateEnvelopeEventPropertyHelper = .init()
   var isVisitedHelper: CreateEnvelopeAdditionalIsVisitedEventHelper = .init()
+  var additionIsGiftHelper: CreateEnvelopeAdditionalIsGiftPropertyHelper = .init()
   init() {}
 
   var prevNames: [PrevEnvelope] = [

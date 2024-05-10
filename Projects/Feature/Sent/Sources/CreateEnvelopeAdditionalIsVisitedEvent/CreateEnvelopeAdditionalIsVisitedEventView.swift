@@ -58,11 +58,12 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
+      VStack(alignment: .leading) {
         makeContentView()
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

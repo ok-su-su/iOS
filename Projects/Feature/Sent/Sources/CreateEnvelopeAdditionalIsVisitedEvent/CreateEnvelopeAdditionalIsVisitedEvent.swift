@@ -16,8 +16,8 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
 
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
-
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
+
     init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
       _isVisitedEventHelper = isVisitedEventHelper
       createEnvelopeSelectionItems = .init(

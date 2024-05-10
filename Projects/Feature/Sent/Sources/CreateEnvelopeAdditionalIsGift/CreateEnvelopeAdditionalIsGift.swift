@@ -13,7 +13,13 @@ struct CreateEnvelopeAdditionalIsGift {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+    var isHighlight = false
+    @Shared var textFieldText: String
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+
+    init(textFieldText: Shared<String>) {
+      _textFieldText = textFieldText
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -24,8 +30,11 @@ struct CreateEnvelopeAdditionalIsGift {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case changedTextField(String)
+    case changeIsHighlight(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -33,9 +42,13 @@ struct CreateEnvelopeAdditionalIsGift {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+  }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case push
+  }
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -43,7 +56,19 @@ struct CreateEnvelopeAdditionalIsGift {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case let .view(.changedTextField(newText)):
+        state.textFieldText = newText
+        let pushable = newText != ""
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+      case .view(.changeIsHighlight(_)):
+        return .none
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .send(.delegate(.push))
+      case .delegate:
+        return .none
+      case .scope(.nextButton(.delegate)):
+        return .none
+      case .scope(.nextButton):
         return .none
       }
     }
