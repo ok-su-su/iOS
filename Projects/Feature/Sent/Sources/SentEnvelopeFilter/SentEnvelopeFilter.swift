@@ -40,24 +40,21 @@ struct SentEnvelopeFilter {
   }
 
   enum Action: BindableAction, Equatable {
-    case onAppear(Bool)
     case binding(BindingAction<State>)
-    case header(HeaderViewFeature.Action)
+    case onAppear(Bool)
     case tappedPerson(UUID)
     case tappedSelectedPerson(UUID)
     case reset
-    case delegate(Delegate)
+    case tappedConfirmButton
+    case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
-    enum Delegate: Equatable {
-      case tappedApplyButton(SentPeopleFilterHelper)
-    }
   }
 
   @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
-      HeaderViewFeature()
+      HeaderViewFeature(enableDismissAction: false)
     }
 
     Scope(state: \.customTextField, action: \.customTextField) {
@@ -71,21 +68,35 @@ struct SentEnvelopeFilter {
       case .header(.tappedDismissButton):
         return .run { send in
           await send(.reset)
+          await dismiss()
         }
       case let .tappedPerson(ind):
         state.filterHelper.select(selectedId: ind)
         return .none
+
       case let .tappedSelectedPerson(ind):
         state.filterHelper.select(selectedId: ind)
         return .none
+
       case .reset:
         state.filterHelper.reset()
         return .none
+
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
-      default:
+
+      case .binding:
         return .none
+
+      case .header:
+        return .none
+
+      case .customTextField:
+        return .none
+
+      case .tappedConfirmButton:
+        return .run { _ in await dismiss() }
       }
     }
   }

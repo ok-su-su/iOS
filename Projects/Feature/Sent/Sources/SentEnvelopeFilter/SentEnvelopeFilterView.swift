@@ -102,27 +102,37 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeBottom() -> some View {
+    WrappingHStack(horizontalSpacing: <#T##CGFloat#>)
     HStack(spacing: 16) {
-      HStack(alignment: .top, spacing: 8) {
-        Button {
-          sliderProperty.reset()
-          store.send(.reset)
-        } label: {
-          SSImage.commonRefresh
-        }
-      }
-      .padding(10)
-      .cornerRadius(100)
-      .overlay(
-        RoundedRectangle(cornerRadius: 100)
-          .inset(by: 0.5)
-          .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
-
-      ZStack {
-        SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
-      }
+      makeResetButton()
+      makeConfirmButton()
     }
     .padding(.vertical, 8)
+  }
+
+  @ViewBuilder
+  private func makeResetButton() -> some View {
+    HStack(alignment: .top, spacing: 8) {
+      Button {
+        sliderProperty.reset()
+        store.send(.reset)
+      } label: {
+        SSImage.commonRefresh
+      }
+    }
+    .padding(10)
+    .cornerRadius(100)
+    .overlay(
+      RoundedRectangle(cornerRadius: 100)
+        .inset(by: 0.5)
+        .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1))
+  }
+
+  @ViewBuilder
+  private func makeConfirmButton() -> some View {
+    SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
+      store.send(.tappedConfirmButton)
+    }
   }
 
   @ViewBuilder
