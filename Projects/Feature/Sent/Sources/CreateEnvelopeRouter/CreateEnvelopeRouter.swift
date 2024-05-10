@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import OSLog
 
 // MARK: - CreateEnvelopeRouter
 
@@ -49,6 +50,7 @@ struct CreateEnvelopeRouter {
     Reduce { state, action in
       switch action {
       case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
+        let cur = state.createEnvelopeProperty.additionalSectionHelper.selectedID
         return .run { send in
           await send(.pushCreateEnvelopeAdditional, animation: .default)
         }
@@ -118,7 +120,7 @@ struct CreateEnvelopeRouter {
         case .memo:
           state.path.append(.createEnvelopeAdditionalMemo(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         case .contacts:
-          state.path.append(.createEnvelopeAdditionalContact(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+          state.path.append(.createEnvelopeAdditionalContact(.init(contactHelper: state.$createEnvelopeProperty.contactHelper)))
         }
         return .run { send in
           await send(.changedPath, animation: .default)
@@ -137,6 +139,7 @@ struct CreateEnvelopeRouter {
 // MARK: CreateEnvelopeRouter.Path
 
 extension CreateEnvelopeRouter {
+  @CasePathable
   @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case createEnvelopePrice(CreateEnvelopePrice)

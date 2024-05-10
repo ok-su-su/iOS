@@ -13,7 +13,12 @@ struct CreateEnvelopeAdditionalContact {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+    @Shared var contactHelper: CreateEnvelopeAdditionalContactHelper
+    var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
+
+    init(contactHelper: Shared<CreateEnvelopeAdditionalContactHelper>) {
+      _contactHelper = contactHelper
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -24,8 +29,11 @@ struct CreateEnvelopeAdditionalContact {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case changedTextField(String)
+    case changeIsHighlight(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -33,11 +41,16 @@ struct CreateEnvelopeAdditionalContact {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+  }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):

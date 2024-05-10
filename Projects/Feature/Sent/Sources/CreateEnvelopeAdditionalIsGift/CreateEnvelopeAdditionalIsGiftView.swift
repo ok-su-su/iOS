@@ -32,7 +32,7 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       .onChange(of: store.textFieldText) { _, newValue in
         store.send(.view(.changedTextField(newValue)))
       }
-      
+
       Spacer()
       CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
     }
