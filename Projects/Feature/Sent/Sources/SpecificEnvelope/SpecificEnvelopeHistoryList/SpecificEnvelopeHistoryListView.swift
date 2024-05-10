@@ -70,9 +70,10 @@ struct SpecificEnvelopeHistoryListView: View {
 
   @ViewBuilder
   private func makeDetailContentView(_ property: EnvelopeContent) -> some View {
+    let textColor = property.envelopeType == .sent ? SSColor.gray90 : SSColor.gray40
     HStack {
       HStack(spacing: 12) {
-        SSImage.envelopeBackArrow
+        property.envelopeType == .sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
         SmallBadge(
           property: .init(
             size: .small,
@@ -83,10 +84,15 @@ struct SpecificEnvelopeHistoryListView: View {
 
         Text("23.07.18") // TODO: 수정
           .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(textColor)
       }
       Spacer()
       Text(property.priceText)
         .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(textColor)
+    }
+    .onTapGesture {
+      store.send(.view(.tappedEnvelope(property.id)))
     }
   }
 

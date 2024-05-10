@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import OSLog
 
 @Reducer
 struct SpecificEnvelopeHistoryList {
@@ -65,6 +66,7 @@ struct SpecificEnvelopeHistoryList {
         return .none
 
       case let .view(.tappedEnvelope(id)):
+        os_log("id = \(id)")
         return .none
 
       case .scope(.envelopePriceProgress):
