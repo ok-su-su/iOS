@@ -18,13 +18,13 @@ struct EnvelopePriceProgressView: View {
   @ViewBuilder
   private func makeMiddleView() -> some View {
     HStack {
-      Text(Constants.middleLeadingButtonText)
+      Text(store.envelopePriceProgressProperty.leadingDescriptionText)
         .modifier(SSTypoModifier(.text_xxxs))
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
-      Text(Constants.middleTrailingButtonText)
+      Text(store.envelopePriceProgressProperty.trailingDescriptionText)
         .modifier(SSTypoModifier(.text_xxxs))
         .foregroundColor(SSColor.gray60)
     }
@@ -32,11 +32,18 @@ struct EnvelopePriceProgressView: View {
 
   @ViewBuilder
   private func makeProgressBarView() -> some View {
-    ZStack(alignment: .topLeading) {
-      SSColor.orange20
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      SSColor.orange60
-        .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
+    GeometryReader { geometry in
+      ZStack(alignment: .topLeading) {
+        
+        SSColor.orange20
+          .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+        SSColor.orange60
+          .frame(
+            maxWidth: geometry.size.width * store.envelopePriceProgressProperty.progressValue,
+            maxHeight: geometry.size.height,
+            alignment: .leading
+          )
+      }
     }
     .frame(maxWidth: .infinity, maxHeight: Metrics.progressHeightValue)
     .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))
@@ -47,14 +54,14 @@ struct EnvelopePriceProgressView: View {
   private func makeBottomView() -> some View {
     HStack {
       // TODO: API 호출 된 Value 로 변경
-      Text("700,000원")
+      Text(store.envelopePriceProgressProperty.leadingPriceText)
         .modifier(SSTypoModifier(.text_xxxs))
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
       // TODO: API 호출 된 Value 로 변경
-      Text("1,000,000원")
+      Text(store.envelopePriceProgressProperty.trailingPriceText)
         .modifier(SSTypoModifier(.text_xxxs))
         .foregroundColor(SSColor.gray60)
     }
@@ -63,18 +70,17 @@ struct EnvelopePriceProgressView: View {
   // MARK: Content
   @ViewBuilder
   private func makeContentView() -> some View {
-
+    VStack(spacing: 0) {
+      makeMiddleView()
+      makeProgressBarView()
+      makeBottomView()
+    }
+    
+    
   }
 
   var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack {
-        makeContentView()
-      }
-    }
+    makeContentView()
     .onAppear{
       store.send(.onAppear(true))
     }
@@ -86,8 +92,4 @@ struct EnvelopePriceProgressView: View {
     static let progressBarVerticalSpacing: CGFloat = 4
   }
   
-  private enum Constants {
-    static let middleLeadingButtonText: String = "보내요"
-    static let middleTrailingButtonText: String = "보내요"
-  }
 }

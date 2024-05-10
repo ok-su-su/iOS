@@ -14,13 +14,16 @@ struct EnvelopePriceProgress {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var progressValue: Double = 150
-    init () {}
+    
+    var envelopePriceProgressProperty: EnvelopePriceProgressProperty
+    init (envelopePriceProgressProperty: EnvelopePriceProgressProperty) {
+      self.envelopePriceProgressProperty = envelopePriceProgressProperty
+    }
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case updatePropery
+    case updateProperty(EnvelopePriceProgressProperty)
   }
   
   enum ViewAction: Equatable {
@@ -41,6 +44,9 @@ struct EnvelopePriceProgress {
       switch action {
       case let .onAppear(isAppear) :
         state.isOnAppear = isAppear
+        return .none
+      case let .updateProperty(value):
+        state.envelopePriceProgressProperty = value
         return .none
       }
     }
