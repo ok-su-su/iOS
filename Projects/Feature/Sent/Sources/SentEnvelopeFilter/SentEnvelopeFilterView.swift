@@ -102,8 +102,7 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeBottom() -> some View {
-    WrappingHStack(horizontalSpacing: <#T##CGFloat#>)
-    HStack(spacing: 16) {
+    WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
       makeResetButton()
       makeConfirmButton()
     }

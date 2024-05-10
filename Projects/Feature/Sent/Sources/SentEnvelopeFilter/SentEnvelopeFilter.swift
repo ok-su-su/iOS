@@ -29,6 +29,9 @@ struct SentEnvelopeFilter {
       _filterHelper = filterHelper
       _textFieldText = .init("")
       customTextField = .init(text: _textFieldText)
+
+      // TODO: - Use SERVER API
+      self.filterHelper.setFakeData()
     }
 
     var filterByTextField: [SentPerson] {

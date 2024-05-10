@@ -24,6 +24,11 @@ struct SentPeopleFilterHelper: Equatable {
 
   init(sentPeople: [SentPerson]) {
     self.sentPeople = sentPeople
+    setButtonProperties()
+  }
+
+  private mutating func setButtonProperties() {
+    ssButtonProperties.removeAll()
     sentPeople.forEach { sentPerson in
       ssButtonProperties[sentPerson.id] = .init(
         size: .xsh28,
@@ -35,18 +40,27 @@ struct SentPeopleFilterHelper: Equatable {
     }
   }
 
+  mutating func setFakeData() {
+    sentPeople = [
+      .init(name: "정국"),
+      .init(name: "국자"),
+      .init(name: "개코"),
+      .init(name: "최자"),
+      .init(name: "헤이즈"),
+      .init(name: "이지은"),
+      .init(name: "아이유"),
+      .init(name: "박재범"),
+      .init(name: "제이팍"),
+      .init(name: "지지지지"),
+      .init(name: "죽음의성물"),
+      .init(name: "론리즐리"),
+    ]
+    setButtonProperties()
+  }
+
   mutating func updateSentPeople(_ people: [SentPerson]) {
     sentPeople = people
-    ssButtonProperties.removeAll()
-    sentPeople.forEach { sentPerson in
-      ssButtonProperties[sentPerson.id] = .init(
-        size: .xsh28,
-        status: .inactive,
-        style: .lined,
-        color: .black,
-        buttonText: sentPerson.name
-      )
-    }
+    setButtonProperties()
   }
 
   mutating func select(selectedId: UUID) {
