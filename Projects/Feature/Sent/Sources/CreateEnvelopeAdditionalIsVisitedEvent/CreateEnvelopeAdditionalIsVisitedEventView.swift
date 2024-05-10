@@ -47,8 +47,6 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       makeDefaultItems()
 
       Spacer()
-
-      makeNextButton()
     }
   }
 
@@ -57,8 +55,11 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      makeContentView()
-        .padding(.horizontal, Metrics.horizontalSpacing)
+      VStack(spacing: 0) {
+        makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
+        makeNextButton()
+      }
     }
 
     .navigationBarBackButtonHidden()

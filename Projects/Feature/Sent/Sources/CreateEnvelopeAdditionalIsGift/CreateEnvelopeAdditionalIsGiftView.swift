@@ -34,7 +34,6 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       }
 
       Spacer()
-      CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
     }
   }
 
@@ -43,8 +42,11 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      makeContentView()
-        .padding(.horizontal, Metrics.horizontalSpacing)
+      VStack(alignment: .leading, spacing: 0) {
+        makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
+        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
+      }
     }
     .navigationBarBackButtonHidden()
     .onAppear {

@@ -50,6 +50,7 @@ struct CreateEnvelopeRouter {
     Reduce { state, action in
       switch action {
       case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.startPush()
         state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
         return .run { send in
           await send(.pushCreateEnvelopeAdditional, animation: .default)
@@ -128,9 +129,7 @@ struct CreateEnvelopeRouter {
 
       case .pushCreateEnvelopeAdditional:
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          // TODO: - Some navigation Logic
-          // addition Section을 종료합니다.
-          return .none
+          return .run { _ in await dismiss() }
         }
         switch currentSection {
         case .isVisited:

@@ -20,7 +20,6 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   var defaultItems: [Item] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
 
   var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
-  private var currentSectionIndex = 0
 
   mutating func removeItem(_ id: UUID) {
     selectedID = selectedID.filter { $0 != id }
@@ -33,8 +32,8 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   }
 
   mutating func startPush() {
-    currentSectionIndex = 0
     currentSection = nil
+    sortItems()
   }
 
   mutating func sortItems() {

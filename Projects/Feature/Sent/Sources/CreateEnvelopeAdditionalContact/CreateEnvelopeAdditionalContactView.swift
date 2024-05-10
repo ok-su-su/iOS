@@ -21,9 +21,6 @@ struct CreateEnvelopeAdditionalContactView: View {
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 32) {
       HStack(spacing: 4) {
-        Spacer()
-          .frame(height: 34)
-
         // TODO: change Property
         Text(Constants.contactNameText)
           .modifier(SSTypoModifier(.title_m))
@@ -42,8 +39,6 @@ struct CreateEnvelopeAdditionalContactView: View {
       )
 
       Spacer()
-
-
     }
   }
 
@@ -57,9 +52,8 @@ struct CreateEnvelopeAdditionalContactView: View {
           .padding(.horizontal, Metrics.horizontalSpacing)
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
-      
     }
-    
+
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
