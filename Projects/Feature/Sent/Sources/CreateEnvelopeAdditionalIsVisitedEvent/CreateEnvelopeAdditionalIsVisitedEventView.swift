@@ -29,28 +29,27 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    HStack(spacing: 4) {
+    VStack(alignment: .leading) {
+      HStack(spacing: 4) {
+        // TODO: change Property
+        Text(Constants.eventNameText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.gray60)
+
+        Text(Constants.descriptionText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.gray100)
+      }
+
       Spacer()
         .frame(height: 34)
 
-      // TODO: change Property
-      Text(Constants.eventNameText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray60)
+      makeDefaultItems()
 
-      Text(Constants.descriptionText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray100)
+      Spacer()
+
+      makeNextButton()
     }
-
-    Spacer()
-      .frame(height: 34)
-
-    makeDefaultItems()
-
-    Spacer()
-
-    makeNextButton()
   }
 
   var body: some View {
@@ -58,11 +57,10 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack(alignment: .leading) {
-        makeContentView()
-      }
-      .padding(.horizontal, Metrics.horizontalSpacing)
+      makeContentView()
+        .padding(.horizontal, Metrics.horizontalSpacing)
     }
+
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

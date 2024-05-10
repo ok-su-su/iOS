@@ -141,8 +141,9 @@ struct CreateEnvelopeRouter {
             )
         case .gift:
           state.path.append(.createEnvelopeAdditionalIsGift(.init(textFieldText: state.$createEnvelopeProperty.additionIsGiftHelper.textFieldText)))
+
         case .memo:
-          state.path.append(.createEnvelopeAdditionalMemo(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+          state.path.append(.createEnvelopeAdditionalMemo(.init(memoHelper: state.$createEnvelopeProperty.memoHelper)))
         case .contacts:
           state.path.append(.createEnvelopeAdditionalContact(.init(contactHelper: state.$createEnvelopeProperty.contactHelper)))
         }

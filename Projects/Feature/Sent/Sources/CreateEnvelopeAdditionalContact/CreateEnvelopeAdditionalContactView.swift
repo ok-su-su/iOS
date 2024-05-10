@@ -19,13 +19,13 @@ struct CreateEnvelopeAdditionalContactView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 32) {
+    VStack(alignment: .leading, spacing: 32) {
       HStack(spacing: 4) {
         Spacer()
           .frame(height: 34)
 
         // TODO: change Property
-        Text(Constants.eventNameText)
+        Text(Constants.contactNameText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
@@ -37,13 +37,13 @@ struct CreateEnvelopeAdditionalContactView: View {
       SSTextField(
         isDisplay: false,
         text: $store.contactHelper.textFieldText.sending(\.view.changedTextField),
-        property: .gift,
+        property: .contact,
         isHighlight: $store.contactHelper.isHighlight.sending(\.view.changeIsHighlight)
       )
 
       Spacer()
 
-      CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
+
     }
   }
 
@@ -52,9 +52,15 @@ struct CreateEnvelopeAdditionalContactView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-
-      makeContentView()
+      VStack {
+        makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
+        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
+      }
+      
     }
+    
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -65,7 +71,7 @@ struct CreateEnvelopeAdditionalContactView: View {
   }
 
   private enum Constants {
-    static let eventNameText = "결혼식을"
-    static let descriptionText = "방문했나요?"
+    static let contactNameText = "김철수님의"
+    static let descriptionText = "연락처를 남겨주세요"
   }
 }

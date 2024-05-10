@@ -60,7 +60,8 @@ struct CreateEnvelopeAdditionalContact {
         return .none
       case let .view(.changedTextField(text)):
         state.contactHelper.textFieldText = text
-        return .none
+        let pushable = state.contactHelper.textFieldText != ""
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
       case let .view(.changeIsHighlight(isHighlight)):
         state.contactHelper.isHighlight = isHighlight
         return .none

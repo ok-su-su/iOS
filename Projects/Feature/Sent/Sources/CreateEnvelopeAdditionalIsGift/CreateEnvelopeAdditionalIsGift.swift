@@ -51,6 +51,9 @@ struct CreateEnvelopeAdditionalIsGift {
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):

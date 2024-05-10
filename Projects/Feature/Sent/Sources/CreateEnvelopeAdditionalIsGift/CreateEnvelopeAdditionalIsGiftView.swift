@@ -19,7 +19,7 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 32) {
+    VStack(alignment: .leading, spacing: 32) {
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
 
@@ -44,6 +44,7 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
         .gray15
         .ignoresSafeArea()
       makeContentView()
+        .padding(.horizontal, Metrics.horizontalSpacing)
     }
     .navigationBarBackButtonHidden()
     .onAppear {
@@ -51,7 +52,9 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let horizontalSpacing: CGFloat = 16
+  }
 
   private enum Constants {
     static let titleText = "보낸 선물을 알려주세요"
