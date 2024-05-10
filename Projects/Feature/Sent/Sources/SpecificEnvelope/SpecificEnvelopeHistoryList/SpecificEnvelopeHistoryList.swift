@@ -42,7 +42,7 @@ struct SpecificEnvelopeHistoryList {
   }
 
   enum DelegateAction: Equatable {
-    case pushDeleteScene
+    
   }
 
   var body: some Reducer<State, Action> {
@@ -56,10 +56,14 @@ struct SpecificEnvelopeHistoryList {
         
       case .scope(.header):
         return .none
-        
-      case .delegate(.pushDeleteScene):
-        return .none
+     
       }
     }
   }
 }
+
+//extension Reducer where State == SpecificEnvelopeHistoryList.State, Action == SpecificEnvelopeHistoryList.Action {
+//  func subFeatures0() -> some ReducerOf<Self> {
+//    ifLet(<#T##WritableKeyPath<State, PresentationState<ChildState>>#>, action: <#T##CaseKeyPath<Action, PresentationAction<ChildAction>>#>)
+//  }
+//}

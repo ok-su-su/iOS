@@ -155,7 +155,7 @@ struct SentMain {
   }
 }
 
-extension Reducer where State == SentMain.State, Action == SentMain.Action {
+private extension Reducer where State == SentMain.State, Action == SentMain.Action {
   func subFeatures1() -> some ReducerOf<Self> {
     ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
       SearchEnvelope()

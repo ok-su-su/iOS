@@ -37,9 +37,7 @@ struct SpecificEnvelopeHistoryRouter {
 
       case let .path(.element(id: _, action: action)):
         switch action {
-        case .specificEnvelopeHistoryList(.delegate(.pushDeleteScene)) :
-          state.path.append(<#T##newElement: Path.State##Path.State#>)
-          return .none
+          
         case .specificEnvelopeHistoryList:
           return .none
         }
