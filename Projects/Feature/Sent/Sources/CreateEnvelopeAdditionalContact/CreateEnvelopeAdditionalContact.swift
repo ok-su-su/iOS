@@ -45,7 +45,9 @@ struct CreateEnvelopeAdditionalContact {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case push
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -56,7 +58,17 @@ struct CreateEnvelopeAdditionalContact {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case let .view(.changedTextField(text)):
+        state.contactHelper.textFieldText = text
+        return .none
+      case let .view(.changeIsHighlight(isHighlight)):
+        state.contactHelper.isHighlight = isHighlight
+        return .none
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .send(.delegate(.push))
+      case .delegate(.push):
+        return .none
+      case .scope(.nextButton):
         return .none
       }
     }

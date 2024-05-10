@@ -54,7 +54,6 @@ struct CreateEnvelopePrice {
     case onAppear(Bool)
     case tappedGuidValue(String)
     case changeText(String)
-    case changedTextfield(String)
   }
 
   enum InnerAction: Equatable {
@@ -112,18 +111,13 @@ struct CreateEnvelopePrice {
         if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
           state.textFieldText = formattedValue
         }
+        let pushable = state.textFieldText != ""
         return .run { send in
-          await send(.view(.changedTextfield(value)))
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
 
       case .delegate(.push):
         return .none
-
-      case let .view(.changedTextfield(text)):
-        let pushable = text != ""
-        return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
       }
     }
   }

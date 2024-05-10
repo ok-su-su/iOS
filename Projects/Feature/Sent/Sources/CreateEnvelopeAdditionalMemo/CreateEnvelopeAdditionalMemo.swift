@@ -35,7 +35,9 @@ struct CreateEnvelopeAdditionalMemo {
   @CasePathable
   enum ScopeAction: Equatable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case push
+  }
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -43,7 +45,8 @@ struct CreateEnvelopeAdditionalMemo {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+
+      case .delegate(.push):
         return .none
       }
     }

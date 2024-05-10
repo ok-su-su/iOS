@@ -50,7 +50,31 @@ struct CreateEnvelopeRouter {
     Reduce { state, action in
       switch action {
       case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
-        let cur = state.createEnvelopeProperty.additionalSectionHelper.selectedID
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalContact(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .contacts)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalIsGift(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .gift)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalIsVisitedEvent(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .isVisited)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalMemo(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .memo)
         return .run { send in
           await send(.pushCreateEnvelopeAdditional, animation: .default)
         }
@@ -103,9 +127,9 @@ struct CreateEnvelopeRouter {
         return .none
 
       case .pushCreateEnvelopeAdditional:
-        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection()
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          // end additionSection
+          // TODO: - Some navigation Logic
+          // addition Section을 종료합니다.
           return .none
         }
         switch currentSection {
