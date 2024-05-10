@@ -18,17 +18,39 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   // MARK: Content
 
   @ViewBuilder
+  private func makeDefaultItems() -> some View {
+    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+  }
+
+  @ViewBuilder
+  private func makeNextButton() -> some View {
+    CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
+  }
+
+  @ViewBuilder
   private func makeContentView() -> some View {
     HStack(spacing: 4) {
+      Spacer()
+        .frame(height: 34)
+
       // TODO: change Property
-//      Text("김철수님에게")
-//        .modifier(SSTypoModifier(.title_m))
-//        .foregroundStyle(SSColor.gray60)
-//
-//      Text(Constants.nameDescriptionText)
-//        .modifier(SSTypoModifier(.title_m))
-//        .foregroundStyle(SSColor.gray100)
+      Text(Constants.eventNameText)
+        .modifier(SSTypoModifier(.title_m))
+        .foregroundStyle(SSColor.gray60)
+
+      Text(Constants.descriptionText)
+        .modifier(SSTypoModifier(.title_m))
+        .foregroundStyle(SSColor.gray100)
     }
+
+    Spacer()
+      .frame(height: 34)
+
+    makeDefaultItems()
+
+    Spacer()
+
+    makeNextButton()
   }
 
   var body: some View {
@@ -39,13 +61,19 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       VStack {
         makeContentView()
       }
+      .padding(.horizontal, Metrics.horizontalSpacing)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let horizontalSpacing: CGFloat = 16
+  }
 
-  private enum Constants {}
+  private enum Constants {
+    static let eventNameText = "결혼식을"
+    static let descriptionText = "방문했나요?"
+  }
 }

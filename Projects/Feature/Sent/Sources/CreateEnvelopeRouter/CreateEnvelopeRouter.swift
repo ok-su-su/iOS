@@ -108,7 +108,11 @@ struct CreateEnvelopeRouter {
         }
         switch currentSection {
         case .isVisited:
-          state.path.append(.createEnvelopeAdditionalIsVisitedEvent(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
+          state
+            .path
+            .append(
+              .createEnvelopeAdditionalIsVisitedEvent(.init(isVisitedEventHelper: state.$createEnvelopeProperty.isVisitedHelper))
+            )
         case .gift:
           state.path.append(.createEnvelopeAdditionalIsGift(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         case .memo:
