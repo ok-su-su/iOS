@@ -18,11 +18,11 @@ public struct InventoryFloating {
   public struct State {
     var isTapped = false
   }
-  
+
   public enum Action {
     case didTapFloatingButton
   }
-  
+
   public var body: some Reducer<State, Action> {
     Reduce { _, action in
       switch action {
@@ -31,5 +31,4 @@ public struct InventoryFloating {
       }
     }
   }
-  
 }

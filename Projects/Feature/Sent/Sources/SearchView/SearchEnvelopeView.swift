@@ -87,7 +87,7 @@ struct SearchEnvelopeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       ForEach(0 ..< min(store.latestSearchCount, 5), id: \.self) { ind in
-        let latestSearch = store.searchProperty.latestSearch
+        let latestSearch = store.searchHelper.latestSearch
         if latestSearch.indices.contains(ind) {
           HStack(spacing: 0) {
             Text(latestSearch[ind])
@@ -100,7 +100,7 @@ struct SearchEnvelopeView: View {
             SSImage
               .commonDeleteGray
               .onTapGesture {
-                store.send(.tappedLatestSearchNameDelete(store.searchProperty.latestSearch[ind]))
+                store.send(.tappedLatestSearchNameDelete(store.searchHelper.latestSearch[ind]))
               }
           }
         }
