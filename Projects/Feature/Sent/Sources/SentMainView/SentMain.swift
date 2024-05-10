@@ -79,6 +79,7 @@ struct SentMain {
 
   enum DelegateAction: Equatable {
     case pushSearchEnvelope
+    case pushFilter
   }
 
   var body: some Reducer<State, Action> {
@@ -117,9 +118,6 @@ struct SentMain {
       case .view(.tappedFirstButton):
         return .none
 
-      case .view(.filterButtonTapped):
-        return .none
-
       case .view(.tappedEmptyEnvelopeButton):
         return .none
 
@@ -147,10 +145,18 @@ struct SentMain {
 
       case .binding:
         return .none
+
       case .inner(.showCreateEnvelopRouter):
         state.createEnvelopeRouter = .init()
         return .none
+
       case .scope(.createEnvelopeRouter):
+        return .none
+
+      case .view(.filterButtonTapped):
+        return .send(.delegate(.pushFilter))
+
+      case .delegate(.pushFilter):
         return .none
       }
     }

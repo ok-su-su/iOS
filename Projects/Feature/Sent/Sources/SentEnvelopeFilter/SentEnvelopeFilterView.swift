@@ -37,31 +37,22 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makePersonButton() -> some View {
     let filteredPeople = store.filterByTextField
+    let sentPeople = store.sentPeopleAdaptor.sentPeople
     if filteredPeople == [] && store.textFieldText == "" {
-      let sentPeople = store.sentPeopleAdaptor.sentPeople
-      ForEach(0 ..< sentPeople.count, id: \.self) { index in
-        if index % 5 == 0 {
-          GridRow {
-            ForEach(index ..< min(index + 5, sentPeople.count), id: \.self) { innerIndex in
-              let current = sentPeople[innerIndex]
-              SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
-                store.send(.tappedPerson(current.id))
-              }
-            }
+      WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+        ForEach(0 ..< sentPeople.count, id: \.self) { index in
+          let current = sentPeople[index]
+          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[current.id, default: Constants.butonProperty]) {
+            store.send(.tappedPerson(current.id))
           }
         }
       }
     } else {
-      ForEach(0 ..< filteredPeople.count, id: \.self) { index in
-        if index % 5 == 0 && index < filteredPeople.count {
-          GridRow {
-            ForEach(index ..< min(index + 5, filteredPeople.count), id: \.self) { innerIndex in
-              if innerIndex < filteredPeople.count {
-                SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[filteredPeople[innerIndex].id, default: Constants.butonProperty]) {
-                  store.send(.tappedPerson(store.filterByTextField[innerIndex].id))
-                }
-              }
-            }
+      WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+        ForEach(0 ..< filteredPeople.count, id: \.self) { index in
+          let current = sentPeople[index]
+          SSButtonWithState(store.sentPeopleAdaptor.ssButtonProperties[filteredPeople[index].id, default: Constants.butonProperty]) {
+            store.send(.tappedPerson(store.filterByTextField[index].id))
           }
         }
       }
@@ -169,10 +160,8 @@ struct SentEnvelopeFilterView: View {
       CustomTextFieldView(store: store.scope(state: \.customTextField, action: \.customTextField))
         .padding(.vertical, 16)
 
-      Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 8) {
-        makePersonButton()
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      makePersonButton()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }

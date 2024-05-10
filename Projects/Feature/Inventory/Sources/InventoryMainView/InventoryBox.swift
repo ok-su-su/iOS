@@ -12,7 +12,6 @@ import ComposableArchitecture
 
 @Reducer
 public struct InventoryBox {
-  
   @ObservableState
   public struct State: Equatable, Identifiable {
     public var id: UUID = .init()
@@ -20,7 +19,7 @@ public struct InventoryBox {
     public var inventoryTitle: String
     public var inventoryAmount: String
     public var inventoryCount: Int
-    
+
     public init(inventoryType: InventoryType, inventoryTitle: String, inventoryAmount: String, inventoryCount: Int) {
       self.inventoryType = inventoryType
       self.inventoryTitle = inventoryTitle
@@ -28,16 +27,12 @@ public struct InventoryBox {
       self.inventoryCount = inventoryCount
     }
   }
-  
-  public enum Action {
-    
-  }
-  
+
+  public enum Action {}
+
   public var body: some Reducer<State, Action> {
-    Reduce { state, action in
-      switch action {
-        
-      }
+    Reduce { _, action in
+      switch action {}
     }
   }
 }
