@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import SwiftUI
 
 struct SpecificEnvelopeHistoryListView: View {
@@ -106,6 +107,21 @@ struct SpecificEnvelopeHistoryListView: View {
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
     }
+    .sSAlert(
+      isPresented: $store.isDeleteAlertPresent,
+      messageAlertProperty: .init(
+        titleText: store.envelopeHistoryProperty.alertTitleText,
+        contentText: store.envelopeHistoryProperty.alertDescriptionText,
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(
+          left: store.envelopeHistoryProperty.alertLeftButtonText,
+          right: store.envelopeHistoryProperty.alertRightButtonText
+        ),
+        didTapCompletionButton: {
+          store.send(.view(.tappedAlertConfirmButton))
+        }
+      )
+    )
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

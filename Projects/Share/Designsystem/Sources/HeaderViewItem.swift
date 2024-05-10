@@ -98,14 +98,13 @@ extension HeaderView {
     case .none:
       EmptyView()
     case let .text(text):
-      Button {
-        store.send(.tappedTextButton)
-      } label: {
-        Text(text)
-          .modifier(SSTypoModifier(.title_xxs))
-          .padding(Constants.imagePadding)
-      }
-      .frame(alignment: .trailing)
+      Text(text)
+        .modifier(SSTypoModifier(.title_xxs))
+        .padding(Constants.imagePadding)
+        .frame(alignment: .trailing)
+        .onTapGesture {
+          store.send(.tappedTextButton)
+        }
     }
   }
 }
