@@ -119,6 +119,9 @@ struct SentMainView: View {
         .presentationDetents([.height(240), .medium, .large])
         .presentationDragIndicator(.automatic)
     }
+    .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
+      SpecificEnvelopeHistoryRouterView(store: store)
+    }
   }
 
   private enum Constants {

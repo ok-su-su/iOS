@@ -29,13 +29,11 @@ struct SpecificEnvelopeHistoryRouter {
       switch action {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
-        return .send(.path(.push(id: 0, state: .specificEnvelopeHistoryList(.init()))))
-      case let .path(.push(id: _, state: pathState)):
-        switch pathState {
-        case let .specificEnvelopeHistoryList(currentState):
-          state.path.append(.specificEnvelopeHistoryList(currentState))
-          return .none
-        }
+        state.path.append(.specificEnvelopeHistoryList(.init()))
+        return .none
+        
+      case let .path(.push(id: _, state: _)):
+        return .none
 
       case let .path(.element(id: id, action: action)):
         return .none

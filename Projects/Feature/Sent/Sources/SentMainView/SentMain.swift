@@ -11,6 +11,8 @@ import Designsystem
 import Foundation
 import OSLog
 
+// MARK: - SentMain
+
 @Reducer
 struct SentMain {
   init() {}
@@ -26,7 +28,7 @@ struct SentMain {
     @Presents var filterDial: FilterDial.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
     @Presents var searchEnvelope: SearchEnvelope.State?
-    @Presents var 
+    @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
 
     @Shared var sentMainProperty: SentMainProperty
 
@@ -79,6 +81,7 @@ struct SentMain {
     case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
+    case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
   }
 
   enum DelegateAction: Equatable {
@@ -105,19 +108,13 @@ struct SentMain {
       case .view(.tappedEmptyEnvelopeButton):
         return .none
 
-      case .scope(.tabBar):
-        return .none
-        
-        /// Navigation Specific Router
+      // Navigation Specific Router
       case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
-        return .none
-      case .scope(.filterDial):
-        return .none
-      case .scope(.header(.tappedSearchButton)):
-        state.searchEnvelope = SearchEnvelope.State(searchHelper: state.$sentMainProperty.searchHelper)
+        state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State()
         return .none
 
-      case .scope(.header):
+      case .scope(.header(.tappedSearchButton)):
+        state.searchEnvelope = SearchEnvelope.State(searchHelper: state.$sentMainProperty.searchHelper)
         return .none
 
       case .scope(.floatingButton(.tapped)):
@@ -132,34 +129,36 @@ struct SentMain {
         return .none
 
       case .inner(.showCreateEnvelopRouter):
-        state.createEnvelopeRouter = .init()
-        return .none
-
-      case .scope(.createEnvelopeRouter):
+        state.createEnvelopeRouter = CreateEnvelopeRouter.State()
         return .none
 
       case .delegate(.pushFilter):
         return .none
 
       case .view(.tappedSortButton):
-        state.filterDial = .init(filterDialProperty: state.$sentMainProperty.filterDialProperty)
+        state.filterDial = FilterDial.State(filterDialProperty: state.$sentMainProperty.filterDialProperty)
         return .none
 
       case .view(.tappedFilterButton):
-        state.sentEnvelopeFilter = .init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+        state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
         return .none
 
-      case .scope(.sentEnvelopeFilter):
-        return .none
-
-      case .scope(.searchEnvelope):
-        return .none
-
-      case .scope(.envelopes):
+      case .scope:
         return .none
       }
     }
-    .ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
+    .subFeatures1()
+    .subFeatures2()
+
+    .forEach(\.envelopes, action: \.scope.envelopes) {
+      Envelope()
+    }
+  }
+}
+
+extension Reducer where State == SentMain.State, Action == SentMain.Action {
+  func subFeatures1() -> some ReducerOf<Self> {
+    ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
       SearchEnvelope()
     }
     .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
@@ -168,11 +167,14 @@ struct SentMain {
     .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
       CreateEnvelopeRouter()
     }
-    .ifLet(\.$filterDial, action: \.scope.filterDial) {
+  }
+
+  func subFeatures2() -> some ReducerOf<Self> {
+    ifLet(\.$filterDial, action: \.scope.filterDial) {
       FilterDial()
     }
-    .forEach(\.envelopes, action: \.scope.envelopes) {
-      Envelope()
+    .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
+      SpecificEnvelopeHistoryRouter()
     }
   }
 }
