@@ -18,16 +18,16 @@ struct SentEnvelopeFilter {
   struct State {
     var isOnAppear = false
     @Shared var textFieldText: String
-    var filterHelper: SentPeopleFilterHelper
+    @Shared var filterHelper: SentPeopleFilterHelper
 
     // MARK: - Scope
 
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
     var customTextField: CustomTextField.State
-    init(sentPeople: [SentPerson]) {
-      filterHelper = .init(sentPeople: sentPeople)
-      _textFieldText = Shared("")
+    init(filterHelper: Shared<SentPeopleFilterHelper>) {
+      _filterHelper = filterHelper
+      _textFieldText = .init("")
       customTextField = .init(text: _textFieldText)
     }
 

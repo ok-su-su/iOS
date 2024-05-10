@@ -10,7 +10,6 @@ import Foundation
 
 @Reducer
 struct FilterDial {
-  
   @Dependency(\.dismiss) var dismiss
   @ObservableState
   struct State {

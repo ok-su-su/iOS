@@ -24,6 +24,7 @@ struct SentMain {
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterDial: FilterDial.State?
+    @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
 
     @Shared var sentMainProperty: SentMainProperty
 
@@ -72,6 +73,7 @@ struct SentMain {
 
     case filterDial(PresentationAction<FilterDial.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
+    case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
   }
@@ -139,8 +141,15 @@ struct SentMain {
         return .none
       // TODO: FilterRouting
       case .view(.tappedFilterButton):
+        state.sentEnvelopeFilter = .init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+//        state.createEnvelopeRouter = .init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+        return .none
+      case .scope(.sentEnvelopeFilter):
         return .none
       }
+    }
+    .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
+      SentEnvelopeFilter()
     }
     .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
       CreateEnvelopeRouter()

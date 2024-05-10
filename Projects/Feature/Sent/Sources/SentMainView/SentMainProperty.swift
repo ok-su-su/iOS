@@ -10,4 +10,5 @@ import Foundation
 
 struct SentMainProperty: Equatable {
   var filterDialProperty: FilterDialProperty = .init()
+  var sentPeopleFilterHelper: SentPeopleFilterHelper = .init()
 }

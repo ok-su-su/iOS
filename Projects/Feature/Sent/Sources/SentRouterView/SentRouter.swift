@@ -38,15 +38,6 @@ struct SentRouter {
           return .none
 
         case .element(id: _, action: .sentMain(.delegate(.pushFilter))):
-          state.path.append(.sentEnvelopeFilter(.init(sentPeople: [
-            .init(name: "춘자"),
-            .init(name: "복자"),
-            .init(name: "흑자"),
-            .init(name: "헬자"),
-            .init(name: "함자"),
-            .init(name: "귀자"),
-            .init(name: "사귀자"),
-          ])))
           return .none
         default:
           return .none
