@@ -1,22 +1,21 @@
-// 
+//
 //  EnvelopePriceProgress.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 @Reducer
 struct EnvelopePriceProgress {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    
+
     var envelopePriceProgressProperty: EnvelopePriceProgressProperty
-    init (envelopePriceProgressProperty: EnvelopePriceProgressProperty) {
+    init(envelopePriceProgressProperty: EnvelopePriceProgressProperty) {
       self.envelopePriceProgressProperty = envelopePriceProgressProperty
     }
   }
@@ -25,7 +24,7 @@ struct EnvelopePriceProgress {
     case onAppear(Bool)
     case updateProperty(EnvelopePriceProgressProperty)
   }
-  
+
   enum ViewAction: Equatable {
     case onAppear(Bool)
   }
@@ -42,7 +41,7 @@ struct EnvelopePriceProgress {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear) :
+      case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
       case let .updateProperty(value):

@@ -1,20 +1,20 @@
-// 
+//
 //  EnvelopePriceProgressView.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 struct EnvelopePriceProgressView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<EnvelopePriceProgress>
-  
+
   @ViewBuilder
   private func makeMiddleView() -> some View {
     HStack {
@@ -34,7 +34,6 @@ struct EnvelopePriceProgressView: View {
   private func makeProgressBarView() -> some View {
     GeometryReader { geometry in
       ZStack(alignment: .topLeading) {
-        
         SSColor.orange20
           .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
         SSColor.orange60
@@ -66,8 +65,9 @@ struct EnvelopePriceProgressView: View {
         .foregroundColor(SSColor.gray60)
     }
   }
-  
+
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
@@ -75,15 +75,13 @@ struct EnvelopePriceProgressView: View {
       makeProgressBarView()
       makeBottomView()
     }
-    
-    
   }
 
   var body: some View {
     makeContentView()
-    .onAppear{
-      store.send(.onAppear(true))
-    }
+      .onAppear {
+        store.send(.onAppear(true))
+      }
   }
 
   private enum Metrics {
@@ -91,5 +89,4 @@ struct EnvelopePriceProgressView: View {
     static let progressCornerRadius: CGFloat = 8
     static let progressBarVerticalSpacing: CGFloat = 4
   }
-  
 }

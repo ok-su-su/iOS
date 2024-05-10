@@ -41,9 +41,7 @@ struct SpecificEnvelopeHistoryList {
     case header(HeaderViewFeature.Action)
   }
 
-  enum DelegateAction: Equatable {
-    
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -53,17 +51,16 @@ struct SpecificEnvelopeHistoryList {
         return .none
       case .scope(.header(.tappedTextButton)):
         return .none
-        
+
       case .scope(.header):
         return .none
-     
       }
     }
   }
 }
 
-//extension Reducer where State == SpecificEnvelopeHistoryList.State, Action == SpecificEnvelopeHistoryList.Action {
+// extension Reducer where State == SpecificEnvelopeHistoryList.State, Action == SpecificEnvelopeHistoryList.Action {
 //  func subFeatures0() -> some ReducerOf<Self> {
 //    ifLet(<#T##WritableKeyPath<State, PresentationState<ChildState>>#>, action: <#T##CaseKeyPath<Action, PresentationAction<ChildAction>>#>)
 //  }
-//}
+// }

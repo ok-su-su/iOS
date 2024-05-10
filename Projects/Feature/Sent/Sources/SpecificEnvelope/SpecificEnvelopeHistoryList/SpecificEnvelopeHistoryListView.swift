@@ -23,37 +23,35 @@ struct SpecificEnvelopeHistoryListView: View {
       HeaderView(store: store.scope(state: \.header, action: \.scope.header))
       Spacer()
         .frame(height: 24)
-      
-      
-      //MARK: TopView
+
+      // MARK: TopView
+
       VStack(alignment: .leading, spacing: 8) {
         Text(Constants.titlePriceText)
           .modifier(SSTypoModifier(.title_m))
-        
+
         SmallBadge(
           property:
-              .init(
-                size: .xSmall,
-                badgeString: Constants.descriptionButtonText,
-                badgeColor: .gray30)
+          .init(
+            size: .xSmall,
+            badgeString: Constants.descriptionButtonText,
+            badgeColor: .gray30
+          )
         )
-        
+
         Spacer()
           .frame(height: 24)
-        
-        
-        
       }
     }
   }
-  
+
   @ViewBuilder
   private func makeProgressBarView() -> some View {
     ZStack(alignment: .topLeading) {
       SSColor.orange20
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       SSColor.orange60
-        .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
+        .frame(maxWidth: 150, maxHeight: .infinity, alignment: .leading)
     }
     .frame(maxWidth: .infinity, maxHeight: Metrics.progressHeightValue)
     .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))

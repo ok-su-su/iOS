@@ -25,7 +25,7 @@ struct SpecificEnvelopeHistoryRouterView: View {
       EmptyView()
     } destination: { store in
       switch store.case {
-      case let .specificEnvelopeHistoryList(store) :
+      case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
       }
     }
