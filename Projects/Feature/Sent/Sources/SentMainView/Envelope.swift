@@ -34,7 +34,7 @@ struct Envelope {
       case .tappedDetailButton:
         state.showDetail.toggle()
         return .none
-      default:
+      case .tappedFullContentOfEnvelopeButton:
         return .none
       }
     }

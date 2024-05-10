@@ -39,6 +39,7 @@ struct SpecificEnvelopeHistoryRouter {
 
       case let .path(.element(id: id, action: action)):
         return .none
+
       case let .path(.popFrom(id: id)):
         return .none
       }

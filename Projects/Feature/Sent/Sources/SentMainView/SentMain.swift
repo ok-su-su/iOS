@@ -26,6 +26,7 @@ struct SentMain {
     @Presents var filterDial: FilterDial.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
     @Presents var searchEnvelope: SearchEnvelope.State?
+    @Presents var 
 
     @Shared var sentMainProperty: SentMainProperty
 
@@ -106,7 +107,9 @@ struct SentMain {
 
       case .scope(.tabBar):
         return .none
-      case .scope(.envelopes):
+        
+        /// Navigation Specific Router
+      case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
         return .none
       case .scope(.filterDial):
         return .none
@@ -150,6 +153,9 @@ struct SentMain {
         return .none
 
       case .scope(.searchEnvelope):
+        return .none
+
+      case .scope(.envelopes):
         return .none
       }
     }
