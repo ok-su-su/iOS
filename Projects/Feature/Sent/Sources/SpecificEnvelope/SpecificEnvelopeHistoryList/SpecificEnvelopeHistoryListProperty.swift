@@ -10,5 +10,5 @@ import Foundation
 
 struct SpecificEnvelopeHistoryListProperty: Equatable {
   var envelopePriceProgressProperty: EnvelopePriceProgressProperty
-  var envelopeContent: EnvelopeContent
+  var envelopeContents: [EnvelopeContent]
 }

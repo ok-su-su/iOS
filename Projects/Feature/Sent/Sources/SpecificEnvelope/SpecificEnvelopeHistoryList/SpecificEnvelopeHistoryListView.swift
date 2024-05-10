@@ -39,23 +39,68 @@ struct SpecificEnvelopeHistoryListView: View {
           )
         )
 
+        // MARK: ProgressView
+
+        EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress))
+          .padding(.vertical, 24)
+
         Spacer()
-          .frame(height: 24)
+          .frame(maxWidth: .infinity, maxHeight: 8)
+          .foregroundStyle(SSColor.gray20)
+
+        Spacer()
+          .frame(height: 16)
+        ScrollView {
+          makeEnvelopeDetails()
+        }
       }
+    }
+  }
+
+  @ViewBuilder
+  private func makeEnvelopeDetails() -> some View {
+    LazyVStack {
+      ForEach(store.envelopeHistoryProperty.envelopeContents) { property in
+        makeDetailContentView(property)
+      }
+      Spacer()
+        .frame(height: 16)
+    }
+  }
+
+  @ViewBuilder
+  private func makeDetailContentView(_ property: EnvelopeContent) -> some View {
+    HStack {
+      HStack(spacing: 12) {
+        SSImage.envelopeBackArrow
+        SmallBadge(
+          property: .init(
+            size: .small,
+            badgeString: property.eventName,
+            badgeColor: property.envelopeType == .sent ? .gray90 : .gray40
+          )
+        )
+
+        Text("23.07.18") // TODO: 수정
+          .modifier(SSTypoModifier(.title_xxs))
+      }
+      Spacer()
+      Text(property.priceText)
+        .modifier(SSTypoModifier(.title_xs))
     }
   }
 
   var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
       VStack {
         makeContentView()
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
     }
-
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

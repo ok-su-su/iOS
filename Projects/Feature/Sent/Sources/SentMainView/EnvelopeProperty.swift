@@ -31,6 +31,10 @@ struct EnvelopeContent: Equatable, Hashable, Identifiable {
   let envelopeType: EnvelopeType
   let price: Int
 
+  var priceText: String {
+    return CustomNumberFormatter.formattedByThreeZero(price) ?? "0원"
+  }
+
   var isHighlight: Bool {
     return id.hashValue % 2 == 0
   }
@@ -51,8 +55,9 @@ struct EnvelopeContent: Equatable, Hashable, Identifiable {
   static func fakeData() -> Self {
     return [
       EnvelopeContent(date: .now, eventName: "돌잔치", envelopeType: .receive, price: 50000),
-      EnvelopeContent(date: .now, eventName: "돌잔치", envelopeType: .receive, price: 15000),
-      EnvelopeContent(date: .now, eventName: "생일잔치", envelopeType: .receive, price: 15000),
+      EnvelopeContent(date: .now, eventName: "돌잔치", envelopeType: .sent, price: 15000),
+      EnvelopeContent(date: .now, eventName: "생일잔치", envelopeType: .sent, price: 15000),
+      EnvelopeContent(date: .now, eventName: "생일잔치", envelopeType: .receive, price: 3000),
     ][Int.random(in: 0 ..< 3)]
   }
 
