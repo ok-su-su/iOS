@@ -1,21 +1,20 @@
-// 
+//
 //  SpecificEnvelopeHistoryList.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 @Reducer
 struct SpecificEnvelopeHistoryList {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    
-    init () {}
+
+    init() {}
   }
 
   enum Action: Equatable, FeatureAction {
@@ -25,7 +24,7 @@ struct SpecificEnvelopeHistoryList {
     case scope(ScopeAction)
     case delegate(DelegateAction)
   }
-  
+
   enum ViewAction: Equatable {
     case onAppear(Bool)
   }
@@ -42,7 +41,7 @@ struct SpecificEnvelopeHistoryList {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)) :
+      case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
       default:

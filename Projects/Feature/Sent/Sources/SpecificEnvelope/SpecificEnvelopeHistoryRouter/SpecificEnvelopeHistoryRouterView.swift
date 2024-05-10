@@ -1,25 +1,24 @@
-// 
+//
 //  SpecificEnvelopeHistoryRouterView.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 struct SpecificEnvelopeHistoryRouterView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<SpecificEnvelopeHistoryRouter>
 
   // MARK: Content
-  @ViewBuilder
-  private func makeContentView() -> some View {
 
-  }
+  @ViewBuilder
+  private func makeContentView() -> some View {}
 
   var body: some View {
     ZStack {
@@ -30,16 +29,12 @@ struct SpecificEnvelopeHistoryRouterView: View {
         makeContentView()
       }
     }
-    .onAppear{
-      store.send(.view(.onAppear(true)))
+    .onAppear {
+      store.send(.onAppear(true))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }

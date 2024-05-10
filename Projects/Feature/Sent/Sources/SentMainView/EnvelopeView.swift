@@ -1,5 +1,5 @@
 //
-//  SentEnvelopeView.swift
+//  EnvelopeView.swift
 //  Sent
 //
 //  Created by MaraMincho on 4/19/24.
