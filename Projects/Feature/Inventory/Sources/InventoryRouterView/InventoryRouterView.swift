@@ -12,9 +12,7 @@ import ComposableArchitecture
 
 struct InventoryRouterView: View {
   var body: some View {
-    //TODO: 추가 예정
-    HStack {
-      
-    }
+    // TODO: 추가 예정
+    HStack {}
   }
 }

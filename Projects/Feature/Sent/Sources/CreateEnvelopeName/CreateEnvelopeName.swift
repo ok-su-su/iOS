@@ -16,6 +16,8 @@ struct CreateEnvelopeName {
     var isOnAppear = false
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
     var isAbleToPush: Bool {
@@ -42,15 +44,18 @@ struct CreateEnvelopeName {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedNextButton
     case tappedFilterItem(name: String)
+    case textFieldChange(String)
   }
 
   enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
-  enum ScopeAction: Equatable {}
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+  }
 
   enum DelegateAction: Equatable {
     case push
@@ -61,6 +66,9 @@ struct CreateEnvelopeName {
   var body: some Reducer<State, Action> {
     BindingReducer()
 
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -70,17 +78,26 @@ struct CreateEnvelopeName {
       case .binding:
         return .none
 
-      case .view(.tappedNextButton):
-        return .run { send in
-          await send(.delegate(.push))
-        }
-
       case .delegate:
         return .none
 
       case let .view(.tappedFilterItem(name: name)):
         state.textFieldText = name
         return .none
+
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .run { send in
+          await send(.delegate(.push))
+        }
+
+      case .scope(.nextButton):
+        return .none
+
+      case let .view(.textFieldChange(text)):
+        let pushable = text != ""
+        return .run { send in
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
       }
     }
   }
