@@ -53,7 +53,7 @@ struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack {
+    VStack(alignment: .leading) {
       Spacer()
         .frame(height: 34)
 

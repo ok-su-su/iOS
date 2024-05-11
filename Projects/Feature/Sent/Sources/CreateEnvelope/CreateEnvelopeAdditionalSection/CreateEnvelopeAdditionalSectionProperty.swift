@@ -17,11 +17,9 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   init() {}
 
   var selectedID: [UUID] = []
-  var defaultItems: [CreateEnvelopeAdditionalSectionProperty] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
+  var defaultItems: [Item] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
 
-  private var pushedItem: [Item] = []
   var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
-  private var currentSectionIndex = 0
 
   mutating func removeItem(_ id: UUID) {
     selectedID = selectedID.filter { $0 != id }
@@ -33,6 +31,11 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
     }
   }
 
+  mutating func startPush() {
+    currentSection = nil
+    sortItems()
+  }
+
   mutating func sortItems() {
     selectedID.sort()
   }
@@ -41,17 +44,34 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
     return !selectedID.isEmpty
   }
 
-  mutating func pushNextSection() {
+  mutating func pushNextSection(from type: CreateEnvelopeAdditionalSectionSceneType?) {
     let uuidByType = CreateEnvelopeAdditionalSectionSceneType.UUIDByType
-    if currentSection == nil {
-      currentSectionIndex = 0
-      currentSection = uuidByType[selectedID[currentSectionIndex]]
-    } else if selectedID.indices.contains(currentSectionIndex + 1) {
-      currentSectionIndex += 1
-      currentSection = uuidByType[selectedID[currentSectionIndex]]
-    } else {
-      currentSection = nil
+    let typeByUUID = CreateEnvelopeAdditionalSectionSceneType.typeByUUID
+
+    // MARK: - 첫 화면에서 푸쉬 할 때 selectedID 의 맨 앞의 section으로 이동합니다.
+
+    guard let type else {
+      if let firstSectionID = selectedID.first,
+         let firstSection = uuidByType[firstSectionID] {
+        currentSection = firstSection
+      }
+      return
     }
+    guard
+      let currentID = typeByUUID[type], // always pass
+      let currentSelectedIDIndex = selectedID.firstIndex(of: currentID), // always pass
+      selectedID.indices.contains(currentSelectedIDIndex + 1)
+    else {
+      // MARK: - 만약 현재 index + 1 보다 넘는 view 가 없을 경우 현재 선택 View 를 nil 로 돌립니다.
+
+      currentSection = nil
+      return
+    }
+
+    // MARK: - NextSection을 바꿉니다.
+
+    let nextSection = uuidByType[selectedID[currentSelectedIDIndex + 1]]
+    currentSection = nextSection
   }
 }
 

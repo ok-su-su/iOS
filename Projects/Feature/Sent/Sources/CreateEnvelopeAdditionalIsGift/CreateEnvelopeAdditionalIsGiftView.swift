@@ -18,23 +18,47 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    VStack(alignment: .leading, spacing: 32) {
+      Text(Constants.titleText)
+        .modifier(SSTypoModifier(.title_m))
+
+      SSTextField(
+        isDisplay: false,
+        text: $store.textFieldText.sending(\.view.changedTextField),
+        property: .gift,
+        isHighlight: $store.isHighlight.sending(\.view.changeIsHighlight)
+      )
+      .onChange(of: store.textFieldText) { _, newValue in
+        store.send(.view(.changedTextField(newValue)))
+      }
+
+      Spacer()
+    }
+  }
 
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
+      VStack(alignment: .leading, spacing: 0) {
         makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
+        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let horizontalSpacing: CGFloat = 16
+  }
 
-  private enum Constants {}
+  private enum Constants {
+    static let titleText = "보낸 선물을 알려주세요"
+  }
 }

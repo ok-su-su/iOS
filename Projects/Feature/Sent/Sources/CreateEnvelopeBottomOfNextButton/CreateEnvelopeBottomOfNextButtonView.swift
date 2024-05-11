@@ -33,6 +33,7 @@ struct CreateEnvelopeBottomOfNextButtonView: View {
     ) {
       store.send(.view(.tappedNextButton))
     }
+    .disabled(!store.isAbleToPush)
   }
 
   private enum Metrics {}
