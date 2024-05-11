@@ -27,35 +27,36 @@ struct SpecificEnvelopeHistoryEditView: View {
 
       makeSubContents()
     }
-    Spacer()
   }
 
   @ViewBuilder
   private func makeSubContents() -> some View {
-    VStack(spacing: 0) {
-      // Section
-      makeEventEditableSection()
+    ScrollView {
+      VStack(spacing: 0) {
+        // Section
+        makeEventEditableSection()
 
-      // name
-      makeNameEditableSection()
+        // name
+        makeNameEditableSection()
 
-      // Relation
-      makeEditableRelationSection()
+        // Relation
+        makeEditableRelationSection()
 
-      // Date
-      makeDateEditableSection()
+        // Date
+        makeDateEditableSection()
 
-      // Visited
-      makeEditableVisitedSection()
+        // Visited
+        makeEditableVisitedSection()
 
-      // Gift
-      makeEditableGiftSection()
+        // Gift
+        makeEditableGiftSection()
 
-      // contact
-      makeEditableContactSection()
+        // contact
+        makeEditableContactSection()
 
-      // memo
-      makeEditableMemoSection()
+        // memo
+        makeEditableMemoSection()
+      }
     }
   }
 
@@ -137,8 +138,8 @@ struct SpecificEnvelopeHistoryEditView: View {
   @ViewBuilder
   private func makeEditableMemoSection() -> some View {
     makeAdditionalSection(
-      title: store.editHelper.envelopeDetailProperty.contactTitle,
-      textFieldString: $store.editHelper.contactEditProperty.contact.sending(\.view.changeContactTextField),
+      title: store.editHelper.envelopeDetailProperty.memoTitle,
+      textFieldString: $store.editHelper.memoEditProperty.memo.sending(\.view.changeMemoTextField),
       promptText: "입력해주세요"
     )
   }

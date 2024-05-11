@@ -77,6 +77,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
             }
             .padding(.all, 4)
             .background(SSColor.gray70)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
           }
         }
       }
