@@ -15,6 +15,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var singleSelectButtonHelper: SingleSelectButtonHelper<Item>
+    var customTextFieldText: String = ""
     init(singleSelectButtonHelper: Shared<SingleSelectButtonHelper<Item>>) {
       self._singleSelectButtonHelper = singleSelectButtonHelper
     }
@@ -23,6 +24,10 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
   enum Action: Equatable {
     case onAppear(Bool)
     case tappedID(UUID)
+    case tappedAddCustomButton
+    case changedText(String)
+    case tappedCloseButton
+    case tappedSaveAndEditButton
   }
 
   var body: some Reducer<State, Action> {
@@ -33,6 +38,28 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
         return .none
       case let .tappedID(id) :
         state.singleSelectButtonHelper.selectItem(by: id)
+        return .none
+        
+      case .tappedAddCustomButton:
+        state.singleSelectButtonHelper.startAddCustomSection()
+        return .none
+        
+      case let .changedText(text):
+        state.customTextFieldText = text
+        return .none
+      case .tappedCloseButton:
+        if state.singleSelectButtonHelper.isSaved {
+          state.singleSelectButtonHelper.resetCustomTextField()
+          return .none
+        }
+        return .send(.changedText(""))
+        
+      case .tappedSaveAndEditButton:
+        if state.singleSelectButtonHelper.isSaved {
+          state.singleSelectButtonHelper.saveCustomTextField()
+        }else {
+          state.singleSelectButtonHelper.startAddCustomSection()
+        }
         return .none
       }
     }

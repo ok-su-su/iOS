@@ -26,6 +26,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
         .frame(width: 72)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+        //MARK: - Defaults Item
         let items = store.singleSelectButtonHelper.items
         ForEach(items) { item in
           SSButton(
@@ -40,7 +41,43 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
             }
         }
         
+        // 만약 CustomItem을 추가할 수 있을 떄
+        if let customItem = store.singleSelectButtonHelper.isCustomItem {
+          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem { // CustomText Field Button
+            
+            SSTextFieldButton(
+              .init(
+                size: .sh32,
+                status: .filled,
+                style: .filled,
+                color: .orange,
+                textFieldText: $store.customTextFieldText.sending(\.changedText),
+                showCloseButton: true,
+                showDeleteButton: true,
+                prompt: store.singleSelectButtonHelper.customTextFieldPrompt ?? ""
+              )) {
+                store.send(.tappedID(customItem.id))
+              } onTapCloseButton: {
+                store.send(.tappedCloseButton)
+              } onTapSaveButton: {
+                store.send(.tappedSaveAndEditButton)
+              }
+
+            
+          }else { // + add Button
+            Button {
+              store.send(.tappedAddCustomButton)
+            } label: {
+              SSImage
+                .commonAdd
+            }
+            .padding(.all, 4)
+            .background(SSColor.gray70)
+          }
+        }
       }
+      
+      
     }
     .padding(.vertical, 16)
     .frame(maxWidth: .infinity, alignment: .topLeading)
