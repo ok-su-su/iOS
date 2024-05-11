@@ -44,6 +44,9 @@ struct SpecificEnvelopeHistoryEditView: View {
 
       // Date
       makeDateEditableSection()
+
+      // Visited
+      makeEditableVisitedSection()
     }
   }
 
@@ -87,6 +90,15 @@ struct SpecificEnvelopeHistoryEditView: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
+  }
+
+  @ViewBuilder
+  private func makeEditableVisitedSection() -> some View {
+    TitleAndItemsWithSingleSelectButtonView(
+      store: store.scope(state: \.visitedSection, action: \.scope.visitedSection),
+      ssButtonFrame: .init(maxWidth: .infinity)
+    )
+      .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
   var body: some View {

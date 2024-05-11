@@ -17,6 +17,7 @@ struct SpecificEnvelopeHistoryEdit {
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
     var eventSection: TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.State
     var relationSection: TitleAndItemsWithSingleSelectButton<RelationSelectButtonItem>.State
+    var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeHistoryEditHelper
 
     // TODO: BottomOFCompleteButton(다른 브런치에 있는 것 가져와서 수정)
@@ -25,6 +26,7 @@ struct SpecificEnvelopeHistoryEdit {
 
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
+      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
     }
   }
 
@@ -51,6 +53,7 @@ struct SpecificEnvelopeHistoryEdit {
     case header(HeaderViewFeature.Action)
     case eventSection(TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.Action)
     case relationSection(TitleAndItemsWithSingleSelectButton<RelationSelectButtonItem>.Action)
+    case visitedSection(TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -63,6 +66,9 @@ struct SpecificEnvelopeHistoryEdit {
       TitleAndItemsWithSingleSelectButton()
     }
     Scope(state: \.relationSection, action: \.scope.relationSection) {
+      TitleAndItemsWithSingleSelectButton()
+    }
+    Scope(state: \.visitedSection, action: \.scope.visitedSection) {
       TitleAndItemsWithSingleSelectButton()
     }
 
@@ -83,6 +89,9 @@ struct SpecificEnvelopeHistoryEdit {
 
       case let .view(.textFieldChanged(text)):
         state.editHelper.changeName(text)
+        return .none
+
+      case .scope(.visitedSection):
         return .none
       }
     }

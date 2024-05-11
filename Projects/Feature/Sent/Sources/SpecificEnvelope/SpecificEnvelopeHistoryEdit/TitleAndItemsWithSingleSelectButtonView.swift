@@ -12,10 +12,13 @@ import SwiftUI
 struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
   // MARK: Reducer
 
+  var ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil
+
   @Bindable
   var store: StoreOf<TitleAndItemsWithSingleSelectButton<Item>>
-  init(store: StoreOf<TitleAndItemsWithSingleSelectButton<Item>>) {
+  init(store: StoreOf<TitleAndItemsWithSingleSelectButton<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil) {
     self.store = store
+    self.ssButtonFrame = ssButtonFrame
   }
 
   @ViewBuilder
@@ -36,7 +39,8 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
               status: item == store.singleSelectButtonHelper.selectedItem ? .active : .inactive,
               style: .filled,
               color: .orange,
-              buttonText: item.title
+              buttonText: item.title,
+              frame: ssButtonFrame
             )) {
               store.send(.tappedID(item.id))
             }
