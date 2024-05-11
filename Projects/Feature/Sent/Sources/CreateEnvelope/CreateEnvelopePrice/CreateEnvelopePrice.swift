@@ -118,12 +118,6 @@ struct CreateEnvelopePrice {
 
       case .delegate(.push):
         return .none
-
-      case let .view(.changedTextfield(text)):
-        let pushable = text != ""
-        return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
       }
     }
   }
