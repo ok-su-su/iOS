@@ -49,7 +49,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
         return .none
 
       case .tappedCloseButton:
-        if state.singleSelectButtonHelper.isSaved {
+        if state.singleSelectButtonHelper.isSaved || state.customTextFieldText == "" {
           state.singleSelectButtonHelper.resetCustomTextField()
           return .none
         }
@@ -57,12 +57,11 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
 
       case .tappedSaveAndEditButton:
         if state.singleSelectButtonHelper.isSaved {
-          state.singleSelectButtonHelper.resetCustomTextField()
+          state.singleSelectButtonHelper.editCustomSection()
         } else {
           state.singleSelectButtonHelper.saveCustomTextField(title: state.customTextFieldText)
         }
         return .none
-
       case .tappedCustomItem:
         state.singleSelectButtonHelper.selectedCustomItem()
         return .none

@@ -47,20 +47,29 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     selectedItem = isCustomItem
   }
 
+  mutating func editCustomSection() {
+    selectedItem = nil
+    isStartedAddingNewCustomItem = true
+    isSaved = false
+  }
+
   mutating func startAddCustomSection() {
     selectedItem = nil
-    isCustomItem?.title = ""
     isStartedAddingNewCustomItem = true
+    isCustomItem?.title = ""
+    isSaved = false
   }
 
   mutating func resetCustomTextField() {
     isCustomItem?.title = ""
     isSaved = false
+    isStartedAddingNewCustomItem = false
   }
 
   mutating func saveCustomTextField(title: String) {
+    selectedItem = nil
     isStartedAddingNewCustomItem = false
-    isSaved = true
     isCustomItem?.title = title
+    isSaved = true
   }
 }
