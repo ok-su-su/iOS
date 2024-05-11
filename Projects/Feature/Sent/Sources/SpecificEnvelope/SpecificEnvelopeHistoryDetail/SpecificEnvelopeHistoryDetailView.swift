@@ -7,8 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
-import SwiftUI
 import SSAlert
+import SwiftUI
 
 struct SpecificEnvelopeHistoryDetailView: View {
   // MARK: Reducer
@@ -44,17 +44,19 @@ struct SpecificEnvelopeHistoryDetailView: View {
   }
 
   @ViewBuilder
-  private func makeListView(title: String, description _: String) -> some View {
+  private func makeListView(title: String, description: String) -> some View {
     HStack(alignment: .center, spacing: 16) {
       Text(title)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray60)
-        .frame(width: 72)
+        .frame(width: 72, alignment: .leading)
+        .multilineTextAlignment(.leading)
 
-      Text(title)
+      Text(description)
         .modifier(SSTypoModifier(.title_s))
         .foregroundStyle(SSColor.gray100)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.leading)
     }
     .padding(.vertical, Metrics.listContentVerticalSpacing)
   }
