@@ -18,7 +18,7 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   let isVisited: Bool
 
   var priceText: String {
-    return CustomNumberFormatter.formattedByThreeZero(price) ?? "0" + "원"
+    return (CustomNumberFormatter.formattedByThreeZero(price) ?? "0") + "원"
   }
 
   var dateText: String {

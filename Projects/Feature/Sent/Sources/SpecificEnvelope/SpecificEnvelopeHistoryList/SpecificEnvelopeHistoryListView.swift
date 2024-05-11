@@ -21,7 +21,6 @@ struct SpecificEnvelopeHistoryListView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
-      HeaderView(store: store.scope(state: \.header, action: \.scope.header))
       Spacer()
         .frame(height: 24)
 
@@ -102,7 +101,8 @@ struct SpecificEnvelopeHistoryListView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
-      VStack {
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
