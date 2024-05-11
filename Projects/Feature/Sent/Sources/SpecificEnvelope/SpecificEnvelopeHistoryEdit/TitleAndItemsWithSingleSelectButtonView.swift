@@ -81,15 +81,9 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
   }
 
   var body: some View {
-    ZStack {
-      makeContentView()
-    }
-    .onAppear {
-      store.send(.onAppear(true))
-    }
+    makeContentView()
+      .onAppear {
+        store.send(.onAppear(true))
+      }
   }
-
-  private enum Metrics {}
-
-  private enum Constants {}
 }

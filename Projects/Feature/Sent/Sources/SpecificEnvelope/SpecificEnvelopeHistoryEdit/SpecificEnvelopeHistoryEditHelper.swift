@@ -15,30 +15,138 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
 
   var eventSectionButtonHelper: SingleSelectButtonHelper<EventSingeSelectButtonItem>
   var eventSectionButtonCustomItem: EventSingeSelectButtonItem = .init(title: "")
-  ///  var selectedEventName: String
-  ///  var selectedRelationName: String
-  ///  var editedName: String
-  ///  var editedDate: Date
-  ///  var editedIsVisited: Bool
-  ///  var editedGift: String?
-  ///  var editedContacts: String?
-  ///  var editedMemo: String?
+
+  var relationSectionButtonHelper: SingleSelectButtonHelper<RelationSelectButtonItem>
+  var relationSectionButtonCustomItem: RelationSelectButtonItem = .init(title: "")
+
+  var nameEditProperty: NameEditProperty
+
+  var dateEditProperty: DateEditProperty
+
+  var visitedEditProperty: VisitedEditProperty
+  
+  var giftEditProperty: GiftEditProperty
+  
+  var contactEditProperty: ContactEditProperty
+  
+  var memoEditProperty: MemoEditProperty
+
   init(envelopeDetailProperty: EnvelopeDetailProperty) {
     self.envelopeDetailProperty = envelopeDetailProperty
+
     eventSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.eventName,
       items: EventSingeSelectButtonItem.defaultItems(),
       isCustomItem: eventSectionButtonCustomItem,
       customTextFieldPrompt: "경조사 이름"
     )
-//    selectedEventName = envelopeDetailProperty.eventName
-//    selectedRelationName = envelopeDetailProperty.relation
-//    editedName = envelopeDetailProperty.name
-//    editedDate = envelopeDetailProperty.date
-//    editedIsVisited = envelopeDetailProperty.isVisited
-//    editedGift = envelopeDetailProperty.gift
-//    editedContacts = envelopeDetailProperty.contacts
-//    editedMemo = envelopeDetailProperty.memo
+
+    relationSectionButtonHelper = .init(
+      titleText: envelopeDetailProperty.relationTitle,
+      items: RelationSelectButtonItem.defaultItems(),
+      isCustomItem: relationSectionButtonCustomItem,
+      customTextFieldPrompt: "관계 이름"
+    )
+
+    nameEditProperty = .init(textFieldText: envelopeDetailProperty.eventName)
+
+    dateEditProperty = .init(date: envelopeDetailProperty.date)
+
+    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited)
+    
+    giftEditProperty = .init(gift: envelopeDetailProperty.gift ?? "")
+    
+    contactEditProperty = .init(contact: envelopeDetailProperty.contacts ?? "")
+    
+    memoEditProperty = .init(memo: envelopeDetailProperty.memo ?? "")
+  }
+
+  mutating func changeName(_ name: String) {
+    nameEditProperty.textFieldText = name
+  }
+}
+
+// MARK: - GiftEditProperty
+
+struct GiftEditProperty: Equatable {
+  var gift: String
+
+  init(gift: String) {
+    self.gift = gift
+  }
+}
+
+// MARK: - contactEditProperty
+
+struct ContactEditProperty: Equatable {
+  var contact: String
+
+  init(contact: String) {
+    self.contact = contact
+  }
+}
+
+// MARK: - memoEditProperty
+
+struct MemoEditProperty: Equatable {
+  var memo: String
+  init(memo: String) {
+    self.memo = memo
+  }
+}
+
+// MARK: - VisitedEditProperty
+
+struct VisitedEditProperty: Equatable {
+  var isVisited: Bool
+
+  init(isVisited: Bool) {
+    self.isVisited = isVisited
+  }
+}
+
+// MARK: - DateEditProperty
+
+struct DateEditProperty: Equatable {
+  var date: Date
+
+  var dateText: String {
+    return "2023년 11월 25일"
+  }
+
+  init(date: Date) {
+    self.date = date
+  }
+}
+
+// MARK: - NameEditProperty
+
+/// EditName을 하기 위해 사용됩니다.
+struct NameEditProperty: Equatable {
+  var textFieldText: String
+}
+
+// MARK: - RelationSelectButtonItem
+
+struct RelationSelectButtonItem: SingleSelectButtonItemable {
+  var id: UUID = .init()
+
+  var title: String
+
+  init(title: String) {
+    self.title = title
+  }
+}
+
+extension RelationSelectButtonItem {
+  static func defaultItems() -> [Self] {
+    let defaultRelationNames: [String] = [
+      "친구",
+      "가족",
+      "친척",
+      "동료",
+    ]
+    return defaultRelationNames.map { .init(title: $0) }
   }
 }
 

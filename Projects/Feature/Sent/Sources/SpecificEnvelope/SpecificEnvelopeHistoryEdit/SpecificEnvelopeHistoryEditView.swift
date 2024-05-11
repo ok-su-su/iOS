@@ -20,9 +20,11 @@ struct SpecificEnvelopeHistoryEditView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 16) {
+      // Title
       Text(store.editHelper.envelopeDetailProperty.priceText)
         .modifier(SSTypoModifier(.title_xxl))
         .foregroundStyle(SSColor.gray100)
+
       makeSubContents()
     }
     Spacer()
@@ -31,13 +33,60 @@ struct SpecificEnvelopeHistoryEditView: View {
   @ViewBuilder
   private func makeSubContents() -> some View {
     VStack(spacing: 0) {
-      makeEventEditSection()
+      // Section
+      makeEventEditableSection()
+
+      // name
+      makeNameEditableSection()
+
+      // Relation
+      makeEditableRelationSection()
+
+      // Date
+      makeDateEditableSection()
     }
   }
 
   @ViewBuilder
-  private func makeEventEditSection() -> some View {
+  private func makeEventEditableSection() -> some View {
     TitleAndItemsWithSingleSelectButtonView(store: store.scope(state: \.eventSection, action: \.scope.eventSection))
+      .padding(.vertical, Metrics.itemVerticalSpacing)
+  }
+
+  @ViewBuilder
+  private func makeNameEditableSection() -> some View {
+    HStack(alignment: .center, spacing: 16) {
+      Text(store.editHelper.envelopeDetailProperty.nameTitle)
+        .modifier(SSTypoModifier(.title_xxs))
+        .frame(width: 72, alignment: .leading)
+
+      TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.textFieldChanged), prompt: nil)
+        .frame(maxWidth: .infinity)
+        .modifier(SSTypoModifier(.title_s))
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.vertical, Metrics.itemVerticalSpacing)
+  }
+
+  @ViewBuilder
+  private func makeEditableRelationSection() -> some View {
+    TitleAndItemsWithSingleSelectButtonView(store: store.scope(state: \.relationSection, action: \.scope.relationSection))
+      .padding(.vertical, Metrics.itemVerticalSpacing)
+  }
+
+  @ViewBuilder
+  private func makeDateEditableSection() -> some View {
+    HStack(alignment: .center, spacing: 16) {
+      Text(store.editHelper.envelopeDetailProperty.nameTitle)
+        .modifier(SSTypoModifier(.title_xxs))
+        .frame(width: 72, alignment: .leading)
+
+      TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.textFieldChanged), prompt: nil)
+        .frame(maxWidth: .infinity)
+        .modifier(SSTypoModifier(.title_s))
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
   var body: some View {
@@ -59,6 +108,7 @@ struct SpecificEnvelopeHistoryEditView: View {
 
   private enum Metrics {
     static let horizontalSpacing: CGFloat = 16
+    static let itemVerticalSpacing: CGFloat = 16
   }
 
   private enum Constants {}
