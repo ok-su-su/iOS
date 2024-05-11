@@ -42,7 +42,12 @@ struct SpecificEnvelopeHistoryRouter {
 
       case let .path(.element(id: _, action: action)):
         switch action {
+        case let .specificEnvelopeHistoryList(.view(.tappedEnvelope(id))):
+          state.path.append(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: .fakeData())))
+          return .none
         case .specificEnvelopeHistoryList:
+          return .none
+        case .specificEnvelopeHistoryDetail:
           return .none
         }
 
@@ -60,5 +65,6 @@ extension SpecificEnvelopeHistoryRouter {
   @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
+    case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
   }
 }

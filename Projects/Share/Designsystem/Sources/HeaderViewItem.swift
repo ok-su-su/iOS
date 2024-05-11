@@ -122,6 +122,7 @@ extension HeaderView {
           .onTapGesture {
             store.send(.tappedDoubleTextButton(.trailing))
           }
+          .padding(.trailing, 16)
       }
     }
   }

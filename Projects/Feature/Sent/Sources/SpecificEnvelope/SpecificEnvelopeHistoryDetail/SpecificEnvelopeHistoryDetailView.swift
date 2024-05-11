@@ -19,24 +19,25 @@ struct SpecificEnvelopeHistoryDetailView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack {
-      HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-
+    VStack(alignment: .leading) {
       Spacer()
         .frame(height: 24)
 
-      VStack(spacing: 16) {
+      VStack(alignment: .leading, spacing: 16) {
         Text(store.envelopeDetailProperty.priceText)
           .modifier(SSTypoModifier(.title_xxl))
           .foregroundStyle(SSColor.gray100)
 
-        VStack(spacing: 0) {
-          let listViewContent = store.envelopeDetailProperty.makeListContent
-          ForEach(0 ..< listViewContent.count, id: \.self) { ind in
-            let (title, description) = listViewContent[ind]
-            makeListView(title: title, description: description)
+        ScrollView {
+          LazyVStack(spacing: 0) {
+            let listViewContent = store.envelopeDetailProperty.makeListContent
+            ForEach(0 ..< listViewContent.count, id: \.self) { ind in
+              let (title, description) = listViewContent[ind]
+              makeListView(title: title, description: description)
+            }
           }
         }
+        .frame(maxHeight: .infinity)
       }
     }
   }
@@ -62,8 +63,13 @@ struct SpecificEnvelopeHistoryDetailView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
-      makeContentView()
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+        makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
+      }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -71,6 +77,7 @@ struct SpecificEnvelopeHistoryDetailView: View {
 
   private enum Metrics {
     static let listContentVerticalSpacing: CGFloat = 16
+    static let horizontalSpacing: CGFloat = 16
   }
 
   private enum Constants {}
