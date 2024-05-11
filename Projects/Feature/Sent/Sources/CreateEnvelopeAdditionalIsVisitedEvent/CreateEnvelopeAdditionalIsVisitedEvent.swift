@@ -1,27 +1,28 @@
 //
-//  CreateEnvelopeAdditionalSection.swift
+//  CreateEnvelopeAdditionalIsVisitedEvent.swift
 //  Sent
 //
-//  Created by MaraMincho on 5/7/24.
+//  Created by MaraMincho on 5/8/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
 import Foundation
 
 @Reducer
-struct CreateEnvelopeAdditionalSection {
+struct CreateEnvelopeAdditionalIsVisitedEvent {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
+    @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
+
+    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
-      _createEnvelopeProperty = createEnvelopeProperty
+    init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
+      _isVisitedEventHelper = isVisitedEventHelper
       createEnvelopeSelectionItems = .init(
-        items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
-        selectedID: createEnvelopeProperty.additionalSectionHelper.selectedID,
+        items: isVisitedEventHelper.items,
+        selectedID: isVisitedEventHelper.selectedID,
         isCustomItem: .init(nil)
       )
     }
@@ -46,7 +47,7 @@ struct CreateEnvelopeAdditionalSection {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
+    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
   }
 
   enum DelegateAction: Equatable {
@@ -59,11 +60,21 @@ struct CreateEnvelopeAdditionalSection {
     }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
-      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
+      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>()
     }
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
-      case .view(.onAppear):
+      case let .view(.onAppear(isAppear)):
+        state.isOnAppear = isAppear
+        return .none
+
+      case .delegate:
+        return .none
+
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .send(.delegate(.push))
+
+      case .scope(.nextButton):
         return .none
 
       case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: id)))):
@@ -71,14 +82,6 @@ struct CreateEnvelopeAdditionalSection {
         return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
 
       case .scope(.createEnvelopeSelectionItems):
-        return .none
-
-      case .delegate(.push):
-        return .none
-
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
-      case .scope(.nextButton):
         return .none
       }
     }

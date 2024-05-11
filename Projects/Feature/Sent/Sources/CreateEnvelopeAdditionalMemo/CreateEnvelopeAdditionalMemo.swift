@@ -1,40 +1,28 @@
 //
-//  CreateEnvelopeName.swift
+//  CreateEnvelopeAdditonalMemo.swift
 //  Sent
 //
-//  Created by MaraMincho on 5/2/24.
+//  Created by MaraMincho on 5/8/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
-import Designsystem
 import Foundation
 
 @Reducer
-struct CreateEnvelopeName {
+struct CreateEnvelopeAdditionalMemo {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var textFieldText: String = ""
-    var textFieldIsHighlight: Bool = false
-    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    @Shared var memoHelper: CreateEnvelopeAdditionalMemoHelper
 
-    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+    var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
 
-    var isAbleToPush: Bool {
-      return textFieldText != ""
-    }
-
-    var filteredPrevEnvelopes: [PrevEnvelope] {
-      return textFieldText == "" ? [] : createEnvelopeProperty.filteredName(textFieldText)
-    }
-
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
-      _createEnvelopeProperty = createEnvelopeProperty
+    init(memoHelper: Shared<CreateEnvelopeAdditionalMemoHelper>) {
+      _memoHelper = memoHelper
     }
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -42,10 +30,11 @@ struct CreateEnvelopeName {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedFilterItem(name: String)
     case textFieldChange(String)
+    case isHighlightChanged(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -61,11 +50,7 @@ struct CreateEnvelopeName {
     case push
   }
 
-  @Dependency(\.dismiss) var dismiss
-
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
@@ -75,29 +60,22 @@ struct CreateEnvelopeName {
         state.isOnAppear = isAppear
         return .none
 
-      case .binding:
-        return .none
-
-      case .delegate:
-        return .none
-
-      case let .view(.tappedFilterItem(name: name)):
-        state.textFieldText = name
+      case .delegate(.push):
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .run { send in
-          await send(.delegate(.push))
-        }
+        return .send(.delegate(.push))
 
       case .scope(.nextButton):
         return .none
 
       case let .view(.textFieldChange(text)):
         let pushable = text != ""
-        return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+
+      case let .view(.isHighlightChanged(highlight)):
+        state.memoHelper.isHighlight = highlight
+        return .none
       }
     }
   }

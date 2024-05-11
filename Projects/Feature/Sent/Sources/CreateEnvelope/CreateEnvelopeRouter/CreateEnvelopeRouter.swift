@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import OSLog
 
 // MARK: - CreateEnvelopeRouter
 
@@ -32,7 +33,15 @@ struct CreateEnvelopeRouter {
     case path(StackActionOf<Path>)
     case header(HeaderViewFeature.Action)
     case changedPath
+    case pushCreateEnvelopeAdditional
+    case dismissScreen
   }
+
+  private enum CancelID {
+    case dismiss
+  }
+
+  @Dependency(\.mainQueue) var mainQueue
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
@@ -40,6 +49,37 @@ struct CreateEnvelopeRouter {
     }
     Reduce { state, action in
       switch action {
+      case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.startPush()
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalContact(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .contacts)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalIsGift(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .gift)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalIsVisitedEvent(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .isVisited)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
+      case .path(.element(id: _, action: .createEnvelopeAdditionalMemo(.delegate(.push)))):
+        state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .memo)
+        return .run { send in
+          await send(.pushCreateEnvelopeAdditional, animation: .default)
+        }
+
       case .path(.element(id: _, action: .createEnvelopeDate(.delegate(.push)))):
         state.path.append(.createEnvelopeAdditionalSection(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .run { send in
@@ -76,24 +116,54 @@ struct CreateEnvelopeRouter {
         if state.path.count == 1 {
           return .run { _ in await dismiss() }
         }
+        return .send(.dismissScreen)
+          .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
+
+      case .dismissScreen:
         _ = state.path.popLast()
-        return .run { send in
-          await send(.changedPath, animation: .default)
-        }
+        return .send(.changedPath, animation: .default)
+
       case .changedPath:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
+
+      case .pushCreateEnvelopeAdditional:
+        guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
+          return .run { _ in await dismiss() }
+        }
+        switch currentSection {
+        case .isVisited:
+          state
+            .path
+            .append(
+              .createEnvelopeAdditionalIsVisitedEvent(.init(isVisitedEventHelper: state.$createEnvelopeProperty.isVisitedHelper))
+            )
+        case .gift:
+          state.path.append(.createEnvelopeAdditionalIsGift(.init(textFieldText: state.$createEnvelopeProperty.additionIsGiftHelper.textFieldText)))
+
+        case .memo:
+          state.path.append(.createEnvelopeAdditionalMemo(.init(memoHelper: state.$createEnvelopeProperty.memoHelper)))
+        case .contacts:
+          state.path.append(.createEnvelopeAdditionalContact(.init(contactHelper: state.$createEnvelopeProperty.contactHelper)))
+        }
+        return .run { send in
+          await send(.changedPath, animation: .default)
+        }
+
       default:
         return .none
       }
     }
     .forEach(\.path, action: \.path)
   }
+
+  private mutating func temp() {}
 }
 
 // MARK: CreateEnvelopeRouter.Path
 
 extension CreateEnvelopeRouter {
+  @CasePathable
   @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case createEnvelopePrice(CreateEnvelopePrice)
@@ -102,5 +172,9 @@ extension CreateEnvelopeRouter {
     case createEnvelopeEvent(CreateEnvelopeEvent)
     case createEnvelopeDate(CreateEnvelopeDate)
     case createEnvelopeAdditionalSection(CreateEnvelopeAdditionalSection)
+    case createEnvelopeAdditionalMemo(CreateEnvelopeAdditionalMemo)
+    case createEnvelopeAdditionalContact(CreateEnvelopeAdditionalContact)
+    case createEnvelopeAdditionalIsGift(CreateEnvelopeAdditionalIsGift)
+    case createEnvelopeAdditionalIsVisitedEvent(CreateEnvelopeAdditionalIsVisitedEvent)
   }
 }

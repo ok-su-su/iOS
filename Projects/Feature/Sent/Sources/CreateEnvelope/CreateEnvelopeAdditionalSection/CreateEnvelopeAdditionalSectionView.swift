@@ -56,35 +56,12 @@ struct CreateEnvelopeAdditionalSectionView: View {
 
   @ViewBuilder
   private func makeDefaultItems() -> some View {
-    ForEach(store.defaultItems, id: \.self) { current in
-      SSButton(
-        .init(
-          size: .mh60,
-          status: .active,
-          style: store.selectedItem.contains(current) ? .filled : .ghost,
-          color: store.selectedItem.contains(current) ? .orange : .black,
-          buttonText: current,
-          frame: .init(maxWidth: .infinity)
-        )) {
-          store.send(.view(.tappedItem(name: current)))
-        }
-    }
+    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
   }
 
   @ViewBuilder
   private func makeNextButton() -> some View {
-    SSButton(
-      .init(
-        size: .mh60,
-        status: store.isAbleToPush ? .active : .inactive,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )
-    ) {
-      store.send(.view(.tappedNextButton))
-    }
+    CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
   }
 
   @ViewBuilder

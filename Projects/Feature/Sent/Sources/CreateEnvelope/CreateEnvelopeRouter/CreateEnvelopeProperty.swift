@@ -12,6 +12,13 @@ import Foundation
 
 struct CreateEnvelopeProperty: Equatable {
   var viewDepth = 1
+  var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
+  var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
+  var eventHelper: CreateEnvelopeEventPropertyHelper = .init()
+  var isVisitedHelper: CreateEnvelopeAdditionalIsVisitedEventHelper = .init()
+  var additionIsGiftHelper: CreateEnvelopeAdditionalIsGiftPropertyHelper = .init()
+  var contactHelper: CreateEnvelopeAdditionalContactHelper = .init()
+  var memoHelper: CreateEnvelopeAdditionalMemoHelper = .init()
   init() {}
 
   var prevNames: [PrevEnvelope] = [

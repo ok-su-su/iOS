@@ -13,32 +13,22 @@ struct CreateEnvelopeRelation {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
+
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var selectedRelationString: String? = nil
-    var isAddingNewRelation: Bool = false
 
-    var addingCustomRelationText = ""
-    var addingCustomRelationHighlight = false
-    var customRelationSaved: Bool = false
-
-    var isAvailableAddingCustomRelationSaveButton: Bool {
-      return addingCustomRelationText != ""
+    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+      createEnvelopeSelectionItems = .init(
+        items: createEnvelopeProperty.relationHelper.defaultRelations,
+        selectedID: createEnvelopeProperty.relationHelper.selectedID,
+        isCustomItem: createEnvelopeProperty.relationHelper.customRelation
+      )
     }
-
-    var isAbleToPush: Bool {
-      return selectedRelationString != "" && selectedRelationString != nil
-    }
-
-    var defaultRelationString: [String] = [
-      "친구",
-      "가족",
-      "친척",
-      "동료",
-    ]
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -48,78 +38,52 @@ struct CreateEnvelopeRelation {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedRelation(name: String)
-    case tappedNextButton
-    case tappedAddCustomRelation
-    case tappedTextFieldCloseButton
-    case tappedTextFieldSaveAndEditButton
   }
 
-  enum InnerAction: Equatable {
-    case startAddCustomRelation
-    case endAddCustomRelation
-  }
+  enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.Action)
+  }
 
   enum DelegateAction: Equatable {
     case push
   }
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
+    Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
+      CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedRelation(name: name)):
-        state.selectedRelationString = name
+      case .delegate:
         return .none
 
-      case .view(.tappedNextButton):
+      case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
           await send(.delegate(.push))
         }
 
-      case .delegate:
+      case .scope(.nextButton):
         return .none
 
-      case .view(.tappedAddCustomRelation):
+      case .scope(.createEnvelopeSelectionItems(.delegate(.selected))):
+        let pushable = !state.createEnvelopeProperty.relationHelper.selectedID.isEmpty
         return .run { send in
-          await send(.inner(.startAddCustomRelation))
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
-
-      case .inner(.startAddCustomRelation):
-        state.selectedRelationString = nil
-        state.isAddingNewRelation = true
-        state.addingCustomRelationText = ""
-        state.customRelationSaved = false
-        return .none
-
-      case .binding:
-        return .none
-
-      case .view(.tappedTextFieldCloseButton):
-        state.addingCustomRelationText = ""
-        if state.customRelationSaved {
-          return .run { send in
-            await send(.inner(.endAddCustomRelation))
-          }
-        }
-        return .none
-
-      case .view(.tappedTextFieldSaveAndEditButton):
-        state.customRelationSaved.toggle()
-        return .none
-
-      case .inner(.endAddCustomRelation):
-        state.isAddingNewRelation = false
+      case .scope(.createEnvelopeSelectionItems):
         return .none
       }
     }
