@@ -27,6 +27,7 @@ struct SpecificEnvelopeHistoryRouter {
     case path(StackActionOf<Path>)
   }
 
+  @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -42,11 +43,19 @@ struct SpecificEnvelopeHistoryRouter {
 
       case let .path(.element(id: _, action: action)):
         switch action {
+        // TODO: - ID를 통한 라우팅하는 흐름구현
         case let .specificEnvelopeHistoryList(.view(.tappedEnvelope(id))):
           state.path.append(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: .fakeData())))
           return .none
+
+        case .specificEnvelopeHistoryList(.scope(.header(.tappedDismissButton))):
+          return .run { _ in
+            await dismiss()
+          }
+
         case .specificEnvelopeHistoryList:
           return .none
+
         case .specificEnvelopeHistoryDetail(.inner(.editing)):
           state.path.append(
             .specificEnvelopeHistoryEdit(
