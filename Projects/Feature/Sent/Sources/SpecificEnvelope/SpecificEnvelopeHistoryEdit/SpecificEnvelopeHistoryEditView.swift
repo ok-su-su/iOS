@@ -62,6 +62,7 @@ struct SpecificEnvelopeHistoryEditView: View {
       Text(store.editHelper.envelopeDetailProperty.nameTitle)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .leading)
+        .foregroundStyle(SSColor.gray70)
 
       TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.textFieldChanged), prompt: nil)
         .frame(maxWidth: .infinity)
@@ -80,13 +81,18 @@ struct SpecificEnvelopeHistoryEditView: View {
   @ViewBuilder
   private func makeDateEditableSection() -> some View {
     HStack(alignment: .center, spacing: 16) {
-      Text(store.editHelper.envelopeDetailProperty.nameTitle)
+      Text(store.editHelper.envelopeDetailProperty.dateTitle)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .leading)
+        .foregroundStyle(SSColor.gray70)
 
-      TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.textFieldChanged), prompt: nil)
+      Text(store.editHelper.dateEditProperty.dateText)
         .frame(maxWidth: .infinity)
         .modifier(SSTypoModifier(.title_s))
+        .foregroundStyle(SSColor.gray100)
+        .onTapGesture {
+          // TODO: - Date Picker Dial
+        }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
@@ -96,9 +102,9 @@ struct SpecificEnvelopeHistoryEditView: View {
   private func makeEditableVisitedSection() -> some View {
     TitleAndItemsWithSingleSelectButtonView(
       store: store.scope(state: \.visitedSection, action: \.scope.visitedSection),
-      ssButtonFrame: .init(maxWidth: .infinity)
+      ssButtonFrame: .init(maxWidth: 116)
     )
-      .padding(.vertical, Metrics.itemVerticalSpacing)
+    .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
   var body: some View {
