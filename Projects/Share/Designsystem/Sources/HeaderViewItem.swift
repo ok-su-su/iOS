@@ -71,6 +71,7 @@ extension HeaderView {
     case icon
     case none
     case text(String)
+    case doubleText(String, String)
   }
 
   @ViewBuilder
@@ -105,6 +106,23 @@ extension HeaderView {
         .onTapGesture {
           store.send(.tappedTextButton)
         }
+    case let .doubleText(leadingText, trailingText):
+      HStack(spacing: 16) {
+        Text(leadingText)
+          .modifier(SSTypoModifier(.title_xxs))
+          .padding(Constants.imagePadding)
+          .frame(alignment: .trailing)
+          .onTapGesture {
+            store.send(.tappedDoubleTextButton(.leading))
+          }
+        Text(trailingText)
+          .modifier(SSTypoModifier(.title_xxs))
+          .padding(Constants.imagePadding)
+          .frame(alignment: .trailing)
+          .onTapGesture {
+            store.send(.tappedDoubleTextButton(.trailing))
+          }
+      }
     }
   }
 }

@@ -32,11 +32,17 @@ public struct HeaderViewFeature {
   }
 
   @Dependency(\.dismiss) var dismiss
-  public enum Action {
+  public enum Action: Equatable {
     case tappedDismissButton
     case tappedNotificationButton
     case tappedSearchButton
     case tappedTextButton
+    case tappedDoubleTextButton(DoubleTextButtonAction)
+
+    public enum DoubleTextButtonAction {
+      case leading
+      case trailing
+    }
   }
 
   public var body: some Reducer<State, Action> {
@@ -53,6 +59,8 @@ public struct HeaderViewFeature {
       case .tappedSearchButton:
         return .none
       case .tappedTextButton:
+        return .none
+      case .tappedDoubleTextButton:
         return .none
       }
     }
@@ -71,6 +79,7 @@ public struct HeaderViewProperty: Equatable, Hashable {
     case depth2Default
     case depthProgressBar(Double)
     case depth2Text(String)
+    case depth2DoubleText(String, String)
   }
 
   public init(title: String = "", type: HeaderViewPropertyType) {
@@ -105,6 +114,8 @@ public struct HeaderViewProperty: Equatable, Hashable {
       .none
     case let .depth2Text(text):
       .text(text)
+    case let .depth2DoubleText(leading, trailing):
+      .doubleText(leading, trailing)
     }
   }
 }
