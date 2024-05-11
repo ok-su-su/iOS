@@ -69,6 +69,9 @@ struct CreateEnvelopeNameView: View {
       // MARK: - TextFieldView
 
       SSTextField(isDisplay: true, text: $store.textFieldText, property: .account, isHighlight: $store.textFieldIsHighlight)
+        .onChange(of: store.textFieldText) { _, newValue in
+          store.send(.view(.textFieldChange(newValue)))
+        }
       Spacer()
         .frame(height: 24)
 
@@ -80,18 +83,9 @@ struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeNextButton() -> some View {
-    SSButton(
-      .init(
-        size: .mh60,
-        status: store.isAbleToPush ? .active : .inactive,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )
-    ) {
-      store.send(.view(.tappedNextButton))
-    }
+    CreateEnvelopeBottomOfNextButtonView(
+      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
+    )
   }
 
   var body: some View {

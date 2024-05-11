@@ -13,31 +13,21 @@ struct CreateEnvelopeEvent {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.State
+
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var selectedString: String? = nil
-    var isAddingNewItem: Bool = false
-
-    var addingCustomItemText = ""
-    var isSavedCustomItem: Bool = false
-
-    var isAvailableAddingCustomItemSaveButton: Bool {
-      return addingCustomItemText != ""
+    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+      createEnvelopeSelectionItems = .init(
+        items: createEnvelopeProperty.eventHelper.defaultEvent,
+        selectedID: createEnvelopeProperty.eventHelper.selectedID,
+        isCustomItem: createEnvelopeProperty.eventHelper.customEvent
+      )
     }
-
-    var isAbleToPush: Bool {
-      return selectedString != "" && selectedString != nil
-    }
-
-    var defaultRelationString: [String] = [
-      "결혼식",
-      "돌잔치",
-      "장례식",
-      "생일기념일",
-    ]
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -47,78 +37,50 @@ struct CreateEnvelopeEvent {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedItem(name: String)
-    case tappedNextButton
-    case tappedAddCustomItemButton
-    case tappedTextFieldCloseButton
-    case tappedTextFieldSaveAndEditButton
   }
 
-  enum InnerAction: Equatable {
-    case startAddCustomItem
-    case endAddCustomItem
-  }
+  enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.Action)
+  }
 
   enum DelegateAction: Equatable {
     case push
   }
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
+    Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
+      CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>(multipleSelectionCount: 1)
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedItem(name: name)):
-        state.selectedString = name
-        return .none
-
-      case .view(.tappedNextButton):
+      case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
           await send(.delegate(.push))
         }
 
+      case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id)))):
+        let pushable = !id.isEmpty
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+      case .scope(.nextButton):
+        return .none
+
       case .delegate:
         return .none
 
-      case .view(.tappedAddCustomItemButton):
-        return .run { send in
-          await send(.inner(.startAddCustomItem))
-        }
-
-      case .inner(.startAddCustomItem):
-        state.selectedString = nil
-        state.isAddingNewItem = true
-        state.addingCustomItemText = ""
-        state.isSavedCustomItem = false
-        return .none
-
-      case .binding:
-        return .none
-
-      case .view(.tappedTextFieldCloseButton):
-        state.addingCustomItemText = ""
-        if state.isSavedCustomItem {
-          return .run { send in
-            await send(.inner(.endAddCustomItem))
-          }
-        }
-        return .none
-
-      case .view(.tappedTextFieldSaveAndEditButton):
-        state.isSavedCustomItem.toggle()
-        return .none
-
-      case .inner(.endAddCustomItem):
-        state.isAddingNewItem = false
+      case .scope(.createEnvelopeSelectionItems):
         return .none
       }
     }

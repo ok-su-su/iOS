@@ -1,5 +1,5 @@
 //
-//  Dependency+Target.swift
+//  Dependency+ThirdParty.swift
 //  ProjectDescriptionHelpers
 //
 //  Created by MaraMincho on 4/8/24.
@@ -7,6 +7,8 @@
 
 import Foundation
 import ProjectDescription
+
+// MARK: - ThirdParty
 
 public enum ThirdParty: String, CaseIterable {
   case Moya
@@ -16,21 +18,20 @@ public enum ThirdParty: String, CaseIterable {
   public var targetName: String {
     switch self {
     default:
-      return self.rawValue
+      return rawValue
     }
   }
-  
+
   private var productType: Product {
     switch self {
-
     default:
       return .framework
     }
   }
-  
-  static public var allCasesProductType: [String: Product] {
+
+  public static var allCasesProductType: [String: Product] {
     var res: [String: Product] = [:]
-    Self.allCases.forEach{res[$0.rawValue] = $0.productType}
+    Self.allCases.forEach { res[$0.rawValue] = $0.productType }
     return res
   }
 }
