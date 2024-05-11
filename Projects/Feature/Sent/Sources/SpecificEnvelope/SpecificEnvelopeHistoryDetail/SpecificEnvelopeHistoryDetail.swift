@@ -20,9 +20,14 @@ struct SpecificEnvelopeHistoryDetail {
     init(envelopeDetailProperty: EnvelopeDetailProperty) {
       self.envelopeDetailProperty = envelopeDetailProperty
     }
+    
+    var alertProperty: (title: String, description: String, cancelButtonText: String, confirmButtonText: String) {
+      return ("봉투를 삭제할까요?", "삭제한 봉투는 다시 복구할 수 없어요", "취소", "삭제")
+    }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, BindableAction {
+    case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -32,6 +37,7 @@ struct SpecificEnvelopeHistoryDetail {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedAlertConfirmButton
   }
 
   enum InnerAction: Equatable {
@@ -64,6 +70,7 @@ struct SpecificEnvelopeHistoryDetail {
         case .leading:
           return .send(.inner(.editing))
         case .trailing:
+          state.isDeleteAlertPresent = true
           return .send(.inner(.delete))
         }
 
@@ -76,6 +83,12 @@ struct SpecificEnvelopeHistoryDetail {
 
       case .inner(.delete):
         state.isDeleteAlertPresent = true
+        return .none
+      case .binding:
+        return .none
+        
+      // TODO: 들리트 버튼을 눌렀을 때 로직 실행
+      case .view(.tappedAlertConfirmButton):
         return .none
       }
     }

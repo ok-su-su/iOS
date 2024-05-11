@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
+import SSAlert
 
 struct SpecificEnvelopeHistoryDetailView: View {
   // MARK: Reducer
@@ -59,6 +60,7 @@ struct SpecificEnvelopeHistoryDetailView: View {
   }
 
   var body: some View {
+    let alertProperty = store.alertProperty
     ZStack {
       SSColor
         .gray10
@@ -70,6 +72,18 @@ struct SpecificEnvelopeHistoryDetailView: View {
       }
     }
     .navigationBarBackButtonHidden()
+    .sSAlert(
+      isPresented: $store.isDeleteAlertPresent,
+      messageAlertProperty: .init(
+        titleText: alertProperty.title,
+        contentText: alertProperty.description,
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(left: alertProperty.cancelButtonText, right: alertProperty.confirmButtonText),
+        didTapCompletionButton: {
+          store.send(.view(.tappedAlertConfirmButton))
+        }
+      )
+    )
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
