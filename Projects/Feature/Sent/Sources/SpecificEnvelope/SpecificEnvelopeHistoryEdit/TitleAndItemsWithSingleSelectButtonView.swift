@@ -27,6 +27,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
       Text(store.singleSelectButtonHelper.titleText)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
+        .foregroundStyle(SSColor.gray70)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         // MARK: - Defaults Item

@@ -87,7 +87,7 @@ struct SpecificEnvelopeHistoryEditView: View {
         .foregroundStyle(SSColor.gray70)
 
       Text(store.editHelper.dateEditProperty.dateText)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .modifier(SSTypoModifier(.title_s))
         .foregroundStyle(SSColor.gray100)
         .onTapGesture {
