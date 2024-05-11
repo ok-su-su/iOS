@@ -58,6 +58,7 @@ struct SpecificEnvelopeHistoryEdit {
 
       case .scope(.header):
         return .none
+        
       }
     }
   }

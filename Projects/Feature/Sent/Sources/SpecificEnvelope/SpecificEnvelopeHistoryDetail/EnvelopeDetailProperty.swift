@@ -32,25 +32,34 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   var isVisitedText: String {
     return isVisited ? "예" : "아니오"
   }
+  
+  var eventNameTitle = "경조사"
+  var nameTitle = "이름"
+  var relationTitle = "나와의 관계"
+  var dateTitle = "날짜"
+  var visitedTitle = "방문여부"
+  var giftTitle = "선물"
+  var contactTitle = "연락처"
+  var memoTitle = "메모"
 
   var makeListContent: [(String, String)] { [
-    ("경조사", eventName),
-    ("이름", name),
-    ("나와의 관계", relation),
-    ("날짜", dateText),
-    ("방문여부", isVisitedText),
+    (eventNameTitle, eventName),
+    (nameTitle, name),
+    (relationTitle, relation),
+    (dateTitle, dateText),
+    (visitedTitle, isVisitedText),
   ] + makeOptionalListContent() }
 
   func makeOptionalListContent() -> [(String, String)] {
     var res: [(String, String)] = []
     if let gift {
-      res.append(("선물", gift))
+      res.append((giftTitle, gift))
     }
     if let contacts {
-      res.append(("연락처", contacts))
+      res.append((contactTitle, contacts))
     }
     if let memo {
-      res.append(("메모", memo))
+      res.append((memoTitle, memo))
     }
     return res
   }

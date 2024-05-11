@@ -32,25 +32,37 @@ struct SpecificEnvelopeHistoryEditView: View {
   private func makeSubContents() -> some View {}
 
   @ViewBuilder
-  private func makeTitleAndSubButtonsView(titleName: String, buttonsText: [String], tappedButton: @escaping () -> Void) -> some View {
+  private func makeEventEditSection() -> some View {
     HStack(alignment: .top, spacing: 16) {
-      Text(titleName)
+      Text(store.editHelper.envelopeDetailProperty.eventNameTitle)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        ForEach(0 ..< buttonsText.count, id: \.self) { ind in
-          let curButtonText = buttonsText[ind]
+        let defaultsButtonText = store.editHelper.defaultsEventNames
+        ForEach(0 ..< defaultsButtonText.count, id: \.self) { ind in
+          let curButtonText = defaultsButtonText[ind]
           SSButton(
             .init(
               size: .sh32,
-              status: .inactive,
+              status: curButtonText == store.editHelper.selectedEventName ? .active : .inactive,
               style: .filled,
               color: .orange,
               buttonText: curButtonText
             )) {
-              tappedButton()
+              store.send(.view(.tappedEventName(curButtonText)))
             }
+        }
+        Button {
+          store.send(.view(.tappedEve))
+        } label: {
+          ZStack {
+            SSColor.gray25
+              
+            SSImage.commonAdd
+              .padding(.all, 4)
+          }
+          .clipShape(RoundedRectangle(cornerRadius: 4))
         }
       }
     }
