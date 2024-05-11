@@ -47,6 +47,15 @@ struct SpecificEnvelopeHistoryEditView: View {
 
       // Visited
       makeEditableVisitedSection()
+
+      // Gift
+      makeEditableGiftSection()
+
+      // contact
+      makeEditableContactSection()
+
+      // memo
+      makeEditableMemoSection()
     }
   }
 
@@ -64,7 +73,7 @@ struct SpecificEnvelopeHistoryEditView: View {
         .frame(width: 72, alignment: .leading)
         .foregroundStyle(SSColor.gray70)
 
-      TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.textFieldChanged), prompt: nil)
+      TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.changeNameTextField), prompt: nil)
         .frame(maxWidth: .infinity)
         .modifier(SSTypoModifier(.title_s))
     }
@@ -104,6 +113,56 @@ struct SpecificEnvelopeHistoryEditView: View {
       store: store.scope(state: \.visitedSection, action: \.scope.visitedSection),
       ssButtonFrame: .init(maxWidth: 116)
     )
+    .padding(.vertical, Metrics.itemVerticalSpacing)
+  }
+
+  @ViewBuilder
+  private func makeEditableGiftSection() -> some View {
+    makeAdditionalSection(
+      title: store.editHelper.envelopeDetailProperty.giftTitle,
+      textFieldString: $store.editHelper.giftEditProperty.gift.sending(\.view.changeGiftTextField),
+      promptText: "한끼 식사"
+    )
+  }
+
+  @ViewBuilder
+  private func makeEditableContactSection() -> some View {
+    makeAdditionalSection(
+      title: store.editHelper.envelopeDetailProperty.contactTitle,
+      textFieldString: $store.editHelper.contactEditProperty.contact.sending(\.view.changeContactTextField),
+      promptText: "01012345678"
+    )
+  }
+
+  @ViewBuilder
+  private func makeEditableMemoSection() -> some View {
+    makeAdditionalSection(
+      title: store.editHelper.envelopeDetailProperty.contactTitle,
+      textFieldString: $store.editHelper.contactEditProperty.contact.sending(\.view.changeContactTextField),
+      promptText: "입력해주세요"
+    )
+  }
+
+  @ViewBuilder
+  func makeAdditionalSection(title: String, textFieldString: Binding<String>, promptText: String) -> some View {
+    HStack(alignment: .center, spacing: 16) {
+      Text(title)
+        .modifier(SSTypoModifier(.title_xxs))
+        .frame(width: 72, alignment: .leading)
+        .foregroundStyle(
+          textFieldString.wrappedValue == "" ? SSColor.gray40 : SSColor.gray70
+        )
+
+      TextField(
+        "",
+        text: textFieldString,
+        prompt: Text(promptText).foregroundStyle(SSColor.gray40)
+      )
+      .frame(maxWidth: .infinity)
+      .modifier(SSTypoModifier(.title_s))
+      .foregroundStyle(SSColor.gray100)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 

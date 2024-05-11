@@ -41,7 +41,10 @@ struct SpecificEnvelopeHistoryEdit {
   @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case textFieldChanged(String)
+    case changeNameTextField(String)
+    case changeGiftTextField(String)
+    case changeContactTextField(String)
+    case changeMemoTextField(String)
   }
 
   enum InnerAction: Equatable {}
@@ -87,11 +90,23 @@ struct SpecificEnvelopeHistoryEdit {
       case .scope(.relationSection):
         return .none
 
-      case let .view(.textFieldChanged(text)):
+      case let .view(.changeNameTextField(text)):
         state.editHelper.changeName(text)
         return .none
 
       case .scope(.visitedSection):
+        return .none
+
+      case let .view(.changeGiftTextField(text)):
+        state.editHelper.changeGift(text)
+        return .none
+
+      case let .view(.changeContactTextField(text)):
+        state.editHelper.changeContact(text)
+        return .none
+
+      case let .view(.changeMemoTextField(text)):
+        state.editHelper.changeMemo(text)
         return .none
       }
     }

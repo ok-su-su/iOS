@@ -71,6 +71,18 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
   mutating func changeName(_ name: String) {
     nameEditProperty.textFieldText = name
   }
+
+  mutating func changeGift(_ name: String) {
+    giftEditProperty.gift = name
+  }
+
+  mutating func changeContact(_ name: String) {
+    contactEditProperty.contact = name
+  }
+
+  mutating func changeMemo(_ name: String) {
+    memoEditProperty.memo = name
+  }
 }
 
 // MARK: - GiftEditProperty
