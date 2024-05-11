@@ -59,7 +59,6 @@ struct CreateEnvelopeAdditionalSection {
     }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
-      // 뷰에 전달할 때 ViewAction만 전달할 수 있게 하는 방법이 과연 존재하는지에 대해서...
       CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
     }
     Reduce { _, action in
