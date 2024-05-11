@@ -15,10 +15,14 @@ struct SpecificEnvelopeHistoryEdit {
   struct State: Equatable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
+    var eventSection: TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeHistoryEditHelper
+
     // TODO: BottomOFCompleteButton(다른 브런치에 있는 것 가져와서 수정)
     init(editHelper: Shared<SpecificEnvelopeHistoryEditHelper>) {
       _editHelper = editHelper
+
+      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
     }
   }
 
@@ -41,6 +45,7 @@ struct SpecificEnvelopeHistoryEdit {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case eventSection(TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -48,6 +53,9 @@ struct SpecificEnvelopeHistoryEdit {
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+    Scope(state: \.eventSection, action: \.scope.eventSection) {
+      TitleAndItemsWithSingleSelectButton()
     }
 
     Reduce { state, action in
@@ -58,7 +66,9 @@ struct SpecificEnvelopeHistoryEdit {
 
       case .scope(.header):
         return .none
-        
+
+      case .scope(.eventSection):
+        return .none
       }
     }
   }

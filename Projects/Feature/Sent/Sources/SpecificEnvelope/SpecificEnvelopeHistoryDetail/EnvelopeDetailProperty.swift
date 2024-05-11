@@ -32,7 +32,7 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   var isVisitedText: String {
     return isVisited ? "예" : "아니오"
   }
-  
+
   var eventNameTitle = "경조사"
   var nameTitle = "이름"
   var relationTitle = "나와의 관계"

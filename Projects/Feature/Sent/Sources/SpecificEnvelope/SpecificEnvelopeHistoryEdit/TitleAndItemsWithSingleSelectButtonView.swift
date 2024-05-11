@@ -1,17 +1,17 @@
-// 
+//
 //  TitleAndItemsWithSingleSellectButtonView.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/11/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
-struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>: View {
-
+struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<TitleAndItemsWithSingleSelectButton<Item>>
   init(store: StoreOf<TitleAndItemsWithSingleSelectButton<Item>>) {
@@ -26,7 +26,8 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
         .frame(width: 72)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        //MARK: - Defaults Item
+        // MARK: - Defaults Item
+
         let items = store.singleSelectButtonHelper.items
         ForEach(items) { item in
           SSButton(
@@ -40,17 +41,16 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
               store.send(.tappedID(item.id))
             }
         }
-        
+
         // 만약 CustomItem을 추가할 수 있을 떄
         if let customItem = store.singleSelectButtonHelper.isCustomItem {
           if store.singleSelectButtonHelper.isStartedAddingNewCustomItem { // CustomText Field Button
-            
             SSTextFieldButton(
               .init(
                 size: .sh32,
-                status: .filled,
+                status: store.singleSelectButtonHelper.isSaved ? .saved : .filled,
                 style: .filled,
-                color: .orange,
+                color: store.singleSelectButtonHelper.isSaved ? .orange : .gray,
                 textFieldText: $store.customTextFieldText.sending(\.changedText),
                 showCloseButton: true,
                 showDeleteButton: true,
@@ -63,8 +63,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
                 store.send(.tappedSaveAndEditButton)
               }
 
-            
-          }else { // + add Button
+          } else { // + add Button
             Button {
               store.send(.tappedAddCustomButton)
             } label: {
@@ -76,8 +75,6 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
           }
         }
       }
-      
-      
     }
     .padding(.vertical, 16)
     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -87,16 +84,12 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingeSelectButtonItemable>:
     ZStack {
       makeContentView()
     }
-    .onAppear{
+    .onAppear {
       store.send(.onAppear(true))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }

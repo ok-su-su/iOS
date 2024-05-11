@@ -1,23 +1,22 @@
-// 
+//
 //  TitleAndItemsWithSingleSellectButton.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/11/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 @Reducer
-struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
-
+struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
     @Shared var singleSelectButtonHelper: SingleSelectButtonHelper<Item>
     var customTextFieldText: String = ""
     init(singleSelectButtonHelper: Shared<SingleSelectButtonHelper<Item>>) {
-      self._singleSelectButtonHelper = singleSelectButtonHelper
+      _singleSelectButtonHelper = singleSelectButtonHelper
     }
   }
 
@@ -33,17 +32,17 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear) :
+      case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
-      case let .tappedID(id) :
+      case let .tappedID(id):
         state.singleSelectButtonHelper.selectItem(by: id)
         return .none
-        
+
       case .tappedAddCustomButton:
         state.singleSelectButtonHelper.startAddCustomSection()
         return .none
-        
+
       case let .changedText(text):
         state.customTextFieldText = text
         return .none
@@ -53,11 +52,11 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingeSelectButtonItemable> {
           return .none
         }
         return .send(.changedText(""))
-        
+
       case .tappedSaveAndEditButton:
         if state.singleSelectButtonHelper.isSaved {
           state.singleSelectButtonHelper.saveCustomTextField()
-        }else {
+        } else {
           state.singleSelectButtonHelper.startAddCustomSection()
         }
         return .none
