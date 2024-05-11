@@ -47,7 +47,18 @@ struct SpecificEnvelopeHistoryRouter {
           return .none
         case .specificEnvelopeHistoryList:
           return .none
+        case .specificEnvelopeHistoryDetail(.inner(.editing)):
+          state.path.append(
+            .specificEnvelopeHistoryEdit(
+              SpecificEnvelopeHistoryEdit.State(
+                editHelper: state.$envelopeHistoryRouterHelper.envelopeHistoryEditHelper
+              )
+            )
+          )
+          return .none
         case .specificEnvelopeHistoryDetail:
+          return .none
+        case .specificEnvelopeHistoryEdit:
           return .none
         }
 
@@ -66,5 +77,6 @@ extension SpecificEnvelopeHistoryRouter {
   enum Path {
     case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
     case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
+    case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
   }
 }

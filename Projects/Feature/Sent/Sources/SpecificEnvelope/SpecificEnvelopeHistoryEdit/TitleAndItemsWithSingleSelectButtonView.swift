@@ -33,7 +33,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
           SSButton(
             .init(
               size: .sh32,
-              status: item.id == store.singleSelectButtonHelper.selectedItem?.id ? .active : .inactive,
+              status: item == store.singleSelectButtonHelper.selectedItem ? .active : .inactive,
               style: .filled,
               color: .orange,
               buttonText: item.title
@@ -44,19 +44,19 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
 
         // 만약 CustomItem을 추가할 수 있을 떄
         if let customItem = store.singleSelectButtonHelper.isCustomItem {
-          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem { // CustomText Field Button
+          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem || store.singleSelectButtonHelper.isSaved { // CustomText Field Button
             SSTextFieldButton(
               .init(
                 size: .sh32,
                 status: store.singleSelectButtonHelper.isSaved ? .saved : .filled,
                 style: .filled,
-                color: store.singleSelectButtonHelper.isSaved ? .orange : .gray,
+                color: store.singleSelectButtonHelper.selectedItem == customItem ? .orange : .gray,
                 textFieldText: $store.customTextFieldText.sending(\.changedText),
                 showCloseButton: true,
                 showDeleteButton: true,
                 prompt: store.singleSelectButtonHelper.customTextFieldPrompt ?? ""
               )) {
-                store.send(.tappedID(customItem.id))
+                store.send(.tappedCustomItem)
               } onTapCloseButton: {
                 store.send(.tappedCloseButton)
               } onTapSaveButton: {

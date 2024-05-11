@@ -27,6 +27,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
     case changedText(String)
     case tappedCloseButton
     case tappedSaveAndEditButton
+    case tappedCustomItem
   }
 
   var body: some Reducer<State, Action> {
@@ -46,6 +47,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
       case let .changedText(text):
         state.customTextFieldText = text
         return .none
+
       case .tappedCloseButton:
         if state.singleSelectButtonHelper.isSaved {
           state.singleSelectButtonHelper.resetCustomTextField()
@@ -55,10 +57,14 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
 
       case .tappedSaveAndEditButton:
         if state.singleSelectButtonHelper.isSaved {
-          state.singleSelectButtonHelper.saveCustomTextField()
+          state.singleSelectButtonHelper.resetCustomTextField()
         } else {
-          state.singleSelectButtonHelper.startAddCustomSection()
+          state.singleSelectButtonHelper.saveCustomTextField(title: state.customTextFieldText)
         }
+        return .none
+
+      case .tappedCustomItem:
+        state.singleSelectButtonHelper.selectedCustomItem()
         return .none
       }
     }

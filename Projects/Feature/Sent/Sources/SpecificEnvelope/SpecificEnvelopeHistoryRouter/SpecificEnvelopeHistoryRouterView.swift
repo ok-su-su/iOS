@@ -29,6 +29,8 @@ struct SpecificEnvelopeHistoryRouterView: View {
         SpecificEnvelopeHistoryListView(store: store)
       case let .specificEnvelopeHistoryDetail(store):
         SpecificEnvelopeHistoryDetailView(store: store)
+      case let .specificEnvelopeHistoryEdit(store):
+        SpecificEnvelopeHistoryEditView(store: store)
       }
     }
     .onAppear {

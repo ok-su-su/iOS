@@ -29,7 +29,11 @@ struct SpecificEnvelopeHistoryEditView: View {
   }
 
   @ViewBuilder
-  private func makeSubContents() -> some View {}
+  private func makeSubContents() -> some View {
+    VStack(spacing: 0) {
+      makeEventEditSection()
+    }
+  }
 
   @ViewBuilder
   private func makeEventEditSection() -> some View {
@@ -44,14 +48,18 @@ struct SpecificEnvelopeHistoryEditView: View {
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let horizontalSpacing: CGFloat = 16
+  }
 
   private enum Constants {}
 }

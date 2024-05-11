@@ -26,6 +26,10 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
   var customTextFieldPrompt: String?
   var isSaved: Bool = false
 
+  var allItems: [Item] {
+    return (items + [isCustomItem]).compactMap { $0 }
+  }
+
   init(titleText: String, items: [Item], isCustomItem: Item?, customTextFieldPrompt: String?) {
     self.titleText = titleText
     self.items = items
@@ -39,7 +43,13 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     }
   }
 
+  mutating func selectedCustomItem() {
+    selectedItem = isCustomItem
+  }
+
   mutating func startAddCustomSection() {
+    selectedItem = nil
+    isCustomItem?.title = ""
     isStartedAddingNewCustomItem = true
   }
 
@@ -48,7 +58,9 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     isSaved = false
   }
 
-  mutating func saveCustomTextField() {
+  mutating func saveCustomTextField(title: String) {
+    isStartedAddingNewCustomItem = false
     isSaved = true
+    isCustomItem?.title = title
   }
 }
