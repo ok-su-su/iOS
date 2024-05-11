@@ -14,25 +14,20 @@ struct CreateEnvelopeAdditionalSection {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var isAddingNewItem: Bool = false
+    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
+    var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
-    var isSavedCustomItem: Bool = false
-    var selectedItem: Set<String> = .init()
-
-    var isAbleToPush: Bool {
-      return !selectedItem.isEmpty
+    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+      createEnvelopeSelectionItems = .init(
+        items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
+        selectedID: createEnvelopeProperty.additionalSectionHelper.selectedID,
+        isCustomItem: .init(nil)
+      )
     }
-
-    var defaultItems: [String] = [
-      "방문 여부",
-      "선물",
-      "메모",
-      "받은 이의 연락처",
-    ]
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -42,8 +37,6 @@ struct CreateEnvelopeAdditionalSection {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedItem(name: String)
-    case tappedNextButton
   }
 
   enum InnerAction: Equatable {}
@@ -51,39 +44,41 @@ struct CreateEnvelopeAdditionalSection {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
+  }
 
   enum DelegateAction: Equatable {
     case push
   }
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
-    Reduce { state, action in
+    Scope(state: \.nextButton, action: \.scope.nextButton) {
+      CreateEnvelopeBottomOfNextButton()
+    }
+    Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
+      // TODO: 다른 로직 생각
+      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
+    }
+    Reduce { _, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
+      case .view(.onAppear):
         return .none
 
-      case let .view(.tappedItem(name: name)):
-        if state.selectedItem.contains(name) {
-          state.selectedItem.remove(name)
-        } else {
-          state.selectedItem.insert(name)
-        }
+      case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: id)))):
+        let pushable = !id.isEmpty
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
 
+      case .scope(.createEnvelopeSelectionItems):
         return .none
 
-      case .view(.tappedNextButton):
-        return .run { send in
-          await send(.delegate(.push))
-        }
-
-      case .delegate:
+      case .delegate(.push):
         return .none
 
-      case .binding:
+      case .scope(.nextButton(.view(.tappedNextButton))):
+        return .send(.delegate(.push))
+      case .scope(.nextButton):
         return .none
       }
     }

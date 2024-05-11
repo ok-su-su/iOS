@@ -6,16 +6,15 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
-import Designsystem
 import ComposableArchitecture
+import Designsystem
+import Foundation
 import OSLog
 
 @Reducer
 public struct InventoryViewFeature: Equatable {
-  
   public init() {}
-  
+
   @ObservableState
   public struct State {
     var inventorys: IdentifiedArrayOf<InventoryBox.State>
@@ -28,7 +27,7 @@ public struct InventoryViewFeature: Equatable {
       self.isLoading = isLoading
     }
   }
-  
+
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
@@ -38,20 +37,20 @@ public struct InventoryViewFeature: Equatable {
     case didTapFilterButton
     case didTapAddInventoryButton
   }
-  
+
   public var body: some Reducer<State, Action> {
     Scope(state: \.headerType, action: /Action.setHeaderView) {
       HeaderViewFeature()
     }
-    
+
     Scope(state: \.tabbarType, action: /Action.setTabbarView) {
       SSTabBarFeature()
     }
-    
+
     Scope(state: \.floatingState, action: /Action.setFloatingView) {
-        InventoryFloating()
+      InventoryFloating()
     }
-    
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
@@ -68,7 +67,7 @@ public struct InventoryViewFeature: Equatable {
         return .none
       }
     }.forEach(\.inventorys, action: \.reloadInvetoryItems) {
-        InventoryBox()
+      InventoryBox()
     }
   }
 }
