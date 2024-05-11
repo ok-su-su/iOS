@@ -47,7 +47,9 @@ struct SpecificEnvelopeHistoryEdit {
     case changeMemoTextField(String)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case setInitialValue
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -79,7 +81,7 @@ struct SpecificEnvelopeHistoryEdit {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
+        return .send(.inner(.setInitialValue))
 
       case .scope(.header):
         return .none
@@ -108,6 +110,16 @@ struct SpecificEnvelopeHistoryEdit {
       case let .view(.changeMemoTextField(text)):
         state.editHelper.changeMemo(text)
         return .none
+
+      case .inner(.setInitialValue):
+        let initialEvent = state.editHelper.envelopeDetailProperty.eventName
+        let initialRelation = state.editHelper.envelopeDetailProperty.relation
+        let initialVisited = state.editHelper.envelopeDetailProperty.isVisitedText
+        return .run { send in
+          await send(.scope(.eventSection(.initialValue(initialEvent))))
+          await send(.scope(.relationSection(.initialValue(initialRelation))))
+          await send(.scope(.visitedSection(.initialValue(initialVisited))))
+        }
       }
     }
   }

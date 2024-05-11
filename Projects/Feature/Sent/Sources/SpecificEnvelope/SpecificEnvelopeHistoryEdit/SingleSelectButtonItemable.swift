@@ -43,6 +43,11 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     }
   }
 
+  mutating func makeAndSelectedCustomItem(title: String) {
+    selectedItem?.title = title
+    selectedItem = isCustomItem
+  }
+
   mutating func selectedCustomItem() {
     selectedItem = isCustomItem
   }

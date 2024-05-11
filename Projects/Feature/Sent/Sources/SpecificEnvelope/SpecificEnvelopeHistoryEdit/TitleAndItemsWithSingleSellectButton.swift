@@ -28,6 +28,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
     case tappedCloseButton
     case tappedSaveAndEditButton
     case tappedCustomItem
+    case initialValue(String)
   }
 
   var body: some Reducer<State, Action> {
@@ -64,6 +65,15 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
         return .none
       case .tappedCustomItem:
         state.singleSelectButtonHelper.selectedCustomItem()
+        return .none
+
+      case let .initialValue(text):
+        // DefaultItem인 경우
+        if let firstItem = state.singleSelectButtonHelper.items.first(where: { $0.title == text }) {
+          return .send(.tappedID(firstItem.id))
+        }
+
+        state.singleSelectButtonHelper.makeAndSelectedCustomItem(title: text)
         return .none
       }
     }
