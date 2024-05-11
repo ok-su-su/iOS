@@ -1,5 +1,5 @@
 //
-//  SearchViewAdaptor.swift
+//  SearchViewHelper.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/1/24.
@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchViewAdaptor
 
-struct SearchViewAdaptor {
+struct SearchEnvelopeHelper: Equatable {
   init() {}
   init(sentPeople: [SentPerson]) {
     self.sentPeople = sentPeople
