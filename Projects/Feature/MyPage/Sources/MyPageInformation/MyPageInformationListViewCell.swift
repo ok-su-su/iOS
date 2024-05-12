@@ -6,4 +6,37 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
+import ComposableArchitecture
+import Designsystem
+import SwiftUI
+
+struct MyPageInformationListViewCell<Item: MyPageMainItemListCellItemable>: View {
+  // MARK: Reducer
+
+  @Bindable
+  var store: StoreOf<MyPageMainItemListCell<Item>>
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 0) {
+      Text(store.property.title)
+        .modifier(SSTypoModifier(.title_xxs))
+        .foregroundStyle(SSColor.gray60)
+
+      Spacer()
+
+      if let subTitle = store.property.subTitle {
+        Text(subTitle)
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray60)
+      }
+    }
+    .padding(.vertical, 12)
+    .background(SSColor.gray100)
+    .onAppear {
+      store.send(.onAppear(true))
+    }
+    .onTapGesture {
+      store.send(.tapped)
+    }
+  }
+}

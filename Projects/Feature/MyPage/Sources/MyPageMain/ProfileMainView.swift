@@ -128,11 +128,8 @@ struct MyPageMainView: View {
   var body: some View {
     ZStack {
       SSColor
-        .blue50
+        .gray20
         .ignoresSafeArea()
-
-      SSColor
-        .blue70
 
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))

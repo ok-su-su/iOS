@@ -15,10 +15,11 @@ import SwiftUI
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   var subscription: AnyCancellable? = nil
 
+  let reducer: MyPageMain
+
   override func viewDidLoad() {
-    view.backgroundColor = .red
     super.viewDidLoad()
-    //TODO: 작성..
+    // TODO: 트러블 슈팅 작성
     navigationController?.setNavigationBarHidden(true, animated: false)
     subscription = reducer.routingPublisher
       .sink { [weak self] path in
@@ -41,7 +42,6 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
       }
   }
 
-  let reducer: MyPageMain
   init() {
     let reducer = MyPageMain()
     self.reducer = reducer

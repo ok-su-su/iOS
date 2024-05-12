@@ -18,14 +18,21 @@ struct MyPageInformationView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    VStack {
+      ForEach(store.scope(state: \.listItems, action: \.scope.listItems)) { store in
+        MyPageInformationListViewCell(store: store)
+      }
+    }
+  }
 
   var body: some View {
     ZStack {
       SSColor
         .gray40
 
-      VStack {
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
     }
