@@ -71,7 +71,7 @@ public struct ContentView: View {
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray90
         .ignoresSafeArea()
       VStack(spacing: 0) {
         contentView()

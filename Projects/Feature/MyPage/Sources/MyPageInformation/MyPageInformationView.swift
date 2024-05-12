@@ -23,12 +23,13 @@ struct MyPageInformationView: View {
   var body: some View {
     ZStack {
       SSColor
-        .gray15
-        .ignoresSafeArea()
+        .gray40
+
       VStack {
         makeContentView()
       }
     }
+    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

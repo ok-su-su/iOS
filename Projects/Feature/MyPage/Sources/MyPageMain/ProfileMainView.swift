@@ -126,15 +126,20 @@ struct MyPageMainView: View {
   var body: some View {
     ZStack {
       SSColor
-        .gray20
+        .blue50
         .ignoresSafeArea()
+
+      SSColor
+        .blue70
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .backgroundStyle(SSColor.orange50)
         Spacer()
-//        makeContentView()
+        makeContentView()
       }
     }
-    .safeAreaInset(edge: .bottom) { makeTabBar() }
+//    .safeAreaInset(edge: .bottom) { makeTabBar() }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

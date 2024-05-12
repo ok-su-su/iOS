@@ -6,7 +6,9 @@ import SwiftUI
 public final class MyPageNavigationController: UINavigationController {
   override public func viewDidLoad() {
     super.viewDidLoad()
-    setViewControllers([MyPageMainRouter()], animated: false)
+    let vc = MyPageMainRouter()
+    vc.safeAreaRegions = .container
+    setViewControllers([vc], animated: false)
   }
 }
 
@@ -15,7 +17,7 @@ public final class MyPageNavigationController: UINavigationController {
 public struct ProfileNavigationView: UIViewControllerRepresentable {
   public init() {}
   public func makeUIViewController(context _: Context) -> MyPageNavigationController {
-    MyPageNavigationController()
+    return MyPageNavigationController()
   }
 
   public func updateUIViewController(_: MyPageNavigationController, context _: Context) {}

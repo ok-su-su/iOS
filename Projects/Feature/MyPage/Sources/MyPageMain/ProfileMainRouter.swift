@@ -10,25 +10,16 @@ import Combine
 import OSLog
 import SwiftUI
 
-// MARK: - TTView
-
-struct TTView: Viewable {
-  var body: some View {
-    EmptyView()
-  }
-}
-
-// MARK: - Viewable
-
-protocol Viewable: View {}
-
 // MARK: - MyPageMainRouter
 
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   var subscription: AnyCancellable? = nil
 
   override func viewDidLoad() {
+    view.backgroundColor = .red
     super.viewDidLoad()
+    //TODO: 작성..
+    navigationController?.setNavigationBarHidden(true, animated: false)
     subscription = reducer.routingPublisher
       .sink { [weak self] path in
         switch path {
