@@ -42,6 +42,7 @@ struct MyPageMain {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedFeedbackButton
   }
 
   enum InnerAction: Equatable {
@@ -150,6 +151,10 @@ struct MyPageMain {
           routingPublisher.send(.resign)
           return .none
         }
+
+      // TODO: Routing FeedBackPage
+      case .view(.tappedFeedbackButton):
+        return .none
       }
     }
     .subFeatures0()

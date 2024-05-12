@@ -20,11 +20,23 @@ struct MyPageMainView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView {
-      VStack(spacing: 8) {
-        makeMyNameAndMyInformationButtonView()
-        makeTopSection()
-        makeMiddleSection()
-        makeBottomSection()
+      VStack(spacing: 0) {
+        VStack(spacing: 8) {
+          makeMyNameAndMyInformationButtonView()
+          makeTopSection()
+          makeMiddleSection()
+          makeBottomSection()
+          Spacer()
+        }
+        Spacer()
+          .frame(height: 16)
+
+        makeAppVersionText()
+
+        Spacer()
+          .frame(height: 32)
+
+        makeFeedbackButton()
       }
     }
   }
@@ -54,6 +66,27 @@ struct MyPageMainView: View {
         MyPageMainItemListCellView(store: store)
       }
     }
+  }
+
+  @ViewBuilder
+  private func makeAppVersionText() -> some View {
+    Text("앱 버전 1.0.0")
+      .modifier(SSTypoModifier(.title_xxxs))
+      .foregroundStyle(SSColor.gray50)
+  }
+
+  @ViewBuilder
+  private func makeFeedbackButton() -> some View {
+    SSButton(
+      .init(
+        size: .sh40,
+        status: .active,
+        style: .ghost,
+        color: .orange,
+        buttonText: "수수에게 피드백 남기기"
+      )) {
+        store.send(.view(.tappedFeedbackButton))
+      }
   }
 
   @ViewBuilder
@@ -97,7 +130,8 @@ struct MyPageMainView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        makeContentView()
+        Spacer()
+//        makeContentView()
       }
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
