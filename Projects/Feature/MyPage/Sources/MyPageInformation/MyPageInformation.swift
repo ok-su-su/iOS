@@ -22,6 +22,7 @@ struct MyPageInformation: Reducer {
     var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("편집")))
     var listItems: IdentifiedArrayOf<MyPageMainItemListCell<MyPageInformationListItem>.State>
       = .init(uniqueElements: MyPageInformationListItem.allCases.map { MyPageMainItemListCell<MyPageInformationListItem>.State(property: $0) })
+    var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     init() {}
   }
 
@@ -51,6 +52,7 @@ struct MyPageInformation: Reducer {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case listItems(IdentifiedActionOf<MyPageMainItemListCell<MyPageInformationListItem>>)
+    case tabBar(SSTabBarFeature.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -58,6 +60,10 @@ struct MyPageInformation: Reducer {
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+
+    Scope(state: \.tabBar, action: \.scope.tabBar) {
+      SSTabBarFeature()
     }
 
     Reduce { state, action in
@@ -75,6 +81,9 @@ struct MyPageInformation: Reducer {
         return .none
       case .inner(.routEditProfile):
         routingPublisher.send(.editProfile)
+        return .none
+
+      case .scope(.tabBar):
         return .none
       }
     }
@@ -115,11 +124,11 @@ enum MyPageInformationListItem: Int, MyPageMainItemListCellItemable, CaseIterabl
   var subTitle: String? {
     switch self {
     case .name:
-      return nil
+      return "김수수"
     case .birthDay:
-      return nil
+      return "2024.02.03"
     case .gender:
-      return nil
+      return "대답하고싶지 않음"
     }
   }
 }

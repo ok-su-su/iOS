@@ -27,11 +27,11 @@ struct MyPageInformationListViewCell<Item: MyPageMainItemListCellItemable>: View
       if let subTitle = store.property.subTitle {
         Text(subTitle)
           .modifier(SSTypoModifier(.title_xxs))
-          .foregroundStyle(SSColor.gray60)
+          .foregroundStyle(SSColor.gray100)
       }
     }
+    .background(SSColor.gray10)
     .padding(.vertical, 12)
-    .background(SSColor.gray100)
     .onAppear {
       store.send(.onAppear(true))
     }
