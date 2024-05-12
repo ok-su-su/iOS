@@ -19,28 +19,66 @@ struct MyPageMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    Button {
-      store.send(.route(.myPageInformation))
-    } label: {
-      Text("Button")
+    VStack(spacing: 8) {
+      makeMyNameAndMyInformationButtonView()
     }
+  }
+
+  @ViewBuilder
+  private func makeMyNameAndMyInformationButtonView() -> some View {
+    HStack(alignment: .center, spacing: 0) {
+      Text("김수수") // TODO: logic 연결
+        .modifier(SSTypoModifier(.title_m))
+        .foregroundStyle(SSColor.gray100)
+
+      Spacer()
+
+      HStack(alignment: .center, spacing: 8) {
+        Text(Constants.myInformationText)
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray60)
+
+        SSImage
+          .envelopeForwardArrow
+      }
+    }
+    .padding(.vertical, Metrics.makeMyNameAndMyInformationButtonViewVerticalSpacing)
+    .frame(maxWidth: .infinity)
+    .background(SSColor.gray10)
+  }
+
+  @ViewBuilder
+  private func makeTabBar() -> some View {
+    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
+      .background {
+        Color.white
+      }
+      .ignoresSafeArea()
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
   }
 
   var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray20
         .ignoresSafeArea()
-      VStack {
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
     }
+    .safeAreaInset(edge: .bottom) { makeTabBar() }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let makeMyNameAndMyInformationButtonViewVerticalSpacing: CGFloat = 16
+  }
 
-  private enum Constants {}
+  private enum Constants {
+    static let myInformationText: String = "내정보"
+  }
 }

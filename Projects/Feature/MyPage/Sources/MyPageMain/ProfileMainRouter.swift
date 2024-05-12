@@ -12,7 +12,7 @@ import SwiftUI
 
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   var subscription: AnyCancellable? = nil
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
   }
