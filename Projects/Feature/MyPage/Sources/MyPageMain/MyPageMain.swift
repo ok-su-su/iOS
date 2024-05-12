@@ -21,10 +21,13 @@ struct MyPageMain {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var header: HeaderViewFeature.State = .init(.init(type: .defaultType))
-    
-    var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State> = {
-      return .init(uniqueElements: TopPageListSection.allCases.map{MyPageMainItemListCell<TopPageListSection>.State(property: $0)})
-    }()
+
+    var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
+      = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
+    var middleSectionList: IdentifiedArrayOf<MyPageMainItemListCell<MiddlePageSection>.State>
+      = .init(uniqueElements: MiddlePageSection.allCases.map { MyPageMainItemListCell<MiddlePageSection>.State(property: $0) })
+    var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
+      = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
     init() {}
   }
@@ -43,6 +46,8 @@ struct MyPageMain {
 
   enum InnerAction: Equatable {
     case topSection(TopPageListSection)
+    case middleSection(MiddlePageSection)
+    case bottomSection(BottomPageSection)
   }
 
   enum AsyncAction: Equatable {}
@@ -52,6 +57,8 @@ struct MyPageMain {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
     case topSectionList(IdentifiedActionOf<MyPageMainItemListCell<TopPageListSection>>)
+    case middleSectionList(IdentifiedActionOf<MyPageMainItemListCell<MiddlePageSection>>)
+    case bottomSectionList(IdentifiedActionOf<MyPageMainItemListCell<BottomPageSection>>)
   }
 
   enum DelegateAction: Equatable {}
@@ -61,6 +68,9 @@ struct MyPageMain {
     case connectedSocialAccount
     case exportExcel
     case privacyPolicy
+    case appVersion
+    case logout
+    case resign
   }
 
   var body: some Reducer<State, Action> {
@@ -83,13 +93,16 @@ struct MyPageMain {
       case .scope(.header):
         return .none
 
-      case let .scope(.topSectionList(.element(id: id, action: .tapped))) :
+      case let .scope(.topSectionList(.element(id: id, action: .tapped))):
+        if let currentSection = TopPageListSection(rawValue: id) {
+          return .send(.inner(.topSection(currentSection)))
+        }
         return .none
-        
+
       case .scope(.topSectionList):
         return .none
-        
-      //TopSection Routing
+
+      // TopSection Routing
       case let .inner(.topSection(section)):
         switch section {
         case .connectedSocialAccount:
@@ -100,8 +113,56 @@ struct MyPageMain {
           routingPublisher.send(.privacyPolicy)
         }
         return .none
+
+      case let .scope(.middleSectionList(.element(id: id, action: .tapped))):
+        if let currentSection = MiddlePageSection(rawValue: id) {
+          return .send(.inner(.middleSection(currentSection)))
+        }
+        return .none
+
+      case .scope(.middleSectionList):
+        return .none
+
+      // Middle Section Routing
+      case let .inner(.middleSection(currentSection)):
+        switch currentSection {
+        case .appVersion: // NavigationSomeSection
+          routingPublisher.send(.appVersion)
+          return .none
+        }
+
+      case let .scope(.bottomSectionList(.element(id: id, action: .tapped))):
+        if let currentSection = BottomPageSection(rawValue: id) {
+          return .send(.inner(.bottomSection(currentSection)))
+        }
+        return .none
+
+      case .scope(.bottomSectionList):
+        return .none
+
+      // BottomSection Routing
+      case let .inner(.bottomSection(currentSection)):
+        switch currentSection {
+        case .logout:
+          routingPublisher.send(.logout)
+          return .none
+        case .resign:
+          routingPublisher.send(.resign)
+          return .none
+        }
       }
-      
+    }
+    .subFeatures0()
+  }
+}
+
+extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
+  func subFeatures0() -> some ReducerOf<Self> {
+    forEach(\.topSectionList, action: \.scope.topSectionList) {
+      MyPageMainItemListCell()
+    }
+    .forEach(\.middleSectionList, action: \.scope.middleSectionList) {
+      MyPageMainItemListCell()
     }
   }
 }
@@ -126,6 +187,48 @@ extension MyPageMain {
         "엑셀 파일 내보내기"
       case .privacyPolicy:
         "개인정보 처리 방침"
+      }
+    }
+
+    var subTitle: String? { nil }
+  }
+
+  enum MiddlePageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
+    case appVersion = 0
+
+    var id: Int {
+      return rawValue
+    }
+
+    var title: String {
+      switch self {
+      case .appVersion:
+        "앱 버전"
+      }
+    }
+
+    var subTitle: String? {
+      switch self {
+      case .appVersion:
+        return "업데이트 하기"
+      }
+    }
+  }
+
+  enum BottomPageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
+    case logout
+    case resign
+
+    var id: Int {
+      return rawValue
+    }
+
+    var title: String {
+      switch self {
+      case .logout:
+        "로그아웃"
+      case .resign:
+        "탈퇴하기"
       }
     }
 

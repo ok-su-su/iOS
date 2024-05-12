@@ -19,8 +19,39 @@ struct MyPageMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 8) {
-      makeMyNameAndMyInformationButtonView()
+    ScrollView {
+      VStack(spacing: 8) {
+        makeMyNameAndMyInformationButtonView()
+        makeTopSection()
+        makeMiddleSection()
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeTopSection() -> some View {
+    VStack(spacing: 0) {
+      ForEach(store.scope(state: \.topSectionList, action: \.scope.topSectionList)) { store in
+        MyPageMainItemListCellView(store: store)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeMiddleSection() -> some View {
+    VStack(spacing: 0) {
+      ForEach(store.scope(state: \.middleSectionList, action: \.scope.middleSectionList)) { store in
+        MyPageMainItemListCellView(store: store)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeBottomSection() -> some View {
+    VStack(spacing: 0) {
+      ForEach(store.scope(state: \.bottomSectionList, action: \.scope.bottomSectionList)) { store in
+        MyPageMainItemListCellView(store: store)
+      }
     }
   }
 

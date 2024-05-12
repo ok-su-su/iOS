@@ -10,6 +10,20 @@ import Combine
 import OSLog
 import SwiftUI
 
+// MARK: - TTView
+
+struct TTView: Viewable {
+  var body: some View {
+    EmptyView()
+  }
+}
+
+// MARK: - Viewable
+
+protocol Viewable: View {}
+
+// MARK: - MyPageMainRouter
+
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   var subscription: AnyCancellable? = nil
 
@@ -23,6 +37,18 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
       .sink { path in
         switch path {
         case .myPageInformation:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .connectedSocialAccount:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .exportExcel:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .privacyPolicy:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .appVersion:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .logout:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        case .resign:
           navigationController.pushViewController(MyPageInformationRouter(), animated: true)
         }
       }
