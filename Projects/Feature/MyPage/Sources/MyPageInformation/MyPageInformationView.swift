@@ -20,11 +20,29 @@ struct MyPageInformationView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
+      SSImage
+        .mypageSusu
+        .frame(width: 88, height: 88)
+        .clipShape(.circle)
+        .padding(.vertical, Metrics.profileVerticalSpacing)
+
       ForEach(store.scope(state: \.listItems, action: \.scope.listItems)) { store in
         MyPageInformationListViewCell(store: store)
       }
+
       Spacer()
     }
+  }
+
+  @ViewBuilder
+  private func makeTabBar() -> some View {
+    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
+      .background {
+        Color.white
+      }
+      .ignoresSafeArea()
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
   }
 
   var body: some View {
@@ -38,13 +56,17 @@ struct MyPageInformationView: View {
         makeContentView()
       }
     }
+    .safeAreaInset(edge: .bottom) { makeTabBar() }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {}
+  private enum Metrics {
+    static let profileVerticalSpacing: CGFloat = 16
+    static let profileWidthAndHeight: CGFloat = 88
+  }
 
   private enum Constants {}
 }

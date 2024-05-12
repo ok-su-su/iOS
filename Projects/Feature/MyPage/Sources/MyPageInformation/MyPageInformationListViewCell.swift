@@ -32,6 +32,7 @@ struct MyPageInformationListViewCell<Item: MyPageMainItemListCellItemable>: View
     }
     .background(SSColor.gray10)
     .padding(.vertical, 12)
+    .padding(.horizontal, 16)
     .onAppear {
       store.send(.onAppear(true))
     }
