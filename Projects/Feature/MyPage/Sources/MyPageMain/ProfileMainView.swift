@@ -73,6 +73,7 @@ struct MyPageMainView: View {
     Text("앱 버전 1.0.0")
       .modifier(SSTypoModifier(.title_xxxs))
       .foregroundStyle(SSColor.gray50)
+      .frame(alignment: .leading)
   }
 
   @ViewBuilder
@@ -83,10 +84,11 @@ struct MyPageMainView: View {
         status: .active,
         style: .ghost,
         color: .orange,
-        buttonText: "수수에게 피드백 남기기"
+        buttonText: Constants.feedbackButtonText
       )) {
         store.send(.view(.tappedFeedbackButton))
       }
+      .frame(alignment: .center)
   }
 
   @ViewBuilder
@@ -139,7 +141,7 @@ struct MyPageMainView: View {
         makeContentView()
       }
     }
-//    .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .safeAreaInset(edge: .bottom) { makeTabBar() }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -151,5 +153,6 @@ struct MyPageMainView: View {
 
   private enum Constants {
     static let myInformationText: String = "내정보"
+    static let feedbackButtonText: String = "수수에게 피드백 남기기"
   }
 }
