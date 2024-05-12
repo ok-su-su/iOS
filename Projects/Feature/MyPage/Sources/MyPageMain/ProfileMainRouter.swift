@@ -6,16 +6,28 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Combine
+import OSLog
 import SwiftUI
 
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
+  var subscription: AnyCancellable? = nil
   override func viewDidLoad() {
     super.viewDidLoad()
   }
 
-  init() {
+  init(navigationController: UINavigationController) {
+    let reducer = MyPageMain()
+    subscription = reducer.routingPublisher
+      .sink { path in
+        switch path {
+        case .myPageInformation:
+          navigationController.pushViewController(MyPageInformationRouter(), animated: true)
+        }
+      }
+
     super.init(rootView: MyPageMainView(store: .init(initialState: MyPageMain.State()) {
-      MyPageMain()
+      reducer
     }))
   }
 

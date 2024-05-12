@@ -1,6 +1,6 @@
 //
-//  ProfileRouterView.swift
-//  Profile
+//  MyPageInformationView.swift
+//  MyPage
 //
 //  Created by MaraMincho on 5/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
@@ -9,11 +9,11 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-struct ProfileRouterView: View {
+struct MyPageInformationView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<ProfileRouter>
+  var store: StoreOf<MyPageInformation>
 
   // MARK: Content
 
@@ -30,7 +30,7 @@ struct ProfileRouterView: View {
       }
     }
     .onAppear {
-      store.send(.onAppear(true))
+      store.send(.view(.onAppear(true)))
     }
   }
 

@@ -18,7 +18,13 @@ struct MyPageMainView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    Button {
+      store.send(.route(.myPageInformation))
+    } label: {
+      Text("Button")
+    }
+  }
 
   var body: some View {
     ZStack {

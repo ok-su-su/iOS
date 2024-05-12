@@ -1,6 +1,6 @@
 //
-//  ProfileRouter.swift
-//  Profile
+//  MyPageInformation.swift
+//  MyPage
 //
 //  Created by MaraMincho on 5/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
@@ -8,10 +8,8 @@
 import ComposableArchitecture
 import Foundation
 
-// MARK: - ProfileRouter
-
 @Reducer
-struct ProfileRouter {
+struct MyPageInformation {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -19,8 +17,12 @@ struct ProfileRouter {
     init() {}
   }
 
-  enum Action: Equatable {
-    case onAppear(Bool)
+  enum Action: Equatable, FeatureAction {
+    case view(ViewAction)
+    case inner(InnerAction)
+    case async(AsyncAction)
+    case scope(ScopeAction)
+    case delegate(DelegateAction)
   }
 
   enum ViewAction: Equatable {
@@ -39,19 +41,12 @@ struct ProfileRouter {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear):
+      case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
+        return .none
+      default:
         return .none
       }
     }
-  }
-}
-
-// MARK: ProfileRouter.Path
-
-extension ProfileRouter {
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case profileMain(MyPageMain)
   }
 }

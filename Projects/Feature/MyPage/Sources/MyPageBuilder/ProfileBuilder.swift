@@ -1,30 +1,12 @@
 // Content of KeepSources.swift
 import SwiftUI
 
-// MARK: - ProfileBuilder
-
-struct ProfileBuilder: View {
-  var body: some View {
-    ProfileRouterView(store: .init(initialState: ProfileRouter.State()) {
-      ProfileRouter()
-    })
-  }
-}
-
-// MARK: - ProfileBuilderHostingViewController
-
-final class ProfileBuilderHostingViewController: UIHostingController<ProfileBuilder> {
-  override func viewDidLoad() {
-    super.viewDidLoad()
-  }
-}
-
 // MARK: - MyPageNavigationController
 
 public final class MyPageNavigationController: UINavigationController {
   override public func viewDidLoad() {
     super.viewDidLoad()
-    setViewControllers([MyPageMainRouter()], animated: false)
+    setViewControllers([MyPageMainRouter(navigationController: self)], animated: false)
   }
 }
 
