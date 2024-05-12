@@ -14,7 +14,7 @@ let project = Project.makeModule(
       .core(.coreLayers),
       .feature(.sent),
       .feature(.inventory),
-      .feature(.profile)
+      .feature(.myPage),
     ],
     testDependencies: [],
     infoPlist: [

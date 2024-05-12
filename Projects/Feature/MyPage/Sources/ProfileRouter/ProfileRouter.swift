@@ -1,31 +1,28 @@
-// 
+//
 //  ProfileRouter.swift
 //  Profile
 //
 //  Created by MaraMincho on 5/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
+import Foundation
+
+// MARK: - ProfileRouter
 
 @Reducer
 struct ProfileRouter {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    
-    init () {}
+
+    init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
-    case view(ViewAction)
-    case inner(InnerAction)
-    case async(AsyncAction)
-    case scope(ScopeAction)
-    case delegate(DelegateAction)
+  enum Action: Equatable {
+    case onAppear(Bool)
   }
-  
+
   enum ViewAction: Equatable {
     case onAppear(Bool)
   }
@@ -42,12 +39,19 @@ struct ProfileRouter {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)) :
+      case let .onAppear(isAppear):
         state.isOnAppear = isAppear
-        return .none
-      default:
         return .none
       }
     }
+  }
+}
+
+// MARK: ProfileRouter.Path
+
+extension ProfileRouter {
+  @Reducer(state: .equatable, action: .equatable)
+  enum Path {
+    case profileMain(MyPageMain)
   }
 }

@@ -13,7 +13,7 @@ import ProjectDescription
 public enum Feature: String {
   case sent
   case inventory
-  case profile
+  case myPage
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
