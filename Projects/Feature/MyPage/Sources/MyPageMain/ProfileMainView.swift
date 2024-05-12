@@ -24,6 +24,7 @@ struct MyPageMainView: View {
         makeMyNameAndMyInformationButtonView()
         makeTopSection()
         makeMiddleSection()
+        makeBottomSection()
       }
     }
   }

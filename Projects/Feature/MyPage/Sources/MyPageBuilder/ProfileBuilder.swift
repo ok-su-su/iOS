@@ -6,7 +6,7 @@ import SwiftUI
 public final class MyPageNavigationController: UINavigationController {
   override public func viewDidLoad() {
     super.viewDidLoad()
-    setViewControllers([MyPageMainRouter(navigationController: self)], animated: false)
+    setViewControllers([MyPageMainRouter()], animated: false)
   }
 }
 

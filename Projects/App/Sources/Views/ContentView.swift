@@ -64,7 +64,7 @@ public struct ContentView: View {
         InventoryViewFeature()
       })),
     .vote: AnyView(VoteRootView()),
-    .mypage: AnyView(ProfileNavigationView()),
+    .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
   ]
 
