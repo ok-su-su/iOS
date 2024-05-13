@@ -2,15 +2,15 @@
 import PackageDescription
 
 #if TUIST
-import ProjectDescription
-import ProjectDescriptionHelpers
+  import ProjectDescription
+  import ProjectDescriptionHelpers
 
-let packageSettings = PackageSettings(
-  // Customize the product types for specific package product
-  // Default is .staticFramework
-  // productTypes: ["Alamofire": .framework,]
-  productTypes: ThirdParty.allCasesProductType
-)
+  let packageSettings = PackageSettings(
+    // Customize the product types for specific package product
+    // Default is .staticFramework
+    // productTypes: ["Alamofire": .framework,]
+    productTypes: ThirdParty.allCasesProductType
+  )
 #endif
 
 let package = Package(
@@ -21,5 +21,3 @@ let package = Package(
     .package(url: "https://github.com/kakao/kakao-ios-sdk", exact: "2.22.0")
   ]
 )
-
-

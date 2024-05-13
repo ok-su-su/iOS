@@ -12,7 +12,7 @@ public extension Project {
   ) -> Project {
     let settingConfiguration: [Configuration] = [
       .debug(name: .debug, xcconfig: .relativeToXCConfig("Server/Debug")),
-      .release(name: .release, xcconfig: .relativeToXCConfig("Server/Debug"))
+      .release(name: .release, xcconfig: .relativeToXCConfig("Server/Debug")),
     ]
 
     let settings: Settings = .settings(
@@ -33,8 +33,6 @@ public extension Project {
     )
   }
 }
-
-
 
 extension Scheme {
   /// Scheme을 만드는 메소드

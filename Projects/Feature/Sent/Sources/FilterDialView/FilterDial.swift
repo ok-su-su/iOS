@@ -10,13 +10,14 @@ import Foundation
 
 @Reducer
 struct FilterDial {
+  @Dependency(\.dismiss) var dismiss
   @ObservableState
   struct State {
     var isOnAppear = false
-    var filterDialProperty: FilterDialProperty
+    @Shared var filterDialProperty: FilterDialProperty
 
-    init(filterDialProperty: FilterDialProperty) {
-      self.filterDialProperty = filterDialProperty
+    init(filterDialProperty: Shared<FilterDialProperty>) {
+      _filterDialProperty = filterDialProperty
     }
   }
 
@@ -34,7 +35,9 @@ struct FilterDial {
 
       case let .tappedDial(type):
         state.filterDialProperty.currentType = type
-        return .none
+        return .run { _ in
+          await dismiss()
+        }
       }
     }
   }

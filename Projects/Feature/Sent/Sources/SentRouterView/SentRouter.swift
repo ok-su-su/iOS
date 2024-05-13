@@ -30,17 +30,13 @@ struct SentRouter {
       switch action {
       case let .path(action):
         switch action {
-        case .element(id: _, action: .sentEnvelopeFilter):
-          return .none
-        case .element(id: _, action: .sentMain(.delegate(.pushSearchEnvelope))):
-//          state.path.append(.searchEnvelope(SearchEnvelope.State()))
-          return .none
         default:
           return .none
         }
       case .onAppear(true):
         state.path.append(.sentMain(SentMain.State()))
         return .none
+
       case .onAppear(false):
         return .none
       }
@@ -56,9 +52,6 @@ struct SentRouter {
 extension SentRouter {
   @Reducer
   enum Path {
-    case sentEnvelopeFilter(SentEnvelopeFilter)
     case sentMain(SentMain)
-    case searchEnvelope(SearchEnvelope)
-    case envelopeDetail(EnvelopeDetail)
   }
 }

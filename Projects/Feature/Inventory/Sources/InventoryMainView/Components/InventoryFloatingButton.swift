@@ -12,9 +12,8 @@ import ComposableArchitecture
 import Designsystem
 
 struct InventoryFloatingButton: View {
-  
   @Bindable var floatingStore: StoreOf<InventoryFloating>
-  
+
   private func makeContentView() -> some View {
     HStack(alignment: .center, spacing: 0) {
       SSImage.commonAdd
@@ -27,11 +26,9 @@ struct InventoryFloatingButton: View {
     .background(SSColor.gray100)
     .cornerRadius(100)
     .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 8)
-    
   }
-  
+
   var body: some View {
     makeContentView()
   }
-  
 }
