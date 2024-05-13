@@ -12,6 +12,7 @@ import Foundation
 enum NetworkError: Error {
     case accessTokenExpired
     case refreshTokenExpired
+    case invalidStatudCode
     case jsonDecodingFailure
     case unknown
 }
@@ -24,6 +25,8 @@ extension NetworkError: CustomStringConvertible {
             return "ERROR: Access Token Expired"
         case .refreshTokenExpired:
             return "ERROR: Refresh Token Expired"
+        case .invalidStatudCode:
+            return "ERROR: Invalid Status Code"
         case .jsonDecodingFailure:
             return "ERROR: Json Decoding Failure"
         case .unknown:
