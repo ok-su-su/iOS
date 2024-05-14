@@ -19,8 +19,13 @@ struct InventoryFilter {
   struct State {
     var isAppear = false
     var inventoryFilter: InventoryType.AllCases = []
+    var selectedFilter: InventoryType.AllCases = []
+    var previousDate: Date = .now
+    var showSheetView: Bool = false
+    var nextDate: Date = .now
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var ssButtonProperties: [Int: SSButtonPropertyState] = [:]
+    var ssSelectedButtonProperties: [Int: SSButtonPropertyState] = [:]
   }
 
   enum Action: Equatable {
@@ -28,6 +33,9 @@ struct InventoryFilter {
     case reloadFilter
     case reset
     case header(HeaderViewFeature.Action)
+    case didTapFilterButton(Int)
+    case didShowFilterView
+    case didTapSelectedFilterButton(Int)
   }
 
   var body: some Reducer<State, Action> {
@@ -40,6 +48,7 @@ struct InventoryFilter {
       case let .onAppear(isAppear):
         state.isAppear = isAppear
         return .none
+
       case .reloadFilter:
         state.inventoryFilter = [
           .Wedding,
@@ -58,6 +67,32 @@ struct InventoryFilter {
           )
         }
 
+        return .none
+
+      case let .didTapFilterButton(index):
+
+        if let idx = state.selectedFilter.firstIndex(of: state.inventoryFilter[index]) {
+          state.ssButtonProperties[index]?.toggleStatus()
+          state.selectedFilter.remove(at: idx)
+        } else {
+          state.ssButtonProperties[index]?.toggleStatus()
+          state.selectedFilter.append(state.inventoryFilter[index])
+        }
+
+        for selectedInventory in state.selectedFilter {
+          state.ssSelectedButtonProperties[selectedInventory.rawValue] = .init(
+            size: .xsh28,
+            status: .inactive,
+            style: .filled,
+            color: .orange,
+            buttonText: selectedInventory.type
+          )
+        }
+
+        return .none
+
+      case .didShowFilterView:
+        state.showSheetView = true
         return .none
       default:
         return .none
