@@ -55,11 +55,21 @@ struct MyPageEditView: View {
   @ViewBuilder
   private func makeNameTextfieldItem() -> some View {
     HStack {
-      Text(Constants.nameCellTitle)
-        .modifier(SSTypoModifier(.title_xxs))
-        .foregroundStyle(SSColor.gray60)
+      HStack(alignment: .top, spacing: 4) {
+        Text(Constants.nameCellTitle)
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray60)
 
-      Spacer()
+        VStack(spacing: 0) {
+          Spacer()
+            .frame(height: 4)
+          SSColor
+            .red60
+            .clipShape(Circle())
+            .frame(width: 4, height: 4)
+        }
+      }
+
       TextField(
         "",
         text: $store.helper.editedValue.name.sending(\.view.nameEdited),
@@ -70,7 +80,7 @@ struct MyPageEditView: View {
       .multilineTextAlignment(.trailing)
       .frame(maxWidth: .infinity, alignment: .trailing)
     }
-    .frame(maxWidth: .infinity)
+    .frame(maxWidth: .infinity, maxHeight: 28)
     .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
@@ -87,7 +97,7 @@ struct MyPageEditView: View {
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(store.helper.isEditedBirthDay() ? SSColor.gray100 : SSColor.gray40)
     }
-    .frame(maxWidth: .infinity)
+    .frame(maxWidth: .infinity, maxHeight: 28)
     .padding(.vertical, Metrics.itemVerticalSpacing)
     .onTapGesture {
       store.send(.view(.selectedYearItem(true)))
@@ -120,6 +130,7 @@ struct MyPageEditView: View {
         }
       }
     }
+    .frame(maxWidth: .infinity, maxHeight: 28)
     .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 

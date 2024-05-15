@@ -24,10 +24,7 @@ struct MyPageEdit {
     var selectYearIsPresented: Bool = false
     var selectYear: SelectYearBottomSheet.State?
 
-    init() {
-      let initialHelpValue = MyPageEditHelper()
-      helper = initialHelpValue
-    }
+    init() {}
   }
 
   enum Action: Equatable, FeatureAction {

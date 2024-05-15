@@ -21,9 +21,12 @@ struct SelectYearBottomSheetView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       ScrollView {
+        Spacer()
+          .frame(height: 16)
         LazyVStack(spacing: 0) {
           ForEach(store.listItems.items) { item in
             Text(item.dateTitle)
+              .modifier(SSTypoModifier(.title_xxs))
               .foregroundStyle(item.dateTitle == store.originalYearString ? SSColor.gray100 : SSColor.gray30)
               .padding(.vertical, Metrics.itemVerticalSpacing)
               .onTapGesture {
