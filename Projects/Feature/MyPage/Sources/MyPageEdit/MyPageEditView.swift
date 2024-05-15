@@ -153,7 +153,7 @@ struct MyPageEditView: View {
       IfLetStore(store.scope(state: \.selectYear, action: \.scope.selectYear)) { store in
         SelectYearBottomSheetView(store: store)
           .presentationDetents([.height(240), .medium, .large])
-          .presentationContentInteraction(.scrolls) // TODO: PR에 작성하기
+          .presentationContentInteraction(.scrolls)
           .presentationDragIndicator(.automatic)
       }
     }
