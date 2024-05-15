@@ -20,13 +20,13 @@ struct MyPageEdit {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("등록")))
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    @Shared var helper: MyPageEditHelper
+    var helper: MyPageEditHelper = .init()
     var selectYearIsPresented: Bool = false
-    var selectYear: SelectYearBottomSheet.State
+    var selectYear: SelectYearBottomSheet.State?
 
     init() {
-      _helper = Shared(.init())
-      selectYear = .init(originalYear: nil, selectedYear: _helper.editedValue.birthDate)
+      let initialHelpValue = MyPageEditHelper()
+      helper = initialHelpValue
     }
   }
 
@@ -73,9 +73,6 @@ struct MyPageEdit {
       SSTabBarFeature()
     }
 
-    Scope(state: \.selectYear, action: \.scope.selectYear) {
-      SelectYearBottomSheet()
-    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -100,15 +97,30 @@ struct MyPageEdit {
         return .none
 
       case let .view(.selectedYearItem(present)):
-        state.selectYearIsPresented = present
+        if present == true {
+          state.selectYearIsPresented = true
+          state.selectYear = .init(originalYear: state.helper.birthDayDate)
+        } else {
+          state.selectYearIsPresented = false
+          state.selectYear = nil
+        }
+
         return .none
 
       case let .scope(.selectYear(.tappedYear(title))):
         state.selectYearIsPresented = false
+        state.helper.setEditDate(by: title)
         return .none
       }
     }
+    .activateScope()
   }
 }
 
-extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdit.Action {}
+extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdit.Action {
+  func activateScope() -> some ReducerOf<Self> {
+    ifLet(\.selectYear, action: \.scope.selectYear) {
+      SelectYearBottomSheet()
+    }
+  }
+}

@@ -82,7 +82,7 @@ struct MyPageEditView: View {
         .foregroundStyle(SSColor.gray60)
 
       Spacer()
-      Text(store.helper.birthDayNotEditedText)
+      Text(store.helper.birthDayText)
         .frame(maxWidth: .infinity, alignment: .trailing)
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(store.helper.isEditedBirthDay() ? SSColor.gray100 : SSColor.gray40)
@@ -139,10 +139,12 @@ struct MyPageEditView: View {
       store.send(.view(.onAppear(true)))
     }
     .sheet(isPresented: $store.selectYearIsPresented.sending(\.view.selectedYearItem)) {
-      SelectYearBottomSheetView(store: store.scope(state: \.selectYear, action: \.scope.selectYear))
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationContentInteraction(.scrolls) // TODO: PR에 작성하기
-        .presentationDragIndicator(.automatic)
+      IfLetStore(store.scope(state: \.selectYear, action: \.scope.selectYear)) { store in
+        SelectYearBottomSheetView(store: store)
+          .presentationDetents([.height(240), .medium, .large])
+          .presentationContentInteraction(.scrolls) // TODO: PR에 작성하기
+          .presentationDragIndicator(.automatic)
+      }
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }

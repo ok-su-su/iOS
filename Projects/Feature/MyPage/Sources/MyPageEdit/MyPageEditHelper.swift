@@ -37,12 +37,32 @@ struct MyPageEditHelper: Equatable {
     return textTo(date: originalValue.birthDate)
   }
 
+  var birthDayDate: Date? {
+    guard let date = editedValue.birthDate else {
+      return originalValue.birthDate
+    }
+    return date
+  }
+
+  var birthDayText: String {
+    if editedValue.birthDate == nil {
+      return textTo(date: originalValue.birthDate)
+    }
+    return textTo(date: editedValue.birthDate)
+  }
+
   /// Date를 화면에 표시가능한 Text로 변환해 줍니다.
-  func textTo(date: Date?) -> String {
-    if date == nil {
+  private func textTo(date: Date?) -> String {
+    guard let date else {
       return "2024년"
     }
-    return "2024년"
+    return SelectYearItemDateFormatter.yearStringFrom(date: date)
+  }
+
+  mutating func setEditDate(by value: String) {
+    if let date = SelectYearItemDateFormatter.dateFrom(string: value) {
+      editedValue.birthDate = date
+    }
   }
 
   func isEditedBirthDay() -> Bool {

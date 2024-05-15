@@ -12,16 +12,17 @@ import Foundation
 struct SelectYearBottomSheet {
   @ObservableState
   struct State: Equatable {
-    var isOnAppear = false
     var listItems: SelectYearListProperty = .init()
 
     var originalYear: Date?
     var originalYearString: String?
-    @Shared var selectedYear: Date?
 
-    init(originalYear: Date?, selectedYear: Shared<Date?>) {
+    init(originalYear: Date?) {
+      guard let originalYear else {
+        return
+      }
       self.originalYear = originalYear
-      _selectedYear = selectedYear
+      originalYearString = SelectYearItemDateFormatter.yearStringFrom(date: originalYear)
     }
   }
 
@@ -38,7 +39,7 @@ struct SelectYearBottomSheet {
   var body: some Reducer<State, Action> {
     Reduce { _, action in
       switch action {
-      case let .tappedYear(title):
+      default:
         return .none
       }
     }
