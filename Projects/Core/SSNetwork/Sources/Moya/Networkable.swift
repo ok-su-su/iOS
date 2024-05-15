@@ -12,16 +12,16 @@ import Moya
 
 // MARK: - Protocol
 protocol Networkable {
-    associatedtype Target: TargetType
+  associatedtype Target: TargetType
 }
 
 // MARK: - Extensions
 extension Networkable {
+  
+  static func makeProvider() -> MoyaProvider<Target> {
+    let loggerPlugin = NetworkLoggerPlugin()
     
-    static func makeProvider() -> MoyaProvider<Target> {
-        let loggerPlugin = NetworkLoggerPlugin()
-        
-        return MoyaProvider<Target>(plugins: [loggerPlugin])
-    }
-    
+    return MoyaProvider<Target>(plugins: [loggerPlugin])
+  }
+  
 }

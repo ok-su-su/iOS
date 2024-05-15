@@ -15,17 +15,17 @@ protocol BaseTargetType: TargetType { }
 
 // MARK: - Extensions
 extension BaseTargetType {
-    
-    var baseURL: URL {
-        URL(string: "https://api.oksusu.site/api/v1")!
-    }
-    
-    var headers: [String : String]? {
-        ["Content-Type": "json/application"]
-    }
-    
-    var validationType: ValidationType {
-        return .successAndRedirectCodes
-    }
-    
+  
+  var baseURL: URL {
+    URL(string: "https://api.oksusu.site/api/v1")!
+  }
+  
+  var headers: [String : String]? {
+    ["Content-Type": "json/application"]
+  }
+  
+  var validationType: ValidationType {
+    return .successAndRedirectCodes
+  }
+  
 }
