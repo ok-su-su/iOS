@@ -38,11 +38,13 @@ struct MyPageMain {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
+    case route(Routing)
   }
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedFeedbackButton
+    case tappedMyPageInformationSection
   }
 
   enum InnerAction: Equatable {
@@ -147,6 +149,7 @@ struct MyPageMain {
         case .logout:
           routingPublisher.send(.logout)
           return .none
+
         case .resign:
           routingPublisher.send(.resign)
           return .none
@@ -155,6 +158,13 @@ struct MyPageMain {
       // TODO: Routing FeedBackPage
       case .view(.tappedFeedbackButton):
         return .none
+
+      case let .route(next):
+        routingPublisher.send(next)
+        return .none
+
+      case .view(.tappedMyPageInformationSection):
+        return .send(.route(.myPageInformation))
       }
     }
     .subFeatures0()

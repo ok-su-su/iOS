@@ -113,6 +113,9 @@ struct MyPageMainView: View {
     .padding(.vertical, Metrics.makeMyNameAndMyInformationButtonViewVerticalSpacing)
     .frame(maxWidth: .infinity)
     .background(SSColor.gray10)
+    .onTapGesture {
+      store.send(.route(.myPageInformation))
+    }
   }
 
   @ViewBuilder
