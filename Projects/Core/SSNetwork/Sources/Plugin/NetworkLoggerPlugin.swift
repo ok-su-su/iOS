@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OSLog
 
 import Moya
 
@@ -47,7 +48,7 @@ struct NetworkLoggerPlugin: PluginType {
     }
     httpLog.append("[HTTP Request End]")
     
-    print(httpLog)
+    os_log(.default, log: .default, "%@", httpLog)
   }
   
   // MARK: - DidReceive
@@ -98,7 +99,7 @@ struct NetworkLoggerPlugin: PluginType {
       }
       httpLog.append("[HTTP Response End]")
       
-      print(httpLog)
+      os_log(.default, log: .default, "%@", httpLog)
     }
   
   // MARK: - OnFail
@@ -115,7 +116,7 @@ struct NetworkLoggerPlugin: PluginType {
     httpLog.append("MESSAGE: \(error.failureReason ?? error.errorDescription ?? "Unknown")\n")
     httpLog.append("[HTTP Error End]")
     
-    print(httpLog)
+    os_log(.error, log: .default, "%@", httpLog)
   }
   
 }

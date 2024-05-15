@@ -18,10 +18,14 @@ protocol Networkable {
 // MARK: - Extensions
 extension Networkable {
   
-  static func makeProvider() -> MoyaProvider<Target> {
+  func makeProvider() -> MoyaProvider<Target> {
+    let session = Session(interceptor: NetworkInterceptor())
     let loggerPlugin = NetworkLoggerPlugin()
     
-    return MoyaProvider<Target>(plugins: [loggerPlugin])
+    return MoyaProvider<Target>(
+      session: session,
+      plugins: [loggerPlugin]
+    )
   }
   
 }
