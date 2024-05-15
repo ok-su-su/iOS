@@ -25,19 +25,19 @@ let project = Project.makeModule(
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
       "LSApplicationQueriesSchemes":
-            .dictionary([
-                "item 0": "kakaokompassauth",
-                "item 1": "kakaolink"
-            ]),
+        .dictionary([
+          "item 0": "kakaokompassauth",
+          "item 1": "kakaolink",
+        ]),
       "CFBundleURLTypes":
-            .array([
-                .dictionary([
-                    "CFBundleURLSchemes":
-                            .array([
-                                .string("${KAKAO_API_KEY}")
-                            ]),
-                ]),
-            ]),
+        .array([
+          .dictionary([
+            "CFBundleURLSchemes":
+              .array([
+                .string("${KAKAO_API_KEY}"),
+              ]),
+          ]),
+        ]),
       "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
     ]
   )
