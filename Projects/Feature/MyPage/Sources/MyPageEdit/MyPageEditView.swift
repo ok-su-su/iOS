@@ -89,6 +89,9 @@ struct MyPageEditView: View {
     }
     .frame(maxWidth: .infinity)
     .padding(.vertical, Metrics.itemVerticalSpacing)
+    .onTapGesture {
+      store.send(.view(.selectedYearItem(true)))
+    }
   }
 
   @ViewBuilder
@@ -134,6 +137,12 @@ struct MyPageEditView: View {
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
+    }
+    .sheet(isPresented: $store.selectYearIsPresented.sending(\.view.selectedYearItem)) {
+      SelectYearBottomSheetView(store: store.scope(state: \.selectYear, action: \.scope.selectYear))
+        .presentationDetents([.height(240), .medium, .large])
+        .presentationContentInteraction(.scrolls) // TODO: PR에 작성하기
+        .presentationDragIndicator(.automatic)
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }

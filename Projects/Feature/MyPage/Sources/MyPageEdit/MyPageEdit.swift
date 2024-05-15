@@ -20,10 +20,14 @@ struct MyPageEdit {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("등록")))
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var helper: MyPageEditHelper = .init()
-    var presentYearModal: Bool = false
+    @Shared var helper: MyPageEditHelper
+    var selectYearIsPresented: Bool = false
+    var selectYear: SelectYearBottomSheet.State
 
-    init() {}
+    init() {
+      _helper = Shared(.init())
+      selectYear = .init(originalYear: nil, selectedYear: _helper.editedValue.birthDate)
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -40,6 +44,7 @@ struct MyPageEdit {
     case onAppear(Bool)
     case selectGender(Gender)
     case nameEdited(String)
+    case selectedYearItem(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -50,6 +55,7 @@ struct MyPageEdit {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
+    case selectYear(SelectYearBottomSheet.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -67,6 +73,9 @@ struct MyPageEdit {
       SSTabBarFeature()
     }
 
+    Scope(state: \.selectYear, action: \.scope.selectYear) {
+      SelectYearBottomSheet()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -88,6 +97,14 @@ struct MyPageEdit {
 
       case let .view(.selectGender(gender)):
         state.helper.editedValue.gender = gender
+        return .none
+
+      case let .view(.selectedYearItem(present)):
+        state.selectYearIsPresented = present
+        return .none
+
+      case let .scope(.selectYear(.tappedYear(title))):
+        state.selectYearIsPresented = false
         return .none
       }
     }
