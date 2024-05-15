@@ -1,5 +1,5 @@
 //
-//  SentEnvelopeView.swift
+//  EnvelopeView.swift
 //  Sent
 //
 //  Created by MaraMincho on 4/19/24.
@@ -39,51 +39,6 @@ struct EnvelopeView: View {
             .rotationEffect(.degrees(180))
         }
       }
-    }
-  }
-
-  @ViewBuilder
-  private func makeMiddleView() -> some View {
-    HStack {
-      Text(Metrics.middleLeadingButtonText)
-        .modifier(SSTypoModifier(.text_xxxs))
-        .foregroundColor(SSColor.gray90)
-
-      Spacer()
-
-      Text(Metrics.middleTrailingButtonText)
-        .modifier(SSTypoModifier(.text_xxxs))
-        .foregroundColor(SSColor.gray60)
-    }
-  }
-
-  @ViewBuilder
-  private func makeProgressBarView() -> some View {
-    ZStack(alignment: .topLeading) {
-      SSColor.orange20
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      SSColor.orange60
-        .frame(maxWidth: store.progressValue, maxHeight: .infinity, alignment: .leading)
-    }
-    .frame(maxWidth: .infinity, maxHeight: Metrics.progressHeightValue)
-    .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))
-    .padding(.vertical, Metrics.progressBarVerticalSpacing)
-  }
-
-  @ViewBuilder
-  private func makeBottomView() -> some View {
-    HStack {
-      // TODO: API 호출 된 Value 로 변경
-      Text("700,000원")
-        .modifier(SSTypoModifier(.text_xxxs))
-        .foregroundColor(SSColor.gray90)
-
-      Spacer()
-
-      // TODO: API 호출 된 Value 로 변경
-      Text("1,000,000원")
-        .modifier(SSTypoModifier(.text_xxxs))
-        .foregroundColor(SSColor.gray60)
     }
   }
 
@@ -171,9 +126,7 @@ struct EnvelopeView: View {
         Spacer()
           .frame(height: Metrics.topAndMiddleSpacing)
 
-        makeMiddleView()
-        makeProgressBarView()
-        makeBottomView()
+        EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.envelopePRiceProgress))
       }
       .padding(Metrics.contentSpacing)
     }
@@ -197,17 +150,7 @@ struct EnvelopeView: View {
 
     static let textAndBadgeSpacing: CGFloat = 12
 
-    static let detailButtonWidthAndHeight: CGFloat = 24
-
-    static let middleLeadingButtonText: String = "보내요"
-    static let middleTrailingButtonText: String = "보내요"
-
     static let topAndMiddleSpacing: CGFloat = 16
-
-    static let progressCornerRadius: CGFloat = 8
-    static let progressHeightValue: CGFloat = 4
-
-    static let progressBarVerticalSpacing: CGFloat = 4
 
     static let viewMaxHeight: CGFloat = 124
   }
