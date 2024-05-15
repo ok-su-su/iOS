@@ -1,11 +1,8 @@
 import ComposableArchitecture
 import Designsystem
 import Inventory
-import Moya
-import OSLog
+import MyPage
 import Sent
-import SSAlert
-import SSDataBase
 import SSRoot
 import SwiftUI
 
@@ -67,14 +64,14 @@ public struct ContentView: View {
         InventoryViewFeature()
       })),
     .vote: AnyView(VoteRootView()),
-    .mypage: AnyView(MyPageRootView()),
+    .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
   ]
 
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray90
         .ignoresSafeArea()
       VStack(spacing: 0) {
         contentView()
@@ -129,24 +126,6 @@ public struct VoteRootView: View {
     NavigationStack {
       Color(.green)
         .edgesIgnoringSafeArea(.all)
-    }
-  }
-}
-
-// MARK: - MyPageRootView
-
-public struct MyPageRootView: View {
-  init() {
-    os_log("마이 페이지가 나타났어!")
-  }
-
-  public var body: some View {
-    NavigationStack {
-      Color(.blue)
-        .edgesIgnoringSafeArea(.all)
-    }
-    .onAppear {
-      os_log("mypage view was appear")
     }
   }
 }

@@ -30,6 +30,9 @@ extension HeaderView {
     } else {
       Button {
         store.send(.tappedDismissButton)
+        if store.state.enableDismissAction {
+          dismiss()
+        }
       } label: {
         Image(.commonArrow)
       }
