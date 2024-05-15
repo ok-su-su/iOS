@@ -7,12 +7,14 @@
 //
 import ComposableArchitecture
 import Foundation
+import Designsystem
 
 @Reducer
 struct MyPageEdit {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("등록")))
 
     init() {}
   }
