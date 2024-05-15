@@ -21,6 +21,17 @@ struct MyPageEditView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {}
   }
+  
+  @ViewBuilder
+  private func makeTabBar() -> some View {
+    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
+      .background {
+        Color.white
+      }
+      .ignoresSafeArea()
+      .frame(height: 56)
+      .toolbar(.hidden, for: .tabBar)
+  }
 
   var body: some View {
     ZStack {
@@ -28,6 +39,7 @@ struct MyPageEditView: View {
         .gray15
         .ignoresSafeArea()
       VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
     }
@@ -35,6 +47,7 @@ struct MyPageEditView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 
   private enum Metrics {}
