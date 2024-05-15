@@ -19,22 +19,65 @@ struct MyPageEditHelper: Equatable {
     originalValue = .init()
     editedValue = .init()
   }
+
+  var selectedGender: Gender? {
+    // 수정된 Gedner가 있을 때
+    if editedValue.gender == nil {
+      return originalValue.gender
+    }
+    // 없을 때
+    return editedValue.gender
+  }
+
+  var namePromptText: String {
+    return originalValue.name == "" ? "김수수" : originalValue.name
+  }
+
+  var birthDayNotEditedText: String {
+    return textTo(date: originalValue.birthDate)
+  }
+
+  /// Date를 화면에 표시가능한 Text로 변환해 줍니다.
+  func textTo(date: Date?) -> String {
+    if date == nil {
+      return "2024년"
+    }
+    return "2024년"
+  }
+
+  func isEditedBirthDay() -> Bool {
+    return !(editedValue.birthDate == nil)
+  }
+
+  mutating func editName(text: String) {
+    editedValue.name = text
+  }
 }
 
 // MARK: - Gender
 
-enum Gender: Int, Identifiable, Equatable, CaseIterable {
+enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible {
   case male = 0
   case female
 
   var id: Int { return rawValue }
+
+  /// Button의 타이틀에 사용됩니다.
+  var description: String {
+    switch self {
+    case .male:
+      "남자"
+    case .female:
+      "여자"
+    }
+  }
 }
 
 // MARK: - MyPageInformationPropertiable
 
 protocol MyPageInformationPropertiable: Equatable {
   /// 내정보에 표시되는 이름입니다.
-  var name: String? { get set }
+  var name: String { get set }
 
   /// 내정보에 표시되는 생일 입니다.
   var birthDate: Date? { get set }
@@ -46,11 +89,11 @@ protocol MyPageInformationPropertiable: Equatable {
 // MARK: - MyPageInformationProperty
 
 struct MyPageInformationProperty: MyPageInformationPropertiable, Equatable {
-  var name: String?
+  var name: String
   var birthDate: Date?
   var gender: Gender?
 
-  init(name: String? = nil, birthDate: Date? = nil, gender: Gender? = nil) {
+  init(name: String = "", birthDate: Date? = nil, gender: Gender? = nil) {
     self.name = name
     self.birthDate = birthDate
     self.gender = gender

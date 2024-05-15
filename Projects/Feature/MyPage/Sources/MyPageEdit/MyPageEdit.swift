@@ -35,8 +35,11 @@ struct MyPageEdit {
     case route(Routing)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case selectGender(Gender)
+    case nameEdited(String)
   }
 
   enum InnerAction: Equatable {}
@@ -78,6 +81,13 @@ struct MyPageEdit {
         return .none
       case let .route(destination):
         routingPublisher.send(destination)
+        return .none
+      case let .view(.nameEdited(text)):
+        state.helper.editName(text: text)
+        return .none
+
+      case let .view(.selectGender(gender)):
+        state.helper.editedValue.gender = gender
         return .none
       }
     }
