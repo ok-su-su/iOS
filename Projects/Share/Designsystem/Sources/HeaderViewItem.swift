@@ -30,6 +30,9 @@ extension HeaderView {
     } else {
       Button {
         store.send(.tappedDismissButton)
+        if store.state.enableDismissAction {
+          dismiss()
+        }
       } label: {
         Image(.commonArrow)
       }
@@ -71,6 +74,7 @@ extension HeaderView {
     case icon
     case none
     case text(String)
+    case doubleText(String, String)
   }
 
   @ViewBuilder
@@ -98,12 +102,31 @@ extension HeaderView {
     case .none:
       EmptyView()
     case let .text(text):
-      Button {} label: {
-        Text(text)
+      Text(text)
+        .modifier(SSTypoModifier(.title_xxs))
+        .padding(Constants.imagePadding)
+        .frame(alignment: .trailing)
+        .onTapGesture {
+          store.send(.tappedTextButton)
+        }
+    case let .doubleText(leadingText, trailingText):
+      HStack(spacing: 16) {
+        Text(leadingText)
           .modifier(SSTypoModifier(.title_xxs))
           .padding(Constants.imagePadding)
+          .frame(alignment: .trailing)
+          .onTapGesture {
+            store.send(.tappedDoubleTextButton(.leading))
+          }
+        Text(trailingText)
+          .modifier(SSTypoModifier(.title_xxs))
+          .padding(Constants.imagePadding)
+          .frame(alignment: .trailing)
+          .onTapGesture {
+            store.send(.tappedDoubleTextButton(.trailing))
+          }
+          .padding(.trailing, 16)
       }
-      .frame(alignment: .trailing)
     }
   }
 }

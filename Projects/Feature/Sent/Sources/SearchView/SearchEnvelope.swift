@@ -18,24 +18,26 @@ struct SearchEnvelope {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2Default))
     var customTextField: CustomTextField.State
+    var specificEnvelope: SpecificEnvelopeHistoryRouter.State?
     @Shared var textFieldText: String
-    var searchProperty: SearchViewAdaptor = .init()
+    @Shared var searchHelper: SearchEnvelopeHelper
 
-    init() {
+    init(searchHelper: Shared<SearchEnvelopeHelper>) {
       _textFieldText = .init("")
       customTextField = .init(text: _textFieldText)
+      _searchHelper = searchHelper
     }
 
     var latestSearchCount: Int {
-      return searchProperty.latestSearch.count
+      return searchHelper.latestSearch.count
     }
 
     var isEmptySearchHistory: Bool {
-      return searchProperty.latestSearch.isEmpty
+      return searchHelper.latestSearch.isEmpty
     }
 
     var searchResult: [SentPerson] {
-      return searchProperty.filterByTextField(textFieldText)
+      return searchHelper.filterByTextField(textFieldText)
     }
   }
 
@@ -45,6 +47,9 @@ struct SearchEnvelope {
     case customTextField(CustomTextField.Action)
     case tappedLatestSearchName(String)
     case tappedLatestSearchNameDelete(String)
+    // TODO: 로직 연결
+    case specificEnvelope(SpecificEnvelopeHistoryRouter.Action)
+    case tappedSpecificName
   }
 
   var body: some Reducer<State, Action> {
@@ -57,11 +62,13 @@ struct SearchEnvelope {
 
     Reduce { state, action in
       switch action {
+      case .tappedSpecificName:
+        return .none
       case let .tappedLatestSearchNameDelete(name):
-        var latestSearch = state.searchProperty.latestSearch
+        var latestSearch = state.searchHelper.latestSearch
         if let ind = latestSearch.firstIndex(of: name) {
           latestSearch.remove(at: ind)
-          state.searchProperty.latestSearch = latestSearch
+          state.searchHelper.latestSearch = latestSearch
         }
         return .none
       case let .tappedLatestSearchName(name):
@@ -73,6 +80,8 @@ struct SearchEnvelope {
       case .header:
         return .none
       case .customTextField:
+        return .none
+      case .specificEnvelope:
         return .none
       }
     }

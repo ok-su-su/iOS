@@ -44,11 +44,13 @@ struct SentMainView: View {
 
   @ViewBuilder
   func showFilterDialView() -> some View {
-    FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
+//    FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
   }
 
   @ViewBuilder
   func makeFilterSection() -> some View {
+    // MARK: - 필터 버튼
+
     HStack(spacing: Constants.topButtonsSpacing) {
       SSButton(.init(
         size: .sh32,
@@ -56,26 +58,15 @@ struct SentMainView: View {
         style: .ghost,
         color: .black,
         leftIcon: .icon(SSImage.commonFilter),
-        buttonText: store.filterDialProperty.currentType.name
+        buttonText: store.sentMainProperty.filterDialProperty.currentType.name
       )) {
-        store.send(.view(.setFilterDialSheet(true)))
+        store.send(.view(.tappedSortButton))
       }
-      ZStack {
-        // TODO: Navigation 변경
-        NavigationLink(state: SentRouter.Path.State.sentEnvelopeFilter(.init(sentPeople: [
-          .init(name: "춘자"),
-          .init(name: "복자"),
-          .init(name: "흑자"),
-          .init(name: "헬자"),
-          .init(name: "함자"),
-          .init(name: "귀자"),
-          .init(name: "사귀자"),
-        ]))) {
-          SSButton(Constants.notSelectedFilterButtonProperty) {
-            store.send(.view(.filterButtonTapped))
-          }
-          .allowsHitTesting(false)
-        }
+
+      // MARK: - 정렬 버튼
+
+      SSButton(Constants.notSelectedFilterButtonProperty) {
+        store.send(.view(.tappedFilterButton))
       }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -117,10 +108,19 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
       CreateEnvelopeRouterView(store: store)
     }
-    .sheet(isPresented: $store.isDialPresented) {
-      showFilterDialView()
+    .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
+      SentEnvelopeFilterView(store: store)
+    }
+    .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
+      SearchEnvelopeView(store: store)
+    }
+    .sheet(item: $store.scope(state: \.filterDial, action: \.scope.filterDial)) { store in
+      FilterDialView(store: store)
         .presentationDetents([.height(240), .medium, .large])
         .presentationDragIndicator(.automatic)
+    }
+    .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
+      SpecificEnvelopeHistoryRouterView(store: store)
     }
   }
 

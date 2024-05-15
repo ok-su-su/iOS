@@ -11,31 +11,36 @@ import Designsystem
 import Foundation
 import OSLog
 
+// MARK: - SentMain
+
 @Reducer
 struct SentMain {
   init() {}
   @ObservableState
   struct State {
+    // MARK: - Scope
+
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
-    var isDialPresented = false
-    var filterProperty: FilterProperty?
-    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
-    var filterDialProperty: FilterDialProperty
-    var filterDial: FilterDial.State
     var floatingButton: FloatingButton.State = .init()
+
+    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
+    @Presents var filterDial: FilterDial.State?
+    @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
+    @Presents var searchEnvelope: SearchEnvelope.State?
+    @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
+
+    @Shared var sentMainProperty: SentMainProperty
+
+    // TODO: Change With APIS
     var envelopes: IdentifiedArrayOf<Envelope.State> = [
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
       .init(envelopeProperty: .init()),
     ]
 
-    init(filterProperty: FilterProperty? = nil) {
-      self.filterProperty = filterProperty
-
-      let initialType: FilterDialProperty = .init(currentType: .newest)
-      filterDialProperty = initialType
-      filterDial = .init(filterDialProperty: initialType)
+    init() {
+      _sentMainProperty = Shared(.init())
     }
   }
 
@@ -50,10 +55,9 @@ struct SentMain {
 
   @CasePathable
   enum ViewAction: Equatable {
-    case tappedFirstButton
-    case filterButtonTapped
+    case tappedSortButton
+    case tappedFilterButton
     case tappedEmptyEnvelopeButton
-    case setFilterDialSheet(Bool)
   }
 
   @CasePathable
@@ -68,17 +72,21 @@ struct SentMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-    case filterDial(FilterDial.Action)
+
     case floatingButton(FloatingButton.Action)
 
+    case filterDial(PresentationAction<FilterDial.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
+    case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
+    case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
-    case setFilterDialSheet(Bool)
+    case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
   }
 
   enum DelegateAction: Equatable {
     case pushSearchEnvelope
+    case pushFilter
   }
 
   var body: some Reducer<State, Action> {
@@ -90,15 +98,6 @@ struct SentMain {
     Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
-    Scope(state: \.filterDial, action: \.scope.filterDial) {
-      FilterDial()
-    }
-    .onChange(of: \.filterDial.filterDialProperty) { _, newValue in
-      Reduce { state, _ in
-        state.filterDialProperty = newValue
-        return .none
-      }
-    }
 
     BindingReducer()
 
@@ -106,37 +105,18 @@ struct SentMain {
 
     Reduce { state, action in
       switch action {
-      case .view(.setFilterDialSheet(true)):
-        state.isDialPresented = true
-        return .none
-
-      case .view(.setFilterDialSheet(false)):
-        state.isDialPresented = false
-        return .none
-
-      case .view(.tappedFirstButton):
-        return .none
-
-      case .view(.filterButtonTapped):
-        return .none
-
       case .view(.tappedEmptyEnvelopeButton):
         return .none
 
-      case .scope(.tabBar):
+      // Navigation Specific Router
+      case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
+        state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State()
         return .none
-      case .scope(.envelopes):
-        return .none
-      case .scope(.filterDial):
-        return .none
+
       case .scope(.header(.tappedSearchButton)):
-        return .run { send in
-          await send(.delegate(.pushSearchEnvelope))
-        }
-      case .scope(.header):
+        state.searchEnvelope = SearchEnvelope.State(searchHelper: state.$sentMainProperty.searchHelper)
         return .none
-      case .scope(.setFilterDialSheet):
-        return .none
+
       case .scope(.floatingButton(.tapped)):
         return .run { send in
           await send(.inner(.showCreateEnvelopRouter))
@@ -147,18 +127,53 @@ struct SentMain {
 
       case .binding:
         return .none
+
       case .inner(.showCreateEnvelopRouter):
-        state.createEnvelopeRouter = .init()
+        state.createEnvelopeRouter = CreateEnvelopeRouter.State()
         return .none
-      case .scope(.createEnvelopeRouter):
+
+      case .delegate(.pushFilter):
+        return .none
+
+      case .view(.tappedSortButton):
+        state.filterDial = FilterDial.State(filterDialProperty: state.$sentMainProperty.filterDialProperty)
+        return .none
+
+      case .view(.tappedFilterButton):
+        state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+        return .none
+
+      case .scope:
         return .none
       }
+    }
+    .subFeatures1()
+    .subFeatures2()
+    .forEach(\.envelopes, action: \.scope.envelopes) {
+      Envelope()
+    }
+  }
+}
+
+private extension Reducer where State == SentMain.State, Action == SentMain.Action {
+  func subFeatures1() -> some ReducerOf<Self> {
+    ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
+      SearchEnvelope()
+    }
+    .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
+      SentEnvelopeFilter()
     }
     .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
       CreateEnvelopeRouter()
     }
-    .forEach(\.envelopes, action: \.scope.envelopes) {
-      Envelope()
+  }
+
+  func subFeatures2() -> some ReducerOf<Self> {
+    ifLet(\.$filterDial, action: \.scope.filterDial) {
+      FilterDial()
+    }
+    .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
+      SpecificEnvelopeHistoryRouter()
     }
   }
 }

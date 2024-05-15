@@ -116,7 +116,11 @@ public struct InventoryView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
+<<<<<<< HEAD:Projects/Feature/Inventory/Sources/InventoryMainView/InventoryView.swift
     }.navigationBarBackButtonHidden()
+=======
+    }
+>>>>>>> 1e16bea909ceb558852ba5feeae8229a26a8da3b:Projects/App/Sources/Views/InventoryView.swift
   }
 
   private enum InventoryFilterConstants {

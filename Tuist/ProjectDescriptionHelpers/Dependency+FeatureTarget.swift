@@ -1,5 +1,5 @@
 //
-//  Dependency+Target.swift
+//  Dependency+FeatureTarget.swift
 //  ProjectDescriptionHelpers
 //
 //  Created by MaraMincho on 4/8/24.
@@ -8,15 +8,18 @@
 import Foundation
 import ProjectDescription
 
+// MARK: - Feature
+
 public enum Feature: String {
-  case writeBoard
   case sent
   case inventory
+  case myPage
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
+
   public var path: Path {
-    return .relativeToRoot("Projects/Feature/\(self.targetName)/")
+    return .relativeToRoot("Projects/Feature/\(targetName)/")
   }
 }
 

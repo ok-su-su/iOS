@@ -21,6 +21,7 @@ public struct HeaderViewFeature {
   @ObservableState
   public struct State: Equatable {
     var property: HeaderViewProperty
+    var enableDismissAction: Bool = false
 
     public init(_ property: HeaderViewProperty) {
       self.property = property
@@ -32,24 +33,38 @@ public struct HeaderViewFeature {
   }
 
   @Dependency(\.dismiss) var dismiss
-  public enum Action {
+  public enum Action: Equatable {
+    case onAppear
     case tappedDismissButton
     case tappedNotificationButton
     case tappedSearchButton
+    case tappedTextButton
+    case tappedDoubleTextButton(DoubleTextButtonAction)
+
+    public enum DoubleTextButtonAction {
+      case leading
+      case trailing
+    }
   }
 
   public var body: some Reducer<State, Action> {
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case .tappedDismissButton:
-        return .run { [enableDismissAction] _ in
-          if enableDismissAction {
-            await dismiss()
-          }
-        }
+        return .none
+
       case .tappedNotificationButton:
         return .none
+
       case .tappedSearchButton:
+        return .none
+
+      case .onAppear:
+        state.enableDismissAction = enableDismissAction
+        return .none
+      case .tappedTextButton:
+        return .none
+      case .tappedDoubleTextButton:
         return .none
       }
     }
@@ -68,6 +83,7 @@ public struct HeaderViewProperty: Equatable, Hashable {
     case depth2Default
     case depthProgressBar(Double)
     case depth2Text(String)
+    case depth2DoubleText(String, String)
   }
 
   public init(title: String = "", type: HeaderViewPropertyType) {
@@ -102,6 +118,8 @@ public struct HeaderViewProperty: Equatable, Hashable {
       .none
     case let .depth2Text(text):
       .text(text)
+    case let .depth2DoubleText(leading, trailing):
+      .doubleText(leading, trailing)
     }
   }
 }
@@ -109,6 +127,7 @@ public struct HeaderViewProperty: Equatable, Hashable {
 // MARK: - HeaderView
 
 public struct HeaderView: View {
+  @Environment(\.dismiss) var dismiss
   @Bindable var store: StoreOf<HeaderViewFeature>
   public var body: some View {
     VStack {
@@ -123,6 +142,10 @@ public struct HeaderView: View {
         .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
       }
     }
+    .onAppear {
+      store.send(.onAppear)
+    }
+    .background(SSColor.gray10)
   }
 
   public init(store: StoreOf<HeaderViewFeature>) {
