@@ -21,7 +21,7 @@ struct MyPageEditView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {}
   }
-  
+
   @ViewBuilder
   private func makeTabBar() -> some View {
     SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))

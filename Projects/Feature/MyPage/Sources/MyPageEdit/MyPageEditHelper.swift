@@ -13,9 +13,9 @@ import Foundation
 struct MyPageEditHelper: Equatable {
   var originalValue: MyPageInformationProperty
   var editedValue: MyPageInformationProperty
-  
-  init(){
-    //TODO: 초기값 지정할 수 있는 로직 생성
+
+  init() {
+    // TODO: 초기값 지정할 수 있는 로직 생성
     originalValue = .init()
     editedValue = .init()
   }

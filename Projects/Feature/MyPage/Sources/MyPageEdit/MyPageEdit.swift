@@ -5,12 +5,16 @@
 //  Created by MaraMincho on 5/15/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import Combine
 import ComposableArchitecture
 import Designsystem
 import Foundation
 
+// MARK: - MyPageEdit
+
 @Reducer
 struct MyPageEdit {
+  var routingPublisher: PassthroughSubject<Routing, Never> = .init()
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -18,7 +22,7 @@ struct MyPageEdit {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var helper: MyPageEditHelper = .init()
     var presentYearModal: Bool = false
-    
+
     init() {}
   }
 
@@ -28,6 +32,7 @@ struct MyPageEdit {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
+    case route(Routing)
   }
 
   enum ViewAction: Equatable {
@@ -46,16 +51,19 @@ struct MyPageEdit {
 
   enum DelegateAction: Equatable {}
 
+  enum Routing: Equatable {
+    case dismiss
+  }
+
   var body: some Reducer<State, Action> {
-    
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
-    
+
     Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
-    
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -68,11 +76,12 @@ struct MyPageEdit {
         return .none
       case .scope(.tabBar):
         return .none
+      case let .route(destination):
+        routingPublisher.send(destination)
+        return .none
       }
     }
   }
 }
 
-extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdit.Action {
-  
-}
+extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdit.Action {}
