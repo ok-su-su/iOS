@@ -70,8 +70,8 @@ struct MyPageInformation: Reducer {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      case .scope(.header(.tappedSearchButton)):
-        return .none
+      case .scope(.header(.tappedTextButton)):
+        return .send(.route(.editProfile))
 
       case .scope(.header):
         return .none
