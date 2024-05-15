@@ -147,103 +147,91 @@ struct InventoryFilterView: View {
           }
         }.padding(.leading, Spacing.leading)
       }
-    }
+    }.frame(height: 72)
   }
 
   @ViewBuilder
   private func makeSelectedFilterContentView() -> some View {
-    HStack {
-      HStack {
-        Grid(alignment: .leading, horizontalSpacing: 8) {
-          GridRow {
-            ForEach(0 ..< store.selectedFilter.count, id: \.self) { index in
-              SSButton(
-                .init(
-                  size: .xsh28,
-                  status: .active,
-                  style: .filled,
-                  color: .orange,
-                  rightIcon: .icon(SSImage.commonDeleteWhite),
-                  buttonText: store.selectedFilter[index].type
-                )
-              ) {
-                store.send(.didTapFilterButton(index))
-              }
-            }
+    Grid(horizontalSpacing: 8) {
+      GridRow {
+        ForEach(0 ..< store.selectedFilter.count, id: \.self) { index in
+          SSButton(
+            .init(
+              size: .xsh28,
+              status: .active,
+              style: .filled,
+              color: .orange,
+              rightIcon: .icon(SSImage.commonDeleteWhite),
+              buttonText: store.selectedFilter[index].type
+            )
+          ) {
+            store.send(.didTapFilterButton(index))
           }
         }
-      }.padding(.leading, Spacing.leading)
-    }
+      }
+    }.padding(.leading, Spacing.leading)
   }
 
-  
+  @ViewBuilder
   private func makeDateFilterContentView() -> some View {
-    Group {
-      if true {
-        GeometryReader { _ in
-          VStack(alignment: .leading) {
-            Text("날짜")
-              .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(SSColor.gray100)
-              .padding(.leading, Spacing.leading)
+    GeometryReader { _ in
+      VStack(alignment: .leading) {
+        Text("날짜")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundColor(SSColor.gray100)
+          .padding(.leading, Spacing.leading)
+        HStack {
+          Rectangle()
+            .fill(SSColor.gray15)
+            .frame(width: 118, height: 36)
+            .overlay {
+              Text(store.previousDate.toString())
+                .modifier(SSTypoModifier(.title_xs))
+                .foregroundColor(SSColor.gray40)
+            }
+            .onTapGesture {
+              store.send(.didShowFilterView)
+            }
 
-            HStack {
-              Rectangle()
-                .fill(SSColor.gray15)
-                .frame(width: 118, height: 36)
-                .overlay {
-                  Text(store.previousDate.toString())
-                    .modifier(SSTypoModifier(.title_xs))
-                    .foregroundColor(SSColor.gray40)
-                }
-                .onTapGesture {
-                  store.send(.didShowFilterView)
-                }
+          Text("부터")
+            .modifier(SSTypoModifier(.title_xxs))
+            .foregroundColor(SSColor.gray100)
 
-              Text("부터")
-                .modifier(SSTypoModifier(.title_xxs))
-                .foregroundColor(SSColor.gray100)
+          Rectangle()
+            .fill(SSColor.gray15)
+            .frame(width: 118, height: 36)
+            .overlay {
+              Text(store.nextDate.toString())
+                .modifier(SSTypoModifier(.title_xs))
+                .foregroundColor(SSColor.gray40)
+            }.sheet(isPresented: $isPresent) {}
 
-              Rectangle()
-                .fill(SSColor.gray15)
-                .frame(width: 118, height: 36)
-                .overlay {
-                  let _ = print(store.nextDate)
-                  Text(store.nextDate.toString())
-                    .modifier(SSTypoModifier(.title_xs))
-                    .foregroundColor(SSColor.gray40)
-                }
-                .sheet(isPresented: $isPresent) {
-                  InventoryModalSheetView(property: .filter)
-                    .presentationDetents([.medium])
-                    .presentationDragIndicator(.visible)
-                }
-
-              Text("까지")
-                .modifier(SSTypoModifier(.title_xxs))
-                .foregroundColor(SSColor.gray100)
-            }.padding(.leading, Spacing.leading)
-          }
+          Text("까지")
+            .modifier(SSTypoModifier(.title_xxs))
+            .foregroundColor(SSColor.gray100)
         }
-      } else {
-        EmptyView()
+        .padding(.leading, Spacing.leading)
       }
     }
-    
-
   }
 
   var body: some View {
     makeHeaderContentView()
-    makeFilterContentView()
-      .onAppear {
-        store.send(.reloadFilter)
+    VStack {
+      makeFilterContentView()
+      Spacer()
+        .frame(height: 48)
+      makeDateFilterContentView()
+      Spacer()
+      VStack(alignment: .leading, spacing: 8) {
+        makeSelectedFilterContentView()
+        makeFilterConfirmContentView()
       }
-      .navigationBarBackButtonHidden()
-
-    makeDateFilterContentView()
-    makeSelectedFilterContentView()
-    makeFilterConfirmContentView()
+    }
+    .onAppear {
+      store.send(.reloadFilter)
+    }
+    .navigationBarBackButtonHidden()
   }
 
   private enum Constants {
