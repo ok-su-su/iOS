@@ -32,15 +32,14 @@ struct MyPageInformation: Reducer {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
+    case route(Routing)
   }
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {
-    case routEditProfile
-  }
+  enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
@@ -71,19 +70,20 @@ struct MyPageInformation: Reducer {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      case .scope(.header(.tappedSearchButton)):
-        return .none
+      case .scope(.header(.tappedTextButton)):
+        return .send(.route(.editProfile))
 
       case .scope(.header):
         return .none
 
       case .scope(.listItems):
         return .none
-      case .inner(.routEditProfile):
-        routingPublisher.send(.editProfile)
-        return .none
 
       case .scope(.tabBar):
+        return .none
+
+      case let .route(destination):
+        routingPublisher.send(destination)
         return .none
       }
     }
