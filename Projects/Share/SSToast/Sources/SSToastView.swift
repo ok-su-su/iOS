@@ -13,7 +13,7 @@ public struct SSToastView: View {
   // MARK: Reducer
 
   @Bindable
-  public var store: StoreOf<SSToast>
+  public var store: StoreOf<SSToastReducer>
 
   // MARK: Content
 
@@ -22,12 +22,12 @@ public struct SSToastView: View {
     switch store.sSToastProperty.type {
     case .none:
       EmptyView()
-      
+
     case let .text(buttonTitle):
       Text(buttonTitle)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.blue40)
-      
+
     case .refresh:
       SSImage
         .commonRefresh
@@ -40,11 +40,12 @@ public struct SSToastView: View {
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray10)
   }
+
   public var body: some View {
     VStack {
       if store.isOnAppear == false {
         EmptyView()
-      }else {
+      } else {
         HStack(alignment: .center, spacing: 16) {
           makeTextItem()
           makeTrailingItem()
@@ -59,12 +60,11 @@ public struct SSToastView: View {
     .onAppear {
       store.send(.onAppear(true))
     }
-  
   }
 
   // MARK: Init
 
-  public init(store: StoreOf<SSToast>) {
+  public init(store: StoreOf<SSToastReducer>) {
     self.store = store
   }
 
@@ -72,5 +72,3 @@ public struct SSToastView: View {
 
   private enum Constants {}
 }
-
-

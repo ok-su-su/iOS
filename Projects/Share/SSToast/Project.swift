@@ -10,7 +10,7 @@ let project = Project.makeModule(
     testingOptions: [.uiTest],
     dependencies: [
       .thirdParty(.ComposableArchitecture),
-      .share(.designsystem)
+      .share(.designsystem),
     ],
     testDependencies: [.thirdParty(.ComposableArchitecture)]
   )

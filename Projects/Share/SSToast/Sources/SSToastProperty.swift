@@ -12,13 +12,13 @@ public struct SSToastProperty: Equatable {
   var toastMessage: String
   var type: TrailingType
   var duration: Double
-  
+
   public enum TrailingType: Equatable {
     case none
     case text(String)
     case refresh
   }
-  
+
   /// ToastMessage에 필요한 Type을 정의합니다.
   /// - Parameters:
   ///   - toastMessage: Toast에 표시할 메시지입니다.
