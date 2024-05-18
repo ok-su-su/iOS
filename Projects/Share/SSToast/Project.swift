@@ -7,7 +7,11 @@ let project = Project.makeModule(
   targets: .custom(
     name: "SSToast",
     product: .framework,
-    testingOptions: [.uiTest]
+    testingOptions: [.uiTest],
+    dependencies: [
+      .thirdParty(.ComposableArchitecture),
+      .share(.designsystem)
+    ],
+    testDependencies: [.thirdParty(.ComposableArchitecture)]
   )
 )
-
