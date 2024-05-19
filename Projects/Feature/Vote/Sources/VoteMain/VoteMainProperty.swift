@@ -13,7 +13,20 @@ import Foundation
 struct VoteMainProperty: Equatable {
   var favoriteVoteItems: [FavoriteVoteItem] = .makeItem()
   var selectedSectionHeaderItem: SectionHeaderItem = .all
+  var selectedBottomFilterType: BottomVoteListFilterItemType = .none
 }
+
+
+
+enum BottomVoteListFilterItemType {
+  /// 아무것도 선택하지 않음
+  case none
+  /// 투표 많은 순
+  case mostVote
+  /// 내 글
+  case myBoard
+}
+
 
 // MARK: - SectionHeaderItem
 

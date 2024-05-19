@@ -20,20 +20,47 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
-      VStack(spacing: 0) {
+      VStack(spacing: 8) {
         makeFavoriteSection()
-        LazyVStack(alignment: .leading, pinnedViews: [.sectionHeaders]) {
+        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
           Section {
-            SSColor
-              .red100
-            SSColor
-              .blue100
+            // Bottom Vote Content
+            makeBottomVoteListFilter()
+
           } header: {
             makeHeaderSection()
           }
         }
       }
     }
+  }
+
+  @ViewBuilder
+  private func makeBottomVoteListFilter() -> some View {
+    HStack(alignment: .center, spacing: 0) {
+      HStack(alignment: .center, spacing: 8) {
+        Circle()
+          .frame(width: Metrics.circleWithAndHeight, height: Metrics.circleWithAndHeight)
+
+        Text(Constants.mostVotesFilterText)
+          .modifier(SSTypoModifier(.title_xxxs))
+      }
+      .foregroundStyle(SSColor.gray40)
+
+      Spacer()
+
+      HStack(spacing: 4) {
+        SSImage
+          .commonUnCheckBox
+
+        Text(Constants.myBoardOnlyFilterText)
+          .modifier(SSTypoModifier(.title_xxxs))
+      }
+      .foregroundStyle(SSColor.gray40)
+    }
+    .padding(.vertical, 8)
+    .padding(.horizontal, 16)
+    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -152,9 +179,12 @@ struct VoteMainView: View {
 
   private enum Metrics {
     static let favoriteItemWidth: CGFloat = 296
+    static let circleWithAndHeight: CGFloat = 6
   }
 
   private enum Constants {
     static let favoriteVoteTitleText: String = "가장 인기 있는 투표"
+    static let mostVotesFilterText = "투표 많은순"
+    static let myBoardOnlyFilterText = "내 글 보기"
   }
 }
