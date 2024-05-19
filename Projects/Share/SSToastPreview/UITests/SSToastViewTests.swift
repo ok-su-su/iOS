@@ -16,24 +16,25 @@ final class SSToastViewTests: XCTestCase {
     continueAfterFailure = true
   }
 
-  override func tearDownWithError() throws {
-    
-  }
+  override func tearDownWithError() throws {}
 
-  func testExample() throws {
+  func test_isShowToastMessage() throws {
     let app = XCUIApplication()
     app.launch()
 
     let toastMessage = app.staticTexts["ToastMessage"]
 
+    // Show short toast message
     let sstoastpreviewIfTapShowToastButton = app.buttons["SSToastPreview if tap show Toast"]
     sstoastpreviewIfTapShowToastButton.tap()
     XCTAssertEqual(toastMessage.label, Constants.shortToastMessage)
 
+    // Show long toast message
     let multilineSstoastpreviewIfTapShowToastButton = app.buttons["Multiline SSToastPreview if tap show Toast"]
     multilineSstoastpreviewIfTapShowToastButton.tap()
     XCTAssertEqual(toastMessage.label, Constants.longToastMessage)
 
+    // close toast message
     multilineSstoastpreviewIfTapShowToastButton.tap()
     let sstoastpreviewIfTapCloseToastButton = app.buttons["SSToastPreview if tap close Toast"]
     sstoastpreviewIfTapCloseToastButton.tap()
