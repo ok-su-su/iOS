@@ -12,6 +12,10 @@ import Vote
 
 @main
 struct ToastPreviewMain: App {
+  init() {
+    Font.registerFont()
+  }
+
   var body: some Scene {
     WindowGroup {
       VoteBuilder()

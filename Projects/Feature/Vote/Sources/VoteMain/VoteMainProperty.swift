@@ -1,0 +1,93 @@
+//
+//  VoteMainProperty.swift
+//  Vote
+//
+//  Created by MaraMincho on 5/19/24.
+//  Copyright © 2024 com.oksusu. All rights reserved.
+//
+
+import Foundation
+
+// MARK: - VoteMainProperty
+
+struct VoteMainProperty: Equatable {
+  var favoriteVoteItems: [FavoriteVoteItem] = .makeItem()
+  var selectedSectionHeaderItem: SectionHeaderItem = .all
+}
+
+// MARK: - SectionHeaderItem
+
+enum SectionHeaderItem: Int, Equatable, Identifiable, CaseIterable {
+  /// 전체
+  case all = 0
+  /// 결혼식
+  case wedding
+  /// 장례식
+  case funeral
+  /// 돌잔치
+  case doljanchi
+  /// 생일 기념일
+  case birthDay
+  /// 자유
+  case freeBoard
+  var id: Int { return rawValue }
+
+  var title: String {
+    switch self {
+    case .all:
+      "전체"
+    case .wedding:
+      "결혼식"
+    case .funeral:
+      "장례식"
+    case .doljanchi:
+      "돌잔치"
+    case .birthDay:
+      "생일기념일"
+    case .freeBoard:
+      "자유"
+    }
+  }
+}
+
+// MARK: - FavoriteVoteItem
+
+struct FavoriteVoteItem: Equatable, Identifiable {
+  var id: Int
+  var title: String
+  var content: String
+  var isActive: Bool
+  var isModified: Bool
+  var participantCount: Int
+}
+
+extension [FavoriteVoteItem] {
+  static func makeItem() -> Self {
+    return (0 ..< 5).map { ind in
+      return .init(id: ind, title: fakeTitle, content: fakeContent, isActive: fakeBool, isModified: fakeBool, participantCount: fakeParticipantCount)
+    }
+  }
+
+  private static var fakeTitle: String {
+    let title = ["결혼식", "장례식", "생일파티", "생일잔치"]
+    return title.randomElement()!
+  }
+
+  private static var fakeContent: String {
+    let content = [
+      "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼?",
+      "지난봄, 어릴 때 만난 친구들 모임인 동창회에서 경조사 문제로 찬반 투표를 실시하였다. ",
+      "혼식에 내는 봉투는 앞면에 '축결혼(祝結婚), 축화혼 ... 우리 학교 투표하면 간식차 온다. 잡코리",
+      " 형제들 측은 “이러한 주주 의결안에 대한 투표는 직원들의 친목 및 경조사를 위한 모임인 사우회의 성격과 맞지 않는 것”으로",
+    ]
+    return content.randomElement()!
+  }
+
+  private static var fakeBool: Bool {
+    return [false, true].randomElement()!
+  }
+
+  private static var fakeParticipantCount: Int {
+    return (1 ... 50000).randomElement()!
+  }
+}
