@@ -15,7 +15,7 @@ let project = Project.makeModule(
       .feature(.sent),
       .feature(.inventory),
       .feature(.myPage),
-      .feature(.vote)
+      .feature(.vote),
     ],
     testDependencies: [],
     infoPlist: [

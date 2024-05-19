@@ -15,4 +15,6 @@ public struct VoteBuilder: View {
       .init(initialState: .init(), reducer: { VoteMain() })
     )
   }
+
+  public init() {}
 }
