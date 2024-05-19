@@ -29,6 +29,7 @@ public struct SSToastReducer {
     case willFinishToast
     case finishToast
     case didFinishToast
+    case showToastMessage(String)
   }
 
   enum CancelID {
@@ -47,7 +48,6 @@ public struct SSToastReducer {
           Just(true)
             .eraseToAnyPublisher()
             .delay(for: .init(state.sSToastProperty.duration), scheduler: RunLoop.main)
-            .map { _ in return }
             .map { _ in return Action.didFinishToast }
         }
         .cancellable(id: CancelID.disappear, cancelInFlight: true)
@@ -62,6 +62,9 @@ public struct SSToastReducer {
       case .finishToast:
         return .send(.didFinishToast)
           .cancellable(id: CancelID.disappear, cancelInFlight: true)
+      case let .showToastMessage(text):
+        state.sSToastProperty.setToastMessage(text)
+        return .send(.onAppear(true))
       }
     }
   }

@@ -7,13 +7,10 @@ let project = Project.makeModule(
   targets: .app(
     name: "SSToastPreview",
     testingOptions: [
-      .uiTest
+      .uiTest,
     ],
     dependencies: [
-      .share(.sSToast)
-    ],
-    testDependencies: [
-      .share(.sSToast)
+      .share(.sSToast),
     ]
   )
 )

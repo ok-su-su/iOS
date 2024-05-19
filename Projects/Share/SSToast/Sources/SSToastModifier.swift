@@ -16,6 +16,7 @@ public struct SSToastModifier: ViewModifier {
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .overlay(alignment: .bottom) {
         SSToastView(store: toastStore)
+          .padding(.horizontal, 24)
       }
   }
 

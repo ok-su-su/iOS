@@ -78,6 +78,7 @@ public extension [Target] {
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())Tests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
+          infoPlist: .default,
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: name)]
@@ -89,9 +90,10 @@ public extension [Target] {
         Target.target(
           name: "\(name)UITests",
           destinations: .iOS,
-          product: .unitTests,
+          product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())UITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
+          infoPlist: .default,
           sources: "UITests/**",
           scripts: [.swiftLint, .swiftFormat],
           dependencies: testDependencies + [.target(name: name)]

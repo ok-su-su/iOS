@@ -39,6 +39,7 @@ public struct SSToastView: View {
     Text(store.state.toastMessage)
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray10)
+      .accessibilityIdentifier("ToastMessage")
   }
 
   public var body: some View {
@@ -56,9 +57,6 @@ public struct SSToastView: View {
         .background(Color(red: 0.2, green: 0.2, blue: 0.2).opacity(0.96))
         .cornerRadius(4)
       }
-    }
-    .onAppear {
-      store.send(.onAppear(true))
     }
   }
 

@@ -29,4 +29,8 @@ public struct SSToastProperty: Equatable {
     self.type = type
     self.duration = duration
   }
+
+  mutating func setToastMessage(_ val: String) {
+    toastMessage = val
+  }
 }

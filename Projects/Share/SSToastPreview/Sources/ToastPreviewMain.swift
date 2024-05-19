@@ -11,5 +11,3 @@ struct ToastPreviewMain: App {
     }
   }
 }
-
-
