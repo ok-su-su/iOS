@@ -5,6 +5,7 @@ import MyPage
 import Sent
 import SSRoot
 import SwiftUI
+import Vote
 
 // MARK: - ContentViewObject
 
@@ -63,7 +64,7 @@ public struct ContentView: View {
       ) {
         InventoryViewFeature()
       })),
-    .vote: AnyView(VoteRootView()),
+    .vote: AnyView(VoteBuilder()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
   ]
