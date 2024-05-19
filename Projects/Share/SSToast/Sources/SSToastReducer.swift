@@ -62,6 +62,7 @@ public struct SSToastReducer {
       case .finishToast:
         return .send(.didFinishToast)
           .cancellable(id: CancelID.disappear, cancelInFlight: true)
+
       case let .showToastMessage(text):
         state.sSToastProperty.setToastMessage(text)
         return .send(.onAppear(true))

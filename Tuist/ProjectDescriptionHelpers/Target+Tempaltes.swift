@@ -171,7 +171,7 @@ public extension [Target] {
         Target.target(
           name: "\(feature.targetName)FeatureUITests",
           destinations: .iOS,
-          product: .unitTests,
+          product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureUITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
@@ -246,7 +246,7 @@ public extension [Target] {
         Target.target(
           name: "\(name)UITests",
           destinations: .iOS,
-          product: .unitTests,
+          product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)FeatureUITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
