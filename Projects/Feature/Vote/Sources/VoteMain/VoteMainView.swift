@@ -38,6 +38,8 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeBottomVoteListFilter() -> some View {
     HStack(alignment: .center, spacing: 0) {
+      let selectedFilter = store.voteMainProperty.selectedBottomFilterType
+      // 투표 많은 순
       HStack(alignment: .center, spacing: 8) {
         Circle()
           .frame(width: Metrics.circleWithAndHeight, height: Metrics.circleWithAndHeight)
@@ -45,19 +47,35 @@ struct VoteMainView: View {
         Text(Constants.mostVotesFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(SSColor.gray40)
+      .foregroundStyle(selectedFilter == .mostVote ? SSColor.orange60 : SSColor.gray40)
+      .onTapGesture {
+        store.send(.view(.tappedBottomVoteFilterType(.mostVote)))
+      }
 
       Spacer()
 
+      // 내 글 보기
       HStack(spacing: 4) {
-        SSImage
-          .commonUnCheckBox
+        if selectedFilter == .myBoard {
+          SSImage.commonMainCheckBox
+            .resizable()
+            .frame(width: 20, height: 20)
+        } else {
+          SSImage
+            .commonUnCheckBox
+            .resizable()
+            .frame(width: 20, height: 20)
+        }
 
         Text(Constants.myBoardOnlyFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(SSColor.gray40)
+      .foregroundStyle(selectedFilter == .myBoard ? SSColor.orange60 : SSColor.gray40)
+      .onTapGesture {
+        store.send(.view(.tappedBottomVoteFilterType(.myBoard)))
+      }
     }
+
     .padding(.vertical, 8)
     .padding(.horizontal, 16)
     .background(SSColor.gray10)

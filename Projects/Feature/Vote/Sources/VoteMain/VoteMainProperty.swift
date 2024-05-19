@@ -14,11 +14,19 @@ struct VoteMainProperty: Equatable {
   var favoriteVoteItems: [FavoriteVoteItem] = .makeItem()
   var selectedSectionHeaderItem: SectionHeaderItem = .all
   var selectedBottomFilterType: BottomVoteListFilterItemType = .none
+
+  mutating func setBottomFilter(_ item: BottomVoteListFilterItemType) {
+    if selectedBottomFilterType == item {
+      selectedBottomFilterType = .none
+      return
+    }
+    selectedBottomFilterType = item
+  }
 }
 
+// MARK: - BottomVoteListFilterItemType
 
-
-enum BottomVoteListFilterItemType {
+enum BottomVoteListFilterItemType: Equatable {
   /// 아무것도 선택하지 않음
   case none
   /// 투표 많은 순
@@ -26,7 +34,6 @@ enum BottomVoteListFilterItemType {
   /// 내 글
   case myBoard
 }
-
 
 // MARK: - SectionHeaderItem
 

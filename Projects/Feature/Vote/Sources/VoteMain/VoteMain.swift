@@ -69,9 +69,9 @@ struct VoteMain {
       case let .view(.tappedSectionItem(item)):
         state.voteMainProperty.selectedSectionHeaderItem = item
         return .none
-        
+
       case let .view(.tappedBottomVoteFilterType(type)):
-        state.voteMainProperty.selectedBottomFilterType = type
+        state.voteMainProperty.setBottomFilter(type)
         return .none
       }
     }
