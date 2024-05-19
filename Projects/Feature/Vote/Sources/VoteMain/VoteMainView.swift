@@ -1,26 +1,25 @@
-// 
+//
 //  VoteMainView.swift
 //  Vote
 //
 //  Created by MaraMincho on 5/19/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 struct VoteMainView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<VoteMain>
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      
-    }
+    VStack(spacing: 0) {}
   }
 
   var body: some View {
@@ -33,16 +32,12 @@ struct VoteMainView: View {
       }
     }
     .navigationBarBackButtonHidden()
-    .onAppear{
+    .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }
