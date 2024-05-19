@@ -26,13 +26,93 @@ struct VoteMainView: View {
           Section {
             // Bottom Vote Content
             makeBottomVoteListFilter()
-
+            makeVoteList()
           } header: {
             makeHeaderSection()
           }
         }
       }
     }
+  }
+
+  @ViewBuilder
+  private func makeVoteList() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      ForEach(store.voteMainProperty.votePreviews) { item in
+        makeVotePreview(item: item)
+      }
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 12)
+    .background(SSColor.gray10)
+  }
+
+  @ViewBuilder
+  private func makeVotePreview(item: VotePreviewProperty) -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      VStack(spacing: 8) {
+        // Top Section
+        VStack(spacing: 4) {
+          HStack {
+            HStack(alignment: .center, spacing: 0) {
+              // SectionTitleText
+              Text("결혼식")
+                .modifier(SSTypoModifier(.title_xxxs))
+                .foregroundStyle(SSColor.orange60)
+
+              SSImage
+                .envelopeForwardArrow
+            }
+
+            Spacer()
+
+            Text("10분 전")
+              .modifier(SSTypoModifier(.text_xxxs))
+              .foregroundStyle(SSColor.gray60)
+          }
+          // Content
+          Text("고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼? 고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼?")
+            .modifier(SSTypoModifier(.text_xxxs))
+            .foregroundStyle(SSColor.gray100)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .multilineTextAlignment(.leading)
+        }
+        .frame(maxWidth: .infinity)
+
+        // Middle Section
+
+        VStack(spacing: 4) {
+          ForEach([3, 5, 10, 20, 30], id: \.self) { item in
+            SSButton(
+              .init(
+                size: .xsh36,
+                status: .active,
+                style: .ghost,
+                color: .black,
+                buttonText: "\(item)만원 ", frame: .init(maxWidth: .infinity, alignment: .leading)
+              )) {}
+              .disabled(true)
+          }
+        }
+        .frame(maxWidth: .infinity)
+
+        // Bottom Section
+        HStack(spacing: 0) {
+          Text("8명 참여") // Participants Count
+            .modifier(SSTypoModifier(.title_xxxs))
+            .foregroundStyle(SSColor.blue60)
+
+          Spacer()
+
+          SSImage
+            .voteWarning
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .padding(16)
+    .background(SSColor.gray15)
+    .cornerRadius(8)
   }
 
   @ViewBuilder
