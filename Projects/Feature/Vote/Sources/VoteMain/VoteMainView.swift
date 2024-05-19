@@ -239,7 +239,6 @@ struct VoteMainView: View {
         SSImage
           .voteSystemLogo
 
-        // Title/xxxs
         Text("\(item.participantCount)명 참여 중")
           .modifier(SSTypoModifier(.title_xxxs))
           .multilineTextAlignment(.center)
