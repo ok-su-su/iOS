@@ -30,7 +30,6 @@ struct ParticipantsAndDateView: View {
         .foregroundStyle(SSColor.gray50)
     }
     .frame(maxWidth: .infinity)
-    
   }
 }
 

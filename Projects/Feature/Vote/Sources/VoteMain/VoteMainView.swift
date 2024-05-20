@@ -293,7 +293,6 @@ struct VoteMainView: View {
         makeFloatingButton()
       }
     }
-    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

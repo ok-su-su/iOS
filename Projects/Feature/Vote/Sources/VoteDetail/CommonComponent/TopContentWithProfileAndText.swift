@@ -30,9 +30,10 @@ struct TopContentWithProfileAndText: View {
       // Content Text
       Text(property.contentText)
         .modifier(SSTypoModifier(.text_xxs))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.leading)
     }
     .frame(maxWidth: .infinity)
-    .padding(0)
   }
 
   private enum Constants {
