@@ -22,6 +22,8 @@ public struct InventoryViewFeature: Equatable {
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+    
+    @Presents var searchInvenotry: InventorySearch.State?
     public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading

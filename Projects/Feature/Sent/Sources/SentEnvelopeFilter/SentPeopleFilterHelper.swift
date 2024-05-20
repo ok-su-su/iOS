@@ -29,7 +29,7 @@ struct SentPeopleFilterHelper: Equatable {
 
   private mutating func setButtonProperties() {
     ssButtonProperties.removeAll()
-    sentPeople.forEach { sentPerson in
+    for sentPerson in sentPeople {
       ssButtonProperties[sentPerson.id] = .init(
         size: .xsh28,
         status: .inactive,
@@ -76,7 +76,7 @@ struct SentPeopleFilterHelper: Equatable {
   }
 
   mutating func reset() {
-    selectedPerson.forEach { person in
+    for person in selectedPerson {
       select(selectedId: person.id)
     }
   }
