@@ -67,7 +67,8 @@ struct OtherVoteDetail {
       case .scope(.header):
         return .none
 
-      case .scope(.voteProgressBar(.element(id: _, action: _))):
+      case let .scope(.voteProgressBar(.element(id: id, action: .tapped))):
+        state.helper.voted(id: id)
         return .none
       }
     }

@@ -17,6 +17,21 @@ struct OtherVoteDetailProperty: Equatable {
     setFakeVoteProgress()
   }
 
+  mutating func voted(id: Int) {
+    let newItems = voteProgress.map { item in
+      var item = item
+      let progressValue = (1 ..< 100).randomElement()!
+      item.showVoteProgressBarProperty = .init(
+        progress: progressValue,
+        showProgress: true,
+        participantsCount: progressValue,
+        isVoted: id == item.id
+      )
+      return item
+    }
+    voteProgress = .init(uniqueElements: newItems)
+  }
+
   mutating func setFakeVoteProgress() {
     let sampleProperty = (0 ..< 5).map { ind in
       VoteProgressBarProperty(id: ind, title: (1 ..< 100).randomElement()!.description + "만원")

@@ -52,7 +52,7 @@ struct VoteProgressBar: View {
       if let progress {
         GeometryReader { proxy in
           SSColor.orange40
-            .frame(width: proxy.size.width * progress.progressPercentage, height: proxy.size.height, alignment: .leading)
+            .frame(width: proxy.size.width * progress.progressPercentage, alignment: .leading)
         }
       }
 
@@ -84,12 +84,15 @@ struct VoteProgressBar: View {
           }
         }
       }
+      .padding(.vertical, 12)
+      .padding(.horizontal, 16)
     }
-    .padding(.vertical, 12)
-    .padding(.horizontal, 16)
-    .frame(maxWidth: .infinity, alignment: .center)
+    .frame(maxWidth: .infinity, maxHeight: 48, alignment: .center)
     .background(SSColor.orange10)
-    .cornerRadius(4)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
+    .onTapGesture {
+      store.send(.tapped)
+    }
   }
 }
 
@@ -114,7 +117,7 @@ struct VoteProgressBarProperty: Equatable, Identifiable {
     }
 
     var progressPercentage: Double {
-      return 100 / Double(progress)
+      return Double(progress) / 100
     }
   }
 
