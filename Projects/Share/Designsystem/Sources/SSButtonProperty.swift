@@ -65,7 +65,7 @@ public struct SSButtonProperty {
     leftIcon: LeftIcon = .none,
     rightIcon: RightIcon = .none,
     buttonText: String,
-    frame: SSButtonFrame = .init()
+    frame: SSButtonFrame? = .init()
   ) {
     self.size = size
     self.status = status
@@ -74,7 +74,7 @@ public struct SSButtonProperty {
     self.leftIcon = leftIcon
     self.rightIcon = rightIcon
     self.buttonText = buttonText
-    self.frame = frame
+    self.frame = frame ?? .init()
   }
 
   public func toggleProperty() -> Self {

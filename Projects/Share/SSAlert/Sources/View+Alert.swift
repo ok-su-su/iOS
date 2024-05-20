@@ -9,7 +9,7 @@
 import SwiftUI
 
 public extension View {
-  func customAlert(
+  func sSAlert(
     isPresented: Binding<Bool>,
     messageAlertProperty: MessageAlertProperty
   ) -> some View {

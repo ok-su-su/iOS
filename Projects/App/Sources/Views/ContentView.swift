@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Designsystem
-import Moya
-import OSLog
+import Inventory
+import MyPage
 import Sent
 import SSAlert
 import SSDataBase
@@ -56,25 +56,25 @@ public struct ContentView: View {
     .envelope: AnyView(SentBuilderView()),
     .inventory: AnyView(InventoryView(
       inventoryStore:
-          .init(
-            initialState: InventoryViewFeature.State(
-              inventorys: [ 
-                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-                .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-              ]
-            )
-          ) {
-            InventoryViewFeature()
-          })),
+      .init(
+        initialState: InventoryViewFeature.State(
+          inventorys: [
+            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
+            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
+          ]
+        )
+      ) {
+        InventoryViewFeature()
+      })),
     .vote: AnyView(VoteRootView()),
-    .mypage: AnyView(MyPageRootView()),
+    .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
   ]
   
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray90
         .ignoresSafeArea()
       VStack(spacing: 0) {
         contentView()

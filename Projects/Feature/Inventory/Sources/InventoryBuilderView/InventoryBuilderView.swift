@@ -10,11 +10,7 @@ import SwiftUI
 
 public struct InventoryBuilderView: View {
   public init() {}
-  
   public var body: some View {
-    HStack {
-      
-    }
+    HStack {}
   }
-  
 }

@@ -47,9 +47,9 @@ public struct InventoryViewFeature: Equatable {
     Scope(state: \.tabbarType, action: /Action.setTabbarView) {
       SSTabBarFeature()
     }
-    
+
     Scope(state: \.floatingState, action: /Action.setFloatingView) {
-        InventoryFloating()
+      InventoryFloating()
     }
     
     Reduce { state, action in
@@ -68,7 +68,7 @@ public struct InventoryViewFeature: Equatable {
         return .none
       }
     }.forEach(\.inventorys, action: \.reloadInvetoryItems) {
-        InventoryBox()
+      InventoryBox()
     }
   }
 }
