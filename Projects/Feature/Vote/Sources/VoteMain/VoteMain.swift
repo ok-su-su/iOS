@@ -31,7 +31,7 @@ struct VoteMain {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedSectionItem(SectionHeaderItem)
+    case tappedSectionItem(VoteSectionHeaderItem)
     case tappedBottomVoteFilterType(BottomVoteListFilterItemType)
     case tappedFloatingButton
   }

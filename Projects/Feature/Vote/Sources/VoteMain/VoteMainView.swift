@@ -164,7 +164,7 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {
-      ForEach(SectionHeaderItem.allCases) { item in
+      ForEach(VoteSectionHeaderItem.allCases) { item in
         let isSelected = store.voteMainProperty.selectedSectionHeaderItem == item
         SSButton(
           .init(

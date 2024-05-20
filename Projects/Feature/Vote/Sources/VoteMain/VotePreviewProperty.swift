@@ -11,7 +11,7 @@ import Foundation
 // MARK: - VotePreviewProperty
 
 struct VotePreviewProperty: Equatable, Identifiable {
-  var section: SectionHeaderItem
+  var section: VoteSectionHeaderItem
   var content: String
   var id: Int
   var createdAt: Date
