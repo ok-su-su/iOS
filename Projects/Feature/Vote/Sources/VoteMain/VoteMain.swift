@@ -33,6 +33,7 @@ struct VoteMain {
     case onAppear(Bool)
     case tappedSectionItem(SectionHeaderItem)
     case tappedBottomVoteFilterType(BottomVoteListFilterItemType)
+    case tappedFloatingButton
   }
 
   enum InnerAction: Equatable {}
@@ -72,6 +73,9 @@ struct VoteMain {
 
       case let .view(.tappedBottomVoteFilterType(type)):
         state.voteMainProperty.setBottomFilter(type)
+        return .none
+
+      case .view(.tappedFloatingButton):
         return .none
       }
     }

@@ -61,7 +61,7 @@ struct VoteMainView: View {
                 .foregroundStyle(SSColor.orange60)
 
               SSImage
-                .envelopeForwardArrow
+                .voteMainRightArrow
             }
 
             Spacer()
@@ -257,14 +257,36 @@ struct VoteMainView: View {
     .cornerRadius(8)
   }
 
+  @ViewBuilder
+  private func makeFloatingButton() -> some View {
+    Button {
+      store.send(.view(.tappedFloatingButton))
+    } label: {
+      ZStack {
+        Circle()
+          .foregroundStyle(SSColor.gray100)
+          .frame(width: 48, height: 48)
+          .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 8)
+
+        SSImage
+          .voteWrite
+      }
+      .padding(.trailing, 20)
+    }
+  }
+
   var body: some View {
     ZStack {
       SSColor
         .gray20
         .ignoresSafeArea()
-      VStack(spacing: 0) {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        makeContentView()
+
+      ZStack(alignment: .bottomTrailing) {
+        VStack(spacing: 0) {
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          makeContentView()
+        }
+        makeFloatingButton()
       }
     }
     .navigationBarBackButtonHidden()
