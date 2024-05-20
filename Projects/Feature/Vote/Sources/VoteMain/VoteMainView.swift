@@ -294,6 +294,9 @@ struct VoteMainView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .fullScreenCover(item: $store.scope(state: \.writeVote, action: \.scope.writeVote)) { store in
+      WriteVoteView(store: store)
+    }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 

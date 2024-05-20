@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 
+// MARK: - VoteMain
+
 @Reducer
 struct VoteMain {
   @ObservableState
@@ -17,6 +19,7 @@ struct VoteMain {
     var header = HeaderViewFeature.State(.init(title: "투표", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .vote)
     var voteMainProperty = VoteMainProperty()
+    @Presents var writeVote: WriteVote.State? = nil
 
     init() {}
   }
@@ -44,6 +47,7 @@ struct VoteMain {
   enum ScopeAction: Equatable {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
+    case writeVote(PresentationAction<WriteVote.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -76,8 +80,21 @@ struct VoteMain {
         return .none
 
       case .view(.tappedFloatingButton):
+        state.writeVote = .init()
+        return .none
+
+      case .scope(.writeVote):
         return .none
       }
+    }
+    .addFeatures0()
+  }
+}
+
+private extension Reducer where State == VoteMain.State, Action == VoteMain.Action {
+  func addFeatures0() -> some ReducerOf<Self> {
+    ifLet(\.$writeVote, action: \.scope.writeVote) {
+      WriteVote()
     }
   }
 }

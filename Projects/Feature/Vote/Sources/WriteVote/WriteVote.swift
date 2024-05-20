@@ -90,7 +90,7 @@ struct WriteVote {
   }
 }
 
-extension Reducer where State == WriteVote.State, Action == WriteVote.Action {
+private extension Reducer where State == WriteVote.State, Action == WriteVote.Action {
   func addFeatures0() -> some ReducerOf<Self> {
     forEach(\.selectableItems, action: \.scope.selectableItems) {
       TextFieldButtonWithTCA()

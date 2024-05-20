@@ -27,7 +27,7 @@ struct WriteVoteProperty: Equatable {
 
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
   var availableSection: [VoteSectionHeaderItem] {
-    return VoteSectionHeaderItem.allCases.filter { $0 == .all }
+    return VoteSectionHeaderItem.allCases.filter { $0 != .all }
   }
 
   var voteTextContentPrompt = "투표 내용을 작성해주세요"
@@ -66,7 +66,7 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
     self.id = id
     title = ""
     isSaved = false
-    isEditing = false
+    isEditing = true
   }
 }
 

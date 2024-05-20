@@ -32,6 +32,7 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
     case tappedCloseButton
     case tappedSavedAndEditButton
     case tappedTextFieldButton
+    case deleteComponent
   }
 
   var body: some Reducer<State, Action> {
@@ -44,10 +45,20 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
         state.item.title = text
         return .none
       case .tappedCloseButton:
-        return .none
+        if !state.item.isSaved {
+          state.item.title = ""
+          return .none
+        }
+        return .send(.deleteComponent)
+
       case .tappedSavedAndEditButton:
+        state.item.isSaved.toggle()
         return .none
+
       case .tappedTextFieldButton:
+        return .none
+
+      case .deleteComponent:
         return .none
       }
     }
@@ -60,7 +71,6 @@ protocol TextFieldButtonWithTCAPropertiable: Identifiable, Equatable {
   var id: Int { get }
   var title: String { get set }
   var isSaved: Bool { get set }
-  var isEditing: Bool { get set }
 
   mutating func deleteTextFieldText()
   mutating func deleteTextField()

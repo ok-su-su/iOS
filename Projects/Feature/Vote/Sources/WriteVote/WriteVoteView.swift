@@ -21,6 +21,8 @@ struct WriteVoteView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       makeHeaderSection()
+      makeWritableVoteContent()
+      Spacer()
     }
   }
 
@@ -59,8 +61,12 @@ struct WriteVoteView: View {
       .foregroundStyle(SSColor.gray100)
 
       // SelectableItems
-      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { store in
-        TextFieldButtonWithTCAView(size: .mh44, prompt: "ss", store: store)
+      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
+        TextFieldButtonWithTCAView(
+          size: .mh52,
+          prompt: store.helper.voteTextContentPrompt,
+          store: scopedStore
+        )
       }
     }
     .padding(0)

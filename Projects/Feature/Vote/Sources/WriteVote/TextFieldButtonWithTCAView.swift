@@ -33,7 +33,7 @@ struct TextFieldButtonWithTCAView<Item: TextFieldButtonWithTCAPropertiable>: Vie
     SSTextFieldButton(
       .init(
         size: size,
-        status: .filled,
+        status: store.item.isSaved ? .saved : .filled,
         style: .ghost,
         color: .gray,
         textFieldText: $store.item.title.sending(\.changedTextfield),
@@ -43,7 +43,11 @@ struct TextFieldButtonWithTCAView<Item: TextFieldButtonWithTCAPropertiable>: Vie
       ),
       onTap: {
         store.send(.tappedTextFieldButton)
-      }, onTapCloseButton: {}, onTapSaveButton: {}
+      }, onTapCloseButton: {
+        store.send(.tappedCloseButton)
+      }, onTapSaveButton: {
+        store.send(.tappedSavedAndEditButton)
+      }
     )
     .onAppear {
       store.send(.onAppear(true))
