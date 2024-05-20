@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import OSLog
 import SwiftUI
 
 struct WriteVoteView: View {
@@ -49,7 +50,7 @@ struct WriteVoteView: View {
 
   @ViewBuilder
   private func makeWritableVoteContent() -> some View {
-    VStack(alignment: .leading, spacing: 24) {
+    VStack(alignment: .center, spacing: 24) {
       // VoteTextContent
       TextField(
         "VoteTextContent",
@@ -59,14 +60,32 @@ struct WriteVoteView: View {
       )
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray100)
-
       // SelectableItems
-      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
-        TextFieldButtonWithTCAView(
-          size: .mh52,
-          prompt: store.helper.voteTextContentPrompt,
-          store: scopedStore
-        )
+      VStack(spacing: 8) {
+        ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
+          TextFieldButtonWithTCAView(
+            size: .mh52,
+            prompt: store.helper.voteTextContentPrompt,
+            store: scopedStore
+          )
+        }
+      }
+
+      // Add Button
+      Button {
+        store.send(.view(.tappedAddSectionItemButton))
+        let cc = store.selectableItems.count
+        os_log("cc = \(cc)")
+        let ccc = store.helper.selectableItem.count
+        os_log("ccc = \(ccc)")
+      } label: {
+        SSImage
+          .commonAdd
+          .resizable()
+          .frame(width: 24, height: 24)
+          .padding(4)
+          .background(SSColor.orange60)
+          .clipShape(Circle())
       }
     }
     .padding(0)

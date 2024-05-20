@@ -14,11 +14,12 @@ import Foundation
 struct WriteVoteProperty: Equatable {
   var selectedSection: VoteSectionHeaderItem = .wedding
   var voteTextContent: String = ""
+  var selectableItemID = 2
   @Shared var selectableItem: IdentifiedArrayOf<TextFieldButtonWithTCAProperty>
 
   mutating func addNewItem() {
-    let nextID = selectableItem.count
-    selectableItem.append(.init(id: nextID))
+    selectableItem.append(.init(id: selectableItemID))
+    selectableItemID += 1
   }
 
   mutating func delete(item: TextFieldButtonWithTCAProperty) {

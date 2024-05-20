@@ -45,7 +45,7 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
         state.item.title = text
         return .none
       case .tappedCloseButton:
-        if !state.item.isSaved {
+        if !state.item.isSaved && state.item.title != "" {
           state.item.title = ""
           return .none
         }
