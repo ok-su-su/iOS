@@ -19,28 +19,39 @@ struct InventoryFilter {
   struct State {
     var isAppear = false
     var inventoryFilter: InventoryType.AllCases = []
-    var selectedFilter: InventoryType.AllCases = []
+    @Presents var sheet: InventoryModalSheet.State?
     var previousDate: Date = .now
-    var showSheetView: Bool = false
     var nextDate: Date = .now
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
-    var ssButtonProperties: [Int: SSButtonPropertyState] = [:]
     var ssSelectedButtonProperties: [Int: SSButtonPropertyState] = [:]
+    @Shared var startDate: Date?
+    @Shared var endDate: Date?
+    @Shared var selectedFilter: InventoryType.AllCases
+    @Shared var ssButtonProperties: [Int: SSButtonPropertyState]
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
     case reloadFilter
     case reset
+    case sheet(PresentationAction<InventoryModalSheet.Action>)
     case header(HeaderViewFeature.Action)
     case didTapFilterButton(Int)
-    case didShowFilterView
+    case didShowStartDateFilterView
+    case didShowEndDateFilterView
     case didTapSelectedFilterButton(Int)
+    case didTapConfirmButton
   }
+
+  @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
+    }
+
+    .ifLet(\.$sheet, action: \.sheet) {
+      InventoryModalSheet()
     }
 
     Reduce { state, action in
@@ -91,9 +102,29 @@ struct InventoryFilter {
 
         return .none
 
-      case .didShowFilterView:
-        state.showSheetView = true
+      case .didShowStartDateFilterView:
+        state.sheet = InventoryModalSheet.State(startDate: state.$startDate, endDate: Shared(nil), selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
         return .none
+      case .didShowEndDateFilterView:
+        state.sheet = InventoryModalSheet.State(startDate: Shared(nil), endDate: state.$endDate, selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
+        return .none
+      case .reset:
+        state.startDate = .now
+        state.endDate = .now
+
+        for resetInventory in state.selectedFilter {
+          state.ssButtonProperties[resetInventory.rawValue] = .init(
+            size: .xsh28,
+            status: .inactive,
+            style: .lined,
+            color: .black,
+            buttonText: resetInventory.type
+          )
+        }
+        state.selectedFilter.removeAll()
+        return .none
+      case .didTapConfirmButton:
+        return .run { _ in await dismiss() }
       default:
         return .none
       }

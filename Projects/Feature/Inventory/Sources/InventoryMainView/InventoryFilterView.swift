@@ -11,91 +11,11 @@ import SwiftUI
 
 import ComposableArchitecture
 
-// MARK: - SSModalShetType
-
-enum SSModalShetType {
-  case filter
-  case sort
-}
-
-// MARK: - SortTypes
-
-enum SortTypes: String, CaseIterable {
-  case latest = "최신순"
-  case oldest = "오래된순"
-  case highestPrice = "금액 높은 순"
-  case lowestPrice = "금액 낮은 순"
-}
-
-// MARK: - InventoryModalSheet
-
-@Reducer
-struct InventoryModalSheet {
-  @ObservableState
-  struct State {
-    var filterItem: SortTypes.AllCases = []
-    var selectedDate: Date = .now
-
-    init(filterItem: SortTypes.AllCases, selectedDate: Date) {
-      self.filterItem = filterItem
-      self.selectedDate = selectedDate
-    }
-  }
-
-  enum Action: Equatable {
-    case reload
-  }
-
-  var body: some Reducer<State, Action> {
-    Reduce { _, action in
-      switch action {
-      case .reload:
-
-        return .none
-      }
-    }
-  }
-}
-
-// MARK: - InventoryModalSheetView
-
-struct InventoryModalSheetView: View {
-  @State private var selectedDate = Date.now
-  let property: SSModalShetType
-
-  init(property: SSModalShetType) {
-    self.property = property
-  }
-
-  @ViewBuilder
-  private func makeContentView() -> some View {
-    GeometryReader { geometry in
-      VStack(alignment: .leading) {
-        switch property {
-        case .filter:
-          DatePicker("", selection: $selectedDate, displayedComponents: [.date])
-            .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
-            .datePickerStyle(.wheel)
-            .colorMultiply(SSColor.gray100)
-            .font(.custom(.title_xxs))
-        default:
-          ZStack {}
-        }
-      }
-    }
-  }
-
-  var body: some View {
-    makeContentView()
-      .frame(maxWidth: .infinity)
-  }
-}
-
 // MARK: - InventoryFilterView
 
 struct InventoryFilterView: View {
   @Bindable var store: StoreOf<InventoryFilter>
-  @State private var isPresent: Bool = true
+
   init(store: StoreOf<InventoryFilter>) {
     self.store = store
   }
@@ -113,15 +33,19 @@ struct InventoryFilterView: View {
     HStack {
       ZStack {
         SSImage.commonRefresh
-      }.onTapGesture {}
-        .padding(10)
-        .overlay {
-          RoundedRectangle(cornerRadius: 100)
-            .inset(by: 0.5)
-            .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1)
-        }
-      SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {}
-        .allowsHitTesting(false)
+      }.onTapGesture {
+        store.send(.reset)
+      }
+      .padding(10)
+      .overlay {
+        RoundedRectangle(cornerRadius: 100)
+          .inset(by: 0.5)
+          .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1)
+      }
+
+      SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
+        store.send(.didTapConfirmButton)
+      }
     }.padding([.leading, .trailing], 16)
   }
 
@@ -185,12 +109,12 @@ struct InventoryFilterView: View {
             .fill(SSColor.gray15)
             .frame(width: 118, height: 36)
             .overlay {
-              Text(store.previousDate.toString())
+              Text(store.startDate?.toString() ?? "")
                 .modifier(SSTypoModifier(.title_xs))
-                .foregroundColor(SSColor.gray40)
+                .foregroundColor(store.startDate == .now ? SSColor.gray100 : SSColor.gray40)
             }
             .onTapGesture {
-              store.send(.didShowFilterView)
+              store.send(.didShowStartDateFilterView)
             }
 
           Text("부터")
@@ -201,10 +125,13 @@ struct InventoryFilterView: View {
             .fill(SSColor.gray15)
             .frame(width: 118, height: 36)
             .overlay {
-              Text(store.nextDate.toString())
+              Text(store.endDate?.toString() ?? "")
                 .modifier(SSTypoModifier(.title_xs))
                 .foregroundColor(SSColor.gray40)
-            }.sheet(isPresented: $isPresent) {}
+            }
+            .onTapGesture {
+              store.send(.didShowEndDateFilterView)
+            }
 
           Text("까지")
             .modifier(SSTypoModifier(.title_xxs))
@@ -232,6 +159,11 @@ struct InventoryFilterView: View {
       store.send(.reloadFilter)
     }
     .navigationBarBackButtonHidden()
+    .sheet(item: $store.scope(state: \.sheet, action: \.sheet)) { store in
+      InventoryModalSheetView(store: store)
+        .presentationDetents([.height(370), .medium])
+        .presentationDragIndicator(.automatic)
+    }
   }
 
   private enum Constants {

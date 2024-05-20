@@ -8,8 +8,9 @@
 
 import ComposableArchitecture
 import Designsystem
-import OSLog
 import SwiftUI
+
+// MARK: - InventoryView
 
 public struct InventoryView: View {
   @Bindable var inventoryStore: StoreOf<InventoryViewFeature>
@@ -75,12 +76,26 @@ public struct InventoryView: View {
   public func makeFilterView() -> some View {
     GeometryReader { geometry in
       HStack(spacing: InventoryFilterConstants.filterSpacing) {
-        SSButton(InventoryFilterConstants.latestButtonProperty) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          buttonText: inventoryStore.selectedSortItem.rawValue
+        )) {
           inventoryStore.send(.didTapLatestButton)
         }
 
         ZStack {
-          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(.init())) {
+          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
+            .init(
+              startDate: Shared(.now),
+              endDate: Shared(.now),
+              selectedFilter: Shared([]),
+              ssButtonProperties: Shared([:])
+            )
+          )
+          ) {
             SSButton(InventoryFilterConstants.filterButtonProperty) {
               inventoryStore.send(.didTapFilterButton)
             }
@@ -116,11 +131,12 @@ public struct InventoryView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
-<<<<<<< HEAD:Projects/Feature/Inventory/Sources/InventoryMainView/InventoryView.swift
     }.navigationBarBackButtonHidden()
-=======
-    }
->>>>>>> 1e16bea909ceb558852ba5feeae8229a26a8da3b:Projects/App/Sources/Views/InventoryView.swift
+      .sheet(item: $inventoryStore.scope(state: \.sortSheet, action: \.sortSheet)) { store in
+        InventorySortSheetView(store: store)
+          .presentationDetents([.height(240), .medium, .large])
+          .presentationDragIndicator(.automatic)
+      }
   }
 
   private enum InventoryFilterConstants {

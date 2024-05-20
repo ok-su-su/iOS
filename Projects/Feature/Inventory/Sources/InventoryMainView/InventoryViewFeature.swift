@@ -22,13 +22,22 @@ public struct InventoryViewFeature {
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+
+    @Presents var sortSheet: InventorySortSheet.State?
+    @Shared var selectedSortItem: SortTypes
+
+    init() {
+      _selectedSortItem = Shared(.latest)
+    }
   }
 
+  @CasePathable
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
+    case sortSheet(PresentationAction<InventorySortSheet.Action>)
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -47,12 +56,17 @@ public struct InventoryViewFeature {
       InventoryFloating()
     }
 
+    .ifLet(\.$sortSheet, action: \.sortSheet) {
+      InventorySortSheet()
+    }
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
         state.isLoading.toggle()
         return .none
       case .didTapLatestButton:
+        state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
         return .none
       case .didTapFilterButton:
         return .none
