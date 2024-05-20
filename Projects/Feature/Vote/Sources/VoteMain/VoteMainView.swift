@@ -113,6 +113,9 @@ struct VoteMainView: View {
     .padding(16)
     .background(SSColor.gray15)
     .cornerRadius(8)
+    .onTapGesture {
+      store.send(.view(.tappedVoteItem))
+    }
   }
 
   @ViewBuilder
@@ -296,6 +299,9 @@ struct VoteMainView: View {
     }
     .fullScreenCover(item: $store.scope(state: \.writeVote, action: \.scope.writeVote)) { store in
       WriteVoteView(store: store)
+    }
+    .fullScreenCover(item: $store.scope(state: \.otherVoteDetail, action: \.scope.otherVoteDetail)) { store in
+      OtherVoteDetailView(store: store)
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }

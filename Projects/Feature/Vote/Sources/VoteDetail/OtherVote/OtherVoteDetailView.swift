@@ -19,7 +19,20 @@ struct OtherVoteDetailView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {}
+    VStack(spacing: 0) {
+      Spacer()
+        .frame(height: 16)
+
+      VStack(alignment: .center, spacing: 24) {
+        TopContentWithProfileAndText(property: .init(userImage: nil, userName: nil, userText: "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼?"))
+
+        VStack(alignment: .center, spacing: 16) {
+          ParticipantsAndDateView(property: .init())
+        }
+      }
+
+      Spacer()
+    }
   }
 
   var body: some View {
@@ -28,6 +41,7 @@ struct OtherVoteDetailView: View {
         .gray15
         .ignoresSafeArea()
       VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
     }

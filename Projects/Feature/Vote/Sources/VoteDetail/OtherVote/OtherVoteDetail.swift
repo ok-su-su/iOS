@@ -36,17 +36,23 @@ struct OtherVoteDetail {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+  }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.scope.header) {
+      HeaderViewFeature()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case .scope(.header):
         return .none
       }
     }
