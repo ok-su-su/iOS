@@ -59,17 +59,12 @@ struct WriteVoteView: View {
       .foregroundStyle(SSColor.gray100)
 
       // SelectableItems
+      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { store in
+        TextFieldButtonWithTCAView(size: .mh44, prompt: "ss", store: store)
+      }
     }
     .padding(0)
   }
-
-  @ViewBuilder
-//  private func makeSelectableItems(_: WriteVoteSelectableItem) -> some View {
-  ////    TextFieldButtonWithTCAView(
-  ////      size: .mh44,
-  ////      prompt: "dd",
-  ////      store: Store<TextFieldButtonWithTCA<TextFieldButtonWithTCAPropertiable>.State, TextFieldButtonWithTCA<TextFieldButtonWithTCAPropertiable>.Action>())
-//  }
 
   var body: some View {
     ZStack {

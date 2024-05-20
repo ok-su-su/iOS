@@ -37,10 +37,6 @@ struct WriteVoteProperty: Equatable {
   }
 }
 
-extension [TextFieldButtonWithTCAProperty] {
-  static func `default`() -> Self { return (0 ..< 2).map { .init(id: $0) } }
-}
-
 // MARK: - TextFieldButtonWithTCAProperty
 
 struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
@@ -72,4 +68,8 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
     isSaved = false
     isEditing = false
   }
+}
+
+extension [TextFieldButtonWithTCAProperty] {
+  static func `default`() -> Self { return (0 ..< 2).map { .init(id: $0) } }
 }

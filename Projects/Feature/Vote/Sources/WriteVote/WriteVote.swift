@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 
+// MARK: - WriteVote
+
 @Reducer
 struct WriteVote {
   @ObservableState
@@ -16,9 +18,9 @@ struct WriteVote {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Text("등록")))
     var helper: WriteVoteProperty = .init()
-    var selectableItemsState: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
+    var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
     init() {
-      selectableItemsState = .init(uniqueElements: [])
+      selectableItems = .init(uniqueElements: [])
       setSelectableItemsState()
     }
 
@@ -27,7 +29,7 @@ struct WriteVote {
         guard let sharedProperty = helper.$selectableItem[id: property.id] else {
           return
         }
-        selectableItemsState.append(.init(sharedItem: sharedProperty))
+        selectableItems.append(.init(sharedItem: sharedProperty))
       }
     }
   }
@@ -54,6 +56,7 @@ struct WriteVote {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case selectableItems(IdentifiedActionOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>>)
   }
 
   enum DelegateAction: Equatable {}
@@ -78,7 +81,19 @@ struct WriteVote {
       case let .view(.editedVoteTextContent(text)):
         state.helper.voteTextContent = text
         return .none
+
+      case .scope(.selectableItems(.element(id: _, action: _))):
+        return .none
       }
+    }
+    .addFeatures0()
+  }
+}
+
+extension Reducer where State == WriteVote.State, Action == WriteVote.Action {
+  func addFeatures0() -> some ReducerOf<Self> {
+    forEach(\.selectableItems, action: \.scope.selectableItems) {
+      TextFieldButtonWithTCA()
     }
   }
 }
