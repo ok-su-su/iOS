@@ -6,16 +6,15 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
-import Designsystem
 import ComposableArchitecture
+import Designsystem
+import Foundation
 import OSLog
 
 @Reducer
 public struct InventoryViewFeature: Equatable {
-  
   public init() {}
-  
+
   @ObservableState
   public struct State {
     var inventorys: IdentifiedArrayOf<InventoryBox.State>
@@ -23,12 +22,14 @@ public struct InventoryViewFeature: Equatable {
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+    
+    @Presents var searchInvenotry: InventorySearch.State?
     public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading
     }
   }
-  
+
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
@@ -38,12 +39,12 @@ public struct InventoryViewFeature: Equatable {
     case didTapFilterButton
     case didTapAddInventoryButton
   }
-  
+
   public var body: some Reducer<State, Action> {
     Scope(state: \.headerType, action: /Action.setHeaderView) {
       HeaderViewFeature()
     }
-    
+
     Scope(state: \.tabbarType, action: /Action.setTabbarView) {
       SSTabBarFeature()
     }
@@ -51,7 +52,7 @@ public struct InventoryViewFeature: Equatable {
     Scope(state: \.floatingState, action: /Action.setFloatingView) {
       InventoryFloating()
     }
-    
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:

@@ -202,26 +202,26 @@ public extension SSTextFieldButtonProperty {
   var backgroundColor: Color {
     let (_, secondaryColor) =
       switch status {
-    case .filled:
-      color.filled
-    case .saved:
-      color.saved
-    case .unfocused:
-      color.unfocused
-    }
+      case .filled:
+        color.filled
+      case .saved:
+        color.saved
+      case .unfocused:
+        color.unfocused
+      }
     return secondaryColor
   }
 
   var textColor: Color {
     let (targetColor, _) =
       switch status {
-    case .filled:
-      color.filled
-    case .saved:
-      color.saved
-    case .unfocused:
-      color.unfocused
-    }
+      case .filled:
+        color.filled
+      case .saved:
+        color.saved
+      case .unfocused:
+        color.unfocused
+      }
     return targetColor
   }
 

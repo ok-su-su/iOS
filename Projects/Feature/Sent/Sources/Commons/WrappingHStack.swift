@@ -24,7 +24,7 @@ struct WrappingHStack: Layout {
 
     var rowWidths = [CGFloat]()
     var currentRowWidth: CGFloat = 0
-    subviews.forEach { subview in
+    for subview in subviews {
       if currentRowWidth + horizontalSpacing + subview.sizeThatFits(proposal).width >= proposal.width ?? 0 {
         rowWidths.append(currentRowWidth)
         currentRowWidth = subview.sizeThatFits(proposal).width
@@ -43,7 +43,7 @@ struct WrappingHStack: Layout {
     guard !subviews.isEmpty else { return }
     var x = bounds.minX
     var y = height / 2 + bounds.minY
-    subviews.forEach { subview in
+    for subview in subviews {
       x += subview.dimensions(in: proposal).width / 2
       if x + subview.dimensions(in: proposal).width / 2 > bounds.maxX {
         x = bounds.minX + subview.dimensions(in: proposal).width / 2

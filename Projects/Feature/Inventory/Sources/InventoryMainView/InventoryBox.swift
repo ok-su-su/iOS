@@ -26,6 +26,7 @@ public struct InventoryBox {
       self.inventoryCount = inventoryCount
     }
   }
+
   public enum Action {}
 
   public var body: some Reducer<State, Action> {
