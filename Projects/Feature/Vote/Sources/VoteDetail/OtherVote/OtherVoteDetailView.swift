@@ -29,8 +29,12 @@ struct OtherVoteDetailView: View {
 
         VStack(alignment: .center, spacing: 16) {
           ParticipantsAndDateView(property: .init())
-            .padding(.horizontal, 16)
+
+          ForEach(store.scope(state: \.voteProgressBar, action: \.scope.voteProgressBar)) { store in
+            VoteProgressBar(store: store)
+          }
         }
+        .padding(.horizontal, 16)
       }
 
       Spacer()

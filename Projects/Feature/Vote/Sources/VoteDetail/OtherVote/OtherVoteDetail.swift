@@ -9,14 +9,25 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 
+// MARK: - OtherVoteDetail
+
 @Reducer
 struct OtherVoteDetail {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
+    var helper: OtherVoteDetailProperty = .init()
+    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
 
-    init() {}
+    init() {
+      helper.voteProgress.forEach { property in
+        guard let sharedProperty = helper.$voteProgress[id: property.id] else {
+          return
+        }
+        voteProgressBar.append(.init(property: sharedProperty))
+      }
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -38,6 +49,7 @@ struct OtherVoteDetail {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case voteProgressBar(IdentifiedActionOf<VoteProgressBarReducer>)
   }
 
   enum DelegateAction: Equatable {}
@@ -54,7 +66,19 @@ struct OtherVoteDetail {
         return .none
       case .scope(.header):
         return .none
+
+      case .scope(.voteProgressBar(.element(id: _, action: _))):
+        return .none
       }
+    }
+    .addFeatures()
+  }
+}
+
+extension Reducer where State == OtherVoteDetail.State, Action == OtherVoteDetail.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    forEach(\.voteProgressBar, action: \.scope.voteProgressBar) {
+      VoteProgressBarReducer()
     }
   }
 }
