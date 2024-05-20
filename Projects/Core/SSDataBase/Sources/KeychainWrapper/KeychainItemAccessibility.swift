@@ -13,25 +13,11 @@ protocol KeychainAttrRepresentable {
 
 // MARK: - KeychainItemAccessibility
 public enum KeychainItemAccessibility {
-  @available(iOS 4, *)
+
   case afterFirstUnlock
-  
-  @available(iOS 4, *)
   case afterFirstUnlockThisDeviceOnly
-  
-  @available(*, deprecated, renamed: "afterFirstUnlock")
-  case always
-  
-  @available(*, deprecated, renamed: "afterFirstUnlockThisDeviceOnly")
-  case alwaysThisDeviceOnly
-  
-  @available(iOS 4, *)
   case whenPasscodeSetThisDeviceOnly
-  
-  @available(iOS 4, *)
   case whenUnlocked
-  
-  @available(iOS 4, *)
   case whenUnlockedThisDeviceOnly
   
   static func accessibilityForAttributeValue(_ keychainAttrValue: CFString) -> KeychainItemAccessibility? {
@@ -49,8 +35,6 @@ private let keychainItemAccessibilityLookup: [KeychainItemAccessibility: CFStrin
   var lookup: [KeychainItemAccessibility: CFString] = [
     .afterFirstUnlock: kSecAttrAccessibleAfterFirstUnlock,
     .afterFirstUnlockThisDeviceOnly: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-    .always: kSecAttrAccessibleAlways,
-    .alwaysThisDeviceOnly: kSecAttrAccessibleAlwaysThisDeviceOnly,
     .whenPasscodeSetThisDeviceOnly: kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
     .whenUnlocked: kSecAttrAccessibleWhenUnlocked,
     .whenUnlockedThisDeviceOnly: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
