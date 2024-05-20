@@ -161,6 +161,7 @@ struct VoteMainView: View {
     .background(SSColor.gray10)
   }
 
+  /// Sticky Header
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {

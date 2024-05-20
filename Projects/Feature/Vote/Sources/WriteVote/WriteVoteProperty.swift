@@ -6,50 +6,70 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import Foundation
+
+// MARK: - WriteVoteProperty
 
 struct WriteVoteProperty: Equatable {
   var selectedSection: VoteSectionHeaderItem = .wedding
   var voteTextContent: String = ""
-  var selectableItem: [WriteVoteSelectableItem] = .default()
-  
+  @Shared var selectableItem: IdentifiedArrayOf<TextFieldButtonWithTCAProperty>
+
   mutating func addNewItem() {
     let nextID = selectableItem.count
     selectableItem.append(.init(id: nextID))
   }
-  
-  mutating func delete(item: WriteVoteSelectableItem) {
-    selectableItem = selectableItem.filter{$0 != item}
+
+  mutating func delete(item: TextFieldButtonWithTCAProperty) {
+    selectableItem = selectableItem.filter { $0 != item }
   }
-  
+
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
   var availableSection: [VoteSectionHeaderItem] {
-    return VoteSectionHeaderItem.allCases.filter{$0 == .all}
+    return VoteSectionHeaderItem.allCases.filter { $0 == .all }
+  }
+
+  var voteTextContentPrompt = "투표 내용을 작성해주세요"
+  var selectableItemPrompt = "선택지를 입력하세요"
+  init() {
+    _selectableItem = .init(.init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
   }
 }
 
-
-extension [WriteVoteSelectableItem] {
-  static func `default`() -> Self { return (0..<2).map{.init(id: $0)} }
+extension [TextFieldButtonWithTCAProperty] {
+  static func `default`() -> Self { return (0 ..< 2).map { .init(id: $0) } }
 }
 
-struct WriteVoteSelectableItem: VoteSelectableItem, Identifiable, Equatable {
-  var content: String = ""
-  var isEdited: Bool = false
-  var isSaved: Bool = false
+// MARK: - TextFieldButtonWithTCAProperty
+
+struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
   var id: Int
-  
-  init(id: Int, content: String, isEdited: Bool, isSaved: Bool) {
-    self.content = content
-    self.isEdited = isEdited
-    self.isSaved = isSaved
-    self.id = id
+  var title: String
+  var isSaved: Bool
+  var isEditing: Bool
+
+  mutating func deleteTextFieldText() {}
+
+  mutating func deleteTextField() {}
+
+  mutating func savedTextField() {}
+
+  mutating func editTextField(text: String) {
+    title = text
   }
+
+  init(id: Int, title: String, isSaved: Bool, isEditing: Bool) {
+    self.id = id
+    self.title = title
+    self.isSaved = isSaved
+    self.isEditing = isEditing
+  }
+
   init(id: Int) {
     self.id = id
+    title = ""
+    isSaved = false
+    isEditing = false
   }
-}
-
-protocol VoteSelectableItem: Equatable {
-  var content: String {get set}
 }
