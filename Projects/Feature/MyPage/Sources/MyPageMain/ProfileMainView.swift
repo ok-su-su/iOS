@@ -109,9 +109,13 @@ struct MyPageMainView: View {
           .envelopeForwardArrow
       }
     }
+    .padding(.horizontal, Metrics.horizontalSpacing)
     .padding(.vertical, Metrics.makeMyNameAndMyInformationButtonViewVerticalSpacing)
     .frame(maxWidth: .infinity)
     .background(SSColor.gray10)
+    .onTapGesture {
+      store.send(.route(.myPageInformation))
+    }
   }
 
   @ViewBuilder
@@ -146,6 +150,7 @@ struct MyPageMainView: View {
 
   private enum Metrics {
     static let makeMyNameAndMyInformationButtonViewVerticalSpacing: CGFloat = 16
+    static let horizontalSpacing: CGFloat = 16
   }
 
   private enum Constants {
