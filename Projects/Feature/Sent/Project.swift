@@ -11,6 +11,7 @@ let project = Project.makeModule(
       .core(.coreLayers),
       .share(.designsystem),
       .share(.sSAlert),
+      .share(.sSToast),
     ],
     testDependencies: []
   )
