@@ -62,6 +62,8 @@ struct WriteVoteView: View {
       .frame(maxWidth: .infinity, minHeight: 24)
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray100)
+      .padding(.horizontal, 16)
+
       // SelectableItems
       VStack(spacing: 8) {
         ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
@@ -72,6 +74,7 @@ struct WriteVoteView: View {
           )
         }
       }
+      .padding(.horizontal, 16)
 
       // Add Button
       Button {
