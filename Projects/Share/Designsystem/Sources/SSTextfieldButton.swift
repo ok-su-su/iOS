@@ -49,7 +49,6 @@ public struct SSTextFieldButton: View {
         .modifier(SSTypoModifier(property.font))
         .foregroundStyle(property.textColor)
         .background(.clear)
-        .frame(maxWidth: .infinity, alignment: .center)
         .disabled(property.disableTextField)
 
         // 에디팅 모드 일 때
@@ -117,7 +116,7 @@ public struct SSTextFieldButton: View {
         minWidth: property.frame.minWidth,
         idealWidth: property.frame.idealWidth,
         maxWidth: property.frame.maxWidth,
-        minHeight: property.frame.minHeight,
+        minHeight: property.frame.minHeight ?? property.minimumHeight,
         idealHeight: property.frame.idealHeight,
         maxHeight: property.frame.maxHeight,
         alignment: property.frame.alignment

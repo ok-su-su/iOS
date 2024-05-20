@@ -20,10 +20,11 @@ struct WriteVoteView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      makeHeaderSection()
-      makeWritableVoteContent()
-      Spacer()
+    ScrollView(.vertical) {
+      VStack(spacing: 0) {
+        makeHeaderSection()
+        makeWritableVoteContent()
+      }
     }
   }
 
@@ -58,6 +59,7 @@ struct WriteVoteView: View {
         prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40),
         axis: .vertical
       )
+      .frame(maxWidth: .infinity, minHeight: 24)
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray100)
       // SelectableItems
@@ -74,10 +76,6 @@ struct WriteVoteView: View {
       // Add Button
       Button {
         store.send(.view(.tappedAddSectionItemButton))
-        let cc = store.selectableItems.count
-        os_log("cc = \(cc)")
-        let ccc = store.helper.selectableItem.count
-        os_log("ccc = \(ccc)")
       } label: {
         SSImage
           .commonAdd

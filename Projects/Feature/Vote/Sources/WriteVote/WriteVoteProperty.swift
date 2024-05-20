@@ -14,10 +14,13 @@ import Foundation
 struct WriteVoteProperty: Equatable {
   var selectedSection: VoteSectionHeaderItem = .wedding
   var voteTextContent: String = ""
-  var selectableItemID = 2
+  var selectableItemID: Int = 0
   @Shared var selectableItem: IdentifiedArrayOf<TextFieldButtonWithTCAProperty>
 
   mutating func addNewItem() {
+    guard selectableItem.count < 5 else {
+      return
+    }
     selectableItem.append(.init(id: selectableItemID))
     selectableItemID += 1
   }
@@ -35,6 +38,7 @@ struct WriteVoteProperty: Equatable {
   var selectableItemPrompt = "선택지를 입력하세요"
   init() {
     _selectableItem = .init(.init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
+    selectableItemID = selectableItem.count
   }
 }
 
