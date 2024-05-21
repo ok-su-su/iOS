@@ -5,6 +5,7 @@ import MyPage
 import Sent
 import SSRoot
 import SwiftUI
+import Vote
 
 // MARK: - ContentViewObject
 

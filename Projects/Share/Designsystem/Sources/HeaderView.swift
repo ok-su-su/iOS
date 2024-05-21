@@ -73,13 +73,33 @@ public struct HeaderViewFeature {
 
 // MARK: - HeaderViewProperty
 
-public struct HeaderViewProperty: Equatable, Hashable {
+public struct HeaderViewProperty: Equatable {
   let title: String
   let type: HeaderViewPropertyType
 
-  public enum HeaderViewPropertyType: Equatable, Hashable {
+  public enum IconType: Equatable {
+    case `default`
+    case singleSearch
+    case reportIcon
+
+    var image: Image {
+      switch self {
+      case .default:
+        SSImage.commonSearch
+      case .singleSearch:
+        SSImage.commonSearch
+      case .reportIcon:
+        SSImage.voteWarning
+      }
+    }
+  }
+
+  public enum HeaderViewPropertyType: Equatable {
     case defaultType
+
+    @available(*, deprecated, renamed: "depth2CustomIcon(IconType:)", message: "depth2Icon was deprecated. use depth2CustomIcon plz ")
     case depth2Icon
+    case depth2CustomIcon(IconType)
     case depth2Default
     case depthProgressBar(Double)
     case depth2Text(String)
@@ -109,10 +129,10 @@ public struct HeaderViewProperty: Equatable, Hashable {
 
   var trailingItem: HeaderView.trailingItemTypes {
     return switch type {
-    case .defaultType,
-         .depth2Icon
-         :
-      .icon
+    case .defaultType:
+      .icon(SSImage.commonSearch)
+    case let .depth2CustomIcon(icon):
+      .icon(icon.image)
     case .depth2Default,
          .depthProgressBar:
       .none
@@ -120,6 +140,8 @@ public struct HeaderViewProperty: Equatable, Hashable {
       .text(text)
     case let .depth2DoubleText(leading, trailing):
       .doubleText(leading, trailing)
+    case .depth2Icon:
+      .icon(SSImage.commonSearch)
     }
   }
 }
