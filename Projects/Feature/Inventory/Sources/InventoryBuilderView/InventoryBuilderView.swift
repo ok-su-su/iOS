@@ -12,6 +12,8 @@ public struct InventoryBuilderView: View {
   public init() {}
 
   public var body: some View {
-    HStack {}
+    InventoryRouterView(store: .init(initialState: InventoryRouter.State(), reducer: {
+      InventoryRouter()
+    }))
   }
 }

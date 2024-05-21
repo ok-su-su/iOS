@@ -13,9 +13,24 @@ import Designsystem
 
 // MARK: - InventoryType
 
-public enum InventoryType: String {
-  case Wedding = "결혼식"
-  case Funeral = "장례식"
+public enum InventoryType: Int, CaseIterable {
+  case Wedding = 0
+  case FirstBirthdayDay = 1
+  case Funeral = 2
+  case Birthday = 3
+
+  public var type: String {
+    switch self {
+    case .Wedding:
+      return "결혼식"
+    case .FirstBirthdayDay:
+      return "돌잔치"
+    case .Funeral:
+      return "장례식"
+    case .Birthday:
+      return "생일 기념일"
+    }
+  }
 }
 
 // MARK: - InventoryBoxView
@@ -27,7 +42,7 @@ public struct InventoryBoxView: View {
   public func makeContentView() -> some View {
     ZStack {
       VStack(alignment: .leading, spacing: 8) {
-        SmallBadge(property: .init(size: .small, badgeString: InventoryType.Wedding.rawValue, badgeColor: .orange60))
+        SmallBadge(property: .init(size: .small, badgeString: InventoryType.Wedding.type, badgeColor: .orange60))
           .padding([.leading, .top], 16)
 
         Text("나의 결혼식")
