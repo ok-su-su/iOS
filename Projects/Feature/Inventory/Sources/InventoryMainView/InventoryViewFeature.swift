@@ -22,11 +22,13 @@ public struct InventoryViewFeature: Equatable {
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
-    
+
     @Presents var searchInvenotry: InventorySearch.State?
+    @Shared var searchInventoryHelper: InventorySearchHelper
     public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading
+      _searchInventoryHelper = Shared(.init())
     }
   }
 
@@ -35,6 +37,7 @@ public struct InventoryViewFeature: Equatable {
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
+    case showSearchView(PresentationAction<InventorySearch.Action>)
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -53,12 +56,19 @@ public struct InventoryViewFeature: Equatable {
       InventoryFloating()
     }
 
+    .ifLet(\.$searchInvenotry, action: \.showSearchView) {
+      InventorySearch()
+    }
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
         state.isLoading.toggle()
         return .none
       case .didTapLatestButton:
+        return .none
+      case .setHeaderView(.tappedSearchButton):
+        state.searchInvenotry = InventorySearch.State(searchHelper: state.$searchInventoryHelper)
         return .none
       case .didTapFilterButton:
         return .none

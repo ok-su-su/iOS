@@ -11,18 +11,18 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct InventorySearchTextField {
+public struct InventorySearchTextField {
   @ObservableState
-  struct State {
+  public struct State {
     @Shared var text: String
   }
 
-  enum Action: Equatable, BindableAction {
+  public enum Action: Equatable, BindableAction {
     case binding(BindingAction<State>)
     case didTapCloseButton
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {

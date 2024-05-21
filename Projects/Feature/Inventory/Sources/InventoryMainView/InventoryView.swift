@@ -111,6 +111,8 @@ public struct InventoryView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
+    }.fullScreenCover(item: $inventoryStore.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
+      InventorySearchView(store: store)
     }
   }
 
