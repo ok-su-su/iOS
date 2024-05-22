@@ -22,6 +22,7 @@ struct VoteSearchView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       SSSearchView(store: store.scope(state: \.searchReducer, action: \.scope.searchReducer))
+        .padding(.horizontal, 16)
     }
   }
 

@@ -37,8 +37,10 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
         state.isOnAppear = isAppear
         return .none
       case .tappedCloseButton:
+        state.helper.textFieldText = ""
         return .none
-      case .changeTextField:
+      case let .changeTextField(text):
+        state.helper.textFieldText = text
         return .none
       case .tappedPrevItem(id: _):
         return .none

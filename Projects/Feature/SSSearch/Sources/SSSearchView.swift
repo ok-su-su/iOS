@@ -41,7 +41,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
         .frame(width: 8)
 
       // commonClose
-      if store.helper.textFieldText.isEmpty {
+      if store.helper.textFieldText != "" {
         SSImage
           .commonClose
           .onTapGesture {
@@ -51,6 +51,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 8)
+    .background(SSColor.gray15)
   }
 
   // MARK: Content
@@ -64,6 +65,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
         .frame(height: 32)
 
       makeSearchContent()
+      Spacer()
     }
   }
 
@@ -92,8 +94,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
           if ind < searchResult.count {
             let currentItem = searchResult[ind]
             HStack(spacing: 16) {
-              SSImage
-                .envelopeMainFill
+              iconImage(type: store.helper.iconType)
 
               VStack(spacing: 0) {
                 Text("\(currentItem.title)")
@@ -122,6 +123,8 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
           }
         }
       } else {
+        Spacer()
+          .frame(height: 122)
         // 검색 결과가 없을 때
         VStack(alignment: .center, spacing: 4) {
           Text(store.helper.noSearchResultTitle)
@@ -138,6 +141,8 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
 
   @ViewBuilder
   private func makeNoPrevSearchHistory() -> some View {
+    Spacer()
+      .frame(height: 144)
     VStack(alignment: .center, spacing: 4) {
       Text(store.helper.prevSearchedNoContentTitleText)
         .modifier(SSTypoModifier(.title_xs))
@@ -151,8 +156,6 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
 
   @ViewBuilder
   private func makePrevSearchHistory() -> some View {
-    Spacer()
-      .frame(height: 144)
     VStack(spacing: 16) {
       Text(searchResultTitleText)
         .modifier(SSTypoModifier(.title_xxs))
@@ -197,7 +200,17 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
     }
   }
 
-  private enum Metrics {}
+  @ViewBuilder
+  func iconImage(type: SSSearchIconType) -> some View {
+    switch type {
+    case .sent:
+      SSImage.envelopeMainFill
+    case .inventory:
+      SSImage.inventoryMainFill
+    case .vote:
+      SSImage.voteMainFill
+    }
+  }
 
   // Constnats (cant use static enum because of Generic
   private let searchResultTitleText: String = "검색 결과"
