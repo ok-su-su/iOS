@@ -151,6 +151,8 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
 
   @ViewBuilder
   private func makePrevSearchHistory() -> some View {
+    Spacer()
+      .frame(height: 144)
     VStack(spacing: 16) {
       Text(searchResultTitleText)
         .modifier(SSTypoModifier(.title_xxs))
@@ -183,7 +185,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
       VStack(spacing: 0) {
         makeContentView()

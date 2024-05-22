@@ -1,5 +1,5 @@
 //
-//  HeaderView.swift
+//  HeaderViewFeature.swift
 //  Designsystem
 //
 //  Created by MaraMincho on 4/17/24.

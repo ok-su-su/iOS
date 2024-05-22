@@ -302,6 +302,9 @@ struct VoteMainView: View {
     .fullScreenCover(item: $store.scope(state: \.otherVoteDetail, action: \.scope.otherVoteDetail)) { store in
       OtherVoteDetailView(store: store)
     }
+    .fullScreenCover(item: $store.scope(state: \.voteSearch, action: \.scope.voteSearch)) { store in
+      VoteSearchView(store: store)
+    }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 
