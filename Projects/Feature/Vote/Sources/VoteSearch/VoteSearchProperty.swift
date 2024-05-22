@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSSearch
 
 // MARK: - VoteSearchItem
 
@@ -36,12 +37,12 @@ struct VoteSearchProperty: SSSearchPropertiable {
 
   var fakeVotes: [VoteSearchItem] = [
     .init(id: 0, title: "김사랑"),
-    .init(id: 0, title: "김헤이즈"),
-    .init(id: 0, title: "김매그너스"),
-    .init(id: 0, title: "김카밀로"),
-    .init(id: 0, title: "김니키"),
-    .init(id: 0, title: "김버니스"),
-    .init(id: 0, title: "김사랑해"),
+    .init(id: 1, title: "김헤이즈"),
+    .init(id: 2, title: "김매그너스"),
+    .init(id: 3, title: "김카밀로"),
+    .init(id: 4, title: "김니키"),
+    .init(id: 5, title: "김버니스"),
+    .init(id: 6, title: "김사랑해"),
   ]
 
   mutating func fakeSearchHistory() {
@@ -55,7 +56,9 @@ struct VoteSearchProperty: SSSearchPropertiable {
     nowSearchedItem = fakeVotes.filter { $0.title.contains(regex) }
   }
 
-  mutating func deletePrevItem(prevItemID _: Int) {}
+  mutating func deletePrevItem(prevItemID id: Int) {
+    prevSearchedItem = prevSearchedItem.filter { $0.id != id }
+  }
 
   var textFieldText: String = ""
   var prevSearchedItem: [VoteSearchItem] = []
