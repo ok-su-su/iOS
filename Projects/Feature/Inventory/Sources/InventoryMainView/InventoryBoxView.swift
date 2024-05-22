@@ -44,7 +44,6 @@ public struct InventoryBoxView: View {
       VStack(alignment: .leading, spacing: 8) {
         SmallBadge(property: .init(size: .small, badgeString: InventoryType.Wedding.type, badgeColor: .orange60))
           .padding([.leading, .top], 16)
-
         Text("나의 결혼식")
           .modifier(SSTypoModifier(.title_m))
           .lineLimit(1)
