@@ -22,7 +22,7 @@ struct InventorySortSheetView: View {
       SSButton(
         .init(
           size: .sh48,
-          status: store.sortItems[index].rawValue == store.selectedSortItem.rawValue ? .active : .inactive,
+          status: store.sortItems[index] == store.selectedSortItem ? .active : .inactive,
           style: .ghost,
           color: .black,
           buttonText: store.sortItems[index].rawValue,

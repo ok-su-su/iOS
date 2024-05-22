@@ -1,5 +1,5 @@
 //
-//  InventoryModalSheet.swift
+//  InventoryDatePickerModalSheet.swift
 //  Inventory
 //
 //  Created by Kim dohyun on 5/20/24.
@@ -11,10 +11,10 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 
-// MARK: - InventoryModalSheet
+// MARK: - InventoryDatePickerModalSheet
 
 @Reducer
-struct InventoryModalSheet {
+struct InventoryDatePickerModalSheet {
   @ObservableState
   struct State {
     var initialStartDate = Date.now

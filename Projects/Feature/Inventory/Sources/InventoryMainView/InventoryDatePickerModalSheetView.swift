@@ -1,5 +1,5 @@
 //
-//  InventoryModalSheetView.swift
+//  InventoryDatePickerModalSheetView.swift
 //  Inventory
 //
 //  Created by Kim dohyun on 5/20/24.
@@ -10,12 +10,12 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-// MARK: - InventoryModalSheetView
+// MARK: - InventoryDatePickerModalSheet
 
-struct InventoryModalSheetView: View {
-  @Bindable var store: StoreOf<InventoryModalSheet>
+struct InventoryDatePickerModalSheetView: View {
+  @Bindable var store: StoreOf<InventoryDatePickerModalSheet>
 
-  init(store: StoreOf<InventoryModalSheet>) {
+  init(store: StoreOf<InventoryDatePickerModalSheet>) {
     self.store = store
   }
 

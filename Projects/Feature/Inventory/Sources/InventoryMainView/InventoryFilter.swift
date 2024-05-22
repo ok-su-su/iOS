@@ -19,7 +19,7 @@ struct InventoryFilter {
   struct State {
     var isAppear = false
     var inventoryFilter: InventoryType.AllCases = []
-    @Presents var sheet: InventoryModalSheet.State?
+    @Presents var sheet: InventoryDatePickerModalSheet.State?
     var previousDate: Date = .now
     var nextDate: Date = .now
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
@@ -34,7 +34,7 @@ struct InventoryFilter {
     case onAppear(Bool)
     case reloadFilter
     case reset
-    case sheet(PresentationAction<InventoryModalSheet.Action>)
+    case sheet(PresentationAction<InventoryDatePickerModalSheet.Action>)
     case header(HeaderViewFeature.Action)
     case didTapFilterButton(Int)
     case didShowStartDateFilterView
@@ -51,7 +51,7 @@ struct InventoryFilter {
     }
 
     .ifLet(\.$sheet, action: \.sheet) {
-      InventoryModalSheet()
+      InventoryDatePickerModalSheet()
     }
 
     Reduce { state, action in
@@ -103,10 +103,10 @@ struct InventoryFilter {
         return .none
 
       case .didShowStartDateFilterView:
-        state.sheet = InventoryModalSheet.State(startDate: state.$startDate, endDate: Shared(nil), selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
+        state.sheet = InventoryDatePickerModalSheet.State(startDate: state.$startDate, endDate: Shared(nil), selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
         return .none
       case .didShowEndDateFilterView:
-        state.sheet = InventoryModalSheet.State(startDate: Shared(nil), endDate: state.$endDate, selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
+        state.sheet = InventoryDatePickerModalSheet.State(startDate: Shared(nil), endDate: state.$endDate, selectedFilter: state.$selectedFilter, selectedFilterProperties: state.$ssButtonProperties)
         return .none
       case .reset:
         state.startDate = .now
