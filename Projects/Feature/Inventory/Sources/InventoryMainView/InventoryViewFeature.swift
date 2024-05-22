@@ -12,13 +12,13 @@ import Foundation
 import OSLog
 
 @Reducer
-public struct InventoryViewFeature: Equatable {
+public struct InventoryViewFeature {
   public init() {}
 
   @ObservableState
   public struct State {
-    var inventorys: IdentifiedArrayOf<InventoryBox.State>
-    var isLoading: Bool
+    var inventorys: IdentifiedArrayOf<InventoryBox.State> = []
+    var isLoading: Bool = false
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
@@ -27,14 +27,21 @@ public struct InventoryViewFeature: Equatable {
     public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
       self.inventorys = inventorys
       self.isLoading = isLoading
+    @Presents var sortSheet: InventorySortSheet.State?
+    @Shared var selectedSortItem: SortTypes
+
+    init() {
+      _selectedSortItem = Shared(.latest)
     }
   }
 
+  @CasePathable
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
+    case sortSheet(PresentationAction<InventorySortSheet.Action>)
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -53,12 +60,17 @@ public struct InventoryViewFeature: Equatable {
       InventoryFloating()
     }
 
+    .ifLet(\.$sortSheet, action: \.sortSheet) {
+      InventorySortSheet()
+    }
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
         state.isLoading.toggle()
         return .none
       case .didTapLatestButton:
+        state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
         return .none
       case .didTapFilterButton:
         return .none

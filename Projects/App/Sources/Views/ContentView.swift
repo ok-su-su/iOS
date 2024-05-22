@@ -7,6 +7,7 @@ import SSAlert
 import SSDataBase
 import SSRoot
 import SwiftUI
+import Vote
 
 // MARK: - ContentViewObject
 
@@ -53,18 +54,7 @@ public struct ContentView: View {
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .inventory: AnyView(InventoryView(
-      inventoryStore:
-      .init(
-        initialState: InventoryViewFeature.State(
-          inventorys: [
-            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-          ]
-        )
-      ) {
-        InventoryViewFeature()
-      })),
+    .inventory: AnyView(InventoryBuilderView()),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
