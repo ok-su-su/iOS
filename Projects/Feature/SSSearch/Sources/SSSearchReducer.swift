@@ -15,7 +15,10 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
-    var helper: item
+    @Shared var helper: item
+    public init(helper: Shared<item>) {
+      _helper = helper
+    }
   }
 
   public enum Action: Equatable {
@@ -24,6 +27,7 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
     case changeTextField(String)
     case tappedPrevItem(id: Int)
     case tappedDeletePrevItem(id: Int)
+    case tappedSearchItem(id: Int)
   }
 
   public var body: some Reducer<State, Action> {
@@ -36,9 +40,11 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
         return .none
       case .changeTextField:
         return .none
-      case let .tappedPrevItem(id: id):
+      case .tappedPrevItem(id: _):
         return .none
-      case let .tappedDeletePrevItem(id: id):
+      case .tappedDeletePrevItem(id: _):
+        return .none
+      case .tappedSearchItem(id: _):
         return .none
       }
     }

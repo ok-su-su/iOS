@@ -23,7 +23,8 @@ public protocol SSSearchPropertiable: Equatable {
   var prevSearchedItem: [item] { get set }
   var nowSearchedItem: [item] { get set }
 
-  mutating func searchItem()
+  mutating func searchItem(by: String)
+  mutating func deletePrevItem(prevItemID: Int)
 }
 
 // MARK: - SSSearchIconType

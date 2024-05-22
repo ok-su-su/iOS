@@ -15,6 +15,10 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
   @Bindable
   var store: StoreOf<SSSearchReducer<item>>
 
+  public init(store: StoreOf<SSSearchReducer<item>>) {
+    self.store = store
+  }
+
   @ViewBuilder
   private func makeSearchTextField() -> some View {
     HStack(alignment: .center, spacing: 0) {
@@ -70,7 +74,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
     } else if store.helper.prevSearchedItem.isEmpty {
       makeNoPrevSearchHistory()
     } else {
-//      makeSearchHistory()
+      makePrevSearchHistory()
     }
   }
 
@@ -111,6 +115,9 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
                   }
                 }
               }
+            }
+            .onTapGesture {
+              store.send(.tappedSearchItem(id: currentItem.id))
             }
           }
         }
