@@ -19,7 +19,6 @@ public struct MessageAlertProperty {
   let animationDuration: TimeInterval
   let didTapCompletionButton: (Bool) -> Void
 
-  
   /// Alert에 표시할 정보들을 모아놓은 구조체 입니다.
   /// - Parameters:
   ///   - titleText: Alert에 Title입니다.

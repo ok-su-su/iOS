@@ -83,7 +83,7 @@ extension HeaderView {
     case let .icon(currentIcon):
       HStack(spacing: 0) {
         Button {
-          store.send(.tappedNotificationButton)
+          store.send(.tappedSearchButton)
         } label: {
           currentIcon
             .padding(Constants.imagePadding)

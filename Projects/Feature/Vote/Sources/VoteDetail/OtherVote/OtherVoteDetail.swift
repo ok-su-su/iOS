@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import SSAlert
 
 // MARK: - OtherVoteDetail
 
@@ -19,6 +20,7 @@ struct OtherVoteDetail {
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
     var helper: OtherVoteDetailProperty = .init()
     var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
+    var isPresentAlert: Bool = false
 
     init() {
       helper.voteProgress.forEach { property in
@@ -38,8 +40,11 @@ struct OtherVoteDetail {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case showAlert(Bool)
+    case tappedAlertConfirmButton(isChecked: Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -53,6 +58,7 @@ struct OtherVoteDetail {
   }
 
   enum DelegateAction: Equatable {}
+  @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -64,12 +70,23 @@ struct OtherVoteDetail {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
+      case .scope(.header(.tappedSearchButton)):
+        return .send(.view(.showAlert(true)))
+
       case .scope(.header):
         return .none
 
       case let .scope(.voteProgressBar(.element(id: id, action: .tapped))):
         state.helper.voted(id: id)
         return .none
+
+      case let .view(.showAlert(present)):
+        state.isPresentAlert = present
+        return .none
+      case let .view(.tappedAlertConfirmButton(isChecked: _)):
+        // TODO: 신고 확인 버튼 눌렀을 때 적절한 API사용
+
+        return .run { _ in await dismiss() }
       }
     }
     .addFeatures()

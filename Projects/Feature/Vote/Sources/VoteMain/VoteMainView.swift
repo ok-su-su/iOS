@@ -110,8 +110,6 @@ struct VoteMainView: View {
           } label: {
             SSImage
               .voteWarning
-              .resizable()
-              .frame(width: 44, height: 44)
           }
         }
         .frame(maxWidth: .infinity)
@@ -336,6 +334,7 @@ struct VoteMainView: View {
     static let favoriteVoteTitleText: String = "가장 인기 있는 투표"
     static let mostVotesFilterText = "투표 많은순"
     static let myBoardOnlyFilterText = "내 글 보기"
+
     static let reportAlertTitle = "해당 글을 신고할까요?"
     static let reportAlertDescription = """
     신고된 글은 수수의 확인 후 제재됩니다.\n이 작성자의 글을 더 이상 보고 싶지 않다면\n작성자를 바로 차단해 주세요.
