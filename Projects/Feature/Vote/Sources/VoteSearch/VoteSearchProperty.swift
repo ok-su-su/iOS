@@ -57,7 +57,12 @@ struct VoteSearchProperty: SSSearchPropertiable {
   }
 
   mutating func deletePrevItem(prevItemID id: Int) {
+    // TODO: 삭제 기능 구현.
     prevSearchedItem = prevSearchedItem.filter { $0.id != id }
+  }
+
+  func titleByPrevItem(id: Int) -> String {
+    return prevSearchedItem.first(where: { $0.id == id })?.title ?? ""
   }
 
   var textFieldText: String = ""

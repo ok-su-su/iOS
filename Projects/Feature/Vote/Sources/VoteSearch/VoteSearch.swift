@@ -73,10 +73,8 @@ struct VoteSearch {
         return .none
 
       case let .scope(.searchReducer(.tappedPrevItem(id: id))):
-        return .none
-
-      case let .scope(.searchReducer(.tappedSearchItem(id: id))):
-        return .none
+        let title = state.helper.titleByPrevItem(id: id)
+        return .send(.scope(.searchReducer(.changeTextField(title))))
 
       case .scope(.searchReducer):
         return .none
