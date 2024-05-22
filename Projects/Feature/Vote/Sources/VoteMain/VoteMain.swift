@@ -23,6 +23,8 @@ struct VoteMain {
     @Presents var writeVote: WriteVote.State? = nil
     @Presents var otherVoteDetail: OtherVoteDetail.State? = nil
     var isPresentReport: Bool = false
+    @Presents var voteSearch: VoteSearch.State? = nil
+
     init() {}
   }
 
@@ -57,6 +59,7 @@ struct VoteMain {
     case header(HeaderViewFeature.Action)
     case writeVote(PresentationAction<WriteVote.Action>)
     case otherVoteDetail(PresentationAction<OtherVoteDetail.Action>)
+    case voteSearch(PresentationAction<VoteSearch.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -75,6 +78,10 @@ struct VoteMain {
         return .none
 
       case .scope(.tabBar):
+        return .none
+
+      case .scope(.header(.tappedSearchButton)):
+        state.voteSearch = .init()
         return .none
 
       case .scope(.header):
@@ -111,6 +118,8 @@ struct VoteMain {
       case let .view(.presentReport(val)):
         state.isPresentReport = val
         return .none
+      case .scope(.voteSearch):
+        return .none
       }
     }
     .addFeatures0()
@@ -124,6 +133,9 @@ private extension Reducer where State == VoteMain.State, Action == VoteMain.Acti
     }
     .ifLet(\.$otherVoteDetail, action: \.scope.otherVoteDetail) {
       OtherVoteDetail()
+    }
+    .ifLet(\.$voteSearch, action: \.scope.voteSearch) {
+      VoteSearch()
     }
   }
 }
