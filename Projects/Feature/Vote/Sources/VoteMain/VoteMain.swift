@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import SSAlert
 
 // MARK: - VoteMain
 
@@ -21,7 +22,7 @@ struct VoteMain {
     var voteMainProperty = VoteMainProperty()
     @Presents var writeVote: WriteVote.State? = nil
     @Presents var otherVoteDetail: OtherVoteDetail.State? = nil
-
+    var isPresentReport: Bool = false
     init() {}
   }
 
@@ -33,6 +34,7 @@ struct VoteMain {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedSectionItem(VoteSectionHeaderItem)
@@ -40,6 +42,9 @@ struct VoteMain {
     case tappedFloatingButton
     // TODO: 어떤 아이템을 터치 했는지 정확하게...
     case tappedVoteItem
+    case tappedReportButton(Int)
+    case tappedReportConfirmButton(isCheck: Bool)
+    case presentReport(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -92,7 +97,19 @@ struct VoteMain {
       case .view(.tappedVoteItem):
         state.otherVoteDetail = .init()
         return .none
+
       case .scope(.otherVoteDetail(_)):
+        return .none
+
+      case let .view(.tappedReportButton(id)):
+        // TODO: 메시지 신고할 때 추가 로직 생성
+        state.isPresentReport = true
+        return .none
+      case let .view(.tappedReportConfirmButton(idChecked)):
+        // TODO: 신고 했을 때 로직 생성
+        return .none
+      case let .view(.presentReport(val)):
+        state.isPresentReport = val
         return .none
       }
     }
