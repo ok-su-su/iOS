@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import SwiftUI
 
 struct VoteMainView: View {
@@ -104,8 +105,12 @@ struct VoteMainView: View {
 
           Spacer()
 
-          SSImage
-            .voteWarning
+          Button {
+            store.send(.view(.tappedReportButton(item.id)))
+          } label: {
+            SSImage
+              .voteWarning
+          }
         }
         .frame(maxWidth: .infinity)
       }
@@ -302,6 +307,21 @@ struct VoteMainView: View {
     .fullScreenCover(item: $store.scope(state: \.otherVoteDetail, action: \.scope.otherVoteDetail)) { store in
       OtherVoteDetailView(store: store)
     }
+    .sSAlert(
+      isPresented: $store.isPresentReport.sending(\.view.presentReport),
+      messageAlertProperty: .init(
+        titleText: Constants.reportAlertTitle,
+        contentText: Constants.reportAlertDescription,
+        checkBoxMessage: .text(Constants.checkBoxMessage),
+        buttonMessage: .doubleButton(
+          left: Constants.reportAlertCancelText,
+          right: Constants.reportAlertConfirmText
+        ),
+        didTapCompletionButton: { isCheck in
+          store.send(.view(.tappedReportConfirmButton(isCheck: isCheck)))
+        }
+      )
+    )
     .fullScreenCover(item: $store.scope(state: \.voteSearch, action: \.scope.voteSearch)) { store in
       VoteSearchView(store: store)
     }
@@ -317,5 +337,13 @@ struct VoteMainView: View {
     static let favoriteVoteTitleText: String = "가장 인기 있는 투표"
     static let mostVotesFilterText = "투표 많은순"
     static let myBoardOnlyFilterText = "내 글 보기"
+
+    static let reportAlertTitle = "해당 글을 신고할까요?"
+    static let reportAlertDescription = """
+    신고된 글은 수수의 확인 후 제재됩니다.\n이 작성자의 글을 더 이상 보고 싶지 않다면\n작성자를 바로 차단해 주세요.
+    """
+    static let reportAlertCancelText = "취소"
+    static let reportAlertConfirmText = "신고하기"
+    static let checkBoxMessage = "작성자도 바로 차단하기"
   }
 }
