@@ -3,8 +3,11 @@ import Designsystem
 import Inventory
 import MyPage
 import Sent
+import SSAlert
+import SSDataBase
 import SSRoot
 import SwiftUI
+import Vote
 
 // MARK: - ContentViewObject
 
@@ -116,5 +119,19 @@ public struct VoteRootView: View {
       Color(.green)
         .edgesIgnoringSafeArea(.all)
     }
+  }
+}
+
+// MARK: - MyPageRootView
+
+public struct MyPageRootView: View {
+  init() {}
+
+  public var body: some View {
+    NavigationStack {
+      Color(.blue)
+        .edgesIgnoringSafeArea(.all)
+    }
+    .onAppear {}
   }
 }

@@ -19,7 +19,6 @@ public struct InventoryBox {
     public var inventoryTitle: String
     public var inventoryAmount: String
     public var inventoryCount: Int
-
     public init(inventoryType: InventoryType, inventoryTitle: String, inventoryAmount: String, inventoryCount: Int) {
       self.inventoryType = inventoryType
       self.inventoryTitle = inventoryTitle

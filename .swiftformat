@@ -19,3 +19,4 @@
 --disable wrapMultilineStatementBraces
 --disable andOperator
 --disable redundantReturn
+--disable preferForLoop

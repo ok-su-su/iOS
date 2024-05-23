@@ -71,7 +71,7 @@ extension HeaderView {
   }
 
   enum trailingItemTypes {
-    case icon
+    case icon(Image)
     case none
     case text(String)
     case doubleText(String, String)
@@ -80,20 +80,12 @@ extension HeaderView {
   @ViewBuilder
   func makeTrailingItem(type: trailingItemTypes) -> some View {
     switch type {
-    case .icon:
+    case let .icon(currentIcon):
       HStack(spacing: 0) {
-        Button {
-          store.send(.tappedNotificationButton)
-        } label: {
-          SSImage.commonSearch
-            .padding(Constants.imagePadding)
-        }
-        .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
-
         Button {
           store.send(.tappedSearchButton)
         } label: {
-          SSImage.commonSearch
+          currentIcon
             .padding(Constants.imagePadding)
         }
         .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
