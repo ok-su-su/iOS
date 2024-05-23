@@ -10,12 +10,14 @@ import SwiftUI
 
 import ComposableArchitecture
 import Designsystem
-
+import SSLayout
 
 // MARK: - InventoryAccountDetailFilterView
 
 struct InventoryAccountDetailFilterView: View {
   @Bindable var store: StoreOf<InventoryAccountDetailFilter>
+
+  @ObservedObject var sliderProperty: CustomSlider = .init(start: 0, end: 1_000_000, width: UIScreen.main.bounds.size.width - 32)
 
   @ViewBuilder
   private func makeContentView() -> some View {
@@ -30,17 +32,30 @@ struct InventoryAccountDetailFilterView: View {
 
   @ViewBuilder
   private func makeProgressContentView() -> some View {
-    VStack(spacing: 16) {
+    VStack(alignment: .leading) {
       Text("받은 봉투 금액")
         .modifier(SSTypoModifier(.title_xs))
         .foregroundColor(SSColor.gray100)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
 
-      VStack(spacing: 8) {
-        Text("0원 ~ 100,000원")
-          .modifier(SSTypoModifier(.title_m))
-          .foregroundColor(SSColor.gray100)
+      Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
+        .modifier(SSTypoModifier(.title_m))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 16)
+
+      Spacer()
+        .frame(height: 16)
+
+      VStack(alignment: .leading) {
+        Spacer()
+          .frame(height: 8)
+
+        HStack(spacing: 0) {
+          SliderView(slider: sliderProperty)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+        }
       }
     }
   }

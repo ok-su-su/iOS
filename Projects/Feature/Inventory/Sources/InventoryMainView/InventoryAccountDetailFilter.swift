@@ -11,7 +11,6 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 
-
 // MARK: - InventoryAccountDetailFilter
 
 @Reducer

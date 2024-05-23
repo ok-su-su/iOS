@@ -12,13 +12,13 @@ import SwiftUI
 
 // MARK: - SliderView
 
-struct SliderView: View {
+public struct SliderView: View {
   @ObservedObject var slider: CustomSlider
-  init(slider: CustomSlider) {
+  public init(slider: CustomSlider) {
     self.slider = slider
   }
 
-  var body: some View {
+  public var body: some View {
     RoundedRectangle(cornerRadius: slider.lineWidth)
       .fill(Color.gray.opacity(0.2))
       .frame(width: slider.width, height: slider.lineWidth)

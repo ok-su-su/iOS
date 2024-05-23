@@ -20,7 +20,7 @@ struct SliderValue {
 
 // MARK: - SliderHandle
 
-class SliderHandle: ObservableObject {
+public class SliderHandle: ObservableObject {
   /// Slider Size
   let sliderWidth: CGFloat
   let sliderHeight: CGFloat
@@ -92,14 +92,14 @@ class SliderHandle: ObservableObject {
     return sliderValueStart + currentPercentage.wrappedValue * sliderValueRange
   }
 
-  var currentValueBy1000: Int {
+  public var currentValueBy1000: Int {
     return Int(sliderValueStart + currentPercentage.wrappedValue * sliderValueRange) / 1000 * 1000
   }
 }
 
 // MARK: - CustomSlider
 
-class CustomSlider: ObservableObject {
+public class CustomSlider: ObservableObject {
   /// Slider Size
   let width: CGFloat
   let lineWidth: CGFloat = 8
@@ -109,8 +109,8 @@ class CustomSlider: ObservableObject {
   let valueEnd: Double
 
   /// Slider Handle
-  @Published var highHandle: SliderHandle
-  @Published var lowHandle: SliderHandle
+  @Published public var highHandle: SliderHandle
+  @Published public var lowHandle: SliderHandle
 
   /// Handle start percentage (also for starting point)
   @SliderValue var highHandleStartPercentage = 1.0
@@ -119,7 +119,7 @@ class CustomSlider: ObservableObject {
   var anyCancellableHigh: AnyCancellable?
   var anyCancellableLow: AnyCancellable?
 
-  init(start: Double, end: Double, width: CGFloat = 300) {
+  public init(start: Double, end: Double, width: CGFloat = 300) {
     self.width = width
     valueStart = start
     valueEnd = end
@@ -158,11 +158,11 @@ class CustomSlider: ObservableObject {
     return String(format: "%.2f", highHandle.currentValue - lowHandle.currentValue)
   }
 
-  func isInitialState() -> Bool {
+  public func isInitialState() -> Bool {
     return highHandle.currentValueBy1000 == 100_000 && lowHandle.currentValueBy1000 == 0
   }
 
-  func reset() {
+  public func reset() {
     highHandle.currentPercentage.wrappedValue = 1
     highHandle.currentLocation = highHandle.startLocation
 

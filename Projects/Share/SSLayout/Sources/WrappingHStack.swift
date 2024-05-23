@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct WrappingHStack: Layout {
+public struct WrappingHStack: Layout {
   /// inspired by: https://stackoverflow.com/a/75672314
   private var horizontalSpacing: CGFloat
   private var verticalSpacing: CGFloat

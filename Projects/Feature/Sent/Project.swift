@@ -12,6 +12,7 @@ let project = Project.makeModule(
       .share(.designsystem),
       .share(.sSAlert),
       .share(.sSToast),
+      .share(.sSLayout),
     ],
     testDependencies: []
   )
