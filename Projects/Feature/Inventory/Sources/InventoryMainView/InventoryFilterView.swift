@@ -160,7 +160,7 @@ struct InventoryFilterView: View {
     }
     .navigationBarBackButtonHidden()
     .sheet(item: $store.scope(state: \.sheet, action: \.sheet)) { store in
-      InventoryModalSheetView(store: store)
+      InventoryDatePickerModalSheetView(store: store)
         .presentationDetents([.height(370), .medium])
         .presentationDragIndicator(.automatic)
     }

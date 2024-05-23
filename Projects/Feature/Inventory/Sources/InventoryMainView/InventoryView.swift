@@ -61,6 +61,9 @@ public struct InventoryView: View {
             ForEach(inventoryStore.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { store in
               InventoryBoxView(inventoryBoxstore: store)
                 .padding(.trailing, InventoryFilterConstants.commonSpacing)
+                .onTapGesture {
+                  inventoryStore.send(.didTapInventoryView)
+                }
             }
             VStack {
               makeDotLineButton()
@@ -136,6 +139,9 @@ public struct InventoryView: View {
         InventorySortSheetView(store: store)
           .presentationDetents([.height(240), .medium, .large])
           .presentationDragIndicator(.automatic)
+      }
+      .fullScreenCover(item: $inventoryStore.scope(state: \.inventoryAccount, action: \.showInventoryDetailView)) { store in
+        InventoryAccountDetailRouterView(store: store)
       }
   }
 

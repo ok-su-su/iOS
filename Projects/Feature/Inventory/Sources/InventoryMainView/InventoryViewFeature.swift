@@ -17,7 +17,9 @@ public struct InventoryViewFeature {
 
   @ObservableState
   public struct State {
-    var inventorys: IdentifiedArrayOf<InventoryBox.State> = []
+    var inventorys: IdentifiedArrayOf<InventoryBox.State> = [
+      .init(inventoryType: .Wedding, inventoryTitle: "나의 결혼식", inventoryAmount: "4,388,000", inventoryCount: 164),
+    ]
     var isLoading: Bool = false
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
@@ -28,6 +30,8 @@ public struct InventoryViewFeature {
       self.inventorys = inventorys
       self.isLoading = isLoading
     @Presents var sortSheet: InventorySortSheet.State?
+    @Presents var inventoryAccount: InventoryAccountDetailRouter.State?
+
     @Shared var selectedSortItem: SortTypes
 
     init() {
@@ -42,6 +46,8 @@ public struct InventoryViewFeature {
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
     case sortSheet(PresentationAction<InventorySortSheet.Action>)
+    case showInventoryDetailView(PresentationAction<InventoryAccountDetailRouter.Action>)
+    case didTapInventoryView
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -64,6 +70,10 @@ public struct InventoryViewFeature {
       InventorySortSheet()
     }
 
+    .ifLet(\.$inventoryAccount, action: \.showInventoryDetailView) {
+      InventoryAccountDetailRouter()
+    }
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
@@ -73,6 +83,10 @@ public struct InventoryViewFeature {
         state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
         return .none
       case .didTapFilterButton:
+        return .none
+      case .didTapInventoryView:
+        state.inventoryAccount = InventoryAccountDetailRouter.State()
+        os_log("Inventory Account Detail")
         return .none
       case .didTapAddInventoryButton:
         os_log("Inventory button Tap")
