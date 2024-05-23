@@ -12,32 +12,42 @@ import Foundation
 import OSLog
 
 @Reducer
-public struct InventoryViewFeature: Equatable {
-  public init() {}
-
+public struct InventoryViewFeature {
   @ObservableState
   public struct State {
-    var inventorys: IdentifiedArrayOf<InventoryBox.State>
-    var isLoading: Bool
+    var inventorys: IdentifiedArrayOf<InventoryBox.State> = [
+      .init(inventoryType: .Wedding, inventoryTitle: "나의 결혼식", inventoryAmount: "4,388,000", inventoryCount: 164),
+    ]
+    var isLoading: Bool = false
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
 
     @Presents var searchInvenotry: InventorySearch.State?
+    @Presents var sortSheet: InventorySortSheet.State?
+    @Presents var inventoryAccount: InventoryAccountDetailRouter.State?
     @Shared var searchInventoryHelper: InventorySearchHelper
-    public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
-      self.inventorys = inventorys
-      self.isLoading = isLoading
+    @Shared var selectedSortItem: SortTypes
+
+    init() {
       _searchInventoryHelper = Shared(.init())
+      _selectedSortItem = Shared(.latest)
     }
   }
 
+  public init() {}
+
+  @CasePathable
   public enum Action {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
     case showSearchView(PresentationAction<InventorySearch.Action>)
+
+    case sortSheet(PresentationAction<InventorySortSheet.Action>)
+    case showInventoryDetailView(PresentationAction<InventoryAccountDetailRouter.Action>)
+    case didTapInventoryView
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
@@ -60,17 +70,30 @@ public struct InventoryViewFeature: Equatable {
       InventorySearch()
     }
 
+    .ifLet(\.$sortSheet, action: \.sortSheet) {
+      InventorySortSheet()
+    }
+
+    .ifLet(\.$inventoryAccount, action: \.showInventoryDetailView) {
+      InventoryAccountDetailRouter()
+    }
+
     Reduce { state, action in
       switch action {
       case .reloadInvetoryItems:
         state.isLoading.toggle()
         return .none
       case .didTapLatestButton:
+        state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
         return .none
       case .setHeaderView(.tappedSearchButton):
         state.searchInvenotry = InventorySearch.State(searchHelper: state.$searchInventoryHelper)
         return .none
       case .didTapFilterButton:
+        return .none
+      case .didTapInventoryView:
+        state.inventoryAccount = InventoryAccountDetailRouter.State()
+        os_log("Inventory Account Detail")
         return .none
       case .didTapAddInventoryButton:
         os_log("Inventory button Tap")

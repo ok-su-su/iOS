@@ -149,9 +149,6 @@ struct SentMain {
     }
     .subFeatures1()
     .subFeatures2()
-    .forEach(\.envelopes, action: \.scope.envelopes) {
-      Envelope()
-    }
   }
 }
 
@@ -174,6 +171,9 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
     }
     .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
       SpecificEnvelopeHistoryRouter()
+    }
+    .forEach(\.envelopes, action: \.scope.envelopes) {
+      Envelope()
     }
   }
 }

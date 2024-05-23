@@ -3,8 +3,11 @@ import Designsystem
 import Inventory
 import MyPage
 import Sent
+import SSAlert
+import SSDataBase
 import SSRoot
 import SwiftUI
+import Vote
 
 // MARK: - ContentViewObject
 
@@ -51,18 +54,7 @@ public struct ContentView: View {
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .inventory: AnyView(InventoryView(
-      inventoryStore:
-      .init(
-        initialState: InventoryViewFeature.State(
-          inventorys: [
-            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-            .init(inventoryType: .Wedding, inventoryTitle: "123", inventoryAmount: "123", inventoryCount: 1),
-          ]
-        )
-      ) {
-        InventoryViewFeature()
-      })),
+    .inventory: AnyView(InventoryBuilderView()),
     .vote: AnyView(VoteRootView()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsRootView()),
@@ -127,5 +119,19 @@ public struct VoteRootView: View {
       Color(.green)
         .edgesIgnoringSafeArea(.all)
     }
+  }
+}
+
+// MARK: - MyPageRootView
+
+public struct MyPageRootView: View {
+  init() {}
+
+  public var body: some View {
+    NavigationStack {
+      Color(.blue)
+        .edgesIgnoringSafeArea(.all)
+    }
+    .onAppear {}
   }
 }

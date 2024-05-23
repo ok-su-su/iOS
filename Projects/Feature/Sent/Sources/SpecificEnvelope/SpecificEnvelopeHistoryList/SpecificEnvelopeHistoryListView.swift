@@ -117,7 +117,7 @@ struct SpecificEnvelopeHistoryListView: View {
           left: store.envelopeHistoryProperty.alertLeftButtonText,
           right: store.envelopeHistoryProperty.alertRightButtonText
         ),
-        didTapCompletionButton: {
+        didTapCompletionButton: { _ in
           store.send(.view(.tappedAlertConfirmButton))
         }
       )

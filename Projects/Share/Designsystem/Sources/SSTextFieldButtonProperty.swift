@@ -339,4 +339,33 @@ public extension SSTextFieldButtonProperty {
       4
     }
   }
+
+  var minimumHeight: CGFloat {
+    switch size {
+    case .lh62:
+      62
+    case .lh54:
+      54
+    case .lh46:
+      46
+    case .mh60:
+      60
+    case .mh52:
+      52
+    case .mh44:
+      44
+    case .sh48:
+      48
+    case .sh40:
+      40
+    case .sh32:
+      32
+    case .xsh44:
+      44
+    case .xsh36:
+      36
+    case .xsh28:
+      28
+    }
+  }
 }
