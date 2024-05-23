@@ -36,6 +36,7 @@ public struct InventoryAccountDetail {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
     case reloadAccountItems(IdentifiedActionOf<InventoryAccount>)
+    case didTapFilterButton
   }
 
   public enum Path {}
@@ -56,6 +57,8 @@ public struct InventoryAccountDetail {
       case .setTabbarView:
         return .none
       case .reloadAccountItems:
+        return .none
+      case .didTapFilterButton:
         return .none
       }
     }.forEach(\.accountItems, action: \.reloadAccountItems) {

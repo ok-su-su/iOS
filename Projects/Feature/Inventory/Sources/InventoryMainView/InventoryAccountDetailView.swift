@@ -100,7 +100,13 @@ struct InventoryAccountDetailView: View {
   @ViewBuilder
   private func makeFilterContentView() -> some View {
     HStack(spacing: 8) {
-      SSButton(InventoryAccountDetailConstants.filterButtonProperty) {}
+      ZStack {
+        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init())) {
+          SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
+            store.send(.didTapFilterButton)
+          }.allowsHitTesting(false)
+        }
+      }
 
       SSButton(InventoryAccountDetailConstants.sortButtonProperty) {}
     }
