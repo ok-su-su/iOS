@@ -1,5 +1,5 @@
 //
-//  StaticsPreviewMain.swift
+//  StatisticsPreviewMain.swift
 //  StatisticsPreview
 //
 //  Created by MaraMincho on 5/24/24.
@@ -11,14 +11,14 @@ import Statistics
 import SwiftUI
 
 @main
-struct StaticsPreviewMain: App {
+struct StatisticsPreviewMain: App {
   init() {
     Font.registerFont()
   }
 
   var body: some Scene {
     WindowGroup {
-      StaticsBuilderView()
+      StatisticsBuilderView()
     }
   }
 }
