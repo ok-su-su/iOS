@@ -17,7 +17,7 @@ protocol BaseTargetType: TargetType { }
 extension BaseTargetType {
   
   var baseURL: URL {
-    URL(string: "https://api.oksusu.site/api/v1")!
+    URL(string: Bundle.main.baseUrl)!
   }
   
   var headers: [String : String]? {
@@ -29,3 +29,20 @@ extension BaseTargetType {
   }
   
 }
+
+
+
+// TODO: - Move other Module
+public extension Bundle {
+    
+    var baseUrl: String {
+      Bundle.main.infoDictionary?["BASE_URL"] as! String
+    }
+    
+    var baseDevUrl: String {
+      Bundle.main.infoDictionary?["BASE_DEV_URL"] as! String
+    }
+    
+}
+
+

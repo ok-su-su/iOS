@@ -15,6 +15,7 @@ final class OAuthAPIWorker: Networkable {
   
   // MARK: - Networking
   func login(_ accessToken: String) async throws -> Data {
+    // 예시 코드
     try await makeProvider().request(.login, of: Data.self)
   }
   

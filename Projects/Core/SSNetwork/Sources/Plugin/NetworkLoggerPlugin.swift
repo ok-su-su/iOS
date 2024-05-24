@@ -19,7 +19,7 @@ struct NetworkLoggerPlugin: PluginType {
     target: any TargetType
   ) {
     guard let httpRequest = request.request else {
-      print("[HTTP Request] invalid request")
+      os_log("[HTTP Request] invalid request")
       return
     }
     
@@ -70,7 +70,7 @@ struct NetworkLoggerPlugin: PluginType {
     target: TargetType) {
       guard let httpRequest = response.request,
             let httpResponse = response.response  else {
-        print("[HTTP Reqeust] invalid request")
+        os_log("[HTTP Reqeust] invalid request")
         return
       }
       

@@ -17,7 +17,7 @@ protocol BaseDevTargetType: TargetType { }
 extension BaseDevTargetType {
   
   var baseURL: URL {
-    URL(string: "https://api.oksusu.site/api/v1/dev")!
+    URL(string: Bundle.main.baseDevUrl)!
   }
   
   var headers: [String : String]? {
