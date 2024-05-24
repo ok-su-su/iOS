@@ -6,8 +6,10 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import SwiftUI
 import Designsystem
+import SwiftUI
+
+// MARK: - StatisticsType2CardProperty
 
 struct StatisticsType2CardProperty: Equatable {
   var title: String
@@ -15,6 +17,8 @@ struct StatisticsType2CardProperty: Equatable {
   var trailingDescription: String
   var isEmptyState: Bool
 }
+
+// MARK: - StatisticsType2Card
 
 struct StatisticsType2Card: View {
   var property: StatisticsType2CardProperty
@@ -24,15 +28,15 @@ struct StatisticsType2Card: View {
       Text(property.title)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray100)
-      
+
       HStack(spacing: 0) {
         // leading Item
         Text(property.leadingDescription)
           .modifier(SSTypoModifier(.title_s))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
-        
+
         Spacer()
-        
+
         // TrailingItem
         Text(property.trailingDescription)
           .modifier(SSTypoModifier(.title_s))
@@ -46,5 +50,5 @@ struct StatisticsType2Card: View {
 }
 
 #Preview {
-    StatisticsType2Card()
+  StatisticsType2Card()
 }

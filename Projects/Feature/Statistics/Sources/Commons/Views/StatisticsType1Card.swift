@@ -1,5 +1,5 @@
 //
-//  StatisticsInformationHalfWidthView.swift
+//  StatisticsType1Card.swift
 //  Statistics
 //
 //  Created by MaraMincho on 5/25/24.
@@ -18,7 +18,7 @@ struct StatisticsType1CardProperty: Equatable {
   var isEmptyState: Bool
 }
 
-// MARK: - StatisticsType0Card
+// MARK: - StatisticsType1Card
 
 struct StatisticsType1Card: View {
   var property: StatisticsType1CardProperty

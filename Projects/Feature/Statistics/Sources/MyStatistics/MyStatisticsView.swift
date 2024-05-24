@@ -23,6 +23,8 @@ struct MyStatisticsView: View {
       makeHistoryView()
       makeMostSpendMonth()
       makeHalfCardView()
+      makeMostReceivedPriceCard()
+      makeMostSentPriceCard()
     }
     .padding(.horizontal, 16)
   }
@@ -49,7 +51,6 @@ struct MyStatisticsView: View {
     }
   }
 
-  
   @ViewBuilder
   private func makeMostSpendMonth() -> some View {
     let isData = store.helper != nil
@@ -71,7 +72,7 @@ struct MyStatisticsView: View {
       .clipShape(RoundedRectangle(cornerRadius: 4))
     }
   }
-  
+
   @ViewBuilder
   private func makeHalfCardView() -> some View {
     HStack(spacing: 8) {
@@ -82,7 +83,7 @@ struct MyStatisticsView: View {
           title: "최다 친구 관계",
           description: helper.mostRelationshipText ?? "?",
           caption: "총 \(helper.mostRelationshipFrequency ?? 0)번",
-          isEmptyState: helper.mostRelationshipText != nil && helper.mostRelationshipFrequency != nil
+          isEmptyState: helper.mostRelationshipText == nil || helper.mostRelationshipFrequency != nil
         )
       )
       // 최다 경조사
@@ -91,7 +92,7 @@ struct MyStatisticsView: View {
           title: "최다 수수 경조사",
           description: helper.mostEventText ?? "?",
           caption: "총 \(helper.mostEventFrequency ?? 0)번",
-          isEmptyState: helper.mostEventText != nil && helper.mostEventFrequency != nil
+          isEmptyState: helper.mostEventText == nil || helper.mostEventFrequency != nil
         )
       )
     }
@@ -100,12 +101,32 @@ struct MyStatisticsView: View {
     .background(SSColor.gray10)
     .clipShape(RoundedRectangle(cornerRadius: 4))
   }
-  
+
   @ViewBuilder
   private func makeMostReceivedPriceCard() -> some View {
-    
+    let helper = store.helper
+    StatisticsType2Card(
+      property: .init(
+        title: "가장 많이 받은 금액",
+        leadingDescription: helper.mostReceivedPersonName ?? "?",
+        trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원",
+        isEmptyState: helper.mostReceivedPersonName == nil || helper.mostReceivedPrice == nil
+      )
+    )
   }
 
+  @ViewBuilder
+  private func makeMostSentPriceCard() -> some View {
+    let helper = store.helper
+    StatisticsType2Card(
+      property: .init(
+        title: "가장 많이 보낸 금액",
+        leadingDescription: helper.mostSentPersonName ?? "?",
+        trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원",
+        isEmptyState: helper.mostSentPersonName == nil || helper.mostSentPrices == nil
+      )
+    )
+  }
 
   var body: some View {
     VStack(spacing: 0) {
