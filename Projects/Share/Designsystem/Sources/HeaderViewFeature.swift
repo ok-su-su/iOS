@@ -13,21 +13,19 @@ import SwiftUI
 
 @Reducer
 public struct HeaderViewFeature {
-  var enableDismissAction: Bool
-  public init(enableDismissAction: Bool = true) {
-    self.enableDismissAction = enableDismissAction
-  }
+  public init() {}
 
   @ObservableState
   public struct State: Equatable {
     var property: HeaderViewProperty
-    var enableDismissAction: Bool = false
+    var enableDismissAction: Bool
 
-    public init(_ property: HeaderViewProperty) {
+    public mutating func updateProperty(_ property: HeaderViewProperty) {
       self.property = property
     }
 
-    public mutating func updateProperty(_ property: HeaderViewProperty) {
+    public init(_ property: HeaderViewProperty, enableDismissAction: Bool = true) {
+      self.enableDismissAction = enableDismissAction
       self.property = property
     }
   }
@@ -48,7 +46,7 @@ public struct HeaderViewFeature {
   }
 
   public var body: some Reducer<State, Action> {
-    Reduce { state, action in
+    Reduce { _, action in
       switch action {
       case .tappedDismissButton:
         return .none
@@ -60,7 +58,6 @@ public struct HeaderViewFeature {
         return .none
 
       case .onAppear:
-        state.enableDismissAction = enableDismissAction
         return .none
       case .tappedTextButton:
         return .none

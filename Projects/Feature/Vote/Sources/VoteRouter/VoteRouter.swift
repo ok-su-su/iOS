@@ -28,6 +28,7 @@ struct VoteRouter {
     case onAppear(Bool)
     case pushPath(VoteRouterPath.State)
     case path(StackActionOf<VoteRouterPath>)
+    case initPush(VoteRouterInitialPath)
   }
 
   enum CancelID {
@@ -40,20 +41,45 @@ struct VoteRouter {
       switch action {
       case let .onAppear(isAppear):
         if state.isOnAppear == true {
-          return .none
+          return .run { _ in
+            await dismiss()
+          }
         }
         state.isOnAppear = isAppear
-        return .publisher {
-          VotePathPublisher.shared
-            .pathPublisher()
-            .map { path in .pushPath(path) }
-        }
+        return .merge(
+          .publisher {
+            VotePathPublisher.shared
+              .pathPublisher()
+              .map { path in .pushPath(path) }
+          }, .send(.initPush(state.initialPath))
+        )
         .cancellable(id: CancelID.observePush, cancelInFlight: true)
+
+      case .path(.popFrom(id: _)):
+        if state.path.isEmpty {
+          return .run { _ in
+            await dismiss()
+          }
+        }
+        return .none
       case .path:
         return .none
 
       case let .pushPath(nextPath):
         state.path.append(nextPath)
+        return .none
+
+      case let .initPush(path):
+        switch path {
+        case .search:
+          state.path.append(.search(.init()))
+        case .voteDetail(.mine):
+          state.path.append(.myVote(.init()))
+        case .voteDetail(.other):
+          state.path.append(.otherVoteDetail(.init()))
+        case .write:
+          state.path.append(.write(.init()))
+        }
         return .none
       }
     }

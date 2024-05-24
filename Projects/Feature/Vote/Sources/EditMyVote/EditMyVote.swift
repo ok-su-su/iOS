@@ -27,8 +27,11 @@ struct EditMyVote {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case editedVoteTextContent(String)
+    case tappedSection(VoteSectionHeaderItem)
   }
 
   enum InnerAction: Equatable {}
@@ -52,7 +55,13 @@ struct EditMyVote {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case let .view(.editedVoteTextContent(text)):
+        state.helper.textFieldText = text
+        return .none
+      case let .view(.tappedSection(item)):
+        state.helper.selectedSection = item
+        return .none
+      case .scope(.header):
         return .none
       }
     }
