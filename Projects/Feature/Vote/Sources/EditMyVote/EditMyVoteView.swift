@@ -41,7 +41,6 @@ struct EditMyVoteView: View {
           )) {
             store.send(.view(.tappedSection(item)))
           }
-          .disabled(true)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 
+// MARK: - EditMyVote
+
 @Reducer
 struct EditMyVote {
   @ObservableState
@@ -46,10 +48,7 @@ struct EditMyVote {
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.header, action: \.scope.header) {
-      HeaderViewFeature()
-    }
-
+    initScope
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -61,9 +60,20 @@ struct EditMyVote {
       case let .view(.tappedSection(item)):
         state.helper.selectedSection = item
         return .none
+      case .scope(.header(.tappedTextButton)):
+        VotePathPublisher.shared.push(.myVote(.init()))
+        return .none
       case .scope(.header):
         return .none
       }
+    }
+  }
+}
+
+extension Reducer where State == EditMyVote.State, Action == EditMyVote.Action {
+  var initScope: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.scope.header) {
+      HeaderViewFeature()
     }
   }
 }
