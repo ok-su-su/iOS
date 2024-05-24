@@ -18,6 +18,7 @@ struct SearchEnvelope {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2Default))
     var customTextField: CustomTextField.State
+    var specificEnvelope: SpecificEnvelopeHistoryRouter.State?
     @Shared var textFieldText: String
     @Shared var searchHelper: SearchEnvelopeHelper
 
@@ -46,6 +47,9 @@ struct SearchEnvelope {
     case customTextField(CustomTextField.Action)
     case tappedLatestSearchName(String)
     case tappedLatestSearchNameDelete(String)
+    // TODO: 로직 연결
+    case specificEnvelope(SpecificEnvelopeHistoryRouter.Action)
+    case tappedSpecificName
   }
 
   var body: some Reducer<State, Action> {
@@ -58,6 +62,8 @@ struct SearchEnvelope {
 
     Reduce { state, action in
       switch action {
+      case .tappedSpecificName:
+        return .none
       case let .tappedLatestSearchNameDelete(name):
         var latestSearch = state.searchHelper.latestSearch
         if let ind = latestSearch.firstIndex(of: name) {
@@ -74,6 +80,8 @@ struct SearchEnvelope {
       case .header:
         return .none
       case .customTextField:
+        return .none
+      case .specificEnvelope:
         return .none
       }
     }

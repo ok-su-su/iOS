@@ -3,14 +3,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Sent",
+  name: "MyPage",
   targets: .feature(
-    .sent,
+    .myPage,
     testingOptions: [.unitTest],
     dependencies: [
-      .core(.coreLayers),
       .share(.designsystem),
       .share(.sSAlert),
+      .core(.coreLayers),
     ],
     testDependencies: []
   )
