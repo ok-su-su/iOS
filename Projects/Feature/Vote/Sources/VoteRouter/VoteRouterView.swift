@@ -42,6 +42,9 @@ struct VoteRouterView: View {
 
       case let .edit(store):
         EditMyVoteView(store: store)
+
+      case .dismiss:
+        EmptyView()
       }
     }
   }

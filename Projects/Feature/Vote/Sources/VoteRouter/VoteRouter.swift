@@ -55,17 +55,15 @@ struct VoteRouter {
         )
         .cancellable(id: CancelID.observePush, cancelInFlight: true)
 
-      case .path(.popFrom(id: _)):
-        if state.path.isEmpty {
-          return .run { _ in
-            await dismiss()
-          }
-        }
-        return .none
       case .path:
         return .none
 
       case let .pushPath(nextPath):
+        if nextPath == .dismiss(.init()) {
+          return .run { _ in
+            await dismiss()
+          }
+        }
         state.path.append(nextPath)
         return .none
 

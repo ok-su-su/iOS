@@ -16,7 +16,7 @@ struct MyVoteDetail {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2DoubleText("편집", "삭제")))
+    var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2DoubleText("편집", "삭제")), enableDismissAction: false)
     var helper: MyVoteDetailProperty = .init()
     var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
     var isPresentAlert: Bool = false
@@ -66,6 +66,9 @@ struct MyVoteDetail {
         return .none
       case .scope(.header(.tappedDoubleTextButton(.leading))):
         VotePathPublisher.shared.push(.edit(EditMyVote.State()))
+        return .none
+      case .scope(.header(.tappedDismissButton)):
+        VotePathPublisher.shared.push(.dismiss(.init()))
         return .none
       case .scope(.header):
         return .none
