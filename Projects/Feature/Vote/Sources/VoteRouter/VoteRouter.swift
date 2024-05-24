@@ -30,23 +30,36 @@ struct VoteRouter {
     case path(StackActionOf<VoteRouterPath>)
   }
 
+  enum CancelID {
+    case observePush
+  }
+
   @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
+        state.isOnAppear = isAppear
         return .publisher {
           VotePathPublisher.shared
             .pathPublisher()
             .map { path in .pushPath(path) }
         }
+        .cancellable(id: CancelID.observePush, cancelInFlight: true)
       case .path:
         return .none
+
       case let .pushPath(nextPath):
         state.path.append(nextPath)
         return .none
       }
     }
-    .forEach(\.path, action: \.path)
+    .addFeatures()
+  }
+}
+
+extension Reducer where State == VoteRouter.State, Action == VoteRouter.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    forEach(\.path, action: \.path)
   }
 }

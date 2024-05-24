@@ -6,15 +6,29 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import Foundation
+
+// MARK: - MyVoteDetail
 
 @Reducer
 struct MyVoteDetail {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2DoubleText("편집", "삭제")))
+    var helper: MyVoteDetailProperty = .init()
+    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
+    var isPresentAlert: Bool = false
 
-    init() {}
+    init() {
+      helper.voteProgress.forEach { property in
+        guard let sharedProperty = helper.$voteProgress[id: property.id] else {
+          return
+        }
+        voteProgressBar.append(.init(property: sharedProperty))
+      }
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -34,7 +48,10 @@ struct MyVoteDetail {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+    case voteProgressBar(IdentifiedActionOf<VoteProgressBarReducer>)
+  }
 
   enum DelegateAction: Equatable {}
 
@@ -44,9 +61,20 @@ struct MyVoteDetail {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      default:
+      case .scope(.header):
+        return .none
+      case .scope(.voteProgressBar):
         return .none
       }
+    }
+    .addFeatures()
+  }
+}
+
+extension Reducer where State == MyVoteDetail.State, Action == MyVoteDetail.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    forEach(\.voteProgressBar, action: \.scope.voteProgressBar) {
+      VoteProgressBarReducer()
     }
   }
 }

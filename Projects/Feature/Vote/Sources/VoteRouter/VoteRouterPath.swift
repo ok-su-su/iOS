@@ -16,4 +16,5 @@ enum VoteRouterPath {
   case search(VoteSearch)
   case otherVoteDetail(OtherVoteDetail)
   case write(WriteVote)
+  case myVote(MyVoteDetail)
 }
