@@ -19,14 +19,16 @@ struct MyStatisticsView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 8) {
-      makeHistoryView()
-      makeMostSpendMonth()
-      makeHalfCardView()
-      makeMostReceivedPriceCard()
-      makeMostSentPriceCard()
+    ScrollView(.vertical) {
+      VStack(spacing: 8) {
+        makeHistoryView()
+        makeMostSpendMonth()
+        makeHalfCardView()
+        makeMostReceivedPriceCard()
+        makeMostSentPriceCard()
+      }
+      .padding(.horizontal, 16)
     }
-    .padding(.horizontal, 16)
   }
 
   @ViewBuilder
@@ -44,11 +46,29 @@ struct MyStatisticsView: View {
           .modifier(SSTypoModifier(.title_xs))
           .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
       }
-      .frame(maxWidth: .infinity)
-      .padding(16)
-      .background(SSColor.gray10)
-      .clipShape(RoundedRectangle(cornerRadius: 4))
+
+      HStack(spacing: 12) {
+        let fakeData = store.helper.historyData
+        ForEach(0 ..< fakeData.count, id: \.self) { ind in
+          let curData = fakeData[ind]
+          VStack(spacing: 4) {
+            Spacer()
+            SSColor
+              .orange30
+              .frame(maxWidth: 24, maxHeight: CGFloat(curData))
+              .clipShape(RoundedRectangle(cornerRadius: 4))
+
+            Text("\(ind + 1)월")
+              .modifier(SSTypoModifier(.title_xxxs))
+              .foregroundStyle(SSColor.gray40)
+          }
+          .frame(maxWidth: 24, minHeight: 104)
+        }
+      }
     }
+    .padding(16)
+    .background(SSColor.gray10)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
   @ViewBuilder
@@ -130,7 +150,7 @@ struct MyStatisticsView: View {
     }
     .navigationBarBackButtonHidden()
     .onAppear {
-      store.send(.view(.onAppear(true)))
+      store.send(.view(.onAppear(true)), animation: .linear(duration: 0.8))
     }
   }
 

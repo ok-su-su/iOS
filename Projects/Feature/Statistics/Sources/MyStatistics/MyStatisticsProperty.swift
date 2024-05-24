@@ -21,6 +21,9 @@ struct MyStatisticsProperty: Equatable {
   var mostSentPersonName: String?
   var mostSentPrices: Int?
 
+  var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
+  var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
+
   init() {
     mostRelationshipText = "친구"
     mostRelationshipFrequency = 12

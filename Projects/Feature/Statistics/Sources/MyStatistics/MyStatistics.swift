@@ -43,8 +43,7 @@ struct MyStatistics {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
-      default:
+        state.helper.historyData = state.helper.fakeHistoryData
         return .none
       }
     }
