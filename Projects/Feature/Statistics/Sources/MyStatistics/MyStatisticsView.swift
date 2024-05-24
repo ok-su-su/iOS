@@ -19,12 +19,15 @@ struct MyStatisticsView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 8) {}
+    VStack(spacing: 8) {
+      makeHistoryView()
+      makeMostSpendMonth()
+    }
   }
 
   @ViewBuilder
   private func makeHistoryView() -> some View {
-    var isData = store.helper != nil
+    let isData = store.helper != nil
     VStack(spacing: 16) {
       HStack(spacing: 0) {
         Text("최근 8개월간 쓴 금액")
@@ -45,6 +48,29 @@ struct MyStatisticsView: View {
       .clipShape(RoundedRectangle(cornerRadius: 4))
     }
   }
+  
+  @ViewBuilder
+  private func makeMostSpendMonth() -> some View {
+    let isData = store.helper != nil
+    VStack(spacing: 16) {
+      HStack(spacing: 0) {
+        Text("경조사비를 가장 많이 쓴 달")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray100)
+
+        Spacer()
+
+        Text("?월")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
+      }
+      .frame(maxWidth: .infinity)
+      .padding(16)
+      .background(SSColor.gray10)
+      .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+  }
+  
 
   var body: some View {
     VStack(spacing: 0) {
