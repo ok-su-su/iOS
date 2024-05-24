@@ -13,7 +13,7 @@ struct MyStatistics {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var helper: MyStatisticsProperty? = nil
+    var helper: MyStatisticsProperty = .init()
     init() {}
   }
 

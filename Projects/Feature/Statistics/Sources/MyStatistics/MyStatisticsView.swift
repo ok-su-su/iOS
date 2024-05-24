@@ -22,7 +22,9 @@ struct MyStatisticsView: View {
     VStack(spacing: 8) {
       makeHistoryView()
       makeMostSpendMonth()
+      makeHalfCardView()
     }
+    .padding(.horizontal, 16)
   }
 
   @ViewBuilder
@@ -39,8 +41,6 @@ struct MyStatisticsView: View {
         Text("0만원")
           .modifier(SSTypoModifier(.title_xs))
           .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
-
-        if let helper = store.helper {}
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -48,6 +48,7 @@ struct MyStatisticsView: View {
       .clipShape(RoundedRectangle(cornerRadius: 4))
     }
   }
+
   
   @ViewBuilder
   private func makeMostSpendMonth() -> some View {
@@ -71,6 +72,40 @@ struct MyStatisticsView: View {
     }
   }
   
+  @ViewBuilder
+  private func makeHalfCardView() -> some View {
+    HStack(spacing: 8) {
+      let helper = store.helper
+      // 최다 친구 관계
+      StatisticsType0Card(
+        property: .init(
+          title: "최다 친구 관계",
+          description: helper.mostRelationshipText ?? "?",
+          caption: "총 \(helper.mostRelationshipFrequency ?? 0)번",
+          isEmptyState: helper.mostRelationshipText != nil && helper.mostRelationshipFrequency != nil
+        )
+      )
+      // 최다 경조사
+      StatisticsType0Card(
+        property: .init(
+          title: "최다 수수 경조사",
+          description: helper.mostEventText ?? "?",
+          caption: "총 \(helper.mostEventFrequency ?? 0)번",
+          isEmptyState: helper.mostEventText != nil && helper.mostEventFrequency != nil
+        )
+      )
+    }
+    .frame(maxWidth: .infinity)
+    .padding(16)
+    .background(SSColor.gray10)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
+  }
+  
+  @ViewBuilder
+  private func makeMostReceivedPriceCard() -> some View {
+    
+  }
+
 
   var body: some View {
     VStack(spacing: 0) {
