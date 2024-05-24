@@ -17,6 +17,7 @@ struct StatisticsMain {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .statistics)
     var header: HeaderViewFeature.State = .init(.init(title: "통계", type: .defaultType))
     var helper: StatisticsMainProperty = .init()
+    var myStatistics: MyStatistics.State = .init()
     init() {}
   }
 
@@ -41,6 +42,7 @@ struct StatisticsMain {
   enum ScopeAction: Equatable {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
+    case myStatistics(MyStatistics.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -53,6 +55,11 @@ struct StatisticsMain {
     Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
+
+    Scope(state: \.myStatistics, action: \.scope.myStatistics) {
+      MyStatistics()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -64,6 +71,8 @@ struct StatisticsMain {
       case .scope(.header):
         return .none
       case .scope(.tabBar):
+        return .none
+      case .scope(.myStatistics):
         return .none
       }
     }

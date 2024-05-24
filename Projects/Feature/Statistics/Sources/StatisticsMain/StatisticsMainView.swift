@@ -21,6 +21,9 @@ struct StatisticsMainView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 8) {
       makeTopStepper()
+      if store.helper.selectedStepperType == .my {
+        MyStatisticsView(store: store.scope(state: \.myStatistics, action: \.scope.myStatistics))
+      }
     }
   }
 
