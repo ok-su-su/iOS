@@ -11,14 +11,14 @@ import Foundation
 /// VoteRouter 화면전환시 첫 화면에 대한 구조체 입니다.
 enum VoteRouterInitialPath: Equatable {
   case search
-  case otherVoteDetail
+  case voteDetail
   case write
 
   var State: VoteRouterPath {
     switch self {
     case .search:
       return .search(.init())
-    case .otherVoteDetail:
+    case .voteDetail:
       return .otherVoteDetail(.init())
     case .write:
       return .write(.init())

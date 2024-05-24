@@ -97,7 +97,7 @@ struct VoteMain {
         return .send(.inner(.present(.write)))
 
       case .view(.tappedVoteItem):
-        return .send(.inner(.present(.otherVoteDetail)))
+        return .send(.inner(.present(.voteDetail)))
 
       case let .view(.tappedReportButton(id)):
         // TODO: 메시지 신고할 때 추가 로직 생성

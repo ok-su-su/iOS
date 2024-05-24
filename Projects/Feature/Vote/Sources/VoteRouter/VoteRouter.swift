@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/24/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import Combine
 import ComposableArchitecture
 import Foundation
 
@@ -17,6 +18,7 @@ struct VoteRouter {
     var isOnAppear = false
     var path: StackState<VoteRouterPath.State> = .init()
     var initialPath: VoteRouterInitialPath
+    var subscriber: AnyCancellable? = nil
     init(initialPath: VoteRouterInitialPath) {
       self.initialPath = initialPath
     }
@@ -24,6 +26,7 @@ struct VoteRouter {
 
   enum Action: Equatable {
     case onAppear(Bool)
+    case pushPath(VoteRouterPath.State)
     case path(StackActionOf<VoteRouterPath>)
   }
 
@@ -32,14 +35,15 @@ struct VoteRouter {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
-        if state.path.isEmpty {
-          state.isOnAppear = isAppear
-          return .none
-        }
-        return .run { _ in
-          await dismiss()
+        return .publisher {
+          VotePathPublisher.shared
+            .pathPublisher()
+            .map { path in .pushPath(path) }
         }
       case .path:
+        return .none
+      case let .pushPath(nextPath):
+        state.path.append(nextPath)
         return .none
       }
     }

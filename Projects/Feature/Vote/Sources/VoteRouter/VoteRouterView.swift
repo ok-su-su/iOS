@@ -20,7 +20,7 @@ struct VoteRouterView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     switch store.initialPath {
-    case .otherVoteDetail:
+    case .voteDetail:
       OtherVoteDetailView(store: .init(initialState: OtherVoteDetail.State()) {
         OtherVoteDetail()
       })
