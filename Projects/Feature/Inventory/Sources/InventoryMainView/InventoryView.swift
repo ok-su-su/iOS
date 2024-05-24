@@ -134,15 +134,16 @@ public struct InventoryView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
-    }.navigationBarBackButtonHidden()
-      .sheet(item: $inventoryStore.scope(state: \.sortSheet, action: \.sortSheet)) { store in
-        InventorySortSheetView(store: store)
-          .presentationDetents([.height(240), .medium, .large])
-          .presentationDragIndicator(.automatic)
-      }
-      .fullScreenCover(item: $inventoryStore.scope(state: \.inventoryAccount, action: \.showInventoryDetailView)) { store in
-        InventoryAccountDetailRouterView(store: store)
-      }
+    }
+    .navigationBarBackButtonHidden()
+    .sheet(item: $inventoryStore.scope(state: \.sortSheet, action: \.sortSheet)) { store in
+      InventorySortSheetView(store: store)
+        .presentationDetents([.height(240), .medium, .large])
+        .presentationDragIndicator(.automatic)
+    }
+    .fullScreenCover(item: $inventoryStore.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
+      InventorySearchView(store: store)
+    }
   }
 
   private enum InventoryFilterConstants {

@@ -13,8 +13,6 @@ import OSLog
 
 @Reducer
 public struct InventoryViewFeature {
-  public init() {}
-
   @ObservableState
   public struct State {
     var inventorys: IdentifiedArrayOf<InventoryBox.State> = [
@@ -24,20 +22,20 @@ public struct InventoryViewFeature {
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
-    
+
     @Presents var searchInvenotry: InventorySearch.State?
-    public init(inventorys: IdentifiedArrayOf<InventoryBox.State>, isLoading: Bool = false) {
-      self.inventorys = inventorys
-      self.isLoading = isLoading
     @Presents var sortSheet: InventorySortSheet.State?
     @Presents var inventoryAccount: InventoryAccountDetailRouter.State?
-
+    @Shared var searchInventoryHelper: InventorySearchHelper
     @Shared var selectedSortItem: SortTypes
 
     init() {
+      _searchInventoryHelper = Shared(.init())
       _selectedSortItem = Shared(.latest)
     }
   }
+
+  public init() {}
 
   @CasePathable
   public enum Action {
@@ -45,6 +43,8 @@ public struct InventoryViewFeature {
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
     case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
+    case showSearchView(PresentationAction<InventorySearch.Action>)
+
     case sortSheet(PresentationAction<InventorySortSheet.Action>)
     case showInventoryDetailView(PresentationAction<InventoryAccountDetailRouter.Action>)
     case didTapInventoryView
@@ -66,6 +66,10 @@ public struct InventoryViewFeature {
       InventoryFloating()
     }
 
+    .ifLet(\.$searchInvenotry, action: \.showSearchView) {
+      InventorySearch()
+    }
+
     .ifLet(\.$sortSheet, action: \.sortSheet) {
       InventorySortSheet()
     }
@@ -81,6 +85,9 @@ public struct InventoryViewFeature {
         return .none
       case .didTapLatestButton:
         state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
+        return .none
+      case .setHeaderView(.tappedSearchButton):
+        state.searchInvenotry = InventorySearch.State(searchHelper: state.$searchInventoryHelper)
         return .none
       case .didTapFilterButton:
         return .none
