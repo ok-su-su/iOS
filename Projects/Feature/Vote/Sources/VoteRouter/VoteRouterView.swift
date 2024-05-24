@@ -47,6 +47,9 @@ struct VoteRouterView: View {
     VStack {
       NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
         makeContentView()
+          .onAppear {
+            store.send(.onAppear(true))
+          }
       } destination: { store in
         switch store.case {
         case let .write(store):
@@ -60,6 +63,8 @@ struct VoteRouterView: View {
 
         case let .myVote(store):
           MyVoteDetailView(store: store)
+        case let .edit(store):
+          EditMyVoteView(store: store)
         }
       }
     }

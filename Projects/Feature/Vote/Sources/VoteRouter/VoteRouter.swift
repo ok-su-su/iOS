@@ -39,6 +39,9 @@ struct VoteRouter {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
+        if state.isOnAppear == true {
+          return .none
+        }
         state.isOnAppear = isAppear
         return .publisher {
           VotePathPublisher.shared

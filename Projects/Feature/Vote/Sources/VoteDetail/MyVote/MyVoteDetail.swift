@@ -56,10 +56,16 @@ struct MyVoteDetail {
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.scope.header) {
+      HeaderViewFeature()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
+        return .none
+      case .scope(.header(.tappedDoubleTextButton(.leading))):
+        VotePathPublisher.shared.push(.edit(EditMyVote.State()))
         return .none
       case .scope(.header):
         return .none
