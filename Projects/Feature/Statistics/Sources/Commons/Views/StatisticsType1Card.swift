@@ -28,7 +28,7 @@ struct StatisticsType1Card: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 8) {
       // 타이틀
       Text(property.title)
         .modifier(SSTypoModifier(.title_xxs))
@@ -45,9 +45,9 @@ struct StatisticsType1Card: View {
           .modifier(SSTypoModifier(.text_xxxxs))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray60)
       }
-      .frame(maxWidth: .infinity)
-      .padding(16)
-      .background(SSColor.gray10)
     }
+    .frame(maxWidth: .infinity)
+    .padding(16)
+    .background(SSColor.gray10)
   }
 }

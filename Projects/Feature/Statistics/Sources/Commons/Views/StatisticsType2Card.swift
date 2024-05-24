@@ -27,7 +27,8 @@ struct StatisticsType2Card: View {
       // 타이틀
       Text(property.title)
         .modifier(SSTypoModifier(.title_xxs))
-        .foregroundStyle(SSColor.gray100)
+        .foregroundStyle(SSColor.gray50)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
       HStack(spacing: 0) {
         // leading Item
@@ -42,13 +43,9 @@ struct StatisticsType2Card: View {
           .modifier(SSTypoModifier(.title_s))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
       }
-      .frame(maxWidth: .infinity)
-      .padding(16)
-      .background(SSColor.gray10)
     }
+    .frame(maxWidth: .infinity)
+    .padding(16)
+    .background(SSColor.gray10)
   }
-}
-
-#Preview {
-  StatisticsType2Card()
 }

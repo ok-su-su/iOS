@@ -83,7 +83,7 @@ struct MyStatisticsView: View {
           title: "최다 친구 관계",
           description: helper.mostRelationshipText ?? "?",
           caption: "총 \(helper.mostRelationshipFrequency ?? 0)번",
-          isEmptyState: helper.mostRelationshipText == nil || helper.mostRelationshipFrequency != nil
+          isEmptyState: helper.mostRelationshipText == nil || helper.mostRelationshipFrequency == nil
         )
       )
       // 최다 경조사
@@ -92,14 +92,10 @@ struct MyStatisticsView: View {
           title: "최다 수수 경조사",
           description: helper.mostEventText ?? "?",
           caption: "총 \(helper.mostEventFrequency ?? 0)번",
-          isEmptyState: helper.mostEventText == nil || helper.mostEventFrequency != nil
+          isEmptyState: helper.mostEventText == nil || helper.mostEventFrequency == nil
         )
       )
     }
-    .frame(maxWidth: .infinity)
-    .padding(16)
-    .background(SSColor.gray10)
-    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
   @ViewBuilder
