@@ -20,10 +20,8 @@ struct VoteMain {
     var header = HeaderViewFeature.State(.init(title: "투표", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .vote)
     var voteMainProperty = VoteMainProperty()
-    @Presents var writeVote: WriteVote.State? = nil
-    @Presents var otherVoteDetail: OtherVoteDetail.State? = nil
     var isPresentReport: Bool = false
-    @Presents var voteSearch: VoteSearch.State? = nil
+    @Presents var voteRouter: VoteRouter.State? = nil
 
     init() {}
   }
@@ -49,7 +47,9 @@ struct VoteMain {
     case presentReport(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case present(VoteRouterInitialPath)
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -57,9 +57,7 @@ struct VoteMain {
   enum ScopeAction: Equatable {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
-    case writeVote(PresentationAction<WriteVote.Action>)
-    case otherVoteDetail(PresentationAction<OtherVoteDetail.Action>)
-    case voteSearch(PresentationAction<VoteSearch.Action>)
+    case voteRouter(PresentationAction<VoteRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -81,7 +79,7 @@ struct VoteMain {
         return .none
 
       case .scope(.header(.tappedSearchButton)):
-        state.voteSearch = .init()
+        state.voteRouter = .init(initialPath: .search)
         return .none
 
       case .scope(.header):
@@ -96,17 +94,10 @@ struct VoteMain {
         return .none
 
       case .view(.tappedFloatingButton):
-        state.writeVote = .init()
-        return .none
+        return .send(.inner(.present(.write)))
 
-      case .scope(.writeVote):
-        return .none
       case .view(.tappedVoteItem):
-        state.otherVoteDetail = .init()
-        return .none
-
-      case .scope(.otherVoteDetail(_)):
-        return .none
+        return .send(.inner(.present(.otherVoteDetail)))
 
       case let .view(.tappedReportButton(id)):
         // TODO: 메시지 신고할 때 추가 로직 생성
@@ -118,7 +109,12 @@ struct VoteMain {
       case let .view(.presentReport(val)):
         state.isPresentReport = val
         return .none
-      case .scope(.voteSearch):
+
+      case .scope(.voteRouter):
+        return .none
+
+      case let .inner(.present(present)):
+        state.voteRouter = .init(initialPath: present)
         return .none
       }
     }
@@ -128,14 +124,8 @@ struct VoteMain {
 
 private extension Reducer where State == VoteMain.State, Action == VoteMain.Action {
   func addFeatures0() -> some ReducerOf<Self> {
-    ifLet(\.$writeVote, action: \.scope.writeVote) {
-      WriteVote()
-    }
-    .ifLet(\.$otherVoteDetail, action: \.scope.otherVoteDetail) {
-      OtherVoteDetail()
-    }
-    .ifLet(\.$voteSearch, action: \.scope.voteSearch) {
-      VoteSearch()
+    ifLet(\.$voteRouter, action: \.scope.voteRouter) {
+      VoteRouter()
     }
   }
 }
