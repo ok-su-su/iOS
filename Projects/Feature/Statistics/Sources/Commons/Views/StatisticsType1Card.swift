@@ -20,7 +20,7 @@ struct StatisticsType1CardProperty: Equatable {
 
 // MARK: - StatisticsType0Card
 
-struct StatisticsType0Card: View {
+struct StatisticsType1Card: View {
   var property: StatisticsType1CardProperty
 
   init(property: StatisticsType1CardProperty) {
@@ -38,12 +38,12 @@ struct StatisticsType0Card: View {
         // Description
         Text(property.description)
           .modifier(SSTypoModifier(.title_l))
-          .foregroundStyle(SSColor.orange60)
+          .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.orange60)
 
         // Caption
         Text(property.caption)
           .modifier(SSTypoModifier(.text_xxxxs))
-          .foregroundStyle(SSColor.gray60)
+          .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray60)
       }
       .frame(maxWidth: .infinity)
       .padding(16)

@@ -77,7 +77,7 @@ struct MyStatisticsView: View {
     HStack(spacing: 8) {
       let helper = store.helper
       // 최다 친구 관계
-      StatisticsType0Card(
+      StatisticsType1Card(
         property: .init(
           title: "최다 친구 관계",
           description: helper.mostRelationshipText ?? "?",
@@ -86,7 +86,7 @@ struct MyStatisticsView: View {
         )
       )
       // 최다 경조사
-      StatisticsType0Card(
+      StatisticsType1Card(
         property: .init(
           title: "최다 수수 경조사",
           description: helper.mostEventText ?? "?",
