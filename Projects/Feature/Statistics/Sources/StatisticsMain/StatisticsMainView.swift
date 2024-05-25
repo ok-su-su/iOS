@@ -35,16 +35,18 @@ struct StatisticsMainView: View {
     HStack(alignment: .top, spacing: 4) {
       ForEach(StepperType.allCases) { type in
         let isSelected = type == store.helper.selectedStepperType
-        Text(type.title)
-          .modifier(SSTypoModifier(.title_xxxs))
-          .foregroundStyle(isSelected ? SSColor.gray100 : SSColor.gray50)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .frame(maxWidth: .infinity, alignment: .center)
-          .background(isSelected ? SSColor.gray20 : Color.clear)
-          .onTapGesture {
-            store.send(.view(.tappedStepper(type)))
-          }
+        Button {
+          store.send(.view(.tappedStepper(type)))
+        } label: {
+          Text(type.title)
+            .modifier(SSTypoModifier(.title_xxxs))
+            .foregroundStyle(isSelected ? SSColor.gray100 : SSColor.gray50)
+            .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(isSelected ? SSColor.gray20 : Color.clear)
       }
     }
     .frame(maxWidth: .infinity)
