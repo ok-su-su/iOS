@@ -35,6 +35,7 @@ struct OtherStatisticsView: View {
         Text("눌러용")
       }
     }
+    .padding(.horizontal, 16)
   }
 
   @ViewBuilder
