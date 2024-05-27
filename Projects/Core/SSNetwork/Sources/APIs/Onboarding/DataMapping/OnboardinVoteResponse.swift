@@ -1,5 +1,5 @@
 //
-//  SignInType.swift
+//  OnboardinVoteResponse.swift
 //  SSNetwork
 //
 //  Created by 김건우 on 5/27/24.
@@ -8,8 +8,6 @@
 
 import Foundation
 
-public enum SignInType: String, Codable {
-  case apple = "APPLE"
-  case kakao = "KAKAO"
-  case google = "GOOGLE"
+public struct OnboardinVoteResponse: Decodable {
+  private enum
 }

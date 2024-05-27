@@ -9,14 +9,14 @@
 import Foundation
 
 public struct OAuthLoginRequest: Encodable {
-    private enum CodingKeys: String, CodingKey {
-        case accessToken
-    }
-    public var accessToken: String
-    
-    public init(accessToken: String) {
-        self.accessToken = accessToken
-    }
+  private enum CodingKeys: String, CodingKey {
+    case accessToken
+  }
+  public var accessToken: String
+  
+  public init(accessToken: String) {
+    self.accessToken = accessToken
+  }
 }
 
 

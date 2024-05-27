@@ -9,8 +9,8 @@
 import Foundation
 
 public struct AbleRegisterResponse: Decodable {
-    private enum CodingKeys: String, CodingKey {
-        case canRegister
-    }
-    var canRegister: Bool
+  private enum CodingKeys: String, CodingKey {
+    case canRegister
+  }
+  var canRegister: Bool
 }

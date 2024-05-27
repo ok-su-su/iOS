@@ -9,10 +9,10 @@
 import Foundation
 
 public struct UserOAuthInfoResponse: Decodable {
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case oauthProvider
-    }
-    public var id: Int
-    public var oauthProvider: SignInType
+  private enum CodingKeys: String, CodingKey {
+    case id
+    case oauthProvider
+  }
+  public var id: Int
+  public var oauthProvider: SignInType
 }
