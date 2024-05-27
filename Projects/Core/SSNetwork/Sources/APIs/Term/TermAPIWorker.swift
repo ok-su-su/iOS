@@ -14,7 +14,7 @@ final public class TermAPIWorker: Networkable {
   typealias Target = TermTarget
   
   // MARK: - Provider
-  lazy var provider = makeProvider()
+  lazy var provider = makeUnauthProvider()
   
   // MARK: - Networking
   public func terms() async throws -> [GetTermResponse] {

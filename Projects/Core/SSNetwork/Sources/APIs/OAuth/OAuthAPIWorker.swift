@@ -76,6 +76,9 @@ final public class OAuthAPIWorker: Networkable {
       .withdraw(code: code, accessToken: ""),
       of: VoidResponse.self
     )
+    
+    // NOTE: - 회원 탈퇴 kakao는 아무것도 안넘겨줘도 됩니다.
+    //         google 회원탈퇴시 구글측 accessToken을 param으로 넘겨줘야함
   }
   
 }

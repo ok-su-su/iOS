@@ -14,7 +14,7 @@ final public class OnboardingAPIWorker: Networkable {
   typealias Target = OnboardingTarget
   
   // MARK: - Provider
-  lazy var provider = makeProvider()
+  lazy var provider = makeUnauthProvider()
   
   // MARK: - Networking
   public func onboarding() async throws -> OnboardingVoteResponse {

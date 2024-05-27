@@ -28,4 +28,10 @@ extension Networkable {
     )
   }
   
+  func makeUnauthProvider() -> MoyaProvider<Target> {
+    let loggerPlugin = NetworkLoggerPlugin()
+    
+    return MoyaProvider<Target>(plugins: [loggerPlugin])
+  }
+  
 }
