@@ -17,8 +17,8 @@ final public class OnboardingAPIWorker: Networkable {
   lazy var provider = makeProvider()
   
   // MARK: - Networking
-  public func onboarding() async throws -> OnboardinVoteResponse {
-    try await provider.request(.onboarding, of: OnboardinVoteResponse.self)
+  public func onboarding() async throws -> OnboardingVoteResponse {
+    try await provider.request(.onboarding, of: OnboardingVoteResponse.self)
   }
   
 }

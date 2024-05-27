@@ -1,5 +1,5 @@
 //
-//  OnboardinVoteResponse.swift
+//  VoidResponse.swift
 //  SSNetwork
 //
 //  Created by 김건우 on 5/27/24.
@@ -8,6 +8,4 @@
 
 import Foundation
 
-public struct OnboardinVoteResponse: Decodable {
-  private enum
-}
+public struct VoidResponse: Decodable { }
