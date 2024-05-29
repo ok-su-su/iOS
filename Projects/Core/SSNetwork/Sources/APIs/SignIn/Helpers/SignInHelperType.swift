@@ -9,6 +9,6 @@
 import UIKit
 
 protocol SignInHelperType {
-    func signIn(with: UIViewController) async throws -> TokenResult
+    func signIn(with viewController: UIViewController) async throws -> TokenResult
     func signOut() async throws
 }

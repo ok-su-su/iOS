@@ -32,15 +32,11 @@ extension BaseTargetType {
 
 
 
-// TODO: - Move other Module
+// TODO: - 다른 모듈로 옮기기
 public extension Bundle {
     
     var baseUrl: String {
-      Bundle.main.infoDictionary?["BASE_URL"] as! String
-    }
-    
-    var baseDevUrl: String {
-      Bundle.main.infoDictionary?["BASE_DEV_URL"] as! String
+      Bundle.main.infoDictionary?["BaseURL"] as! String
     }
     
 }

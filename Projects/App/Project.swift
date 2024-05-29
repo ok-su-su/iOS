@@ -38,8 +38,6 @@ let project = Project.makeModule(
                             ]),
                 ]),
             ]),
-      "BASE_URL": "${BASE_URL}",
-      "BASE_DEV_URL": "${BASE_DEV_URL}",
       "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
     ]
   )

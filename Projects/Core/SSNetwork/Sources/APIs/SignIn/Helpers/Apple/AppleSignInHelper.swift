@@ -11,7 +11,9 @@ import UIKit
 final class AppleSignInHelper: SignInHelperType {
     
     // TODO: - Apple SignIn Code 작성하기
-    func signIn(with: UIViewController) async throws -> TokenResult {
+    func signIn(
+        with viewController: UIViewController
+    ) async throws -> TokenResult {
         return TokenResult(accessToken: "", refershToken: "")
     }
     

@@ -15,7 +15,9 @@ import KakaoSDKUser
 final class KakaoSignInHelper: SignInHelperType {
     
     // MARK: - Sign In
-    func signIn(with: UIViewController) async throws -> TokenResult {
+    func signIn(
+        with viewController: UIViewController
+    ) async throws -> TokenResult {
         if UserApi.isKakaoTalkLoginAvailable() {
             try await signInWithKakaoTalk()
         } else {
