@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct OtherStatisticsProperty {
+struct OtherStatisticsProperty: Equatable {
   var eventName: String
   var aged: String
   var relationship: String
@@ -44,5 +44,9 @@ struct OtherStatisticsProperty {
 
     relationshipAveragePrice = 100_000
     eventAveragePrice = 52000
+  }
+
+  mutating func fakeSetRelationship() {
+    relationship = ["친구", "가족"].randomElement()!
   }
 }

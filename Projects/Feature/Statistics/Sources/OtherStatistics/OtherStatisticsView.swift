@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
+// MARK: - OtherStatisticsView
+
 struct OtherStatisticsView: View {
   // MARK: Reducer
 
@@ -21,6 +23,7 @@ struct OtherStatisticsView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       makeAverageTopSection()
+      makeRelationAverage()
 
       Text(store.price.description)
         .contentTransition(.numericText())
@@ -73,9 +76,13 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: "친구"
+              buttonText: store.helper.relationship
             )) {
               // 관계 클릭했을 떄 Some Touch logic
+              withAnimation {
+                store.send(.view(.tappedRelationshipButton))
+                return ()
+              }
             }
             .padding(.trailing, 4)
 
@@ -118,6 +125,19 @@ struct OtherStatisticsView: View {
     .padding(16)
     .background(.white)
     .clipShape(RoundedRectangle(cornerRadius: 4))
+  }
+
+  @ViewBuilder
+  private func makeRelationAverage() -> some View {
+    StatisticsType2Card(
+      property: .init(
+        title: "관계별 평균 수수",
+        leadingDescription: store.helper.relationship,
+        trailingDescription: "50000원",
+        isEmptyState: false
+      )
+    )
+    .contentTransition(.numericText())
   }
 
   var body: some View {

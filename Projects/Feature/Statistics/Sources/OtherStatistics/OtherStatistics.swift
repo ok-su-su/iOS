@@ -14,6 +14,7 @@ struct OtherStatistics {
   struct State: Equatable {
     var isOnAppear = false
     var price: Int = 3000
+    var helper: OtherStatisticsProperty = .init()
     init() {}
   }
 
@@ -28,6 +29,7 @@ struct OtherStatistics {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedButton
+    case tappedRelationshipButton
   }
 
   enum InnerAction: Equatable {}
@@ -48,6 +50,10 @@ struct OtherStatistics {
       case .view(.tappedButton):
         let nextValue = (5000 ... 50000).randomElement()!
         state.price = nextValue
+        return .none
+
+      case .view(.tappedRelationshipButton):
+        state.helper.fakeSetRelationship()
         return .none
       }
     }

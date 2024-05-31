@@ -29,7 +29,10 @@ struct MyStatistics {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case setInitialHistoryData
+    case setHistoryData
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -43,7 +46,17 @@ struct MyStatistics {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        state.helper.historyData = state.helper.fakeHistoryData
+        return .run { send in
+          await send(.inner(.setInitialHistoryData))
+          await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
+        }
+
+      case .inner(.setHistoryData):
+        state.helper.setHistoryData()
+        return .none
+
+      case .inner(.setInitialHistoryData):
+        state.helper.setInitialHistoryData()
         return .none
       }
     }

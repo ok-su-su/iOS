@@ -22,7 +22,18 @@ struct MyStatisticsProperty: Equatable {
   var mostSentPrices: Int?
 
   var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
+  var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
   var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
+
+  mutating func setHistoryData() {
+    historyData = fakeHistoryData
+  }
+
+  
+  //TODO: Some 로직 
+  mutating func setInitialHistoryData() {
+    historyData = initialData
+  }
 
   init() {
     mostRelationshipText = "친구"

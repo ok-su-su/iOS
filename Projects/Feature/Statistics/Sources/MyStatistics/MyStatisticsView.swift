@@ -150,7 +150,7 @@ struct MyStatisticsView: View {
     }
     .navigationBarBackButtonHidden()
     .onAppear {
-      store.send(.view(.onAppear(true)), animation: .linear(duration: 0.8))
+      store.send(.view(.onAppear(true)))
     }
   }
 
