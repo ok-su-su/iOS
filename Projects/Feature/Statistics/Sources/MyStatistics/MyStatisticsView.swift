@@ -73,7 +73,6 @@ struct MyStatisticsView: View {
 
   @ViewBuilder
   private func makeMostSpendMonth() -> some View {
-    let isData = store.helper != nil
     VStack(spacing: 16) {
       HStack(spacing: 0) {
         Text("경조사비를 가장 많이 쓴 달")
@@ -84,7 +83,7 @@ struct MyStatisticsView: View {
 
         Text("?월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
+          .foregroundColor(store.helper.mostEventText != nil ? SSColor.blue60 : SSColor.gray40)
       }
       .frame(maxWidth: .infinity)
       .padding(16)

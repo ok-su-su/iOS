@@ -14,6 +14,13 @@ struct OtherStatisticsProperty: Equatable {
   var relationship: String
   var topSectionPrice: Int
   var relationProperty: StatisticsType2CardProperty
+  var eventProperty: StatisticsType2CardProperty
+  var mostSpentMonthText: String = "3월"
+
+  // HistoryProperty
+  var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
+  var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
+  var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
 
   var relationshipAveragePrice: Int
   var eventAveragePrice: Int
@@ -42,6 +49,12 @@ struct OtherStatisticsProperty: Equatable {
       trailingDescription: "500,000원",
       isEmptyState: false
     )
+    eventProperty = .init(
+      title: "경조사 카테고리별 수수",
+      leadingDescription: relationship,
+      trailingDescription: "300,000원",
+      isEmptyState: false
+    )
   }
 
   init() {
@@ -59,10 +72,25 @@ struct OtherStatisticsProperty: Equatable {
       trailingDescription: "500,000원",
       isEmptyState: false
     )
+    eventProperty = .init(
+      title: "경조사 카테고리별 수수",
+      leadingDescription: relationship,
+      trailingDescription: "300,000원",
+      isEmptyState: false
+    )
   }
 
   mutating func fakeSetRelationship() {
     relationship = ["친구", "가족"].randomElement()!
     relationProperty.leadingDescription = relationship
+    relationProperty.updateTrailingText(["100000원", "300000원", "150000원"].randomElement()!)
+  }
+
+  mutating func setHistoryData() {
+    historyData = fakeHistoryData
+  }
+
+  mutating func setInitialHistoryData() {
+    historyData = initialData
   }
 }

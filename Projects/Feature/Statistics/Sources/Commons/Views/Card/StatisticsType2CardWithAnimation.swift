@@ -7,17 +7,43 @@
 //
 
 import Designsystem
+import OSLog
 import SwiftUI
 
 // MARK: - StatisticsType2Card
 
 struct StatisticsType2CardWithAnimation: View {
   @Binding var property: StatisticsType2CardProperty
-  @State private var oldTitle: String = ""
-  @State private var newTitle: String = ""
+  @State private var oldLeadingTitle: String = ""
+  @State private var newLeadingTitle: String = ""
+  @State private var oldTrailingTitle: [String] = []
+  @State private var newTrailingTitle: [String] = []
 
   init(property: Binding<StatisticsType2CardProperty>) {
     _property = property
+  }
+
+  @ViewBuilder
+  func makeTrailingItem() -> some View {
+    ForEach(0 ..< property.trailingDescriptionSlice.count, id: \.self) { ind in
+      CustomNumericNumberAnimation(
+        height: 30,
+        item: $property.trailingDescriptionSlice[ind]
+      ) {
+        if ind < oldTrailingTitle.count {
+          Text(oldTrailingTitle[ind])
+            .modifier(SSTypoModifier(.title_s))
+            .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
+        }
+
+      } newContent: {
+        if ind < newTrailingTitle.count {
+          Text(newTrailingTitle[ind])
+            .modifier(SSTypoModifier(.title_s))
+            .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
+        }
+      }
+    }
   }
 
   var body: some View {
@@ -35,33 +61,37 @@ struct StatisticsType2CardWithAnimation: View {
           height: 30,
           item: $property
         ) {
-          Text(oldTitle)
+          Text(oldLeadingTitle)
             .modifier(SSTypoModifier(.title_s))
             .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
         } newContent: {
-          Text(newTitle)
+          Text(newLeadingTitle)
             .modifier(SSTypoModifier(.title_s))
             .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
         }
 
         Spacer()
-
-        // TrailingItem
-        Text(property.trailingDescription)
-          .modifier(SSTypoModifier(.title_s))
-          .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
+        HStack(spacing: 0) {
+          makeTrailingItem()
+        }
       }
     }
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
     .onChange(of: property) { oldValue, newValue in
-      newTitle = newValue.leadingDescription
-      oldTitle = oldValue.leadingDescription
+      newLeadingTitle = newValue.leadingDescription
+      oldLeadingTitle = oldValue.leadingDescription
+
+      newTrailingTitle = newValue.trailingDescriptionSlice
+      oldTrailingTitle = oldValue.trailingDescriptionSlice
     }
     .onAppear {
-      newTitle = property.leadingDescription
-      oldTitle = property.leadingDescription
+      newLeadingTitle = property.leadingDescription
+      oldLeadingTitle = property.leadingDescription
+
+      newTrailingTitle = property.trailingDescriptionSlice
+      oldTrailingTitle = property.trailingDescriptionSlice
     }
   }
 }

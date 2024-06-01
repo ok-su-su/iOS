@@ -21,22 +21,13 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 8) {
       makeAverageTopSection()
       makeRelationAverage()
-
-      Text(store.price.description)
-        .contentTransition(.numericText())
-
-      Button {
-        withAnimation {
-          store.send(.view(.tappedButton))
-          return ()
-        }
-
-      } label: {
-        Text("눌러용")
-      }
+      makeEventAverage()
+      makeHistoryView()
+      makeMostSpendMonth()
+      makeHalfCardView()
     }
     .padding(.horizontal, 16)
   }
@@ -132,13 +123,107 @@ struct OtherStatisticsView: View {
     StatisticsType2CardWithAnimation(property: $store.helper.relationProperty)
   }
 
+  @ViewBuilder
+  private func makeEventAverage() -> some View {
+    StatisticsType2CardWithAnimation(property: $store.helper.eventProperty)
+  }
+
+  @ViewBuilder
+  private func makeHistoryView() -> some View {
+    VStack(spacing: 16) {
+      HStack(spacing: 0) {
+        Text("최근 8개월간 쓴 금액")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray100)
+
+        Spacer()
+
+        Text("0만원")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundColor(SSColor.blue60)
+        // TODO: - Empty일 떄 로직 세우기
+//          .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
+      }
+
+      HStack(spacing: 12) {
+        let fakeData = store.helper.historyData
+        ForEach(0 ..< fakeData.count, id: \.self) { ind in
+          let curData = fakeData[ind]
+          VStack(spacing: 4) {
+            Spacer()
+            SSColor
+              .orange30
+              .frame(maxWidth: 24, maxHeight: CGFloat(curData))
+              .clipShape(RoundedRectangle(cornerRadius: 4))
+
+            Text("\(ind + 1)월")
+              .modifier(SSTypoModifier(.title_xxxs))
+              .foregroundStyle(SSColor.gray40)
+          }
+          .frame(maxWidth: 24, minHeight: 104)
+        }
+      }
+    }
+    .padding(16)
+    .background(SSColor.gray10)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
+  }
+
+  @ViewBuilder
+  private func makeMostSpendMonth() -> some View {
+    VStack(spacing: 16) {
+      HStack(spacing: 0) {
+        Text("경조사비를 가장 많이 쓴 달")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray100)
+
+        Spacer()
+
+        Text(store.helper.mostSpentMonthText)
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundColor(SSColor.blue60)
+      }
+      .frame(maxWidth: .infinity)
+      .padding(16)
+      .background(SSColor.gray10)
+      .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+  }
+
+  @ViewBuilder
+  private func makeHalfCardView() -> some View {
+    HStack(spacing: 8) {
+      let helper = store.helper
+      // 최다 친구 관계
+      StatisticsType1Card(
+        property: .init(
+          title: "최다 수수 관계",
+          description: "친구",
+          caption: "평균 12번",
+          isEmptyState: false
+        )
+      )
+      // 최다 경조사
+      StatisticsType1Card(
+        property: .init(
+          title: "최다 수수 경조사",
+          description: "결혼식",
+          caption: "평균 3번",
+          isEmptyState: false
+        )
+      )
+    }
+  }
+
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
+      ScrollView {
+        VStack(spacing: 0) {
+          makeContentView()
+        }
       }
     }
     .navigationBarBackButtonHidden()

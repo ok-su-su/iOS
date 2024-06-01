@@ -33,7 +33,10 @@ struct OtherStatistics {
     case tappedRelationshipButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case setInitialHistoryData
+    case setHistoryData
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -47,7 +50,19 @@ struct OtherStatistics {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
+        return .run { send in
+          await send(.inner(.setInitialHistoryData))
+          await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
+        }
+
+      case .inner(.setHistoryData):
+        state.helper.setHistoryData()
         return .none
+
+      case .inner(.setInitialHistoryData):
+        state.helper.setInitialHistoryData()
+        return .none
+
       case .view(.tappedButton):
         let nextValue = (5000 ... 50000).randomElement()!
         state.price = nextValue
