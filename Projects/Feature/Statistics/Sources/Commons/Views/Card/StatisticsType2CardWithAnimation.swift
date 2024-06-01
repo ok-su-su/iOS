@@ -14,9 +14,7 @@ import SwiftUI
 struct StatisticsType2CardWithAnimation: View {
   @Binding var property: StatisticsType2CardProperty
   @State private var oldTitle: String = ""
-  @State private var oldOffset = 0.0
   @State private var newTitle: String = ""
-  @State private var newOffset = 24.0
 
   init(property: Binding<StatisticsType2CardProperty>) {
     _property = property
@@ -34,7 +32,7 @@ struct StatisticsType2CardWithAnimation: View {
         // leading Item
 
         CustomNumericAnimationView(
-          height: 24,
+          height: 30,
           item: $property
         ) {
           Text(oldTitle)
