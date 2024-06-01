@@ -91,7 +91,7 @@ struct OtherStatisticsProperty: Equatable {
   mutating func fakeSetRelationship() {
     relationship = ["친구", "가족"].randomElement()!
     relationProperty.leadingDescription = relationship
-    relationProperty.updateTrailingText(["100000원", "300000원", "150000원"].randomElement()!)
+    relationProperty.updateTrailingText(["10000000원", "3000원", "150000원"].randomElement()!)
   }
 
   mutating func setHistoryData() {

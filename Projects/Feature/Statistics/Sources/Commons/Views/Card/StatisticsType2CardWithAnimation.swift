@@ -54,25 +54,11 @@ struct StatisticsType2CardWithAnimation: View {
 
   @ViewBuilder
   func makeTrailingItem() -> some View {
-    ForEach(0 ..< property.trailingDescriptionSlice.count, id: \.self) { ind in
-      CustomNumericNumberAnimation(
-        height: 30,
-        item: $property.trailingDescriptionSlice[ind]
-      ) {
-        if ind < oldTrailingTitle.count {
-          Text(oldTrailingTitle[ind])
-            .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
-        }
-
-      } newContent: {
-        if ind < newTrailingTitle.count {
-          Text(newTrailingTitle[ind])
-            .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
-        }
-      }
-    }
+    CustomNumericNumberView(
+      descriptionSlice: $property.trailingDescriptionSlice,
+      isEmptyState: false,
+      height: 30
+    )
   }
 
   var body: some View {

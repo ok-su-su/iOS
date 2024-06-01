@@ -46,18 +46,28 @@ struct CustomNumericNumberAnimation<OldContent, NewContent>: View where OldConte
     }
     .frame(height: height)
     .clipped()
-    .onChange(of: item) { oldValue, newValue in
-      guard
-        oldValue != newValue,
-        let oldValue = Int(oldValue),
-        let newValue = Int(newValue)
-      else {
-        return
+    .onAppear {
+      oldOffset = 0
+      newOffset = moveHeightOffset
+      withAnimation(.linear(duration: duration)) {
+        oldOffset = -moveHeightOffset
+        newOffset = 0
       }
+    }
+    .onChange(of: item) { oldValue, newValue in
       let directionWeight: Double = oldValue > newValue ? 1 : -1
-
+      // offset 초기값 세팅
       oldOffset = 0
       newOffset = moveHeightOffset * directionWeight
+
+      // 새로운 값이 숫자가 아닐 때 애니메이션을 실행하지 않습니다.
+      if Int(newValue) == nil {
+        oldOffset = -moveHeightOffset * directionWeight
+        newOffset = 0
+        return
+      }
+
+      // 숫자일 때 애니메이션을 실행합니다.
       withAnimation(.linear(duration: duration)) {
         oldOffset = -moveHeightOffset * directionWeight
         newOffset = 0

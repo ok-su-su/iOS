@@ -69,11 +69,7 @@ struct OtherStatisticsView: View {
               rightIcon: .icon(SSImage.envelopeDownArrow),
               buttonText: store.helper.relationship
             )) {
-              // 관계 클릭했을 떄 Some Touch logic
-              withAnimation {
-                store.send(.view(.tappedRelationshipButton))
-                return ()
-              }
+              store.send(.view(.tappedRelationshipButton))
             }
             .padding(.trailing, 4)
 
