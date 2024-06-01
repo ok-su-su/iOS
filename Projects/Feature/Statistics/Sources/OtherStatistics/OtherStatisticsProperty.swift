@@ -13,6 +13,7 @@ struct OtherStatisticsProperty: Equatable {
   var aged: String
   var relationship: String
   var topSectionPrice: Int
+  var relationProperty: StatisticsType2CardProperty
 
   var relationshipAveragePrice: Int
   var eventAveragePrice: Int
@@ -34,6 +35,13 @@ struct OtherStatisticsProperty: Equatable {
     self.topSectionPrice = topSectionPrice
     self.relationshipAveragePrice = relationshipAveragePrice
     self.eventAveragePrice = eventAveragePrice
+
+    relationProperty = .init(
+      title: "관계별 평균 수수",
+      leadingDescription: relationship,
+      trailingDescription: "500,000원",
+      isEmptyState: false
+    )
   }
 
   init() {
@@ -44,9 +52,17 @@ struct OtherStatisticsProperty: Equatable {
 
     relationshipAveragePrice = 100_000
     eventAveragePrice = 52000
+
+    relationProperty = .init(
+      title: "관계별 평균 수수",
+      leadingDescription: relationship,
+      trailingDescription: "500,000원",
+      isEmptyState: false
+    )
   }
 
   mutating func fakeSetRelationship() {
     relationship = ["친구", "가족"].randomElement()!
+    relationProperty.leadingDescription = relationship
   }
 }

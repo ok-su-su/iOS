@@ -22,6 +22,7 @@ struct StatisticsType2CardProperty: Equatable {
 
 struct StatisticsType2Card: View {
   var property: StatisticsType2CardProperty
+
   var body: some View {
     VStack(spacing: 4) {
       // 타이틀
@@ -32,6 +33,7 @@ struct StatisticsType2Card: View {
 
       HStack(spacing: 0) {
         // leading Item
+
         Text(property.leadingDescription)
           .modifier(SSTypoModifier(.title_s))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)

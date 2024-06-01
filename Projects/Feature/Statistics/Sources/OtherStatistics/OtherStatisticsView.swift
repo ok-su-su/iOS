@@ -129,15 +129,7 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeRelationAverage() -> some View {
-    StatisticsType2Card(
-      property: .init(
-        title: "관계별 평균 수수",
-        leadingDescription: store.helper.relationship,
-        trailingDescription: "50000원",
-        isEmptyState: false
-      )
-    )
-    .contentTransition(.numericText())
+    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty)
   }
 
   var body: some View {

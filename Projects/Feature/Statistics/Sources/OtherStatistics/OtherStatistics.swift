@@ -18,7 +18,8 @@ struct OtherStatistics {
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: BindableAction, Equatable, FeatureAction {
+    case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -54,6 +55,9 @@ struct OtherStatistics {
 
       case .view(.tappedRelationshipButton):
         state.helper.fakeSetRelationship()
+        return .none
+
+      case .binding:
         return .none
       }
     }

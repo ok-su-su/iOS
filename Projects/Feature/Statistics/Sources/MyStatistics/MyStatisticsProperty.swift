@@ -29,8 +29,7 @@ struct MyStatisticsProperty: Equatable {
     historyData = fakeHistoryData
   }
 
-  
-  //TODO: Some 로직 
+  // TODO: Some 로직
   mutating func setInitialHistoryData() {
     historyData = initialData
   }
