@@ -33,42 +33,15 @@ struct MyStatisticsView: View {
 
   @ViewBuilder
   private func makeHistoryView() -> some View {
-    let isData = store.helper != nil
-    VStack(spacing: 16) {
-      HStack(spacing: 0) {
-        Text("최근 8개월간 쓴 금액")
-          .modifier(SSTypoModifier(.title_xs))
-          .foregroundStyle(SSColor.gray100)
-
-        Spacer()
-
-        Text("0만원")
-          .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(isData ? SSColor.blue60 : SSColor.gray40)
-      }
-
-      HStack(spacing: 12) {
-        let fakeData = store.helper.historyData
-        ForEach(0 ..< fakeData.count, id: \.self) { ind in
-          let curData = fakeData[ind]
-          VStack(spacing: 4) {
-            Spacer()
-            SSColor
-              .orange30
-              .frame(maxWidth: 24, maxHeight: CGFloat(curData))
-              .clipShape(RoundedRectangle(cornerRadius: 4))
-
-            Text("\(ind + 1)월")
-              .modifier(SSTypoModifier(.title_xxxs))
-              .foregroundStyle(SSColor.gray40)
-          }
-          .frame(maxWidth: 24, minHeight: 104)
-        }
-      }
-    }
-    .padding(16)
-    .background(SSColor.gray10)
-    .clipShape(RoundedRectangle(cornerRadius: 4))
+    HistoryVerticalChartView(
+      historyHeights: store
+        .helper
+        .historyData
+        .enumerated()
+        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
+      chartTitle: "최근 8개월간 쓴 금액",
+      chartTopTrailingDescription: "0만원"
+    )
   }
 
   @ViewBuilder
@@ -121,11 +94,14 @@ struct MyStatisticsView: View {
   private func makeMostReceivedPriceCard() -> some View {
     let helper = store.helper
     StatisticsType2Card(
-      property: .init(
-        title: "가장 많이 받은 금액",
-        leadingDescription: helper.mostReceivedPersonName ?? "?",
-        trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원",
-        isEmptyState: helper.mostReceivedPersonName == nil || helper.mostReceivedPrice == nil
+      property:
+      .init(
+        isEmptyState: helper.mostReceivedPrice == nil,
+        type: .twoLine(
+          title: "가장 많이 받은 금액",
+          leadingDescription: helper.mostReceivedPersonName ?? "?",
+          trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원"
+        )
       )
     )
   }
@@ -135,10 +111,12 @@ struct MyStatisticsView: View {
     let helper = store.helper
     StatisticsType2Card(
       property: .init(
-        title: "가장 많이 보낸 금액",
-        leadingDescription: helper.mostSentPersonName ?? "?",
-        trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원",
-        isEmptyState: helper.mostSentPersonName == nil || helper.mostSentPrices == nil
+        isEmptyState: helper.mostSentPersonName == nil || helper.mostSentPrices == nil,
+        type: .twoLine(
+          title: "가장 많이 보낸 금액",
+          leadingDescription: helper.mostSentPersonName ?? "?",
+          trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원"
+        )
       )
     )
   }

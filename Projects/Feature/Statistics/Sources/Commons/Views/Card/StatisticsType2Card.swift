@@ -12,29 +12,17 @@ import SwiftUI
 // MARK: - StatisticsType2CardProperty
 
 struct StatisticsType2CardProperty: Equatable {
-  var title: String
-  var leadingDescription: String
-  var trailingDescription: String
   var isEmptyState: Bool
-  var trailingDescriptionSlice: [String]
-  var formatter = NumberFormatter()
-  init(title: String, leadingDescription: String, trailingDescription: String, isEmptyState: Bool) {
-    self.title = title
-    self.leadingDescription = leadingDescription
-    self.trailingDescription = trailingDescription
-    self.isEmptyState = isEmptyState
+  var type: CardType
 
-    formatter.numberStyle = .decimal
-
-    trailingDescriptionSlice = []
-    updateTrailingText(trailingDescription)
-    // TODO: force unwrapping 제거
+  enum CardType: Equatable {
+    case oneLine(title: String, description: String)
+    case twoLine(title: String, leadingDescription: String, trailingDescription: String)
   }
 
-  mutating func updateTrailingText(_ value: String) {
-    trailingDescription = value
-    let num = Int(String(trailingDescription.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
-    trailingDescriptionSlice = formatter.string(from: .init(value: num))!.map { String($0) }
+  init(isEmptyState: Bool, type: CardType) {
+    self.isEmptyState = isEmptyState
+    self.type = type
   }
 }
 
@@ -43,10 +31,32 @@ struct StatisticsType2CardProperty: Equatable {
 struct StatisticsType2Card: View {
   var property: StatisticsType2CardProperty
 
-  var body: some View {
+  @ViewBuilder
+  private func makeOneLineCard(title: String, description: String) -> some View {
+    VStack(spacing: 16) {
+      HStack(spacing: 0) {
+        Text(title)
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray100)
+
+        Spacer()
+
+        Text(description)
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundColor(property.isEmptyState ? SSColor.blue60 : SSColor.gray40)
+      }
+      .frame(maxWidth: .infinity)
+      .padding(16)
+      .background(SSColor.gray10)
+      .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+  }
+
+  @ViewBuilder
+  private func makeTwoLineCard(title: String, leadingDescription: String, trailingDescription: String) -> some View {
     VStack(spacing: 4) {
       // 타이틀
-      Text(property.title)
+      Text(title)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray50)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -54,14 +64,14 @@ struct StatisticsType2Card: View {
       HStack(spacing: 0) {
         // leading Item
 
-        Text(property.leadingDescription)
+        Text(leadingDescription)
           .modifier(SSTypoModifier(.title_s))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
 
         Spacer()
 
         // TrailingItem
-        Text(property.trailingDescription)
+        Text(trailingDescription)
           .modifier(SSTypoModifier(.title_s))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
       }
@@ -69,5 +79,14 @@ struct StatisticsType2Card: View {
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
+  }
+
+  var body: some View {
+    switch property.type {
+    case let .oneLine(title, description):
+      makeOneLineCard(title: title, description: description)
+    case let .twoLine(title, leadingDescription, trailingDescription):
+      makeTwoLineCard(title: title, leadingDescription: leadingDescription, trailingDescription: trailingDescription)
+    }
   }
 }

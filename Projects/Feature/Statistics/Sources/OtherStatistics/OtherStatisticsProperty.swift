@@ -13,8 +13,8 @@ struct OtherStatisticsProperty: Equatable {
   var aged: String
   var relationship: String
   var topSectionPrice: Int
-  var relationProperty: StatisticsType2CardProperty
-  var eventProperty: StatisticsType2CardProperty
+  var relationProperty: StatisticsType2CardWithAnimationProperty
+  var eventProperty: StatisticsType2CardWithAnimationProperty
   var mostSpentMonthText: String = "3월"
 
   var agedBottomSheetProperty: SelectBottomSheetProperty<AgedBottomSheetProperty> = .init(items: [

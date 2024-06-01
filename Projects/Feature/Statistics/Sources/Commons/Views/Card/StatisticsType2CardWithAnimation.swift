@@ -10,16 +10,45 @@ import Designsystem
 import OSLog
 import SwiftUI
 
-// MARK: - StatisticsType2Card
+// MARK: - StatisticsType2CardWithAnimationProperty
+
+struct StatisticsType2CardWithAnimationProperty: Equatable {
+  var title: String
+  var leadingDescription: String
+  var trailingDescription: String
+  var isEmptyState: Bool
+  var trailingDescriptionSlice: [String]
+  var formatter = NumberFormatter()
+  init(title: String, leadingDescription: String, trailingDescription: String, isEmptyState: Bool) {
+    self.title = title
+    self.leadingDescription = leadingDescription
+    self.trailingDescription = trailingDescription
+    self.isEmptyState = isEmptyState
+
+    formatter.numberStyle = .decimal
+
+    trailingDescriptionSlice = []
+    updateTrailingText(trailingDescription)
+    // TODO: force unwrapping 제거
+  }
+
+  mutating func updateTrailingText(_ value: String) {
+    trailingDescription = value
+    let num = Int(String(trailingDescription.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
+    trailingDescriptionSlice = formatter.string(from: .init(value: num))!.map { String($0) }
+  }
+}
+
+// MARK: - StatisticsType2CardWithAnimation
 
 struct StatisticsType2CardWithAnimation: View {
-  @Binding var property: StatisticsType2CardProperty
+  @Binding var property: StatisticsType2CardWithAnimationProperty
   @State private var oldLeadingTitle: String = ""
   @State private var newLeadingTitle: String = ""
   @State private var oldTrailingTitle: [String] = []
   @State private var newTrailingTitle: [String] = []
 
-  init(property: Binding<StatisticsType2CardProperty>) {
+  init(property: Binding<StatisticsType2CardWithAnimationProperty>) {
     _property = property
   }
 
