@@ -8,14 +8,19 @@
 import ComposableArchitecture
 import Foundation
 
+// MARK: - OtherStatistics
+
 @Reducer
 struct OtherStatistics {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
     var price: Int = 3000
-    var helper: OtherStatisticsProperty = .init()
-    init() {}
+    @Shared var helper: OtherStatisticsProperty
+    @Presents var agedBottomSheet: SelectBottomSheet<AgedBottomSheetProperty>.State? = nil
+    init() {
+      _helper = .init(.init())
+    }
   }
 
   enum Action: BindableAction, Equatable, FeatureAction {
@@ -30,6 +35,7 @@ struct OtherStatistics {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedButton
+    case tappedAgedButton
     case tappedRelationshipButton
   }
 
@@ -41,7 +47,9 @@ struct OtherStatistics {
   enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case agedBottomSheet(PresentationAction<SelectBottomSheet<AgedBottomSheetProperty>.Action>)
+  }
 
   enum DelegateAction: Equatable {}
 
@@ -74,7 +82,29 @@ struct OtherStatistics {
 
       case .binding:
         return .none
+
+      case .view(.tappedAgedButton):
+        state.agedBottomSheet = .init(property: state.$helper.agedBottomSheetProperty)
+        return .none
+      case .scope(.agedBottomSheet):
+        return .none
       }
     }
+    .addFeatures0()
   }
+}
+
+extension Reducer where State == OtherStatistics.State, Action == OtherStatistics.Action {
+  func addFeatures0() -> some ReducerOf<Self> {
+    ifLet(\.$agedBottomSheet, action: \.scope.agedBottomSheet) {
+      SelectBottomSheet()
+    }
+  }
+}
+
+// MARK: - AgedBottomSheetProperty
+
+struct AgedBottomSheetProperty: SelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
 }

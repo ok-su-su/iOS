@@ -17,6 +17,14 @@ struct OtherStatisticsProperty: Equatable {
   var eventProperty: StatisticsType2CardProperty
   var mostSpentMonthText: String = "3월"
 
+  var agedBottomSheetProperty: SelectBottomSheetProperty<AgedBottomSheetProperty> = .init(items: [
+    .init(description: "20대", id: 0),
+    .init(description: "30대", id: 1),
+    .init(description: "40대", id: 2),
+    .init(description: "50대", id: 3),
+    .init(description: "60대", id: 4),
+  ])
+
   // HistoryProperty
   var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
   var initialData = [0, 0, 0, 0, 0, 0, 0, 0]

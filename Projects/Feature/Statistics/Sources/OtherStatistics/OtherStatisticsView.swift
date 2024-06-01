@@ -51,7 +51,7 @@ struct OtherStatisticsView: View {
               rightIcon: .icon(SSImage.envelopeDownArrow),
               buttonText: "20대"
             )) {
-              // 연령 클릭했을 떄 Some Touch logic
+              store.send(.view(.tappedAgedButton))
             }
             .padding(.trailing, 4)
 
@@ -225,6 +225,12 @@ struct OtherStatisticsView: View {
           makeContentView()
         }
       }
+    }
+    .sheet(item: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet)) { store in
+      SelectBottomSheetView(store: store)
+        .presentationDetents([.height(240), .medium, .large])
+        .presentationContentInteraction(.scrolls)
+        .presentationDragIndicator(.automatic)
     }
     .navigationBarBackButtonHidden()
     .onAppear {
