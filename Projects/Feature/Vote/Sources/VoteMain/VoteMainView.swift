@@ -301,12 +301,6 @@ struct VoteMainView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .fullScreenCover(item: $store.scope(state: \.writeVote, action: \.scope.writeVote)) { store in
-      WriteVoteView(store: store)
-    }
-    .fullScreenCover(item: $store.scope(state: \.otherVoteDetail, action: \.scope.otherVoteDetail)) { store in
-      OtherVoteDetailView(store: store)
-    }
     .sSAlert(
       isPresented: $store.isPresentReport.sending(\.view.presentReport),
       messageAlertProperty: .init(
@@ -322,8 +316,8 @@ struct VoteMainView: View {
         }
       )
     )
-    .fullScreenCover(item: $store.scope(state: \.voteSearch, action: \.scope.voteSearch)) { store in
-      VoteSearchView(store: store)
+    .fullScreenCover(item: $store.scope(state: \.voteRouter, action: \.scope.voteRouter)) { store in
+      VoteRouterView(store: store)
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }

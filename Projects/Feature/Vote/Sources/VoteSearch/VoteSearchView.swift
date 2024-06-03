@@ -36,7 +36,6 @@ struct VoteSearchView: View {
         makeContentView()
       }
     }
-    .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
