@@ -16,6 +16,7 @@ public enum Feature: String {
   case myPage
   case vote
   case sSSearch
+  case statistics
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
