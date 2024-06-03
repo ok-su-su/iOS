@@ -57,7 +57,7 @@ struct SentEnvelopeFilter {
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
-      HeaderViewFeature(enableDismissAction: false)
+      HeaderViewFeature()
     }
 
     Scope(state: \.customTextField, action: \.customTextField) {
