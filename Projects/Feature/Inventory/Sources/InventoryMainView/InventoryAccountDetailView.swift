@@ -101,7 +101,7 @@ struct InventoryAccountDetailView: View {
   private func makeFilterContentView() -> some View {
     HStack(spacing: 8) {
       ZStack {
-        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init())) {
+        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init(accountFilterHelper: Shared(.init(remittPerson: []))))) {
           SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
             store.send(.didTapFilterButton)
           }.allowsHitTesting(false)

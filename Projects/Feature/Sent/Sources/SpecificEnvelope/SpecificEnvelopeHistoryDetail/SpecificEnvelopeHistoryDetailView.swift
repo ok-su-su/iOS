@@ -81,7 +81,7 @@ struct SpecificEnvelopeHistoryDetailView: View {
         contentText: alertProperty.description,
         checkBoxMessage: .none,
         buttonMessage: .doubleButton(left: alertProperty.cancelButtonText, right: alertProperty.confirmButtonText),
-        didTapCompletionButton: {
+        didTapCompletionButton: { _ in
           store.send(.view(.tappedAlertConfirmButton))
         }
       )
