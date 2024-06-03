@@ -5,9 +5,9 @@ import MyPage
 import Sent
 import SSAlert
 import SSRoot
+import Statistics
 import SwiftUI
 import Vote
-import Statistics
 
 // MARK: - ContentViewObject
 
@@ -77,4 +77,3 @@ public struct ContentView: View {
     sectionViews[ContentViewObject.type]!
   }
 }
-

@@ -31,6 +31,7 @@ public extension [Target] {
   ) -> [Target] {
     let mergedInfoPlist: [String: Plist.Value] = [
       "BaseURL": "$(BASE_URL)",
+      "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [
         "UIApplicationSupportsMultipleScenes": false,
       ],
