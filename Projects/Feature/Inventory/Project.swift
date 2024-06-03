@@ -10,6 +10,7 @@ let project = Project.makeModule(
     dependencies: [
       .core(.coreLayers),
       .share(.designsystem),
+      .share(.sSLayout),
     ],
     testDependencies: []
   )

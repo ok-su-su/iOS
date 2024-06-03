@@ -14,6 +14,7 @@ public enum Shared: String {
   case designsystem
   case sSAlert
   case sSToast
+  case sSLayout
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

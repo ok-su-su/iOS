@@ -23,6 +23,8 @@ public struct InventoryAccountDetailRouterView: View {
       switch store.case {
       case let .showInventoryAccountDetail(store):
         InventoryAccountDetailView(store: store)
+      case let .showInventoryAccountFilter(store):
+        InventoryAccountDetailFilterView(store: store)
       }
     }.onAppear {
       store.send(.onAppear(true))

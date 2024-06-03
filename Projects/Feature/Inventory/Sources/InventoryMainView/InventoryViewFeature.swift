@@ -6,10 +6,10 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Foundation
+
 import ComposableArchitecture
 import Designsystem
-import Foundation
-import OSLog
 
 @Reducer
 public struct InventoryViewFeature {
@@ -93,10 +93,8 @@ public struct InventoryViewFeature {
         return .none
       case .didTapInventoryView:
         state.inventoryAccount = InventoryAccountDetailRouter.State()
-        os_log("Inventory Account Detail")
         return .none
       case .didTapAddInventoryButton:
-        os_log("Inventory button Tap")
         return .none
       default:
         return .none

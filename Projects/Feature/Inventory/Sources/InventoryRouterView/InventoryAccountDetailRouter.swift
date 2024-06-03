@@ -28,6 +28,7 @@ public struct InventoryAccountDetailRouter {
   @Reducer
   public enum Path {
     case showInventoryAccountDetail(InventoryAccountDetail)
+    case showInventoryAccountFilter(InventoryAccountDetailFilter)
   }
 
   public var body: some Reducer<State, Action> {
@@ -36,6 +37,8 @@ public struct InventoryAccountDetailRouter {
       case let .path(action):
         switch action {
         case .element(id: _, action: .showInventoryAccountDetail):
+          return .none
+        case .element(id: _, action: .showInventoryAccountFilter):
           return .none
         default:
           return .none
