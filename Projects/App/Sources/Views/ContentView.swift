@@ -4,8 +4,8 @@ import Inventory
 import MyPage
 import Sent
 import SSAlert
-import SSDataBase
 import SSRoot
+import Statistics
 import SwiftUI
 import Vote
 
@@ -57,7 +57,7 @@ public struct ContentView: View {
     .inventory: AnyView(InventoryBuilderView()),
     .vote: AnyView(VoteBuilder()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
-    .statistics: AnyView(StatisticsRootView()),
+    .statistics: AnyView(StatisticsBuilderView()),
   ]
 
   public var body: some View {
@@ -75,63 +75,5 @@ public struct ContentView: View {
   @ViewBuilder
   func contentView() -> some View {
     sectionViews[ContentViewObject.type]!
-  }
-}
-
-// MARK: - EnvelopeRootView
-
-public struct EnvelopeRootView: View {
-  public var body: some View {
-    NavigationStack {
-      Color(.systemBackground)
-        .ignoresSafeArea()
-    }
-  }
-}
-
-// MARK: - InventoryRootView
-
-public struct InventoryRootView: View {
-  public var body: some View {
-    NavigationStack {
-      Color(.blue)
-        .edgesIgnoringSafeArea(.all)
-    }
-  }
-}
-
-// MARK: - StatisticsRootView
-
-public struct StatisticsRootView: View {
-  public var body: some View {
-    NavigationStack {
-      Color(.red)
-        .edgesIgnoringSafeArea(.all)
-    }
-  }
-}
-
-// MARK: - VoteRootView
-
-public struct VoteRootView: View {
-  public var body: some View {
-    NavigationStack {
-      Color(.green)
-        .edgesIgnoringSafeArea(.all)
-    }
-  }
-}
-
-// MARK: - MyPageRootView
-
-public struct MyPageRootView: View {
-  init() {}
-
-  public var body: some View {
-    NavigationStack {
-      Color(.blue)
-        .edgesIgnoringSafeArea(.all)
-    }
-    .onAppear {}
   }
 }
