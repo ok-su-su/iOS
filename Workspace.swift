@@ -6,6 +6,7 @@ let workspace = Workspace(
     "Projects/App",
     "Projects/Share/SSToastPreview",
     "Projects/Feature/VotePreview",
-    "Projects/Feature/StatisticsPreview"
+    "Projects/Feature/StatisticsPreview",
+    "Projects/Feature/InventoryPreview"
   ]
 )

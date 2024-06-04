@@ -34,14 +34,6 @@ public extension [Target] {
       "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [
         "UIApplicationSupportsMultipleScenes": false,
-//        "UISceneConfigurations": [
-//          "UIWindowSceneSessionRoleApplication": [
-//            [
-//              "UISceneConfigurationName": "Default Configuration",
-//              "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
-//            ],
-//          ],
-//        ],
       ],
 //      "UIBackgroundModes": [
 //        "fetch",
@@ -58,7 +50,7 @@ public extension [Target] {
         name: name,
         destinations: .iOS,
         product: .app,
-        bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())",
+        bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased()).app",
         deploymentTargets: ProjectEnvironment.default.deploymentTargets,
         infoPlist: .extendingDefault(with: mergedInfoPlist),
         sources: "Sources/**",

@@ -16,14 +16,14 @@ let project = Project.makeModule(
       .feature(.inventory),
       .feature(.myPage),
       .feature(.vote),
-      .feature(.statistics)
+      .feature(.statistics),
     ],
     testDependencies: [],
     infoPlist: [
-      "UILaunchStoryboardName": "LaunchScreen.storyboard",
-      "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu",
-      "CFBundleShortVersionString": "0.0.1",
-      "CFBundleVersion": "202404201",
+      "UILaunchStoryboardName": "LaunchScreen",
+      "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
+      "CFBundleShortVersionString": "0.1.2",
+      "CFBundleVersion": "202406053",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
       "LSApplicationQueriesSchemes":

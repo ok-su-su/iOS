@@ -45,7 +45,7 @@ struct CreateEnvelopeRouter {
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
-      HeaderViewFeature(enableDismissAction: false)
+      HeaderViewFeature()
     }
     Reduce { state, action in
       switch action {
