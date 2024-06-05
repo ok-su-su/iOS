@@ -162,5 +162,3 @@ def createFeatureDirectoryAndFile(feature_name: str):
     create_preview_module(feature_name)
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
-
-createFeatureDirectoryAndFile("HiTest")
