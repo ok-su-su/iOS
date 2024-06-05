@@ -97,6 +97,31 @@ final class {feature_name}Tests: XCTestCase {{
         keep_resources_file.write(test_content)
 
 
+def modify_XcodeWorkspace(feature_name):
+    file_path = 'Workspace.swift'
+    try:
+        # Read the content of the Swift file
+        with open(file_path, 'r') as file:
+            content = file.readlines()
+
+        newPath = f'    "Projects/Feature/{feature_name}",\n'
+
+        modified_content = content[:-2] + [newPath] + content[-2:]
+
+        # Write the modified content back to the file
+        with open(file_path, 'w') as file:
+            file.write("".join(modified_content))
+
+    except Exception as e:
+        print(f"Error modifying the file: {e}")
+        
+
+
+
+def create_preview_module(preview_name) :
+    modify_XcodeWorkspace(preview_name)
+    create_feature(preview_name)
+
 def createFeatureDirectoryAndFile(feature_name: str):
     # Modify the Dependency+Target.swift file
     modify_dependency_file(feature_name)
@@ -105,5 +130,8 @@ def createFeatureDirectoryAndFile(feature_name: str):
     create_project_feature_file(feature_name)
     
     create_test_dir(feature_name)
+    
+    # create_preview_module(feature_name + "Preview")
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
+    
