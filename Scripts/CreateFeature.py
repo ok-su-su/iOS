@@ -97,8 +97,7 @@ final class {feature_name}Tests: XCTestCase {{
         keep_resources_file.write(test_content)
 
 
-if __name__ == "__main__":
-    feature_name = sys.argv[1]
+def createFeatureDirectoryAndFile(feature_name: str):
     # Modify the Dependency+Target.swift file
     modify_dependency_file(feature_name)
 
@@ -108,4 +107,3 @@ if __name__ == "__main__":
     create_test_dir(feature_name)
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
-    

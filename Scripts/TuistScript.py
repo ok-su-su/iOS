@@ -241,7 +241,7 @@ if __name__ == "__main__":
     feature_name = feature_name[0].capitalize() + feature_name[1:]
 
     if sys.argv[1] == "feature":
-        CreateFeature(feature_name)
+        CreateFeature.createFeatureDirectoryAndFile(feature_name)
     elif sys.argv[1] == "share":
         # Modify the Dependency+Target.swift file
         modify_dependency_custom_shared_file(feature_name)
