@@ -116,11 +116,38 @@ def modify_XcodeWorkspace(feature_name):
         print(f"Error modifying the file: {e}")
         
 
+def create_preview_project_feature_file(feature_name, preivew_feature_name):
+    file_path = f'Projects/Feature/{feature_name}/Project.swift'
+    try:
+        # Create the Project.swift file content
+        project_content = f"""
+import ProjectDescription
+import ProjectDescriptionHelpers
 
+let project = Project.makeModule(
+  name: "{preivew_feature_name}",
+  targets: .app(
+    name: "{preivew_feature_name}",
+    testingOptions: [
+    ],
+    dependencies: [
+      .feature(.{ to_lower_camel_case(feature_name) }),
+    ]
+  )
+)
+"""
 
-def create_preview_module(preview_name) :
+        # Write the content to the new Project.swift file
+        with open(file_path, 'w') as file:
+            file.write(project_content)
+
+    except Exception as e:
+        print(f"Error creating the Project.swift file: {e}")
+
+def create_preview_module(feature_name) :
+    preview_name = feature_name + "Preview"
     modify_XcodeWorkspace(preview_name)
-    create_feature(preview_name)
+    create_preview_project_feature_file(feature_name, preview_name)
 
 def createFeatureDirectoryAndFile(feature_name: str):
     # Modify the Dependency+Target.swift file
@@ -131,7 +158,7 @@ def createFeatureDirectoryAndFile(feature_name: str):
     
     create_test_dir(feature_name)
     
-    # create_preview_module(feature_name + "Preview")
+    create_preview_module(feature_name + "Preview")
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
     
