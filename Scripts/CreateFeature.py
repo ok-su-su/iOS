@@ -147,6 +147,7 @@ let project = Project.makeModule(
 def create_preview_module(feature_name) :
     preview_name = feature_name + "Preview"
     modify_XcodeWorkspace(preview_name)
+    create_feature(preview_name)
     create_preview_project_feature_file(feature_name, preview_name)
 
 def createFeatureDirectoryAndFile(feature_name: str):
@@ -162,4 +163,4 @@ def createFeatureDirectoryAndFile(feature_name: str):
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
 
-createFeatureDirectoryAndFile("hiTest")
+createFeatureDirectoryAndFile("HiTest")
