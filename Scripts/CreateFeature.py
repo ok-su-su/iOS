@@ -117,7 +117,7 @@ def modify_XcodeWorkspace(feature_name):
         
 
 def create_preview_project_feature_file(feature_name, preivew_feature_name):
-    file_path = f'Projects/Feature/{feature_name}/Project.swift'
+    file_path = f'Projects/Feature/{preivew_feature_name}/Project.swift'
     try:
         # Create the Project.swift file content
         project_content = f"""
@@ -158,7 +158,8 @@ def createFeatureDirectoryAndFile(feature_name: str):
     
     create_test_dir(feature_name)
     
-    create_preview_module(feature_name + "Preview")
+    create_preview_module(feature_name)
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
-    
+
+createFeatureDirectoryAndFile("hiTest")
