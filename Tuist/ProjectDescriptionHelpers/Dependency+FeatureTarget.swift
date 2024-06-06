@@ -18,6 +18,7 @@ public enum Feature: String {
   case sSSearch
   case statistics
   case onboarding
+  case sSLaunchScreen
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
