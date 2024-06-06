@@ -17,6 +17,7 @@ let project = Project.makeModule(
       .feature(.myPage),
       .feature(.vote),
       .feature(.statistics),
+      .feature(.onboarding)
     ],
     testDependencies: [],
     infoPlist: [
