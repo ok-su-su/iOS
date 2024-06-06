@@ -11,14 +11,13 @@ import Foundation
 
 // MARK: - SSLaunchScreenBuilderRouterPublisher
 
-// 싱글톤 객체
+/// 싱글톤 객체
 public final class SSLaunchScreenBuilderRouterPublisher {
-  
   public static let shared: SSLaunchScreenBuilderRouterPublisher = .init()
   private init() {}
-  
+
   private let statusPublisher: PassthroughSubject<LaunchStatus, Never> = .init()
-  
+
   public func publisher() -> AnyPublisher<LaunchStatus, Never> {
     return statusPublisher.eraseToAnyPublisher()
   }

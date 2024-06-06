@@ -10,9 +10,9 @@ import Foundation
 
 struct LaunchScreenHelper {
   init() {}
-  
+
   func runAppInitTask() async -> EndedLaunchScreenStatus {
-    //TODO: 섬 로직
-    return .newUser
+    sleep(2)
+    return .prevUser
   }
 }

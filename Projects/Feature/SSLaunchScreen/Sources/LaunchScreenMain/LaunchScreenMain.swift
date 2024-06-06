@@ -21,12 +21,12 @@ struct LaunchScreenMain {
     case onAppear(Bool)
     case runTask
   }
-  
+
   private var routingPublisher = SSLaunchScreenBuilderRouterPublisher.shared
   private var helper = LaunchScreenHelper()
 
   init() {}
-  
+
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -34,14 +34,13 @@ struct LaunchScreenMain {
         state.isOnAppear = isAppear
         routingPublisher.send(.launchTaskWillRun)
         return .send(.runTask)
-        
+
       case .runTask:
-        return .run {[helper, routingPublisher] send in
+        return .run { [helper, routingPublisher] _ in
           let taskResult = await helper.runAppInitTask()
           routingPublisher.send(.launchTaskDidRun(taskResult))
         }
       }
-      
     }
   }
 }

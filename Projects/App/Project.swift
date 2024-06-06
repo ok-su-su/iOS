@@ -18,7 +18,7 @@ let project = Project.makeModule(
       .feature(.vote),
       .feature(.statistics),
       .feature(.onboarding),
-      .feature(.sSLaunchScreen)
+      .feature(.sSLaunchScreen),
     ],
     testDependencies: [],
     infoPlist: [
