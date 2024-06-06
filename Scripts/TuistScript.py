@@ -1,5 +1,6 @@
 import os
 import sys
+import CreateFeature
 
 def to_lower_camel_case(snake_str):
     return snake_str[0].lower() + snake_str[1:]
@@ -240,15 +241,7 @@ if __name__ == "__main__":
     feature_name = feature_name[0].capitalize() + feature_name[1:]
 
     if sys.argv[1] == "feature":
-        # Modify the Dependency+Target.swift file
-        modify_dependency_file(feature_name)
-
-        # Create the Project.swift file
-        create_project_feature_file(feature_name)
-        
-        create_test_dir(feature_name)
-
-        print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
+        CreateFeature.createFeatureDirectoryAndFile(feature_name)
     elif sys.argv[1] == "share":
         # Modify the Dependency+Target.swift file
         modify_dependency_custom_shared_file(feature_name)

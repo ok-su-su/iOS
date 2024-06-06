@@ -22,33 +22,43 @@ def print_current_version():
     except Exception as e:
         print(f"Error modifying the file: {e}")
 
-def set_version(is_update_version):
-    file_path = 'Projects/App/MealGok/Project.swift'
+def set_version():
+    file_path = 'Projects/App/Project.swift'
     try:
         # Read the content of the Swift file
         with open(file_path, 'r') as file:
             content = file.read()
-
-        start_content = '''      "BGTaskSchedulerPermittedIdentifiers": "com.maramincho.mealgok",\n'''
-        build_start_index = content.find(start_content)
+        
+        split_content = content.split('\n')
+        build_start_index = "a"
+        for ind, lineText in enumerate(split_content) :
+            if re.search(r'"CFBundleShortVersionString": "(\d+\.\d+\.\d+)",', lineText) :
+                build_start_index = ind
+                break
         marketing_target_name_match = re.search(r'"CFBundleShortVersionString": "(\d)+\.(\d)+\.(\d)+"', content)
-        mid_num = int(marketing_target_name_match.group(2)) + 1 if is_update_version == 'y' else int(marketing_target_name_match.group(2))
         new_target_marketing_version = f'{marketing_target_name_match.group(1)}.{int(marketing_target_name_match.group(2)) + 1}.{marketing_target_name_match.group(3)}'
-        new_marketing_version = f'      "CFBundleShortVersionString": "{new_target_marketing_version}",\n'
+        new_marketing_version = f'      "CFBundleShortVersionString": "{new_target_marketing_version}",'
         
-        
-        build_target_name_match = re.search(r'"CFBundleVersion": "(\d*)"', content)
+        build_target_name_match = re.search(r'"CFBundleVersion": "(\d*)",', content)
         today = generate_date_number()
         build_target_index = len(str(today))
-        new_build_version = f'      "CFBundleVersion": "{today}{int(build_target_name_match.group(1)[build_target_index:]) + 1}",\n'
+        new_build_version = f'      "CFBundleVersion": "{today}{int(build_target_name_match.group(1)[build_target_index:]) + 1}",'
         
-        next_inpolist_index = content.find('''      "UIUserInterfaceStyle": "Light",''')
-        modified_content = content[:build_start_index] + start_content + new_marketing_version + new_build_version + content[next_inpolist_index: ]
+        next_inpolist_index = "a"
+        for ind, lineText in enumerate(split_content) :
+            if re.search(r'"CFBundleVersion": "(\d*)"', lineText): 
+                next_inpolist_index = ind
+                break
 
+        modified_content = split_content[:build_start_index] + [new_marketing_version] + [new_build_version] + split_content[next_inpolist_index + 1: ]
+        save_file = '\n'.join(modified_content)
+        
+        file_path = 'Projects/App/Project.swift'
         # Write the modified content back to the file
         with open(file_path, 'w') as file:
-            file.write(modified_content)
-
+            
+            file.write(save_file)
+            
     except Exception as e:
         print(f"Error modifying the file: {e}")
 
@@ -69,5 +79,5 @@ if __name__ == "__main__":
     is_new_version = input("버전을 올리시겠습니까? (y/n): ")
     
     print_current_version()
-
-    set_version(is_new_version)
+    if is_new_version == "y":
+        set_version()
