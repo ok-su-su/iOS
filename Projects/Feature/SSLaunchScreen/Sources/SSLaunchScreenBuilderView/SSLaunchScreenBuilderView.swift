@@ -12,13 +12,8 @@ import SwiftUI
 public struct SSLaunchScreenBuilderView: View {
   public init() {}
   public var body: some View {
-    ZStack {
-      SSColor
-        .orange10
-        .ignoresSafeArea()
-
-      SSImage
-        .commonLogo
-    }
+    LaunchScreenMainView(store: .init(initialState: LaunchScreenMain.State(), reducer: {
+      LaunchScreenMain()
+    }))
   }
 }
