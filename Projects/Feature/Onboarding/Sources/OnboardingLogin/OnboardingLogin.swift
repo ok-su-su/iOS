@@ -1,20 +1,21 @@
-//
-//  OnboardingVote.swift
+// 
+//  OnboardingLogin.swift
 //  Onboarding
 //
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import ComposableArchitecture
 import Foundation
+import ComposableArchitecture
 
 @Reducer
-struct OnboardingVote {
+struct OnboardingLogin {
+
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var helper: OnboardingVoteHelper = .init()
-    init() {}
+    
+    init () {}
   }
 
   enum Action: Equatable, FeatureAction {
@@ -24,10 +25,9 @@ struct OnboardingVote {
     case scope(ScopeAction)
     case delegate(DelegateAction)
   }
-
+  
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedButtonItem(OnboardingVoteItem)
   }
 
   enum InnerAction: Equatable {}
@@ -42,16 +42,11 @@ struct OnboardingVote {
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
+      case let .view(.onAppear(isAppear)) :
         state.isOnAppear = isAppear
         return .none
-        
-      case let .view(.tappedButtonItem(item)):
-        
-        return .run { send in
-          //TODO: Vote Logic
-          OnboardingRouterPublisher.shared.send(.login(.init()))
-        }
+      default:
+        return .none
       }
     }
   }

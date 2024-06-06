@@ -8,6 +8,7 @@
 
 import Onboarding
 import SwiftUI
+import Designsystem
 
 @main
 struct OnboardingPreviewMain: App {
@@ -15,6 +16,7 @@ struct OnboardingPreviewMain: App {
     WindowGroup {
       OnboardingBuilderView()
         .onAppear {
+          Font.registerFont()
           #if DEBUG
             UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
           #endif

@@ -60,6 +60,7 @@ extension OnboardingRouter {
   @Reducer(state: .equatable, action: .equatable)
   enum Path {
     case vote(OnboardingVote)
+    case login(OnboardingLogin)
   }
 }
 
