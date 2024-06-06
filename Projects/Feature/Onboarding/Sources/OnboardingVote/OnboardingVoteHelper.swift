@@ -8,13 +8,18 @@
 
 import Foundation
 
+// MARK: - OnboardingVoteHelper
+
 struct OnboardingVoteHelper: Equatable {
   var items: [OnboardingVoteItem]
-  
+
   init(items: [OnboardingVoteItem] = [OnboardingVoteItem].initialItems()) {
     self.items = items
   }
 }
+
+// MARK: - OnboardingVoteItem
+
 struct OnboardingVoteItem: Equatable, Identifiable {
   var title: String
   var id: Int
@@ -26,7 +31,7 @@ extension [OnboardingVoteItem] {
       "3만원",
       "5만원",
       "10만원",
-      "20만원"
+      "20만원",
     ]
     return itemsTitle.enumerated().map { cur in
       return .init(title: cur.element, id: cur.offset)

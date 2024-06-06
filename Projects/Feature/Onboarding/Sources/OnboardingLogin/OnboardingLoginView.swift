@@ -1,26 +1,25 @@
-// 
+//
 //  OnboardingLoginView.swift
 //  Onboarding
 //
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 struct OnboardingLoginView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<OnboardingLogin>
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      
-    }
+    VStack(spacing: 0) {}
   }
 
   var body: some View {
@@ -33,16 +32,12 @@ struct OnboardingLoginView: View {
       }
     }
     .navigationBarBackButtonHidden()
-    .onAppear{
+    .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }

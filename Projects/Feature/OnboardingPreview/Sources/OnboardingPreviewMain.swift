@@ -6,9 +6,9 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Designsystem
 import Onboarding
 import SwiftUI
-import Designsystem
 
 @main
 struct OnboardingPreviewMain: App {

@@ -38,6 +38,7 @@ struct OnboardingRouter {
           OnboardingRouterPublisher
             .shared
             .publisher()
+            .receive(on: RunLoop.main)
             .map { .pushPath($0) }
         }
         .cancellable(id: CancelID.observePush, cancelInFlight: true)

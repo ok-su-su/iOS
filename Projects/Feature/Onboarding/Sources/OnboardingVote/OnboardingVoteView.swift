@@ -19,36 +19,51 @@ struct OnboardingVoteView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 48) {
-      VStack(spacing: 16) {
+    VStack(spacing: 0) {
+      Spacer()
+        .frame(height: 32)
+
+      VStack(alignment: .leading, spacing: 16) {
         Text(Constants.titleTest)
+          .multilineTextAlignment(.leading)
           .modifier(SSTypoModifier(.title_l))
-        
-        Text(Constants.titleDescriptionText)
+
+        Text(.init(Constants.titleDescriptionText))
+          .multilineTextAlignment(.leading)
           .modifier(SSTypoModifier(.text_l))
       }
-      makeVoteView()
-      
+      .frame(maxWidth: .infinity, alignment: .leading)
+
       Spacer()
-      
+        .frame(height: 48)
+
+      makeVoteView()
+
+      Spacer()
+
       SSImage
         .signInTrademark
         .padding(.bottom, Metrics.bottomPadding)
     }
+    .padding(.horizontal, 16)
   }
-  
+
   @ViewBuilder
   private func makeVoteView() -> some View {
-    ForEach(store.helper.items) {item in
-      SSButton(
-        .init(
-          size: .mh60,
-          status: .inactive,
-          style: .ghost,
-          color: .black,
-          buttonText: item.title)) {
+    VStack(spacing: 8) {
+      ForEach(store.helper.items) { item in
+        SSButton(
+          .init(
+            size: .mh60,
+            status: .inactive,
+            style: .ghost,
+            color: .black,
+            buttonText: item.title,
+            frame: .init(maxWidth: .infinity)
+          )) {
             store.send(.view(.tappedButtonItem(item)))
           }
+      }
     }
   }
 
@@ -68,7 +83,7 @@ struct OnboardingVoteView: View {
   }
 
   private enum Metrics {
-    static let bottomPadding:CGFloat = 24
+    static let bottomPadding: CGFloat = 24
   }
 
   private enum Constants {

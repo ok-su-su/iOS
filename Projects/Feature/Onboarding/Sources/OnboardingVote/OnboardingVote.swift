@@ -45,11 +45,11 @@ struct OnboardingVote {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-        
+
       case let .view(.tappedButtonItem(item)):
-        
-        return .run { send in
-          //TODO: Vote Logic
+
+        return .run { _ in
+          // TODO: Vote Logic
           OnboardingRouterPublisher.shared.send(.login(.init()))
         }
       }
