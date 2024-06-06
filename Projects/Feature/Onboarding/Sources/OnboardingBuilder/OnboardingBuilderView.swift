@@ -10,9 +10,10 @@ import SwiftUI
 
 public struct OnboardingBuilderView: View {
   public init() {}
+  @State var show: Bool = true
   public var body: some View {
-    ZStack {
-      Text("Hello, World!")
-    }
+    OnboardingRouterView(store: .init(initialState: OnboardingRouter.State(), reducer: {
+      OnboardingRouter()
+    }))
   }
 }

@@ -14,6 +14,11 @@ struct OnboardingPreviewMain: App {
   var body: some Scene {
     WindowGroup {
       OnboardingBuilderView()
+        .onAppear {
+          #if DEBUG
+            UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+          #endif
+        }
     }
   }
 }

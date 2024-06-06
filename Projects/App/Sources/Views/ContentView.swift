@@ -74,6 +74,7 @@ public struct ContentView: View {
   private mutating func bind() {
     SSLaunchScreenBuilderRouterPublisher.shared
       .publisher()
+      .subscribe(on: RunLoop.main)
       .sink { [self] status in
         switch status {
         case .launchTaskWillRun:
