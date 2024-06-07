@@ -8,6 +8,7 @@ let project = Project.makeModule(
     name: "SSBottomSelectSheet",
     product: .framework,
     dependencies: [
+      .share(.designsystem),
       .thirdParty(.ComposableArchitecture),
     ]
   )

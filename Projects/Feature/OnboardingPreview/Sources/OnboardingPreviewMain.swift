@@ -17,6 +17,7 @@ struct OnboardingPreviewMain: App {
       OnboardingBuilderView()
         .onAppear {
           Font.registerFont()
+          // MARK: - ConstraintsError없애는 코드
           #if DEBUG
             UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
           #endif
