@@ -61,7 +61,8 @@ struct OnboardingLogin {
         state.helper.setTextProperty()
         return .none
       case .view(.tappedKakaoLoginButton):
-        //TODO: KAKAO Login Logic
+        // TODO: KAKAO Login Logic
+        OnboardingRouterPublisher.shared.send(.terms(.init()))
         return .none
       }
     }

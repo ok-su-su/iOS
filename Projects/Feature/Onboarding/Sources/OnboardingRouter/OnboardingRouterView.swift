@@ -34,6 +34,8 @@ struct OnboardingRouterView: View {
         OnboardingVoteView(store: store)
       case let .login(store):
         OnboardingLoginView(store: store)
+      case let .terms(store):
+        AgreeToTermsAndConditionsView(store: store)
       }
     }
     .navigationViewStyle(.stack)

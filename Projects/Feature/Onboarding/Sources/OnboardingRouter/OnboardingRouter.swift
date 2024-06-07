@@ -62,6 +62,7 @@ extension OnboardingRouter {
   enum Path {
     case vote(OnboardingVote)
     case login(OnboardingLogin)
+    case terms(AgreeToTermsAndConditions)
   }
 }
 
