@@ -24,6 +24,7 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(self, selector: #selector(statics), name: SSNotificationName.tappedStatistics, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(vote), name: SSNotificationName.tappedVote, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(myPage), name: SSNotificationName.tappedMyPage, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(goMain), name: SSNotificationName.goMainScene, object: nil)
   }
 
   @objc func enveloped() {
@@ -44,6 +45,10 @@ final class ContentViewObject: ObservableObject {
 
   @objc func myPage() {
     type = .mypage
+  }
+  
+  @objc func goMain() {
+    nowScreenType = .main
   }
 
   init() {
@@ -72,6 +77,7 @@ public struct ContentView: View {
   }
 
   private mutating func bind() {
+    // LaunchScreenPublisher
     SSLaunchScreenBuilderRouterPublisher.shared
       .publisher()
       .subscribe(on: RunLoop.main)
