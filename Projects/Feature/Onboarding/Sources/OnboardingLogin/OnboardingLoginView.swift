@@ -42,27 +42,52 @@ struct OnboardingLoginView: View {
 
       makePieChartView()
       Spacer()
+        .frame(height: 40)
+
+      makeChartDescriptionView()
+      Spacer()
+        .frame(height: 39)
+      makeLoginButtonView()
+      Spacer()
     }
   }
 
   @ViewBuilder
   private func makeChartDescriptionView() -> some View {
-    HStack(spacing: 4) {
-      Text(Constants.firstLineLeadingText)
-        .modifier(SSTypoModifier(.title_s))
-        .foregroundStyle(SSColor.gray90)
+    VStack {
+      // FirstLine
+      HStack(spacing: 4) {
+        Text(Constants.firstLineLeadingText)
+          .modifier(SSTypoModifier(.title_s))
+          .foregroundStyle(SSColor.gray90)
 
-      Text(store.helper.displayPriceText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.orange60)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 2)
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        Text(store.helper.displayPercentageText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.orange60)
+          .frame(width: 65, height: 36)
+          .padding(.vertical, 2)
+          .background(.white)
+          .clipShape(RoundedRectangle(cornerRadius: 4))
 
-      Text(Constants.firstLineTrailingText)
-        .modifier(SSTypoModifier(.title_s))
-        .foregroundStyle(SSColor.gray90)
+        Text(Constants.firstLineTrailingText)
+          .modifier(SSTypoModifier(.title_s))
+          .foregroundStyle(SSColor.gray90)
+      }
+
+      // SecondLine
+      HStack(spacing: 4) {
+        Text(store.helper.displayPriceText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.orange60)
+          .frame(width: 82, height: 36)
+          .padding(.vertical, 2)
+          .background(.white)
+          .clipShape(RoundedRectangle(cornerRadius: 4))
+
+        Text(Constants.secondLineText)
+          .modifier(SSTypoModifier(.title_s))
+          .foregroundStyle(SSColor.gray90)
+      }
     }
   }
 
@@ -92,6 +117,17 @@ struct OnboardingLoginView: View {
     }
   }
 
+  @ViewBuilder
+  private func makeLoginButtonView() -> some View {
+    VStack(spacing: 4) {
+      SSImage
+        .signInKakao
+        .onTapGesture {
+          store.send(.view(.tappedKakaoLoginButton))
+        }
+    }
+  }
+
   var body: some View {
     ZStack {
       SSColor
@@ -116,6 +152,7 @@ struct OnboardingLoginView: View {
     static let titleDescriptionText: String = "잊지말고 수수에서 챙기세요"
     static let firstLineLeadingText: String = "수수 가입자"
     static let firstLineTrailingText: String = "는"
+    static let secondLineText: String = "이 적당하다고 답했어요"
   }
 }
 

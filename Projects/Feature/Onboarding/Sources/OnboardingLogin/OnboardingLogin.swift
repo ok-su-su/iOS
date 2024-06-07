@@ -28,6 +28,7 @@ struct OnboardingLogin {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedKakaoLoginButton
   }
 
   enum InnerAction: Equatable {
@@ -47,10 +48,10 @@ struct OnboardingLogin {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .merge(
-          .send(.inner(.showPieChart)),
-          .send(.inner(.showPercentageAndPriceText), animation: .linear(duration: 1.2))
-        )
+        return .run { send in
+          await send(.inner(.showPieChart))
+          await send(.inner(.showPercentageAndPriceText), animation: .bouncy(duration: 1))
+        }
 
       case .inner(.showPieChart):
         state.helper.setSectorShapeProperty()
@@ -58,6 +59,9 @@ struct OnboardingLogin {
 
       case .inner(.showPercentageAndPriceText):
         state.helper.setTextProperty()
+        return .none
+      case .view(.tappedKakaoLoginButton):
+        //TODO: KAKAO Login Logic
         return .none
       }
     }
