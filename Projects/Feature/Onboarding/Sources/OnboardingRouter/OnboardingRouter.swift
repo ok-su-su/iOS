@@ -63,6 +63,7 @@ extension OnboardingRouter {
     case vote(OnboardingVote)
     case login(OnboardingLogin)
     case terms(AgreeToTermsAndConditions)
+    case termDetail(TermsAndConditionDetail)
   }
 }
 

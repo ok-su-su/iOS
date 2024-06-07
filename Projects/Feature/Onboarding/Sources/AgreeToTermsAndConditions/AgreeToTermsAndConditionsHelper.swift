@@ -6,16 +6,16 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import Foundation
-import OSLog
 
 // MARK: - AgreeToTermsAndConditionsHelper
 
 struct AgreeToTermsAndConditionsHelper: Equatable {
-  var termItems: [TermItem]
+  @Shared var termItems: IdentifiedArrayOf<TermItem>
 
   init(termItems: [TermItem]) {
-    self.termItems = termItems
+    _termItems = .init(.init(uniqueElements: termItems))
   }
 
   var activeNextScreenButton: Bool {
@@ -23,39 +23,28 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
   }
 
   mutating func check(_ currentItem: TermItem) {
-    termItems = termItems.map { item in
-      var item = item
-      if currentItem == item {
-        item.check()
-      }
-      return item
-    }
+    termItems[id: currentItem.id]?.check()
   }
 
   mutating func checkAllItems() {
     if isAllCheckedItems {
-      termItems = termItems.map { item in
-        var item = item
-        item.isCheck = false
-        return item
+      for ind in 0 ..< termItems.count {
+        termItems[ind].isCheck = false
       }
     } else {
-      termItems = termItems.map { item in
-        var item = item
-        item.isCheck = true
-        return item
+      for ind in 0 ..< termItems.count {
+        termItems[ind].isCheck = true
       }
     }
   }
 
   var isAllCheckedItems: Bool {
-    let checkCount = termItems.filter { $0.isCheck == false }.count
-    os_log("카운트는 = \(checkCount), isEmpty = \(termItems.isEmpty)")
+
     return termItems.filter { $0.isCheck == false }.isEmpty
   }
 
   init() {
-    termItems = .makeFakeData()
+    _termItems = .init(.init(uniqueElements: [TermItem].makeFakeData()))
   }
 }
 

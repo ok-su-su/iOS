@@ -1,5 +1,5 @@
 //
-//  AgreeToTermsAndConditions.swift
+//  TermsAndConditionDetail.swift
 //  Onboarding
 //
 //  Created by MaraMincho on 6/7/24.
@@ -10,14 +10,15 @@ import Designsystem
 import Foundation
 
 @Reducer
-struct AgreeToTermsAndConditions {
+struct TermsAndConditionDetail {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header = HeaderViewFeature.State(.init(title: "약관 동의", type: .defaultType))
-    var helper: AgreeToTermsAndConditionsHelper
-    init() {
-      helper = .init()
+    var header: HeaderViewFeature.State
+    @Shared var item: TermItem
+    init(item: Shared<TermItem>) {
+      _item = item
+      header = .init(.init(title: item.title.wrappedValue, type: .defaultType))
     }
   }
 
@@ -31,10 +32,7 @@ struct AgreeToTermsAndConditions {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedTermDetailButton(TermItem)
-    case tappedCheckBox(TermItem)
-    case checkAllTerms
-    case tappedNextScreenButton
+    case tappedAgreeButton
   }
 
   enum InnerAction: Equatable {}
@@ -52,31 +50,16 @@ struct AgreeToTermsAndConditions {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
-
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedTermDetailButton(item)):
-        guard let item = state.helper.$termItems[id: item.id] else {
-          return .none
-        }
-        OnboardingRouterPublisher.shared.send(.termDetail(.init(item: item)))
-        return .none
       case .scope(.header):
         return .none
-      case let .view(.tappedCheckBox(item)):
-        state.helper.check(item)
-        return .none
 
-      case .view(.checkAllTerms):
-        state.helper.checkAllItems()
-        return .none
-
-      case .view(.tappedNextScreenButton):
-        // TODO: - navigation
+      case .view(.tappedAgreeButton):
         return .none
       }
     }
