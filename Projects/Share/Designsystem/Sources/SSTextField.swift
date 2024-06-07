@@ -20,23 +20,27 @@ public enum SSTextPlaceholderText {
   case contents
   case holiday
 
-  public var placeholder: Text {
+  public var placeHolderTextString: String {
     switch self {
     case .signUp:
-      Text("김수수")
+      "김수수"
     case .account:
-      Text("이름을 입력해주세요")
+      "이름을 입력해주세요"
     case .amount:
-      Text("금액을 입력해주세요")
+      "금액을 입력해주세요"
     case .gift:
-      Text("무엇을 선물했나요")
+      "무엇을 선물했나요"
     case .contact:
-      Text("01012345678")
+      "01012345678"
     case .contents:
-      Text("입력해주세요")
+      "입력해주세요"
     case .holiday:
-      Text("경조사명을 입력해주세요")
+      "경조사명을 입력해주세요"
     }
+  }
+
+  public var placeholder: Text {
+    Text(placeHolderTextString)
   }
 
   public var keyboardType: UIKeyboardType {

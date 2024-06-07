@@ -25,6 +25,10 @@ public struct SSTextFieldReducerProperty: Equatable {
     return text.count
   }
 
+  public var getText: String {
+    return text
+  }
+
   var lineStatus: LineStatus {
     if status == .error {
       return .red
@@ -43,7 +47,7 @@ public struct SSTextFieldReducerProperty: Equatable {
   ///   - isFocus: Focuse되는지에 대한 변수 입니다.
   ///   - status: 현재 Status에 대해서 입력받습니다.
   ///   - errorMessage: Error Status일 때 표시될 에러 메시지 입니다.
-  init(
+  public init(
     text: String,
     maximumTextLength: Int,
     regexPattern: String,
@@ -76,7 +80,13 @@ public struct SSTextFieldReducerProperty: Equatable {
     errorMessage = text
   }
 
-  private func isValidation(text: String) -> Bool {
+  func isValidation() -> Bool {
+    let text = text
+    // 빈 문자열일 경우 분기
+    if text.isEmpty {
+      return true
+    }
+
     do {
       let regex = try NSRegularExpression(pattern: regexPattern, options: .caseInsensitive)
       let range = NSRange(location: 0, length: text.utf16.count)
@@ -92,6 +102,8 @@ public struct SSTextFieldReducerProperty: Equatable {
 
 @Reducer
 public struct SSTextFieldReducer {
+  public init() {}
+
   @ObservableState
   public struct State: Equatable {
     @Shared var property: SSTextFieldReducerProperty
@@ -103,6 +115,7 @@ public struct SSTextFieldReducer {
   public enum Action: Equatable {
     case changeTextField(String)
     case tappedCloseButton
+    case checkValidation
   }
 
   public var body: some ReducerOf<Self> {
@@ -110,10 +123,14 @@ public struct SSTextFieldReducer {
       switch action {
       case let .changeTextField(text):
         state.property.text = text
-        return .none
+        return .send(.checkValidation)
 
       case .tappedCloseButton:
         return .send(.changeTextField(""))
+      case .checkValidation:
+        let isValid = state.property.isValidation()
+        state.property.status = isValid ? .active : .error
+        return .none
       }
     }
   }
@@ -136,7 +153,7 @@ public struct SSTextFieldView: View {
         TextField(
           "",
           text: $store.property.text.sending(\.changeTextField),
-          prompt: store.property.placeHolderText.placeholder
+          prompt: Text(store.property.placeHolderText.placeHolderTextString)
         )
         .background(.clear)
         .foregroundColor(.gray100)
@@ -148,7 +165,7 @@ public struct SSTextFieldView: View {
           isFocus = newValue
         }
 
-        if store.property.text.isEmpty {
+        if !store.property.text.isEmpty {
           SSImage
             .signupClose
             .onTapGesture {
@@ -157,15 +174,15 @@ public struct SSTextFieldView: View {
             .padding(.horizontal, 12)
         }
 
-        Text("\(store.property.textLength)/20")
+        Text("\(store.property.textLength)/\(store.property.maximumTextLength)")
           .foregroundStyle(store.property.status == .active ? SSColor.gray30 : .red60)
       }
+      .frame(maxHeight: 56)
       .padding(8)
-      .frame(maxWidth: .infinity)
 
       // Line
       makeLine()
-        .frame(width: .infinity, height: 1)
+        .frame(maxWidth: .infinity, minHeight: 1, maxHeight: 1)
 
       Spacer()
         .frame(height: 8)
@@ -174,8 +191,11 @@ public struct SSTextFieldView: View {
       if store.property.status == .error {
         Text(store.property.errorMessage)
           .foregroundStyle(SSColor.red60)
+          .frame(alignment: .leading)
       }
+      Spacer()
     }
+    .frame(maxWidth: .infinity)
   }
 
   @ViewBuilder

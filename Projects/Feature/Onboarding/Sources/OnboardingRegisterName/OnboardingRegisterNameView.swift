@@ -34,15 +34,7 @@ struct OnboardingRegisterNameView: View {
 
       // MARK: - TextFieldView
 
-      SSTextField(
-        isDisplay: true,
-        text: $store.textFieldText.sending(\.view.changeTextField),
-        property: .account,
-        isHighlight: $store.isHighlight.sending(\.view.changeHighlight)
-      )
-      .onChange(of: store.textFieldText) { _, newValue in
-        store.send(.view(.changeTextField(newValue)))
-      }
+      SSTextFieldView(store: store.scope(state: \.textField, action: \.scope.textField))
       Spacer()
     }
     .padding(.horizontal, 16)
@@ -68,6 +60,7 @@ struct OnboardingRegisterNameView: View {
         .gray15
         .ignoresSafeArea()
       VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
         Spacer()
         makeNextScreenButton()

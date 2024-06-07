@@ -64,6 +64,7 @@ enum OnboardingRouterPath {
   case terms(AgreeToTermsAndConditions)
   case termDetail(TermsAndConditionDetail)
   case registerName(OnboardingRegisterName)
+  case additional(OnboardingAdditional)
 }
 
 extension Reducer where State == OnboardingRouter.State, Action == OnboardingRouter.Action {
