@@ -13,6 +13,7 @@ struct OnboardingLogin {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var helper: OnboardingLoginHelper = .init()
 
     init() {}
   }
@@ -29,7 +30,10 @@ struct OnboardingLogin {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case showPieChart
+    case showPercentageAndPriceText
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -43,8 +47,17 @@ struct OnboardingLogin {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
+        return .merge(
+          .send(.inner(.showPieChart)),
+          .send(.inner(.showPercentageAndPriceText), animation: .linear(duration: 1.2))
+        )
+
+      case .inner(.showPieChart):
+        state.helper.setSectorShapeProperty()
         return .none
-      default:
+
+      case .inner(.showPercentageAndPriceText):
+        state.helper.setTextProperty()
         return .none
       }
     }
