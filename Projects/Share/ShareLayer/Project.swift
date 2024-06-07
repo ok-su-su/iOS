@@ -3,13 +3,16 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "CoreLayers",
+  name: "ShareLayer",
   targets: .custom(
-    name: "CoreLayers",
+    name: "ShareLayer",
     product: .framework,
     dependencies: [
-      .core(.sSNetwork),
-      .thirdParty(.ComposableArchitecture),
+      .share(.designsystem),
+      .share(.sSAlert),
+      .share(.sSBottomSelectSheet),
+      .share(.sSToast),
     ]
   )
 )
+

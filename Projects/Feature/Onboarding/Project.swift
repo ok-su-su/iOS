@@ -8,11 +8,8 @@ let project = Project.makeModule(
     .onboarding,
     testingOptions: [.unitTest],
     dependencies: [
-      .share(.designsystem),
-      .share(.sSAlert),
-      .share(.sSLayout),
+      .share(.shareLayer),
       .core(.coreLayers),
-      .share(.sSToast),
     ],
     testDependencies: []
   )
