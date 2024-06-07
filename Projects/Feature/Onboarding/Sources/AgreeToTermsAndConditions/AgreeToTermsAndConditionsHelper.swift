@@ -39,7 +39,6 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
   }
 
   var isAllCheckedItems: Bool {
-
     return termItems.filter { $0.isCheck == false }.isEmpty
   }
 

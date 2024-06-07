@@ -63,6 +63,7 @@ struct TermsAndConditionDetailView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+        makeNextScreenButton()
       }
     }
     .navigationBarBackButtonHidden()
