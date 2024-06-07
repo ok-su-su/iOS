@@ -43,16 +43,22 @@ struct TermsAndConditionDetailView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    SSButton(.init(
-      size: .mh60,
-      status: .active,
-      style: .filled,
-      color: .black,
-      buttonText: "동의하기",
-      frame: .init(maxWidth: .infinity)
-    )) {
-      store.send(.view(.tappedAgreeButton))
+    VStack(spacing: 0) {
+      SSButton(.init(
+        size: .mh60,
+        status: .active,
+        style: .filled,
+        color: .black,
+        buttonText: "동의하기",
+        frame: .init(maxWidth: .infinity)
+      )) {
+        store.send(.view(.tappedAgreeButton))
+      }
+
+      SSColor.gray100
+        .frame(maxHeight: 24)
     }
+    .background(SSColor.gray100)
   }
 
   var body: some View {
@@ -63,8 +69,13 @@ struct TermsAndConditionDetailView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+      }
+
+      VStack {
+        Spacer()
         makeNextScreenButton()
       }
+      .ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
     .onAppear {

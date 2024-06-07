@@ -34,17 +34,23 @@ struct AgreeToTermsAndConditionsView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    SSButton(.init(
-      size: .mh60,
-      status: store.helper.activeNextScreenButton ? .active : .inactive,
-      style: .filled,
-      color: .black,
-      buttonText: "다음",
-      frame: .init(maxWidth: .infinity)
-    )) {
-      store.send(.view(.tappedNextScreenButton))
+    VStack(spacing: 0) {
+      SSButton(.init(
+        size: .mh60,
+        status: store.helper.activeNextScreenButton ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )) {
+        store.send(.view(.tappedNextScreenButton))
+      }
+      .allowsHitTesting(store.helper.activeNextScreenButton)
+
+      Color.clear
+        .frame(maxHeight: 24)
     }
-    .allowsHitTesting(store.helper.activeNextScreenButton)
+    .background(store.helper.activeNextScreenButton ? SSColor.gray100 : SSColor.gray30)
   }
 
   @ViewBuilder
@@ -123,9 +129,13 @@ struct AgreeToTermsAndConditionsView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+      }
+
+      VStack {
         Spacer()
         makeNextScreenButton()
       }
+      .ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
     .onAppear {

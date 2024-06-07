@@ -42,17 +42,23 @@ struct OnboardingRegisterNameView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    SSButton(.init(
-      size: .mh60,
-      status: store.isActiveNextButton ? .active : .inactive,
-      style: .filled,
-      color: .black,
-      buttonText: "다음",
-      frame: .init(maxWidth: .infinity)
-    )) {
-      store.send(.view(.tappedNextButton))
+    VStack(spacing: 0) {
+      SSButton(.init(
+        size: .mh60,
+        status: store.isActiveNextButton ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )) {
+        store.send(.view(.tappedNextButton))
+      }
+      .allowsHitTesting(store.isActiveNextButton)
+
+      Color.clear
+        .frame(maxHeight: 24)
     }
-    .allowsHitTesting(store.isActiveNextButton)
+    .background(store.isActiveNextButton ? SSColor.gray100 : SSColor.gray30)
   }
 
   var body: some View {
@@ -60,12 +66,17 @@ struct OnboardingRegisterNameView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
         Spacer()
-        makeNextScreenButton()
       }
+
+      VStack {
+        Spacer()
+        makeNextScreenButton()
+      }.ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
     .onAppear {

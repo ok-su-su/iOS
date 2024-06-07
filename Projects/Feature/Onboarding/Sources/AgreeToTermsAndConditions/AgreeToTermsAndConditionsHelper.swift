@@ -81,14 +81,3 @@ extension [TermItem] {
     ]
   }
 }
-
-// {
-//  "id": 1,
-//  "title": "서비스 이용 약관",
-//  "isEssential": true
-// },
-// {
-//  "id": 2,
-//  "title": "개인 정보 수집 및 이용안내",
-//  "isEssential": true
-// }
