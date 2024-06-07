@@ -29,6 +29,8 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
     case tapped(item: Item)
   }
 
+  @Dependency(\.dismiss) var dismiss
+
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -37,7 +39,9 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
         return .none
       case let .tapped(item: item):
         state.selectedItem = item
-        return .none
+        return .run { _ in
+          await dismiss()
+        }
       }
     }
   }

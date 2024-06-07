@@ -30,6 +30,8 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
             Text(item.description)
               .modifier(SSTypoModifier(.title_xxs))
               .padding(.vertical, itemVerticalSpacing)
+              .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
+              .padding(.vertical, 12)
               .onTapGesture {
                 store.send(.tapped(item: item))
               }

@@ -8,6 +8,9 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import SSBottomSelectSheet
+
+// MARK: - OnboardingAdditional
 
 @Reducer
 struct OnboardingAdditional {
@@ -16,8 +19,12 @@ struct OnboardingAdditional {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
-    var helper: OnboardingAdditionalProperty = .init()
-    init() {}
+    var helper: OnboardingAdditionalProperty
+    @Presents var bottomSheet: SSSelectableBottomSheetReducer<BottomSheetYearItem>.State? = nil
+
+    init() {
+      helper = .init()
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -42,6 +49,7 @@ struct OnboardingAdditional {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case bottomSheet(PresentationAction<SSSelectableBottomSheetReducer<BottomSheetYearItem>.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -62,6 +70,11 @@ struct OnboardingAdditional {
         return .none
 
       case .view(.tappedBirthButton):
+        state.bottomSheet =
+          .init(
+            items: BottomSheetYearItem.makeDefaultItems(),
+            selectedItem: state.helper.$selectedBirth
+          )
         return .none
 
       case .scope(.header):
@@ -69,7 +82,18 @@ struct OnboardingAdditional {
 
       case .view(.tappedNextButton):
         return .none
+      case .scope(.bottomSheet):
+        return .none
       }
+    }
+    .addFeatures0()
+  }
+}
+
+extension Reducer where State == OnboardingAdditional.State, Action == OnboardingAdditional.Action {
+  func addFeatures0() -> some ReducerOf<Self> {
+    ifLet(\.$bottomSheet, action: \.scope.bottomSheet) {
+      SSSelectableBottomSheetReducer()
     }
   }
 }

@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 struct OnboardingAdditionalView: View {
@@ -82,7 +83,7 @@ struct OnboardingAdditionalView: View {
           status: store.helper.selectedBirth == nil ? .inactive : .active,
           style: .ghost,
           color: .black,
-          buttonText: store.helper.selectedBirth ?? "2023",
+          buttonText: store.helper.selectedBirth?.description ?? makeNowYear(),
           frame: .init(maxWidth: .infinity)
         )
       ) {
@@ -93,16 +94,21 @@ struct OnboardingAdditionalView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    SSButton(.init(
-      size: .mh60,
-      status: .active,
-      style: .filled,
-      color: .black,
-      buttonText: "다음",
-      frame: .init(maxWidth: .infinity)
-    )) {
-      store.send(.view(.tappedNextButton))
+    VStack(spacing: 0) {
+      SSButton(.init(
+        size: .mh60,
+        status: .active,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )) {
+        store.send(.view(.tappedNextButton))
+      }
+      SSColor.gray100
+        .frame(maxHeight: 24)
     }
+    .background(SSColor.gray100)
   }
 
   var body: some View {
@@ -110,19 +116,31 @@ struct OnboardingAdditionalView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
-        makeNextScreenButton()
       }
+
+      VStack {
+        Spacer()
+        makeNextScreenButton()
+      }.ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
   private enum Metrics {}
+
+  private func makeNowYear() -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy"
+    return dateFormatter.string(from: .now)
+  }
 
   private enum Constants {
     static let titleText: String = "아래 정보들을 알려주시면\n통계를 알려드릴 수 있어요"
