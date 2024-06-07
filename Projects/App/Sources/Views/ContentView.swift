@@ -46,7 +46,7 @@ final class ContentViewObject: ObservableObject {
   @objc func myPage() {
     type = .mypage
   }
-  
+
   @objc func goMain() {
     nowScreenType = .main
   }
@@ -80,7 +80,7 @@ public struct ContentView: View {
     // LaunchScreenPublisher
     SSLaunchScreenBuilderRouterPublisher.shared
       .publisher()
-      .subscribe(on: RunLoop.main)
+      .receive(on: RunLoop.main)
       .sink { [self] status in
         switch status {
         case .launchTaskWillRun:

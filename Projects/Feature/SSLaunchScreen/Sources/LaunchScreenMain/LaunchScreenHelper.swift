@@ -12,7 +12,8 @@ struct LaunchScreenHelper {
   init() {}
 
   func runAppInitTask() async -> EndedLaunchScreenStatus {
+    // TODO: Must be delete
     sleep(2)
-    return .prevUser
+    return .newUser
   }
 }

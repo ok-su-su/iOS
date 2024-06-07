@@ -81,6 +81,8 @@ struct OnboardingAdditional {
         return .none
 
       case .view(.tappedNextButton):
+        // navigate Main Scene
+        NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         return .none
       case .scope(.bottomSheet):
         return .none
