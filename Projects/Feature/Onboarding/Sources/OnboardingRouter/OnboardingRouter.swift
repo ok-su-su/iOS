@@ -15,14 +15,14 @@ struct OnboardingRouter {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var path: StackState<Path.State> = .init([.vote(.init())])
+    var path: StackState<OnboardingRouterPath.State> = .init([.vote(.init())])
     init() {}
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case path(StackActionOf<Path>)
-    case pushPath(Path.State)
+    case path(StackActionOf<OnboardingRouterPath>)
+    case pushPath(OnboardingRouterPath.State)
   }
 
   enum CancelID {
@@ -55,16 +55,15 @@ struct OnboardingRouter {
   }
 }
 
-// MARK: OnboardingRouter.Path
+// MARK: - OnboardingRouterPath
 
-extension OnboardingRouter {
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case vote(OnboardingVote)
-    case login(OnboardingLogin)
-    case terms(AgreeToTermsAndConditions)
-    case termDetail(TermsAndConditionDetail)
-  }
+@Reducer(state: .equatable, action: .equatable)
+enum OnboardingRouterPath {
+  case vote(OnboardingVote)
+  case login(OnboardingLogin)
+  case terms(AgreeToTermsAndConditions)
+  case termDetail(TermsAndConditionDetail)
+  case registerName(OnboardingRegisterName)
 }
 
 extension Reducer where State == OnboardingRouter.State, Action == OnboardingRouter.Action {

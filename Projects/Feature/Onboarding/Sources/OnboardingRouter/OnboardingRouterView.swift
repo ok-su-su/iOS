@@ -38,6 +38,8 @@ struct OnboardingRouterView: View {
         AgreeToTermsAndConditionsView(store: store)
       case let .termDetail(store):
         TermsAndConditionDetailView(store: store)
+      case let .registerName(store):
+        OnboardingRegisterNameView(store: store)
       }
     }
     .navigationViewStyle(.stack)

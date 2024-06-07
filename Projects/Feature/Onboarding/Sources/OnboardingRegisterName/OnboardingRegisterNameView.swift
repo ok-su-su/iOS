@@ -40,6 +40,9 @@ struct OnboardingRegisterNameView: View {
         property: .account,
         isHighlight: $store.isHighlight.sending(\.view.changeHighlight)
       )
+      .onChange(of: store.textFieldText) { _, newValue in
+        store.send(.view(.changeTextField(newValue)))
+      }
       Spacer()
     }
     .padding(.horizontal, 16)
@@ -66,6 +69,8 @@ struct OnboardingRegisterNameView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         makeContentView()
+        Spacer()
+        makeNextScreenButton()
       }
     }
     .navigationBarBackButtonHidden()

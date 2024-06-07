@@ -76,7 +76,7 @@ struct AgreeToTermsAndConditions {
         return .none
 
       case .view(.tappedNextScreenButton):
-        // TODO: - navigation
+        OnboardingRouterPublisher.shared.send(.registerName(.init()))
         return .none
       }
     }

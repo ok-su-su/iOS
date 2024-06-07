@@ -12,13 +12,13 @@ import Foundation
 struct OnboardingRouterPublisher {
   static var shared = OnboardingRouterPublisher()
   private init() {}
-  private var pathPublisher: PassthroughSubject<OnboardingRouter.Path.State, Never> = .init()
+  private var pathPublisher: PassthroughSubject<OnboardingRouterPath.State, Never> = .init()
 
-  func send(_ value: OnboardingRouter.Path.State) {
+  func send(_ value: OnboardingRouterPath.State) {
     pathPublisher.send(value)
   }
 
-  func publisher() -> AnyPublisher<OnboardingRouter.Path.State, Never> {
+  func publisher() -> AnyPublisher<OnboardingRouterPath.State, Never> {
     return pathPublisher.eraseToAnyPublisher()
   }
 }
