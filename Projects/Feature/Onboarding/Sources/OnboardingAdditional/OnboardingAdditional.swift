@@ -16,6 +16,7 @@ struct OnboardingAdditional {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
+    var helper: OnboardingAdditionalProperty = .init()
     init() {}
   }
 
@@ -29,8 +30,9 @@ struct OnboardingAdditional {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedGenderButton(id: Int)
+    case tappedGenderButton(GenderButtonProperty)
     case tappedBirthButton
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {}
@@ -55,13 +57,17 @@ struct OnboardingAdditional {
         state.isOnAppear = isAppear
         return .none
 
-      case let .view(.tappedGenderButton(id: id)):
+      case let .view(.tappedGenderButton(item)):
+        state.helper.selectedGenderItem = item
         return .none
 
       case .view(.tappedBirthButton):
         return .none
 
       case .scope(.header):
+        return .none
+
+      case .view(.tappedNextButton):
         return .none
       }
     }

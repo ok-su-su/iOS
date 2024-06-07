@@ -44,7 +44,7 @@ struct OnboardingRegisterNameView: View {
   private func makeNextScreenButton() -> some View {
     SSButton(.init(
       size: .mh60,
-      status: .active,
+      status: store.isActiveNextButton ? .active : .inactive,
       style: .filled,
       color: .black,
       buttonText: "다음",
@@ -52,6 +52,7 @@ struct OnboardingRegisterNameView: View {
     )) {
       store.send(.view(.tappedNextButton))
     }
+    .allowsHitTesting(store.isActiveNextButton)
   }
 
   var body: some View {
