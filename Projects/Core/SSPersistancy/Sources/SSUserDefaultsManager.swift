@@ -1,5 +1,5 @@
 //
-//  UserDefaultsManager.swift
+//  SSUserDefaultsManager.swift
 //  SSPersistancy
 //
 //  Created by MaraMincho on 6/8/24.
@@ -8,22 +8,22 @@
 
 import Foundation
 
-public final class UserDefaultsManager {
-  static var shared = UserDefaultsManager()
-  
+public final class SSUserDefaultsManager {
+  static var shared = SSUserDefaultsManager()
+
   private let userDefaults: UserDefaults = .standard
-  
+
   private init() {}
-  
+
   public func setValue(key: String, value: AnyObject) {
     userDefaults.setValue(value, forKey: key)
   }
-  
+
   public func getValue(key: String) -> Any? {
     return userDefaults.value(forKey: key)
   }
-  
+
   public func getValue<T>(key: String) -> T? {
-    return userDefaults.value(forKey:key) as? T
+    return userDefaults.value(forKey: key) as? T
   }
 }

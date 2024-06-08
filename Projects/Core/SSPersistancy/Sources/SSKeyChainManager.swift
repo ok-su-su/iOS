@@ -1,5 +1,5 @@
 //
-//  KeyChainManager.swift
+//  SSKeyChainManager.swift
 //  SSPersistancy
 //
 //  Created by MaraMincho on 6/8/24.
@@ -7,6 +7,8 @@
 //
 
 import Foundation
+
+// MARK: - Keychaining
 
 public protocol Keychaining {
   /// 키체인에 키-data로 데이터를 저장합니다.
@@ -21,8 +23,10 @@ public protocol Keychaining {
   func delete(key: String) -> OSStatus
 }
 
-public final class Keychain: Keychaining {
-  public static let shared = Keychain()
+// MARK: - SSKeychain
+
+public final class SSKeychain: Keychaining {
+  public static let shared = SSKeychain()
 
   private init() {}
 
