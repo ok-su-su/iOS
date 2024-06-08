@@ -14,6 +14,7 @@ import SSPersistancy
 
 struct TokenInterceptor: RequestInterceptor {
   let keyChainShared = SSKeychain.shared
+
   func adapt(_ urlRequest: URLRequest, for _: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
     guard let (accessToken, refreshToken) = getToken() else {
       completion(.success(urlRequest))
