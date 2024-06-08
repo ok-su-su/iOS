@@ -16,6 +16,7 @@ public enum Core: String {
   case coreLayers
   case sSRoot
   case kakaoLogin
+  case sSPersistancy
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

@@ -8,7 +8,7 @@ let project = Project.makeModule(
     name: "CoreLayers",
     product: .framework,
     dependencies: [
-      //      .core(.sSDataBase),
+      .core(.sSPersistancy),
       .core(.sSNetwork),
       .thirdParty(.ComposableArchitecture),
     ]
