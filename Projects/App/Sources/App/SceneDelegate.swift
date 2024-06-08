@@ -12,7 +12,7 @@ import UIKit
 
 // MARK: - MySceneDelegate
 
-class MySceneDelegate: NSObject, UIWindowSceneDelegate {
+class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
 
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
