@@ -12,6 +12,7 @@ import Moya
 import OSLog
 import SSPersistancy
 
+// MARK: - TokenInterceptHelpable
 
 protocol TokenInterceptHelpable {
   func getToken() -> (accessToken: String, refreshToken: String)?
@@ -19,15 +20,17 @@ protocol TokenInterceptHelpable {
   var accessTokenString: String { get }
   var refreshTokenString: String { get }
 }
+
+// MARK: - TokenInterceptHelper
+
 final class TokenInterceptHelper: TokenInterceptHelpable {
-  
   init() {}
-  
+
   private let keyChainShared = SSKeychain.shared
   private let jsonEncoder = JSONEncoder()
   let accessTokenString = "accessToken"
   let refreshTokenString = "refreshToken"
-  
+
   func getToken() -> (accessToken: String, refreshToken: String)? {
     guard let accessTokenData = keyChainShared.load(key: accessTokenString),
           let refreshTokenData = keyChainShared.load(key: refreshTokenString)
@@ -47,19 +50,19 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
     let body = try jsonEncoder.encode(RefreshRequestBodyDTO(accessToken, refreshToken))
     return body
   }
-
-
 }
 
-struct TokenInterceptor: RequestInterceptor {
-  
-  static let shared: TokenInterceptor = .init(helper: TokenInterceptHelper())
-  
+// MARK: - SSTokenInterceptor
+
+struct SSTokenInterceptor: RequestInterceptor {
+  static let shared: SSTokenInterceptor = .init(helper: TokenInterceptHelper())
+
   var helper: TokenInterceptHelpable
-  
+
   init(helper: TokenInterceptHelpable) {
     self.helper = helper
   }
+
   func adapt(_ urlRequest: URLRequest, for _: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
     guard let (accessToken, refreshToken) = helper.getToken() else {
       completion(.success(urlRequest))
