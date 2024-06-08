@@ -7,6 +7,7 @@
 //
 
 import Designsystem
+import KakaoSDKAuth
 import SwiftUI
 import UIKit
 

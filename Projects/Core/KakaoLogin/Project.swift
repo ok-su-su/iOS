@@ -3,12 +3,12 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "SSNetwork",
+  name: "KakaoLogin",
   targets: .custom(
-    name: "SSNetwork",
+    name: "KakaoLogin",
     product: .framework,
     dependencies: [
-      .thirdParty(.Moya),
+      .thirdParty(.KakaoSDK),
     ]
   )
 )
