@@ -14,4 +14,5 @@ public enum SSNotificationName {
   public static let tappedStatistics = Notification.Name("tappedStatistics")
   public static let tappedVote = Notification.Name("tappedVote")
   public static let tappedMyPage = Notification.Name("tappedMyPage")
+  public static let goMainScene = Notification.Name("goMainScene")
 }

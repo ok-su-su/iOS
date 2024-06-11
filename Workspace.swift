@@ -8,5 +8,7 @@ let workspace = Workspace(
     "Projects/Feature/VotePreview",
     "Projects/Feature/StatisticsPreview",
     "Projects/Feature/InventoryPreview",
+    "Projects/Feature/OnboardingPreview",
+    "Projects/Feature/SSLaunchScreenPreview",
   ]
 )

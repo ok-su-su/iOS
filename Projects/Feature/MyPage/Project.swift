@@ -8,8 +8,7 @@ let project = Project.makeModule(
     .myPage,
     testingOptions: [.unitTest],
     dependencies: [
-      .share(.designsystem),
-      .share(.sSAlert),
+      .share(.shareLayer),
       .share(.sSLayout),
       .core(.coreLayers),
     ],

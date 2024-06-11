@@ -15,6 +15,8 @@ public enum Shared: String {
   case sSAlert
   case sSToast
   case sSLayout
+  case sSBottomSelectSheet
+  case shareLayer
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

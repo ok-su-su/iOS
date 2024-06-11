@@ -107,7 +107,7 @@ public struct SSTabBarFeature {
         case .inventory:
           NotificationCenter.default.post(name: SSNotificationName.tappedInventory, object: nil)
         case .statistics:
-          NotificationCenter.default.post(name: SSNotificationName.tappedInventory, object: nil)
+          NotificationCenter.default.post(name: SSNotificationName.tappedStatistics, object: nil)
         case .vote:
           NotificationCenter.default.post(name: SSNotificationName.tappedVote, object: nil)
         case .mypage:

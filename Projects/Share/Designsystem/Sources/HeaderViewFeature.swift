@@ -98,6 +98,7 @@ public struct HeaderViewProperty: Equatable {
     case depth2Icon
     case depth2CustomIcon(IconType)
     case depth2Default
+    /// 1부터 0 사이의 progress Value를 입력하세요
     case depthProgressBar(Double)
     case depth2Text(String)
     case depth2DoubleText(String, String)
@@ -164,7 +165,7 @@ public struct HeaderView: View {
     .onAppear {
       store.send(.onAppear)
     }
-    .background(SSColor.gray10)
+    .background(Color.clear)
   }
 
   public init(store: StoreOf<HeaderViewFeature>) {

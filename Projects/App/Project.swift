@@ -17,14 +17,15 @@ let project = Project.makeModule(
       .feature(.myPage),
       .feature(.vote),
       .feature(.statistics),
-      .core(.kakaoLogin),
+      .feature(.onboarding),
+      .feature(.sSLaunchScreen),
     ],
     testDependencies: [],
     infoPlist: [
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
-      "CFBundleShortVersionString": "0.0.2",
-      "CFBundleVersion": "202406032",
+      "CFBundleShortVersionString": "0.1.2",
+      "CFBundleVersion": "202406073",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
       "LSApplicationQueriesSchemes":
