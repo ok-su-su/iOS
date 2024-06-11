@@ -1,9 +1,12 @@
+import Combine
 import ComposableArchitecture
 import Designsystem
 import Inventory
 import MyPage
+import Onboarding
 import Sent
 import SSAlert
+import SSLaunchScreen
 import SSRoot
 import Statistics
 import SwiftUI
@@ -12,6 +15,7 @@ import Vote
 // MARK: - ContentViewObject
 
 final class ContentViewObject: ObservableObject {
+  @Published var nowScreenType: ScreenType = .launchScreen
   @Published var type: SSTabType = .envelope
 
   func setup() {
@@ -20,6 +24,7 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(self, selector: #selector(statics), name: SSNotificationName.tappedStatistics, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(vote), name: SSNotificationName.tappedVote, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(myPage), name: SSNotificationName.tappedMyPage, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(goMain), name: SSNotificationName.goMainScene, object: nil)
   }
 
   @objc func enveloped() {
@@ -42,15 +47,56 @@ final class ContentViewObject: ObservableObject {
     type = .mypage
   }
 
+  @objc func goMain() {
+    nowScreenType = .main
+  }
+
   init() {
     setup()
   }
 }
 
+// MARK: - ScreenType
+
+enum ScreenType {
+  case launchScreen
+  case loginAndRegister
+  case main
+}
+
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @ObservedObject var ContentViewObject: ContentViewObject
+  @ObservedObject var contentViewObject: ContentViewObject
+
+  private var subscriptions: Set<AnyCancellable> = .init()
+
+  init(contentViewObject: ContentViewObject) {
+    self.contentViewObject = contentViewObject
+    bind()
+  }
+
+  private mutating func bind() {
+    // LaunchScreenPublisher
+    SSLaunchScreenBuilderRouterPublisher.shared
+      .publisher()
+      .receive(on: RunLoop.main)
+      .sink { [self] status in
+        switch status {
+        case .launchTaskWillRun:
+          break
+        case let .launchTaskDidRun(endedLaunchScreenStatus):
+          switch endedLaunchScreenStatus {
+          case .newUser:
+            contentViewObject.nowScreenType = .loginAndRegister
+          case .prevUser:
+            contentViewObject.nowScreenType = .main
+          }
+        }
+        return
+      }
+      .store(in: &subscriptions)
+  }
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
@@ -61,19 +107,21 @@ public struct ContentView: View {
   ]
 
   public var body: some View {
-    ZStack {
-      SSColor
-        .gray90
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        contentView()
-      }
-      .onAppear {}
+    VStack(spacing: 0) {
+      contentView()
     }
+    .onAppear {}
   }
 
   @ViewBuilder
   func contentView() -> some View {
-    sectionViews[ContentViewObject.type]!
+    switch contentViewObject.nowScreenType {
+    case .launchScreen:
+      SSLaunchScreenBuilderView()
+    case .loginAndRegister:
+      OnboardingBuilderView()
+    case .main:
+      sectionViews[contentViewObject.type]!
+    }
   }
 }

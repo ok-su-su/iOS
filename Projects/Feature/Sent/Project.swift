@@ -9,9 +9,7 @@ let project = Project.makeModule(
     testingOptions: [.unitTest],
     dependencies: [
       .core(.coreLayers),
-      .share(.designsystem),
-      .share(.sSAlert),
-      .share(.sSToast),
+      .share(.shareLayer),
       .share(.sSLayout),
     ],
     testDependencies: []
