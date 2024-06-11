@@ -7,9 +7,10 @@ let project = Project.makeModule(
   targets: .custom(
     name: "SSNetwork",
     product: .framework,
+    testingOptions: [.unitTest],
     dependencies: [
       .thirdParty(.Moya),
-      .thirdParty(.KakaoSDK),
+      .core(.sSPersistancy),
     ]
   )
 )

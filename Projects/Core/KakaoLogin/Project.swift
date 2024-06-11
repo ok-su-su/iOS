@@ -3,14 +3,12 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "CoreLayers",
+  name: "KakaoLogin",
   targets: .custom(
-    name: "CoreLayers",
+    name: "KakaoLogin",
     product: .framework,
     dependencies: [
-      .core(.sSPersistancy),
-      .core(.sSNetwork),
-      .thirdParty(.ComposableArchitecture),
+      .thirdParty(.KakaoSDK),
     ]
   )
 )

@@ -6,9 +6,13 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import KakaoLogin
+import KakaoSDKAuth
 import UIKit
 
-class MySceneDelegate: NSObject, UIWindowSceneDelegate {
+// MARK: - MySceneDelegate
+
+class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
 
   func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
@@ -24,4 +28,16 @@ class MySceneDelegate: NSObject, UIWindowSceneDelegate {
   func sceneWillEnterForeground(_: UIScene) {}
 
   func sceneDidEnterBackground(_: UIScene) {}
+}
+
+// MARK: - KAKAO OAuth2.0 Extension
+
+extension MySceneDelegate {
+  func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    if let url = URLContexts.first?.url {
+      if AuthApi.isKakaoTalkLoginUrl(url) {
+        _ = AuthController.handleOpenUrl(url: url)
+      }
+    }
+  }
 }

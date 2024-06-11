@@ -30,7 +30,9 @@ let project = Project.makeModule(
       "ITSAppUsesNonExemptEncryption": "No",
       "LSApplicationQueriesSchemes":
         .dictionary([
+          // 카카오톡으로 로그인
           "item 0": "kakaokompassauth",
+          // 카카오톡 공유
           "item 1": "kakaolink",
         ]),
       "CFBundleURLTypes":
