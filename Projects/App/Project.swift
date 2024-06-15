@@ -19,6 +19,7 @@ let project = Project.makeModule(
       .feature(.statistics),
       .feature(.onboarding),
       .feature(.sSLaunchScreen),
+      .core(.kakaoLogin),
     ],
     testDependencies: [],
     infoPlist: [
@@ -28,6 +29,7 @@ let project = Project.makeModule(
       "CFBundleVersion": "202406073",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
+      // KAKAO InfoPlist
       "LSApplicationQueriesSchemes":
         .dictionary([
           // 카카오톡으로 로그인
@@ -40,11 +42,11 @@ let project = Project.makeModule(
           .dictionary([
             "CFBundleURLSchemes":
               .array([
-                .string("${KAKAO_API_KEY}"),
+                .string("kakao${NATIVE_APP_KEY}"),
               ]),
           ]),
         ]),
-      "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
+      "NATIVE_APP_KEY": "${NATIVE_APP_KEY}",
     ]
   )
 )

@@ -13,10 +13,10 @@ import ProjectDescription
 public enum Core: String {
   case sSNetwork
   case sSDataBase
-  case coreLayers
   case sSRoot
   case kakaoLogin
   case sSPersistancy
+  case coreLayers
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

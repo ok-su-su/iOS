@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import KakaoLogin
 
 @Reducer
 struct OnboardingLogin {
@@ -14,6 +15,7 @@ struct OnboardingLogin {
   struct State: Equatable {
     var isOnAppear = false
     var helper: OnboardingLoginHelper = .init()
+    var networkHelper = OnboardingLoginNetworkHelper()
 
     init() {}
   }
@@ -34,9 +36,12 @@ struct OnboardingLogin {
   enum InnerAction: Equatable {
     case showPieChart
     case showPercentageAndPriceText
+    case navigateTermsView
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case loginWithKakaoTalk
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {}
@@ -60,8 +65,20 @@ struct OnboardingLogin {
       case .inner(.showPercentageAndPriceText):
         state.helper.setTextProperty()
         return .none
+
       case .view(.tappedKakaoLoginButton):
-        // TODO: KAKAO Login Logic
+        // 토큰 검사 로직 필요
+        return .send(.async(.loginWithKakaoTalk))
+
+      case .async(.loginWithKakaoTalk):
+        return .run(priority: .high) { [helper = state.networkHelper] send in
+          let isSuccessLoginWithKAKAOTalk = await helper.loginWithKakao()
+          if isSuccessLoginWithKAKAOTalk {
+            await send(.inner(.navigateTermsView))
+          }
+        }
+
+      case .inner(.navigateTermsView):
         OnboardingRouterPublisher.shared.send(.terms(.init()))
         return .none
       }
