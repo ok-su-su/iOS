@@ -31,11 +31,11 @@ let project = Project.makeModule(
       "ITSAppUsesNonExemptEncryption": "No",
       // KAKAO InfoPlist
       "LSApplicationQueriesSchemes":
-        .dictionary([
+        .array([
           // 카카오톡으로 로그인
-          "item 0": "kakaokompassauth",
+          "kakaokompassauth",
           // 카카오톡 공유
-          "item 1": "kakaolink",
+          "kakaolink",
         ]),
       "CFBundleURLTypes":
         .array([
