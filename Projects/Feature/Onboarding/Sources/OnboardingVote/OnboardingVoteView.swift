@@ -27,10 +27,12 @@ struct OnboardingVoteView: View {
         Text(Constants.titleTest)
           .multilineTextAlignment(.leading)
           .modifier(SSTypoModifier(.title_l))
+          .foregroundStyle(SSColor.gray100)
 
         Text(.init(Constants.titleDescriptionText))
           .multilineTextAlignment(.leading)
           .modifier(SSTypoModifier(.text_l))
+          .foregroundStyle(SSColor.gray100)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
 
