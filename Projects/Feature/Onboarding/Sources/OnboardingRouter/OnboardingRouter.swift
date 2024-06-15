@@ -15,7 +15,8 @@ struct OnboardingRouter {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var path: StackState<OnboardingRouterPath.State> = .init([.vote(.init())])
+    var path: StackState<OnboardingRouterPath.State> = .init([])
+    var helper: OnboardingRouterProperty = .init()
     init() {}
   }
 
@@ -34,6 +35,9 @@ struct OnboardingRouter {
       switch action {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
+        if state.path.isEmpty {
+          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
+        }
         return .publisher {
           OnboardingRouterPublisher
             .shared
