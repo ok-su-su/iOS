@@ -14,6 +14,7 @@ import OSLog
 
 public enum LoginWithKakao {
   /// 카카오로 소셜 로그인 합니다.
+  @MainActor
   public static func loginWithKakao() async -> Bool {
     return await withCheckedContinuation { continuation in
       if isKAKAOInstalled() {
