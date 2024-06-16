@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
+import OSLog
 
 @Reducer
 struct TermsAndConditionDetail {
@@ -15,10 +16,12 @@ struct TermsAndConditionDetail {
   struct State: Equatable {
     var isOnAppear = false
     var header: HeaderViewFeature.State
+    var detailDescription: String
     @Shared var item: TermItem
-    init(item: Shared<TermItem>) {
+    init(item: Shared<TermItem>, detailDescription: String) {
       _item = item
       header = .init(.init(title: item.title.wrappedValue, type: .depth2Default))
+      self.detailDescription = detailDescription
     }
   }
 

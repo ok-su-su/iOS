@@ -15,6 +15,11 @@ struct AgreeToTermsAndConditionsView: View {
   @Bindable
   var store: StoreOf<AgreeToTermsAndConditions>
 
+  init(store: StoreOf<AgreeToTermsAndConditions>) {
+    self.store = store
+    self.store.send(.view(.viewDidLoad(true)))
+  }
+
   // MARK: Content
 
   @ViewBuilder

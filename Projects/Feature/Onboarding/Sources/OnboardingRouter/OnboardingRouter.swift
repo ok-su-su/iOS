@@ -36,7 +36,9 @@ struct OnboardingRouter {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         if state.path.isEmpty {
-          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
+          // 반드시 제거할 것
+          state.path.append(.terms(.init()))
+//          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
         }
         return .publisher {
           OnboardingRouterPublisher
