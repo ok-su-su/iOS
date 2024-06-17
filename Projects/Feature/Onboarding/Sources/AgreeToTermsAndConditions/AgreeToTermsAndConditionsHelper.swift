@@ -18,6 +18,10 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
     return termItems.filter { $0.isSatisfy() == false }.isEmpty
   }
 
+  func checkItemsID() -> [Int] {
+    return termItems.filter(\.isCheck).map(\.id)
+  }
+
   mutating func check(_ currentItem: TermItem) {
     termItems[id: currentItem.id]?.check()
   }

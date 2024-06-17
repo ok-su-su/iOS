@@ -47,8 +47,6 @@ struct OnboardingRegisterName {
   @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case changeTextField(String)
-    case changeHighlight(Bool)
     case tappedNextButton
   }
 
@@ -77,13 +75,13 @@ struct OnboardingRegisterName {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      case let .view(.changeTextField(text)):
-        return .none
-
-      case let .view(.changeHighlight(highlight)):
-        return .none
 
       case .view(.tappedNextButton):
+        guard let signupObject = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
+          return .none
+        }
+        signupObject.setName(state.textFieldProperty.getText)
+        SharedStateContainer.setValue(signupObject)
         OnboardingRouterPublisher.shared.send(.additional(.init()))
         return .none
 

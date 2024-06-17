@@ -86,6 +86,11 @@ struct AgreeToTermsAndConditions {
         return .none
 
       case .view(.tappedNextScreenButton):
+        // Container 저장
+        let signupBodyProperty = SignUpBodyProperty()
+        signupBodyProperty.setTermAgreement(terms: state.helper.checkItemsID())
+        SharedStateContainer.setValue(signupBodyProperty)
+        // Navigation
         OnboardingRouterPublisher.shared.send(.registerName(.init()))
         return .none
 

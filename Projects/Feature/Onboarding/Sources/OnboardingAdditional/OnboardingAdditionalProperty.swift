@@ -51,14 +51,14 @@ public struct BottomSheetYearItem: SSSelectBottomSheetPropertyItemable {
 
 extension BottomSheetYearItem {
   static func makeDefaultItems() -> [Self] {
-    var dateFormatter = DateFormatter()
+    let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy"
     let nowYear = dateFormatter.string(from: Date.now)
     guard let nowYearToInt = Int(nowYear) else {
       return []
     }
     let items: [Self] = (1950 ... nowYearToInt).enumerated().map { ind, val in
-      return .init(description: val.description, id: ind)
+      return .init(description: val.description + "년", id: ind)
     }
     return items.reversed()
   }

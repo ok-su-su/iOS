@@ -71,12 +71,8 @@ struct OnboardingRegisterNameView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
         Spacer()
-      }
-
-      VStack {
-        Spacer()
         makeNextScreenButton()
-      }.ignoresSafeArea()
+      }
     }
     .navigationBarBackButtonHidden()
     .onAppear {
