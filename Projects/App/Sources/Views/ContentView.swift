@@ -24,7 +24,7 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
       self.type = .envelope
     }
-    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedInventory, object: nil, queue: .main) { _ in
       self.type = .inventory
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
