@@ -31,6 +31,12 @@ public final class SSKeychain: Keychaining {
   private init() {}
 
   @discardableResult
+  public func save(key: String, value: Encodable) throws -> OSStatus {
+    let data = try JSONEncoder().encode(value)
+    return save(key: key, data: data)
+  }
+
+  @discardableResult
   public func save(key: String, data: Data) -> OSStatus {
     let query: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,

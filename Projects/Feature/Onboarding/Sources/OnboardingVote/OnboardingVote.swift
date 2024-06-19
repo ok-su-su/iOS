@@ -14,6 +14,8 @@ struct OnboardingVote {
   struct State: Equatable {
     var isOnAppear = false
     var helper: OnboardingVoteHelper = .init()
+    var networkHelper: OnboardingNetworkHelper = .init()
+    var persistencyHelper: OnboardingVotePersistencyHelper = .init()
     init() {}
   }
 
@@ -30,28 +32,52 @@ struct OnboardingVote {
     case tappedButtonItem(OnboardingVoteItem)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case updateVoteItems([OnboardingVoteItem])
 
-  enum AsyncAction: Equatable {}
+    case saveVote
+  }
+
+  enum AsyncAction: Equatable {
+    case getVoteItems
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {}
 
   enum DelegateAction: Equatable {}
 
+  enum CancelID {
+    case getOnboardingVoteItems
+  }
+
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
+        return .send(.async(.getVoteItems))
 
       case let .view(.tappedButtonItem(item)):
-
-        return .run { _ in
-          // TODO: Vote Logic
+        if item.title == "" {
+          return .none
+        }
+        return .run { send in
+          await send(.inner(.saveVote))
           OnboardingRouterPublisher.shared.send(.login(.init()))
         }
+      case .async(.getVoteItems):
+        return .run { [helper = state.networkHelper] send in
+          let items = await helper.getOnboardingVoteItems()
+          await send(.inner(.updateVoteItems(items)), animation: .linear(duration: 0.8))
+        }
+        .cancellable(id: CancelID.getOnboardingVoteItems, cancelInFlight: true)
+      case let .inner(.updateVoteItems(items)):
+        state.helper.items = items
+        return .none
+      case .inner(.saveVote):
+        state.persistencyHelper.saveKeyChainIsNotInitialUser()
+        return .none
       }
     }
   }

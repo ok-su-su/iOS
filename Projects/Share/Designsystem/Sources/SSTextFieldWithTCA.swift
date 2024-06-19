@@ -153,7 +153,7 @@ public struct SSTextFieldView: View {
         TextField(
           "",
           text: $store.property.text.sending(\.changeTextField),
-          prompt: Text(store.property.placeHolderText.placeHolderTextString)
+          prompt: Text(store.property.placeHolderText.placeHolderTextString).foregroundStyle(SSColor.gray30)
         )
         .background(.clear)
         .foregroundColor(.gray100)

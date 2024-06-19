@@ -11,11 +11,14 @@ import Foundation
 // MARK: - OnboardingVoteHelper
 
 struct OnboardingVoteHelper: Equatable {
-  var items: [OnboardingVoteItem]
+  var items: [OnboardingVoteItem] = [
+    .init(title: "  ", id: 0),
+    .init(title: "  ", id: 1),
+    .init(title: "  ", id: 2),
+    .init(title: "  ", id: 3),
+  ]
 
-  init(items: [OnboardingVoteItem] = [OnboardingVoteItem].initialItems()) {
-    self.items = items
-  }
+  init() {}
 }
 
 // MARK: - OnboardingVoteItem

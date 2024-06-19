@@ -20,6 +20,7 @@ struct OnboardingAdditional {
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
     var helper: OnboardingAdditionalProperty
+    let networkHelper = OnBoardingAdditionalNetwork()
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<BottomSheetYearItem>.State? = nil
 
     init() {
@@ -81,9 +82,17 @@ struct OnboardingAdditional {
         return .none
 
       case .view(.tappedNextButton):
-        // navigate Main Scene
-        NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
-        return .none
+        guard let body = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
+          return .none
+        }
+        body.setGender(state.helper.selectedGenderItemToBodyString())
+        body.setBirth(state.helper.selectedBirthItemToBodyString())
+
+        return .run { [helper = state.networkHelper] _ in
+          let response = try await helper.requestSignUp(body: body)
+          OnboardingAdditionalPersistence.saveToken(response)
+          NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
+        }
       case .scope(.bottomSheet):
         return .none
       }

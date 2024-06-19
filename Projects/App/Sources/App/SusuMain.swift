@@ -5,6 +5,9 @@ import SwiftUI
 @main
 struct SusuApp: App {
   init() {
+    #if DEBUG
+      UserDefaults.standard.set(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+    #endif
     LoginWithKakao.initKakaoSDK()
   }
 

@@ -9,6 +9,7 @@
 import Combine
 import Foundation
 import Moya
+import OSLog
 
 extension JSONDecoder {
   static var `default`: JSONDecoder {
@@ -43,15 +44,31 @@ public extension MoyaProvider {
       self.request(target) { result in
         switch result {
         case let .success(response):
-          guard let res = try? JSONDecoder.default.decode(T.self, from: response.data) else {
-            continuation.resume(throwing: MoyaError.jsonMapping(response))
+          // statusCode 검사
+          if 200 ..< 300 ~= response.statusCode {
+            guard let res = try? JSONDecoder.default.decode(T.self, from: response.data) else {
+              continuation.resume(throwing: MoyaError.jsonMapping(response))
+              return
+            }
+            continuation.resume(returning: res)
             return
           }
-          continuation.resume(returning: res)
+          if let isSUSUError = String(data: response.data, encoding: .utf8) {
+            os_log("\(isSUSUError)")
+          }
+          continuation.resume(with: .failure(MoyaError.statusCode(response)))
+
         case let .failure(error):
           continuation.resume(throwing: error)
         }
       }
     }
   }
+}
+
+// MARK: - SUSUErrorResponseDTO
+
+struct SUSUErrorResponseDTO: Decodable {
+  let errorCode: String
+  let reason: String
 }

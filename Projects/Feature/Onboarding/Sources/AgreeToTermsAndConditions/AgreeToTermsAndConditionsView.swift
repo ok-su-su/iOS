@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import Lottie
 import SwiftUI
 
 struct AgreeToTermsAndConditionsView: View {
@@ -14,6 +15,11 @@ struct AgreeToTermsAndConditionsView: View {
 
   @Bindable
   var store: StoreOf<AgreeToTermsAndConditions>
+
+  init(store: StoreOf<AgreeToTermsAndConditions>) {
+    self.store = store
+    self.store.send(.view(.viewDidLoad(true)))
+  }
 
   // MARK: Content
 
@@ -27,6 +33,7 @@ struct AgreeToTermsAndConditionsView: View {
         .multilineTextAlignment(.leading)
 
       makeTermsAndConditions()
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
       Spacer()
     }
     .padding(.horizontal, 16)

@@ -29,6 +29,18 @@ public extension [Target] {
     testDependencies: [TargetDependency] = [],
     infoPlist: [String: Plist.Value] = [:]
   ) -> [Target] {
+    
+    // 에셋 리소스를 코드로 자동완성 해주는 옵션 활성화
+    let settings: Settings = .settings(
+      base: [
+        "DEVELOPMENT_TEAM": "2G5Z92682P",
+      ],
+      configurations: [
+        .debug(name: .debug),
+        .release(name: .release),
+      ]
+    )
+    
     let mergedInfoPlist: [String: Plist.Value] = [
       "BaseURL": "$(BASE_URL)",
       "UILaunchStoryboardName": "LaunchScreen",
@@ -58,6 +70,7 @@ public extension [Target] {
         entitlements: entitlements,
         scripts: [.swiftFormat, .swiftLint],
         dependencies: dependencies,
+        settings: settings,
         environmentVariables: ["IDEPreferLogStreaming": "YES"]
       ),
     ]

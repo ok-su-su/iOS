@@ -14,12 +14,14 @@ import Foundation
 struct AgreeToTermsAndConditionsHelper: Equatable {
   @Shared var termItems: IdentifiedArrayOf<TermItem>
 
-  init(termItems: [TermItem]) {
-    _termItems = .init(.init(uniqueElements: termItems))
-  }
-
   var activeNextScreenButton: Bool {
     return termItems.filter { $0.isSatisfy() == false }.isEmpty
+  }
+
+  func checkItemsID() -> [Int] {
+    var checkedId = termItems.filter(\.isCheck).map(\.id)
+    checkedId.remove(at: 0)
+    return checkedId
   }
 
   mutating func check(_ currentItem: TermItem) {
@@ -43,7 +45,7 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
   }
 
   init() {
-    _termItems = .init(.init(uniqueElements: [TermItem].makeFakeData()))
+    _termItems = .init(.init(uniqueElements: [TermItem].makeLocalItems()))
   }
 }
 
@@ -73,11 +75,15 @@ struct TermItem: Equatable, Identifiable {
 }
 
 extension [TermItem] {
-  static func makeFakeData() -> Self {
+  static func makeLocalItems() -> Self {
     [
       .init(id: 0, title: "만 14세 이상입니다.", isEssential: true, isDetailContent: false),
-      .init(id: 1, title: "서비스 이용 약관", isEssential: true, isDetailContent: true),
-      .init(id: 2, title: "개인 정보 수집 및 이용안내", isEssential: true, isDetailContent: true),
     ]
+  }
+
+  static func makeBy(dto: GetTermsInformationResponseDTO) -> Self {
+    return dto.map { element in
+      return .init(id: element.id, title: element.title, isEssential: element.isEssential, isDetailContent: element.isEssential)
+    }
   }
 }

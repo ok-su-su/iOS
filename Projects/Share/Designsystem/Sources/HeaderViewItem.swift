@@ -57,6 +57,8 @@ extension HeaderView {
       Text(text)
         .modifier(SSTypoModifier(.title_xs))
         .frame(maxWidth: .infinity, alignment: .center)
+        .foregroundStyle(SSColor.gray100)
+
     case let .progress(degree):
       ZStack(alignment: .topLeading) {
         Color.orange30
