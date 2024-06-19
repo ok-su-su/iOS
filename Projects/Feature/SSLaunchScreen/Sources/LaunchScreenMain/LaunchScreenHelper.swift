@@ -27,7 +27,7 @@ struct LaunchScreenHelper {
       return .newUser
     }
 
-    await SSTokenInterceptor.shared.refreshToken()
+    await SSTokenInterceptor.shared.refreshTokenWithNetwork()
     return .prevUser
   }
 }

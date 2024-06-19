@@ -26,6 +26,10 @@ public extension SSNetworkTargetType {
     return targetURL
   }
 
+  var validationType: ValidationType {
+    .successCodes
+  }
+
   var headers: [String: String]? {
     var additionalHeader = additionalHeader ?? .init()
     DefaultHeaderValue.allCases.forEach { current in

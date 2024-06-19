@@ -74,6 +74,7 @@ public struct SSTokenInterceptor: RequestInterceptor {
       completion(.doNotRetryWithError(error))
       return
     }
+    os_log("401에러가 발생했습니다. Token 재발급을 실행합니다.")
     refreshTokenWithNetworking(completion)
   }
 
@@ -101,6 +102,7 @@ public struct SSTokenInterceptor: RequestInterceptor {
           refreshToken: responseDTO.refreshToken,
           refreshTokenExp: responseDTO.refreshTokenExp
         ))
+        os_log("토큰 재발급에 성공했습니다. 이천 요청을 수행합니다.")
         completion(.retry)
       case let .failure(error):
         completion(.doNotRetryWithError(error))
@@ -112,7 +114,7 @@ public struct SSTokenInterceptor: RequestInterceptor {
 }
 
 public extension SSTokenInterceptor {
-  func refreshToken() async {
+  func refreshTokenWithNetwork() async {
     do {
       let body: Data = try helper.getTokenData()
       let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
@@ -120,6 +122,25 @@ public extension SSTokenInterceptor {
       try SSTokenManager.shared.saveToken(response)
     } catch {
       os_log("토큰 갱신에 실패했습니다.\n\(error)")
+    }
+  }
+
+  func healthCheck() async {
+    let customEndpointClosure = { (target: HealthCheck) -> Endpoint in
+      return Endpoint(
+        url: URL(target: target).absoluteString,
+        sampleResponseClosure: { .networkError(NSError(domain: "TokenInvalid", code: 401, userInfo: nil)) },
+        method: target.method,
+        task: target.task,
+        httpHeaderFields: target.headers
+      )
+    }
+    let provider = MoyaProvider<HealthCheck>(endpointClosure: customEndpointClosure, session: Session(interceptor: SSTokenInterceptor.shared))
+    do {
+      let responseDTO: healthCheckResponseDTO = try await provider.request(.init())
+      os_log("responseDTO Message: \(responseDTO.message)")
+    } catch {
+      os_log("\(error)")
     }
   }
 }
