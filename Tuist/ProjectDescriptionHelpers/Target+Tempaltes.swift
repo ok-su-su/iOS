@@ -34,6 +34,10 @@ public extension [Target] {
     let settings: Settings = .settings(
       base: [
         "DEVELOPMENT_TEAM": "2G5Z92682P",
+        "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
+        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+//        "CLANG_ENABLE_MODULES": "Yes"
       ],
       configurations: [
         .debug(name: .debug),
@@ -86,7 +90,8 @@ public extension [Target] {
           infoPlist: .default,
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: name)]
+          dependencies: testDependencies + [.target(name: name)],
+          settings: settings
         )
       )
     }
@@ -101,7 +106,8 @@ public extension [Target] {
           infoPlist: .default,
           sources: "UITests/**",
           scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: name)]
+          dependencies: testDependencies + [.target(name: name)],
+          settings: settings
         )
       )
     }
@@ -133,7 +139,14 @@ public extension [Target] {
 
     // 에셋 리소스를 코드로 자동완성 해주는 옵션 활성화
     let settings: Settings = .settings(
-      base: ["ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES"],
+      base: [
+        "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
+        "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
+        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+//        "CLANG_ENABLE_MODULES": "Yes"
+//        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
+      ],
       configurations: [
         .debug(name: .debug),
         .release(name: .release),
@@ -166,7 +179,8 @@ public extension [Target] {
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
           scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
+          dependencies: testDependencies + [.target(name: "\(feature.targetName)")],
+          settings: settings
         )
       )
     }
@@ -214,6 +228,22 @@ public extension [Target] {
     let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)"].merging(infoPlist) { _, new in
       new
     }
+    
+    let settings: Settings = settings == nil ?
+    .settings(
+      base: [
+        "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
+        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+//        "CLANG_ENABLE_MODULES": "Yes"
+//        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
+      ],
+      configurations: [
+        .debug(name: .debug),
+        .release(name: .release),
+      ]
+    )
+    : settings!
 
     var targets: [Target] = [
       Target.target(
@@ -241,7 +271,8 @@ public extension [Target] {
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
           scripts: [],
-          dependencies: testDependencies + [.target(name: name)]
+          dependencies: testDependencies + [.target(name: name)],
+          settings: settings
         )
       )
     }
@@ -256,7 +287,8 @@ public extension [Target] {
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
           scripts: [],
-          dependencies: testDependencies + [.target(name: name)]
+          dependencies: testDependencies + [.target(name: name)],
+          settings: settings
         )
       )
     }
