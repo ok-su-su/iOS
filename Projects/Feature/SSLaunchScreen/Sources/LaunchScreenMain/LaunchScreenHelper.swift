@@ -7,13 +7,24 @@
 //
 
 import Foundation
+import OSLog
+import SSPersistancy
 
 struct LaunchScreenHelper {
   init() {}
 
   func runAppInitTask() async -> EndedLaunchScreenStatus {
-    // TODO: Must be delete
-    sleep(2)
-    return .newUser
+    // 기존 유저인지 검사합니다.
+    if SSTokenManager.shared.isToken() {
+      return .newUser
+    }
+
+    // refreshToken이 만료되었는지 검사합니다.
+    if SSTokenManager.shared.isRefreshTokenExpired() {
+      SSTokenManager.shared.removeToken()
+      return .newUser
+    }
+
+    return .prevUser
   }
 }

@@ -3,15 +3,13 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "CoreLayers",
+  name: "SSInterceptor",
   targets: .custom(
-    name: "CoreLayers",
+    name: "SSInterceptor",
     product: .framework,
     dependencies: [
-      .core(.sSPersistancy),
       .core(.sSNetwork),
-      .thirdParty(.ComposableArchitecture),
-      .core(.sSInterceptor),
+      .core(.sSPersistancy),
     ]
   )
 )

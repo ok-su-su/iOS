@@ -33,11 +33,8 @@ final class TokenInterceptorTest: XCTestCase {
   }
 
   var helper = MockHelper()
-  var interceptor: SSTokenInterceptor!
 
-  override func setUpWithError() throws {
-    interceptor = .init(helper: helper)
-  }
+  override func setUpWithError() throws {}
 
   override func tearDownWithError() throws {}
 

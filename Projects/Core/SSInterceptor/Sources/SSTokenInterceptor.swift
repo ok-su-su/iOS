@@ -1,10 +1,3 @@
-//
-//  SSTokenInterceptor.swift
-//  SSNetwork
-//
-//  Created by MaraMincho on 6/8/24.
-//  Copyright © 2024 com.oksusu. All rights reserved.
-//
 
 import Alamofire
 import Foundation
@@ -32,15 +25,13 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
   let refreshTokenString = "refreshToken"
 
   func getToken() -> (accessToken: String, refreshToken: String)? {
-    guard let accessTokenData = keyChainShared.load(key: accessTokenString),
-          let refreshTokenData = keyChainShared.load(key: refreshTokenString)
-    else {
+    do {
+      let token = try SSTokenManager.shared.getToken()
+      return (token.accessToken, token.refreshTokenExp)
+    }catch {
+      os_log("Interceptor에 활용하기 위한\(#function) 토큰이 존재하지 않습니다.\n\(error)")
       return nil
     }
-
-    let accessToken = String(decoding: accessTokenData, as: UTF8.self)
-    let refreshToken = String(decoding: refreshTokenData, as: UTF8.self)
-    return (accessToken, refreshToken)
   }
 
   func getTokenData() throws -> Data {
@@ -64,15 +55,15 @@ struct SSTokenInterceptor: RequestInterceptor {
   }
 
   func adapt(_ urlRequest: URLRequest, for _: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
-    guard let (accessToken, refreshToken) = helper.getToken() else {
+    // 토큰이 저장되어있는지 확인합니다.
+    guard let (accessToken, _) = helper.getToken() else {
       completion(.success(urlRequest))
       return
     }
-    var urlRequest = urlRequest
-    urlRequest.setValue(accessToken, forHTTPHeaderField: helper.accessTokenString)
-    urlRequest.setValue(refreshToken, forHTTPHeaderField: helper.refreshTokenString)
-
-    completion(.success(urlRequest))
+    // 토큰을 전달합니다.
+    var mutalURLRequest = urlRequest
+    mutalURLRequest.setValue(accessToken, forHTTPHeaderField: helper.accessTokenString)
+    completion(.success(mutalURLRequest))
   }
 
   func retry(_ request: Request, for _: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) {
@@ -90,6 +81,7 @@ struct SSTokenInterceptor: RequestInterceptor {
     do {
       let body: Data = try helper.getTokenData()
       let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
+      
       refreshProvider.request(.init(bodyData: body)) { responseResult in
         refreshTokenResponse(result: responseResult, completion: completion)
       }
@@ -103,11 +95,12 @@ struct SSTokenInterceptor: RequestInterceptor {
       switch result {
       case let .success(response):
         let responseDTO = try response.map(RefreshResponseDTO.self, failsOnEmptyData: true)
-        let accessTokenData = try responseDTO.getAccessTokenData()
-        let refreshTokenData = try responseDTO.getRefreshTokenData()
-        SSKeychain.shared.save(key: helper.accessTokenString, data: accessTokenData)
-        SSKeychain.shared.save(key: helper.refreshTokenString, data: refreshTokenData)
-
+        try SSTokenManager.shared.saveToken(.init(
+          accessToken: responseDTO.accessToken,
+          accessTokenExp: responseDTO.accessTokenExp,
+          refreshToken: responseDTO.refreshToken,
+          refreshTokenExp: responseDTO.refreshTokenExp
+        ))
         completion(.retry)
       case let .failure(error):
         completion(.doNotRetryWithError(error))

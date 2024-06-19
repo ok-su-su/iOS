@@ -59,18 +59,16 @@ public enum LoginWithKakao {
 
   public static func checkKakaoToken() async -> Bool {
     return await withCheckedContinuation { promise in
-      if (AuthApi.hasToken()) {
-        UserApi.shared.accessTokenInfo { (_, error) in
-          if let error = error {
+      if AuthApi.hasToken() {
+        UserApi.shared.accessTokenInfo { _, error in
+          if let error {
             promise.resume(with: .success(false))
-            if let sdkError = error as? SdkError, sdkError.isInvalidTokenError() == true  {
+            if let sdkError = error as? SdkError, sdkError.isInvalidTokenError() == true {
               os_log("invalidTokkenError, sdkInvalidTokkenError가 발생했습니다.")
-            }
-            else {
+            } else {
               os_log("기타 카카오 로그인 에러가 발생했습니다. ")
             }
-          }
-          else {
+          } else {
             promise.resume(with: .success(true))
           }
         }

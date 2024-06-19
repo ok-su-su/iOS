@@ -42,6 +42,8 @@ struct OnboardingLogin {
 
   enum AsyncAction: Equatable {
     case loginWithKakaoTalk
+    case checkIsNewUser(loginType: LoginType)
+    case loginWithSUSU(loginType: LoginType)
   }
 
   @CasePathable
@@ -68,16 +70,13 @@ struct OnboardingLogin {
         return .none
 
       case .view(.tappedKakaoLoginButton):
-        // 토큰 검사 로직 필요
         return .send(.async(.loginWithKakaoTalk))
 
       case .async(.loginWithKakaoTalk):
         return .run(priority: .high) { [helper = state.networkHelper] send in
           let isSuccessLoginWithKAKAOTalk = await helper.loginWithKakao()
           if isSuccessLoginWithKAKAOTalk {
-            let property = SignUpBodyProperty()
-            await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
-            await send(.inner(.navigateTermsView))
+            await send(.async(.checkIsNewUser(loginType: .KAKAO)))
           }
         }
 
@@ -90,6 +89,22 @@ struct OnboardingLogin {
         property.setLoginType(val)
         SharedStateContainer.setValue(property)
         return .none
+
+      case let .async(.checkIsNewUser(loginType: loginType)):
+        return .run { [helper = state.networkHelper] send in
+          // 만약 이전에 가입한 유저라면
+          if await helper.isNewUser(loginType: loginType) {
+            await send(.async(.loginWithSUSU(loginType: loginType)))
+            return
+          }
+          // 가입한 유저가 아닐 때
+          await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
+          await send(.inner(.navigateTermsView))
+        }
+      case let .async(.loginWithSUSU(loginType: loginType)):
+        return .run { [helper = state.networkHelper] _ in
+          await helper.loginWithSUSU(loginType: loginType)
+        }
       }
     }
   }
