@@ -62,14 +62,16 @@ struct OnboardingLoginNetworkHelper: Equatable {
 
   func isNewUser(loginType: LoginType) async -> Bool {
     guard let token = getTokenFormManager(loginType) else {
-      os_log("저장된 토큰이 없습니다. \(#function)")
-      return false
+      os_log("Oauth의 저장된 토큰이 없습니다. 심각한 오류 입니다. \(#function)")
+      return true
     }
 
     do {
-      return try await provider.request(.isNewUser(loginType, token))
+      let newUserDTO: isNewUserResponseDTO = try await provider.request(.isNewUser(loginType, token))
+      return newUserDTO.canRegister
     } catch {
-      return false
+      os_log("가입가능한지에 대한 리스폰스처리 에러 입니다.\n \(error.localizedDescription)")
+      return true
     }
   }
 
@@ -113,4 +115,12 @@ struct OnboardingLoginNetworkHelper: Equatable {
 
 struct LoginWithSUSUBodyDTO: Encodable {
   let accessToken: String
+}
+
+// MARK: - isNewUserResponseDTO
+
+struct isNewUserResponseDTO: Decodable {
+  /// 새로운 고객은 가입할 수 있다.
+  /// isNewUser == canRegister
+  let canRegister: Bool
 }

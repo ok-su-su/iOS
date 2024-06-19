@@ -16,6 +16,7 @@ struct LaunchScreenHelper {
   init() {}
 
   func runAppInitTask() async -> EndedLaunchScreenStatus {
+    SSTokenManager.shared.removeToken()
     // 기존 유저인지 검사합니다.
     if !SSTokenManager.shared.isToken() {
       return .newUser

@@ -21,36 +21,24 @@ final class ContentViewObject: ObservableObject {
   @Published var type: SSTabType = .envelope
 
   func setup() {
-    NotificationCenter.default.addObserver(self, selector: #selector(enveloped), name: SSNotificationName.tappedEnveloped, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(inventory), name: SSNotificationName.tappedInventory, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(statics), name: SSNotificationName.tappedStatistics, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(vote), name: SSNotificationName.tappedVote, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(myPage), name: SSNotificationName.tappedMyPage, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(goMain), name: SSNotificationName.goMainScene, object: nil)
-  }
-
-  @objc func enveloped() {
-    type = .envelope
-  }
-
-  @objc func inventory() {
-    type = .inventory
-  }
-
-  @objc func statics() {
-    type = .statistics
-  }
-
-  @objc func vote() {
-    type = .vote
-  }
-
-  @objc func myPage() {
-    type = .mypage
-  }
-
-  @objc func goMain() {
-    nowScreenType = .main
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
+      self.type = .envelope
+    }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
+      self.type = .inventory
+    }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
+      self.type = .statistics
+    }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedVote, object: nil, queue: .main) { _ in
+      self.type = .vote
+    }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.tappedMyPage, object: nil, queue: .main) { _ in
+      self.type = .mypage
+    }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
+      self.nowScreenType = .main
+    }
   }
 
   init() {

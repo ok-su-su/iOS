@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import Foundation
 import KakaoLogin
 
@@ -92,18 +93,19 @@ struct OnboardingLogin {
 
       case let .async(.checkIsNewUser(loginType: loginType)):
         return .run { [helper = state.networkHelper] send in
-          // 만약 이전에 가입한 유저라면
+          // 새로운 유저라면
           if await helper.isNewUser(loginType: loginType) {
-            await send(.async(.loginWithSUSU(loginType: loginType)))
+            await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
+            await send(.inner(.navigateTermsView))
             return
           }
-          // 가입한 유저가 아닐 때
-          await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
-          await send(.inner(.navigateTermsView))
+          // 만약 이전에 가입한 유저라면
+          await send(.async(.loginWithSUSU(loginType: loginType)))
         }
       case let .async(.loginWithSUSU(loginType: loginType)):
         return .run { [helper = state.networkHelper] _ in
           await helper.loginWithSUSU(loginType: loginType)
+          NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         }
       }
     }
