@@ -35,8 +35,8 @@ public extension [Target] {
       base: [
         "DEVELOPMENT_TEAM": "2G5Z92682P",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
-        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+        "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
 //        "CLANG_ENABLE_MODULES": "Yes"
       ],
       configurations: [
@@ -142,8 +142,8 @@ public extension [Target] {
       base: [
         "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
-        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+        "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
 //        "CLANG_ENABLE_MODULES": "Yes"
 //        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
       ],
@@ -233,8 +233,8 @@ public extension [Target] {
     .settings(
       base: [
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
-        "ENABLE_MODULE_VERIFIER": "Yes", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "Yes"
+        "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
 //        "CLANG_ENABLE_MODULES": "Yes"
 //        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
       ],
