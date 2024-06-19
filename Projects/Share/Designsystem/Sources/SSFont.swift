@@ -118,9 +118,9 @@ public enum SSFont {
   var font: Font {
     return switch weightType {
     case .title:
-      .custom("Pretendard-Bold", size: sizeTypes.fontSize)
+      .custom("Pretendard-Bold", fixedSize: sizeTypes.fontSize)
     case .text:
-      .custom("Pretendard-Regular", size: sizeTypes.fontSize)
+      .custom("Pretendard-Regular", fixedSize: sizeTypes.fontSize)
     }
   }
 
