@@ -14,6 +14,7 @@ import OSLog
 struct AgreeToTermsAndConditions {
   @ObservableState
   struct State: Equatable {
+    var isLoading = true
     var isOnAppear = false
     var viewDidLoad: Bool = false
     var header = HeaderViewFeature.State(.init(title: "약관 동의", type: .defaultType))
@@ -42,6 +43,7 @@ struct AgreeToTermsAndConditions {
   }
 
   enum InnerAction: Equatable {
+    case isLoading(Bool)
     case showTermItems([TermItem])
     case showDetailTerms(id: Int, description: String)
   }
@@ -106,8 +108,12 @@ struct AgreeToTermsAndConditions {
 
       case .async(.getRequestTermsInformation):
         return .run(priority: .high) { [helper = state.networkHelper] send in
-          let dto = try await helper.requestTermsInformation()
-          await send(.inner(.showTermItems(.makeBy(dto: dto))))
+          await send(.inner(.isLoading(true)))
+          do {
+            let dto = try await helper.requestTermsInformation()
+            await send(.inner(.showTermItems(.makeBy(dto: dto))))
+          }
+          await send(.inner(.isLoading(false)))
         }
 
       case let .inner(.showTermItems(items)):
@@ -127,6 +133,10 @@ struct AgreeToTermsAndConditions {
         }
         state.viewDidLoad = value
         return .send(.async(.getRequestTermsInformation))
+
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
+        return .none
       }
     }
   }
