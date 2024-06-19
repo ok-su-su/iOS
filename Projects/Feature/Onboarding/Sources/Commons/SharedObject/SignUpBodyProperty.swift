@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - SignUpBodyProperty
+
 final class SignUpBodyProperty: Equatable, Encodable {
   static func == (lhs: SignUpBodyProperty, rhs: SignUpBodyProperty) -> Bool {
     return lhs === rhs
@@ -16,7 +18,7 @@ final class SignUpBodyProperty: Equatable, Encodable {
   private var name: String? = nil
   private var termAgreement: [Int] = []
   private var gender: String? = nil
-  private var birth: String? = nil
+  private var birth: Int? = nil
 
   init() {}
 
@@ -24,15 +26,31 @@ final class SignUpBodyProperty: Equatable, Encodable {
     termAgreement = terms
   }
 
-  func setName(_ val: String) {
+  func setName(_ val: String?) {
     name = val
   }
 
-  func setGender(_ val: String) {
+  func setGender(_ val: String?) {
     gender = val
   }
 
-  func setBirth(_ val: String) {
+  func setBirth(_ val: Int?) {
     birth = val
+  }
+}
+
+extension SignUpBodyProperty {
+  func makeBody() -> SingUpBodyDTO {
+    return .init(
+      name: name ?? "",
+      termAgreement: termAgreement,
+      gender: gender,
+      birth: birth
+    )
+  }
+
+  func makeBodyData() throws -> Data {
+    let encoder = JSONEncoder()
+    return try encoder.encode(makeBody())
   }
 }

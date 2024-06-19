@@ -12,6 +12,8 @@ import KakaoSDKCommon
 import KakaoSDKUser
 import OSLog
 
+// MARK: - LoginWithKakao
+
 public enum LoginWithKakao {
   /// 카카오로 소셜 로그인 합니다.
   @MainActor
@@ -55,25 +57,14 @@ public enum LoginWithKakao {
     }
   }
 
-  public static func checkKakaoToken() {
-    if AuthApi.hasToken() {
-      UserApi.shared.accessTokenInfo { _, error in
-        if let error {
-          if let sdkError = error as? SdkError, sdkError.isInvalidTokenError() == true {
-            os_log("로그인이 필요합니다.")
-            // 로그인 필요
-          } else {
-            os_log("기타 에러")
-            // 기타 에러
-          }
-        } else {
-          os_log("토큰이 갱신됨 (성공)")
-          // 토큰 유효성 체크 성공(필요 시 토큰 갱신됨)
-        }
-      }
-    } else {
-      os_log("로그인 필요")
-    }
+  public static func checkKakaoToken() -> Bool {
+    return AuthApi.hasToken()
+  }
+
+  /// "카카오 토큰을 가져옵니다."
+  /// - Returns: 토큰이 없을 경우 Nil 을 리턴합니다.
+  public static func getToken() -> String? {
+    return TokenManager.manager.getToken()?.accessToken
   }
 
   /// KAKAOSDK를 초기화 합니다.
@@ -84,5 +75,21 @@ public enum LoginWithKakao {
     }
     os_log("KakaoNativeAppKey를 정상적으로 가져왔습니다.")
     KakaoSDK.initSDK(appKey: appKey)
+  }
+}
+
+// MARK: - SUSUKakaoLoginError
+
+enum SUSUKakaoLoginError: LocalizedError {
+  case invalidToken
+  case loginError
+
+  var errorDescription: String? {
+    switch self {
+    case .invalidToken:
+      return NSLocalizedString("invalidToken", comment: "토큰값이 유효하지 않습니다.")
+    case .loginError:
+      return NSLocalizedString("loginError", comment: "카카오 로그인을 해야 합니다.")
+    }
   }
 }

@@ -17,6 +17,29 @@ struct OnboardingAdditionalProperty: Equatable {
   var selectedGenderItem: GenderButtonProperty?
   @Shared var selectedBirth: BottomSheetYearItem?
 
+  func selectedGenderItemToBodyString() -> String? {
+    guard let selectedGenderItem else {
+      return nil
+    }
+    switch selectedGenderItem.id {
+    case 0:
+      return "남성"
+    case 1:
+      return "여성"
+    default:
+      return nil
+    }
+  }
+
+  func selectedBirthItemToBodyString() -> Int? {
+    guard
+      let selectedBirth
+    else {
+      return nil
+    }
+    return Int(String(selectedBirth.id))
+  }
+
   init() {
     genderItems = .makeInitialData()
     _selectedBirth = .init(nil)
@@ -57,8 +80,8 @@ extension BottomSheetYearItem {
     guard let nowYearToInt = Int(nowYear) else {
       return []
     }
-    let items: [Self] = (1950 ... nowYearToInt).enumerated().map { ind, val in
-      return .init(description: val.description + "년", id: ind)
+    let items: [Self] = (1950 ... nowYearToInt).map { val in
+      return .init(description: val.description + "년", id: val)
     }
     return items.reversed()
   }
