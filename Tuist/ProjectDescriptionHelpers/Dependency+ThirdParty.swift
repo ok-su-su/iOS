@@ -16,6 +16,7 @@ public enum ThirdParty: String, CaseIterable {
   case RealmSwift
   case Realm
   case KakaoSDK
+  case Lottie
   public var targetName: String {
     switch self {
     default:
