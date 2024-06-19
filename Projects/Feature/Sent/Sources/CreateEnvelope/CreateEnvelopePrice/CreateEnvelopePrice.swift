@@ -58,6 +58,7 @@ struct CreateEnvelopePrice {
 
   enum InnerAction: Equatable {
     case convertPrice(String)
+    case push
   }
 
   enum AsyncAction: Equatable {}
@@ -69,7 +70,6 @@ struct CreateEnvelopePrice {
 
   enum DelegateAction: Equatable {
     case dismissCreateFlow
-    case push
   }
 
   var body: some Reducer<State, Action> {
@@ -97,7 +97,7 @@ struct CreateEnvelopePrice {
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
-          await send(.delegate(.push))
+          await send(.inner(.push))
         }
 
       case .scope(.nextButton):
@@ -116,7 +116,8 @@ struct CreateEnvelopePrice {
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
 
-      case .delegate(.push):
+      case .inner(.push):
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
         return .none
       }
     }

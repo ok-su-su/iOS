@@ -37,6 +37,10 @@ struct CreateEnvelopeDate {
     var isAbleToPush: Bool {
       return yearTextFieldValid && monthTextFieldValid && dayTextFieldValid
     }
+
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+      _createEnvelopeProperty = createEnvelopeProperty
+    }
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
@@ -53,16 +57,16 @@ struct CreateEnvelopeDate {
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
   @CasePathable
   enum ScopeAction: Equatable {}
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     BindingReducer()
@@ -77,9 +81,11 @@ struct CreateEnvelopeDate {
 
       case .view(.tappedNextButton):
         return .run { send in
-          await send(.delegate(.push))
+          await send(.inner(.push))
         }
-      case .delegate(.push):
+
+      case .inner(.push):
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(state.$createEnvelopeProperty)))
         return .none
       }
     }

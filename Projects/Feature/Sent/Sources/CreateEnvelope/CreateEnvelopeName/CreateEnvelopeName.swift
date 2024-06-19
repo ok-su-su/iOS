@@ -28,7 +28,7 @@ struct CreateEnvelopeName {
       return textFieldText == "" ? [] : createEnvelopeProperty.filteredName(textFieldText)
     }
 
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
     }
   }
@@ -48,7 +48,9 @@ struct CreateEnvelopeName {
     case textFieldChange(String)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -57,9 +59,7 @@ struct CreateEnvelopeName {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   @Dependency(\.dismiss) var dismiss
 
@@ -78,7 +78,8 @@ struct CreateEnvelopeName {
       case .binding:
         return .none
 
-      case .delegate:
+      case .inner(.push):
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
         return .none
 
       case let .view(.tappedFilterItem(name: name)):
@@ -87,7 +88,7 @@ struct CreateEnvelopeName {
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
-          await send(.delegate(.push))
+          await send(.inner(.push))
         }
 
       case .scope(.nextButton):

@@ -17,7 +17,7 @@ struct CreateEnvelopeAdditionalSection {
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,

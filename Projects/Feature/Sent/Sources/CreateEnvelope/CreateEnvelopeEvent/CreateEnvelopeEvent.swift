@@ -17,7 +17,7 @@ struct CreateEnvelopeEvent {
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.State
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.eventHelper.defaultEvent,
@@ -39,7 +39,9 @@ struct CreateEnvelopeEvent {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -49,9 +51,7 @@ struct CreateEnvelopeEvent {
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -66,9 +66,12 @@ struct CreateEnvelopeEvent {
         state.isOnAppear = isAppear
         return .none
 
+      case .inner(.push):
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
+        return .none
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
-          await send(.delegate(.push))
+          await send(.inner(.push))
         }
 
       case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id)))):
