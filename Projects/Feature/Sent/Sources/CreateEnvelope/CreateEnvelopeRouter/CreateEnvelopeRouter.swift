@@ -39,6 +39,7 @@ struct CreateEnvelopeRouter {
 
   private enum CancelID {
     case dismiss
+    case publishNavigation
   }
 
   @Dependency(\.mainQueue) var mainQueue
@@ -47,6 +48,7 @@ struct CreateEnvelopeRouter {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
     }
+
     Reduce { state, action in
       switch action {
       case let .onAppear(val):
@@ -59,6 +61,7 @@ struct CreateEnvelopeRouter {
           CreateEnvelopeRouterPublisher.shared.publisher()
             .map { val in .push(val) }
         }
+        .cancellable(id: CancelID.dismiss, cancelInFlight: true)
 
       case .header(.tappedDismissButton):
         if state.path.count == 1 {

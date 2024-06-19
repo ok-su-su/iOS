@@ -11,7 +11,6 @@ import Foundation
 // MARK: - CreateEnvelopeProperty
 
 struct CreateEnvelopeProperty: Equatable {
-  var viewDepth = 1
   var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
   var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
   var eventHelper: CreateEnvelopeEventPropertyHelper = .init()

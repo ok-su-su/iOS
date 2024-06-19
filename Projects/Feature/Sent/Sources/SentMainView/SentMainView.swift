@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 // MARK: - SentMainView
@@ -43,11 +44,6 @@ struct SentMainView: View {
   }
 
   @ViewBuilder
-  func showFilterDialView() -> some View {
-//    FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
-  }
-
-  @ViewBuilder
   func makeFilterSection() -> some View {
     // MARK: - 필터 버튼
 
@@ -58,7 +54,7 @@ struct SentMainView: View {
         style: .ghost,
         color: .black,
         leftIcon: .icon(SSImage.commonFilter),
-        buttonText: store.sentMainProperty.filterDialProperty.currentType.name
+        buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
       )) {
         store.send(.view(.tappedSortButton))
       }
@@ -114,11 +110,10 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
       SearchEnvelopeView(store: store)
     }
-    .sheet(item: $store.scope(state: \.filterDial, action: \.scope.filterDial)) { store in
-      FilterDialView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationDragIndicator(.automatic)
-    }
+    .modifier(
+      SSSelectableBottomSheetModifier(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet)
+      )
+    )
     .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
       SpecificEnvelopeHistoryRouterView(store: store)
     }

@@ -22,6 +22,7 @@ struct EnvelopeView: View {
       Text("김철수") // TODO:
         .modifier(SSTypoModifier(.title_xs))
         .padding(.trailing, Metrics.textAndBadgeSpacing)
+        .foregroundStyle(SSColor.gray100)
       SmallBadge(property: .init(
         size: .small,
         badgeString: "전체: 1,700,000 원", // TODO:

@@ -78,7 +78,16 @@ public struct SSButtonProperty {
   }
 
   public func toggleProperty() -> Self {
-    return .init(size: size, status: status == .active ? .inactive : .active, style: style, color: color, leftIcon: leftIcon, rightIcon: rightIcon, buttonText: buttonText, frame: frame)
+    return .init(
+      size: size,
+      status: status == .active ? .inactive : .active,
+      style: style,
+      color: color,
+      leftIcon: leftIcon,
+      rightIcon: rightIcon,
+      buttonText: buttonText,
+      frame: frame
+    )
   }
 
   public mutating func update(text: String) {

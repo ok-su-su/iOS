@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
-import OSLog
+import SSBottomSelectSheet
 
 // MARK: - SentMain
 
@@ -25,7 +25,7 @@ struct SentMain {
     var floatingButton: FloatingButton.State = .init()
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
-    @Presents var filterDial: FilterDial.State?
+    @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
     @Presents var searchEnvelope: SearchEnvelope.State?
     @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
@@ -74,8 +74,7 @@ struct SentMain {
     case tabBar(SSTabBarFeature.Action)
 
     case floatingButton(FloatingButton.Action)
-
-    case filterDial(PresentationAction<FilterDial.Action>)
+    case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
     case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
@@ -136,7 +135,7 @@ struct SentMain {
         return .none
 
       case .view(.tappedSortButton):
-        state.filterDial = FilterDial.State(filterDialProperty: state.$sentMainProperty.filterDialProperty)
+        state.filterBottomSheet = .init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial)
         return .none
 
       case .view(.tappedFilterButton):
@@ -166,8 +165,8 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
   }
 
   func subFeatures2() -> some ReducerOf<Self> {
-    ifLet(\.$filterDial, action: \.scope.filterDial) {
-      FilterDial()
+    ifLet(\.$filterBottomSheet, action: \.scope.filterBottomSheet) {
+      SSSelectableBottomSheetReducer()
     }
     .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
       SpecificEnvelopeHistoryRouter()
@@ -175,5 +174,32 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
     .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()
     }
+  }
+}
+
+// MARK: - FilterDialItem
+
+struct FilterDialItem: SSSelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
+
+  init(description: String, id: Int) {
+    self.description = description
+    self.id = id
+  }
+}
+
+extension [FilterDialItem] {
+  static var `default`: Self {
+    return [
+      .init(description: "최신순", id: 0),
+      .init(description: "오래된순", id: 1),
+      .init(description: "금액 높은 순", id: 2),
+      .init(description: "금액 낮은 순", id: 3),
+    ]
+  }
+
+  static var initialValue: FilterDialItem {
+    .init(description: "최신순", id: 0)
   }
 }
