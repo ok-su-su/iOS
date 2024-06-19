@@ -7,7 +7,7 @@ import SSPersistancy
 
 // MARK: - TokenInterceptHelpable
 
-protocol TokenInterceptHelpable {
+public protocol TokenInterceptHelpable {
   func getToken() -> (accessToken: String, refreshToken: String)?
   func getTokenData() throws -> Data
   var accessTokenString: String { get }
@@ -27,8 +27,8 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
   func getToken() -> (accessToken: String, refreshToken: String)? {
     do {
       let token = try SSTokenManager.shared.getToken()
-      return (token.accessToken, token.refreshTokenExp)
-    }catch {
+      return (token.accessToken, token.refreshToken)
+    } catch {
       os_log("Interceptor에 활용하기 위한\(#function) 토큰이 존재하지 않습니다.\n\(error)")
       return nil
     }
@@ -45,16 +45,16 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
 
 // MARK: - SSTokenInterceptor
 
-struct SSTokenInterceptor: RequestInterceptor {
-  static let shared: SSTokenInterceptor = .init(helper: TokenInterceptHelper())
+public struct SSTokenInterceptor: RequestInterceptor {
+  public static let shared: SSTokenInterceptor = .init(helper: TokenInterceptHelper())
 
   var helper: TokenInterceptHelpable
 
-  init(helper: TokenInterceptHelpable) {
+  public init(helper: TokenInterceptHelpable) {
     self.helper = helper
   }
 
-  func adapt(_ urlRequest: URLRequest, for _: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
+  public func adapt(_ urlRequest: URLRequest, for _: Session, completion: @escaping (Result<URLRequest, any Error>) -> Void) {
     // 토큰이 저장되어있는지 확인합니다.
     guard let (accessToken, _) = helper.getToken() else {
       completion(.success(urlRequest))
@@ -66,7 +66,7 @@ struct SSTokenInterceptor: RequestInterceptor {
     completion(.success(mutalURLRequest))
   }
 
-  func retry(_ request: Request, for _: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) {
+  public func retry(_ request: Request, for _: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) {
     guard
       let response = request.task?.response as? HTTPURLResponse,
       response.statusCode == 401
@@ -77,11 +77,11 @@ struct SSTokenInterceptor: RequestInterceptor {
     refreshTokenWithNetworking(completion)
   }
 
-  func refreshTokenWithNetworking(_ completion: @escaping (RetryResult) -> Void) {
+  public func refreshTokenWithNetworking(_ completion: @escaping (RetryResult) -> Void) {
     do {
       let body: Data = try helper.getTokenData()
       let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
-      
+
       refreshProvider.request(.init(bodyData: body)) { responseResult in
         refreshTokenResponse(result: responseResult, completion: completion)
       }
@@ -90,7 +90,7 @@ struct SSTokenInterceptor: RequestInterceptor {
     }
   }
 
-  func refreshTokenResponse(result: Result<Response, MoyaError>, completion: @escaping (RetryResult) -> Void) {
+  public func refreshTokenResponse(result: Result<Response, MoyaError>, completion: @escaping (RetryResult) -> Void) {
     do {
       switch result {
       case let .success(response):
@@ -107,6 +107,19 @@ struct SSTokenInterceptor: RequestInterceptor {
       }
     } catch {
       completion(.doNotRetryWithError(error))
+    }
+  }
+}
+
+public extension SSTokenInterceptor {
+  func refreshToken() async {
+    do {
+      let body: Data = try helper.getTokenData()
+      let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
+      let response: SSToken = try await refreshProvider.request(.init(bodyData: body))
+      try SSTokenManager.shared.saveToken(response)
+    } catch {
+      os_log("토큰 갱신에 실패했습니다.\n\(error)")
     }
   }
 }

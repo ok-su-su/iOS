@@ -13,20 +13,20 @@ import SSNetwork
 
 // MARK: - RefreshTokenTargetType
 
-struct RefreshTokenTargetType: SSNetworkTargetType {
-  init(bodyData: Data) {
+public struct RefreshTokenTargetType: SSNetworkTargetType {
+  public init(bodyData: Data) {
     self.bodyData = bodyData
   }
 
-  let bodyData: Data
+  public let bodyData: Data
 
-  var additionalHeader: [String: String]? = nil
+  public var additionalHeader: [String: String]? = nil
 
-  var path: String = "api/v1/auth/token/refresh"
+  public var path: String = "auth/token/refresh"
 
-  var method: Moya.Method = .get
+  public var method: Moya.Method = .post
 
-  var task: Moya.Task {
+  public var task: Moya.Task {
     .requestCompositeData(bodyData: bodyData, urlParameters: [:])
   }
 }

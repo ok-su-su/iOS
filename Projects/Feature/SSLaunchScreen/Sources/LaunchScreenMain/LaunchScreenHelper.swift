@@ -8,6 +8,8 @@
 
 import Foundation
 import OSLog
+import SSInterceptor
+import SSNetwork
 import SSPersistancy
 
 struct LaunchScreenHelper {
@@ -15,7 +17,7 @@ struct LaunchScreenHelper {
 
   func runAppInitTask() async -> EndedLaunchScreenStatus {
     // 기존 유저인지 검사합니다.
-    if SSTokenManager.shared.isToken() {
+    if !SSTokenManager.shared.isToken() {
       return .newUser
     }
 
@@ -25,6 +27,7 @@ struct LaunchScreenHelper {
       return .newUser
     }
 
+    await SSTokenInterceptor.shared.refreshToken()
     return .prevUser
   }
 }
