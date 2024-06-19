@@ -89,8 +89,7 @@ struct OnboardingAdditional {
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
         return .run { [helper = state.networkHelper] _ in
-          let bodyData = try body.makeBodyData()
-          let response = try await helper.requestSignUp(body: bodyData)
+          let response = try await helper.requestSignUp(body: body)
           OnboardingAdditionalPersistence.saveToken(response)
           NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         }

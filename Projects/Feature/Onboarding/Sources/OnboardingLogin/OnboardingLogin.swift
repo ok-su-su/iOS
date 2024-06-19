@@ -37,6 +37,7 @@ struct OnboardingLogin {
     case showPieChart
     case showPercentageAndPriceText
     case navigateTermsView
+    case initSignUpBodyPropertyInSharedStateContainer(LoginType)
   }
 
   enum AsyncAction: Equatable {
@@ -74,12 +75,20 @@ struct OnboardingLogin {
         return .run(priority: .high) { [helper = state.networkHelper] send in
           let isSuccessLoginWithKAKAOTalk = await helper.loginWithKakao()
           if isSuccessLoginWithKAKAOTalk {
+            let property = SignUpBodyProperty()
+            await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
             await send(.inner(.navigateTermsView))
           }
         }
 
       case .inner(.navigateTermsView):
         OnboardingRouterPublisher.shared.send(.terms(.init()))
+        return .none
+
+      case let .inner(.initSignUpBodyPropertyInSharedStateContainer(val)):
+        let property = SignUpBodyProperty()
+        property.setLoginType(val)
+        SharedStateContainer.setValue(property)
         return .none
       }
     }

@@ -27,9 +27,7 @@ public extension SSNetworkTargetType {
   }
 
   var headers: [String: String]? {
-    guard var additionalHeader else {
-      return nil
-    }
+    var additionalHeader = additionalHeader ?? .init()
     DefaultHeaderValue.allCases.forEach { current in
       additionalHeader[current.key] = current.value
     }

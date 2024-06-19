@@ -46,6 +46,7 @@ struct AgreeToTermsAndConditions {
     case isLoading(Bool)
     case showTermItems([TermItem])
     case showDetailTerms(id: Int, description: String)
+    case setSignUpBodyAtSharedStateContainer
   }
 
   enum AsyncAction: Equatable {
@@ -88,13 +89,12 @@ struct AgreeToTermsAndConditions {
         return .none
 
       case .view(.tappedNextScreenButton):
-        // Container 저장
-        let signupBodyProperty = SignUpBodyProperty()
-        signupBodyProperty.setTermAgreement(terms: state.helper.checkItemsID())
-        SharedStateContainer.setValue(signupBodyProperty)
-        // Navigation
-        OnboardingRouterPublisher.shared.send(.registerName(.init()))
-        return .none
+        return .run { send in
+          await send(.inner(.setSignUpBodyAtSharedStateContainer))
+
+          // Navigation
+          OnboardingRouterPublisher.shared.send(.registerName(.init()))
+        }
 
       case let .async(.getRequestTermsInformationDetail(id)):
         guard let item = state.helper.$termItems[id: id] else {
@@ -136,6 +136,13 @@ struct AgreeToTermsAndConditions {
 
       case let .inner(.isLoading(val)):
         state.isLoading = val
+        return .none
+
+      case .inner(.setSignUpBodyAtSharedStateContainer):
+        // Container 저장
+        let signupBodyProperty = SharedStateContainer.getValue(SignUpBodyProperty.self) ?? .init()
+        signupBodyProperty.setTermAgreement(terms: state.helper.checkItemsID())
+        SharedStateContainer.setValue(signupBodyProperty)
         return .none
       }
     }

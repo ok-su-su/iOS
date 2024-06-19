@@ -9,6 +9,7 @@
 import Foundation
 import KakaoLogin
 import Moya
+import OSLog
 import SSNetwork
 
 // MARK: - OnBoardingAdditionalNetwork
@@ -45,11 +46,26 @@ struct OnBoardingAdditionalNetwork: Equatable {
 
   private let provider: MoyaProvider<Network> = .init()
 
-  func requestSignUp(body: Data) async throws -> SignUpResponseDTO {
-    guard let token = LoginWithKakao.getToken() else {
-      throw OnboardingSignUpError.tokenError
+  func requestSignUp(body: SignUpBodyProperty) async throws -> SignUpResponseDTO {
+    let bodyData = try body.makeBodyData()
+    switch body.getLoginType() {
+    case .KAKAO:
+      guard let token = LoginWithKakao.getToken() else {
+        throw OnboardingSignUpError.tokenError
+      }
+      os_log("token = \(token)")
+      os_log("body = \(String(data: bodyData, encoding: .utf8) ?? "")")
+      return try await provider.request(.signupByKakao(SingUpBodyDTOData: bodyData, token: token))
+
+    case .APPLE:
+      throw OnboardingSignUpError.notImplementLoginMethod("Apple")
+
+    case .GOOGLE:
+      throw OnboardingSignUpError.notImplementLoginMethod("Google")
+
+    case .none:
+      throw OnboardingSignUpError.requestBodyIsInvalid
     }
-    return try await provider.request(.signupByKakao(SingUpBodyDTOData: body, token: token))
   }
 }
 
@@ -79,11 +95,17 @@ struct SignUpResponseDTO: Decodable {
 
 enum OnboardingSignUpError: LocalizedError {
   case tokenError
+  case requestBodyIsInvalid
+  case notImplementLoginMethod(String)
 
   var errorDescription: String? {
     switch self {
     case .tokenError:
       return "토큰값이 유효하지 않습니다."
+    case .requestBodyIsInvalid:
+      return "요청하는 Body값이 잘못되었습니다."
+    case let .notImplementLoginMethod(val):
+      return "\(val) Login Method가 구현되지 않았습니다. "
     }
   }
 }

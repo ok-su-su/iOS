@@ -37,8 +37,8 @@ struct OnboardingRouter {
         state.isOnAppear = isAppear
         if state.path.isEmpty {
           // 반드시 제거할 것
-          state.path.append(.terms(.init()))
-//          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
+//          state.path.append(.terms(.init()))
+          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
         }
         return .publisher {
           OnboardingRouterPublisher
