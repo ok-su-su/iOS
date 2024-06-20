@@ -20,7 +20,7 @@ struct CreateEnvelopeRouter {
   struct State {
     var isOnAppear = false
     var path = StackState<PathDestination.State>()
-    var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)))
+    var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
     init() {
@@ -35,6 +35,7 @@ struct CreateEnvelopeRouter {
     case push(PathDestination.State)
     case pushCreateEnvelopeAdditional
     case dismissScreen
+    case changeProgress
   }
 
   private enum CancelID {
@@ -43,6 +44,10 @@ struct CreateEnvelopeRouter {
   }
 
   @Dependency(\.mainQueue) var mainQueue
+
+  init() {
+    // TODO...
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
@@ -58,26 +63,27 @@ struct CreateEnvelopeRouter {
         state.isOnAppear = val
         state.path.append(.createEnvelopePrice(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .publisher {
-          CreateEnvelopeRouterPublisher.shared.publisher()
+          CreateEnvelopeRouterPublisher
+            .shared
+            .publisher()
+            .receive(on: RunLoop.main)
             .map { val in .push(val) }
         }
-        .cancellable(id: CancelID.dismiss, cancelInFlight: true)
 
       case .header(.tappedDismissButton):
         if state.path.count == 1 {
           return .run { _ in await dismiss() }
         }
-
         return .send(.dismissScreen)
           .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
 
       case .dismissScreen:
         _ = state.path.popLast()
-        state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
-        return .none
+        let pathCount = state.path.count
+        os_log("Path의갯수는? \(pathCount)")
+        return .send(.changeProgress)
 
         // MARK: Additional Section 분기
-
       case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
         state.createEnvelopeProperty.additionalSectionHelper.startPush()
         state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
@@ -131,9 +137,11 @@ struct CreateEnvelopeRouter {
 
       case let .push(pathState):
         state.path.append(pathState)
+        return .send(.changeProgress)
+
+      case .changeProgress:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
-
       default:
         return .none
       }
