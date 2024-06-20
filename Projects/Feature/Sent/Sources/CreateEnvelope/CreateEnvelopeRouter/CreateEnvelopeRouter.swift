@@ -92,7 +92,6 @@ struct CreateEnvelopeRouter {
 
       case .dismissScreen:
         _ = state.path.popLast()
-        let pathCount = state.path.count
         return .send(.changeProgress)
 
       case let .pushAdditionalScreen(screenType):

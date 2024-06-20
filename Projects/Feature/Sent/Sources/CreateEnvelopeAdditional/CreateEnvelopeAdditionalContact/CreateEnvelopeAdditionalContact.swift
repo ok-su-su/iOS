@@ -37,7 +37,9 @@ struct CreateEnvelopeAdditionalContact {
     case changeIsHighlight(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -46,9 +48,7 @@ struct CreateEnvelopeAdditionalContact {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -67,8 +67,9 @@ struct CreateEnvelopeAdditionalContact {
         state.contactHelper.isHighlight = isHighlight
         return .none
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
-      case .delegate(.push):
+        return .send(.inner(.push))
+      case .inner(.push):
+        CreateAdditionalRouterPublisher.shared.push(from: .contact)
         return .none
       case .scope(.nextButton):
         return .none

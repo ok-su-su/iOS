@@ -38,7 +38,9 @@ struct CreateEnvelopeAdditionalMemo {
     case isHighlightChanged(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -47,9 +49,7 @@ struct CreateEnvelopeAdditionalMemo {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -61,11 +61,12 @@ struct CreateEnvelopeAdditionalMemo {
         state.isOnAppear = isAppear
         return .none
 
-      case .delegate(.push):
+      case .inner(.push):
+        CreateAdditionalRouterPublisher.shared.push(from: .memo)
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
+        return .send(.inner(.push))
 
       case .scope(.nextButton):
         return .none

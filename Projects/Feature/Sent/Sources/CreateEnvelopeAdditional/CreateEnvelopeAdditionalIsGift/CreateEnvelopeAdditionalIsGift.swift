@@ -38,7 +38,9 @@ struct CreateEnvelopeAdditionalIsGift {
     case changeIsHighlight(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -47,9 +49,7 @@ struct CreateEnvelopeAdditionalIsGift {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -67,8 +67,9 @@ struct CreateEnvelopeAdditionalIsGift {
       case .view(.changeIsHighlight(_)):
         return .none
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
-      case .delegate:
+        return .send(.inner(.push))
+      case .inner(.push):
+        CreateAdditionalRouterPublisher.shared.push(from: .gift)
         return .none
       case .scope(.nextButton(.delegate)):
         return .none

@@ -41,7 +41,9 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -51,9 +53,7 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -69,11 +69,12 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
         state.isOnAppear = isAppear
         return .none
 
-      case .delegate:
+      case .inner(.push):
+        CreateAdditionalRouterPublisher.shared.push(from: .isVisitedEvent)
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
+        return .send(.inner(.push))
 
       case .scope(.nextButton):
         return .none
