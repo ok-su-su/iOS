@@ -7,9 +7,9 @@
 //
 import ComposableArchitecture
 import Designsystem
+import FeatureAction
 import Foundation
 import SSAlert
-import FeatureAction
 
 // MARK: - VoteMain
 

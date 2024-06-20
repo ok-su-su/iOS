@@ -7,8 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
-import Foundation
 import FeatureAction
+import Foundation
 
 @Reducer
 struct OnboardingRegisterName {
