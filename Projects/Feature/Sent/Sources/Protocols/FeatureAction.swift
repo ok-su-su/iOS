@@ -6,7 +6,11 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import Foundation
+import SwiftUI
+
+// MARK: - FeatureAction
 
 public protocol FeatureAction {
   associatedtype ViewAction
@@ -30,3 +34,5 @@ public protocol FeatureAction {
   /// NOTE: 부모 Reducer 에서 사용되는 Action 을 정의합니다.
   static func delegate(_: DelegateAction) -> Self
 }
+
+// MARK: - SentMainView

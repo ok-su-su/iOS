@@ -18,6 +18,7 @@ public enum Core: String {
   case sSPersistancy
   case coreLayers
   case sSInterceptor
+  case featureAction
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

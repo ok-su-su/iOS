@@ -12,6 +12,7 @@ let project = Project.makeModule(
       .core(.sSNetwork),
       .thirdParty(.ComposableArchitecture),
       .core(.sSInterceptor),
+      .core(.featureAction),
     ]
   )
 )

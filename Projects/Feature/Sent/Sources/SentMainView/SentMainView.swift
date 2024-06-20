@@ -14,7 +14,8 @@ import SwiftUI
 // MARK: - SentMainView
 
 struct SentMainView: View {
-  @Bindable var store: StoreOf<SentMain>
+  @Bindable
+  var store: Store<SentMain.State, SentMain.Action>
 
   init(store: StoreOf<SentMain>) {
     self.store = store
@@ -29,13 +30,15 @@ struct SentMainView: View {
           .modifier(SSTypoModifier(.text_s))
           .foregroundStyle(SSColor.gray50)
         SSButton(Constants.emptyEnvelopeButtonProperty) {
-          store.send(.view(.tappedEmptyEnvelopeButton))
+          store.sendViewAction(.tappedEmptyEnvelopeButton)
         }
         Spacer()
       }
     } else {
       ScrollView {
-        ForEach(store.scope(state: \.envelopes, action: \.scope.envelopes)) { store in
+        ForEach(
+          store.scope(state: \.envelopes, action: \.scope.envelopes)
+        ) { store in
           EnvelopeView(store: store)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -56,7 +59,7 @@ struct SentMainView: View {
         leftIcon: .icon(SSImage.commonFilter),
         buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
       )) {
-        store.send(.view(.tappedSortButton))
+        store.sendViewAction(.tappedSortButton)
       }
 
       // MARK: - 정렬 버튼

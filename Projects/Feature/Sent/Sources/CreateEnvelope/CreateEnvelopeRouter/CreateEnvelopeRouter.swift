@@ -84,6 +84,7 @@ struct CreateEnvelopeRouter {
         return .send(.changeProgress)
 
         // MARK: Additional Section 분기
+
       case .path(.element(id: _, action: .createEnvelopeAdditionalSection(.delegate(.push)))):
         state.createEnvelopeProperty.additionalSectionHelper.startPush()
         state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
