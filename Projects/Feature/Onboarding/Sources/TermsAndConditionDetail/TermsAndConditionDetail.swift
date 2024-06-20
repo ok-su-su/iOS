@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 import OSLog
+import FeatureAction
 
 @Reducer
 struct TermsAndConditionDetail {

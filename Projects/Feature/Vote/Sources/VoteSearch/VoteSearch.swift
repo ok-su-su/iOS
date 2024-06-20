@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import Foundation
 import SSSearch
+import FeatureAction
 
 // MARK: - VoteSearch
 
