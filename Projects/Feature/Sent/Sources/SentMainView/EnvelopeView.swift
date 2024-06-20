@@ -19,17 +19,20 @@ struct EnvelopeView: View {
   @ViewBuilder
   private func makeHeaderView() -> some View {
     HStack(spacing: 0) {
-      Text("김철수") // TODO:
+      // 이름
+      Text(store.envelopeProperty.envelopeTargetUserNameText) // TODO:
         .modifier(SSTypoModifier(.title_xs))
         .padding(.trailing, Metrics.textAndBadgeSpacing)
         .foregroundStyle(SSColor.gray100)
+      // 전체 금액
       SmallBadge(property: .init(
         size: .small,
-        badgeString: "전체: 1,700,000 원", // TODO:
+        badgeString: store.envelopeProperty.totalPriceText,
         badgeColor: .gray20
       ))
       Spacer()
 
+      // DetailView Button
       Button {
         store.send(.tappedDetailButton)
       } label: {
@@ -44,30 +47,37 @@ struct EnvelopeView: View {
   }
 
   @ViewBuilder
-  private func makeDetailContentView(_ isHighlight: Bool) -> some View {
-    if isHighlight {
+  private func makeDetailContentView(
+    isSentType: Bool,
+    eventNameTextString: String,
+    dateTextString: String,
+    priceTextString: String
+  ) -> some View {
+    if isSentType {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeBackArrow
-          SmallBadge(property: .init(size: .small, badgeString: "돌잔치", badgeColor: .gray90)) // TODO: 수정
-          Text("23.07.18") // TODO: 수정
+          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray90))
+          Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
+            .foregroundStyle(SSColor.gray100)
         }
         Spacer()
-        Text("50,000 원")
+        Text(priceTextString)
           .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray100)
       }
     } else {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeForwardArrow
-          SmallBadge(property: .init(size: .small, badgeString: "돌잔치", badgeColor: .gray40)) // TODO: 수정
-          Text("23.07.18") // TODO: 수정
+          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray40)) // TODO: 수정
+          Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray50)
         }
         Spacer()
-        Text("50,000 원")
+        Text(priceTextString)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(SSColor.gray50)
       }
@@ -77,10 +87,28 @@ struct EnvelopeView: View {
   @ViewBuilder
   private func makeEnvelopeDetailView() -> some View {
     if store.showDetail {
-      VStack {
-        ForEach(store.envelopeProperty.envelopeContents) { property in
-          makeDetailContentView(property.isHighlight)
+      VStack(spacing: 8) {
+        if store.isLoading {
+          ForEach(0 ..< 3, id: \.self) { _ in
+            makeDetailContentView(
+              isSentType: false,
+              eventNameTextString: "",
+              dateTextString: "",
+              priceTextString: ""
+            )
+          }
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        } else {
+          ForEach(store.envelopeProperty.envelopeContents) { property in
+            makeDetailContentView(
+              isSentType: property.isSentView,
+              eventNameTextString: property.eventName,
+              dateTextString: property.dateText,
+              priceTextString: property.priceText
+            )
+          }
         }
+
         Spacer()
           .frame(height: 16)
 

@@ -16,7 +16,7 @@ struct SpecificEnvelopeHistoryRouterHelper: Equatable {
   init() {
     specificEnvelopeHistoryListProperty = .init(
       envelopePriceProgressProperty: .makeFakeData(),
-      envelopeContents: (0 ..< 100).map { _ in return .fakeData() }
+      envelopeContents: []
     )
     envelopeHistoryEditHelper = .init(envelopeDetailProperty: .fakeData())
   }

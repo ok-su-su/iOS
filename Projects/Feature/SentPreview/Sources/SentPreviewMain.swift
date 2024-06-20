@@ -8,12 +8,14 @@
 
 import Designsystem
 import Sent
+import SSPersistancy
 import SwiftUI
 
 @main
 struct SentPreviewMain: App {
   init() {
     Font.registerFont()
+    FakeTokenManager.saveFakeToken(fakeToken: .uid5)
   }
 
   var body: some Scene {

@@ -12,9 +12,12 @@ import Foundation
 enum CustomNumberFormatter {
   static let numberFormatter = NumberFormatter()
 
-  static func formattedByThreeZero(_ val: Int) -> String? {
+  static func formattedByThreeZero(_ val: Int, subFixString: String? = nil) -> String? {
     numberFormatter.numberStyle = .decimal
-    return numberFormatter.string(for: val)
+    guard let formatterString = numberFormatter.string(for: val) else {
+      return nil
+    }
+    return formatterString + (subFixString ?? "")
   }
 
   static func priceToInt(_ val: String) -> Int? {

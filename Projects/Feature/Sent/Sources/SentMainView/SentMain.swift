@@ -24,6 +24,9 @@ struct SentMain {
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var floatingButton: FloatingButton.State = .init()
+    var networkHelper = SentMainNetwork()
+    var isLoading = true
+    var isOnAppear = false
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
@@ -34,11 +37,7 @@ struct SentMain {
     @Shared var sentMainProperty: SentMainProperty
 
     // TODO: Change With APIS
-    var envelopes: IdentifiedArrayOf<Envelope.State> = [
-      .init(envelopeProperty: .init()),
-      .init(envelopeProperty: .init()),
-      .init(envelopeProperty: .init()),
-    ]
+    var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
     init() {
       _sentMainProperty = Shared(.init())
@@ -59,11 +58,14 @@ struct SentMain {
     case tappedSortButton
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
+    case onAppear(Bool)
   }
 
   @CasePathable
   enum InnerAction: Equatable {
     case showCreateEnvelopRouter
+    case updateEnvelopes([EnvelopeProperty])
+    case isLoading(Bool)
   }
 
   @CasePathable
@@ -106,7 +108,7 @@ struct SentMain {
     Reduce { state, action in
       switch action {
       case .view(.tappedEmptyEnvelopeButton):
-        return .none
+        return .send(.inner(.showCreateEnvelopRouter))
 
       // Navigation Specific Router
       case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
@@ -118,9 +120,7 @@ struct SentMain {
         return .none
 
       case .scope(.floatingButton(.tapped)):
-        return .run { send in
-          await send(.inner(.showCreateEnvelopRouter))
-        }
+        return .send(.inner(.showCreateEnvelopRouter))
 
       case .delegate(.pushSearchEnvelope):
         return .none
@@ -144,6 +144,24 @@ struct SentMain {
         return .none
 
       case .scope:
+        return .none
+      case let .view(.onAppear(appear)):
+        if state.isOnAppear {
+          return .none
+        }
+        state.isOnAppear = appear
+
+        return .run { [helper = state.networkHelper] send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await helper.requestInitialScreenData()
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
+      case let .inner(.updateEnvelopes(val)):
+        state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
+        return .none
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
         return .none
       }
     }

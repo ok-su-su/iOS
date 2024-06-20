@@ -19,11 +19,13 @@ struct SentMainView: View {
 
   init(store: StoreOf<SentMain>) {
     self.store = store
+    store.send(.view(.onAppear(true)))
   }
 
   @ViewBuilder
   private func makeEnvelope() -> some View {
     if store.state.envelopes.isEmpty {
+      // 봉투가 한개도 없을 때
       VStack {
         Spacer()
         Text(Constants.emptyEnvelopesText)
@@ -98,6 +100,7 @@ struct SentMainView: View {
           makeFilterSection()
           makeEnvelope()
         }
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
         FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
       }.padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
