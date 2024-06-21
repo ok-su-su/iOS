@@ -17,7 +17,9 @@ struct CreateEnvelopeName {
     var isOnAppear = false
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
+    var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var networkHelper = CreateEnvelopeNetwork()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
@@ -26,7 +28,7 @@ struct CreateEnvelopeName {
     }
 
     var filteredPrevEnvelopes: [PrevEnvelope] {
-      return textFieldText == "" ? [] : createEnvelopeProperty.filteredName(textFieldText)
+      return textFieldText == "" ? createEnvelopeProperty.prevEnvelopes : createEnvelopeProperty.filteredName(textFieldText)
     }
 
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
@@ -34,8 +36,7 @@ struct CreateEnvelopeName {
     }
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -43,14 +44,17 @@ struct CreateEnvelopeName {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedFilterItem(name: String)
-    case textFieldChange(String)
+    case changeText(String)
+    case changeFocused(Bool)
   }
 
   enum InnerAction: Equatable {
     case push
+    case updateEnvelopes([PrevEnvelope])
   }
 
   enum AsyncAction: Equatable {}
@@ -65,19 +69,21 @@ struct CreateEnvelopeName {
   @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
-
-      case .binding:
-        return .none
+        state.isFocused = true
+        return .run { [helper = state.networkHelper] send in
+          let prevEnvelopes = try await helper.searchInitialEnvelope()
+          await send(.inner(.updateEnvelopes(prevEnvelopes)))
+        }
 
       case .inner(.push):
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
@@ -95,11 +101,20 @@ struct CreateEnvelopeName {
       case .scope(.nextButton):
         return .none
 
-      case let .view(.textFieldChange(text)):
+      case let .view(.changeText(text)):
         let pushable = text != ""
+        state.textFieldText = text
         return .run { send in
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
+
+      case let .view(.changeFocused(val)):
+        state.isFocused = val
+        return .none
+
+      case let .inner(.updateEnvelopes(prevEnvelopes)):
+        state.createEnvelopeProperty.prevEnvelopes = prevEnvelopes
+        return .none
       }
     }
   }

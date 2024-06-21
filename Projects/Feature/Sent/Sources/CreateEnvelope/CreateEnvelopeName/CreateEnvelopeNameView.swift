@@ -12,6 +12,9 @@ import SwiftUI
 struct CreateEnvelopeNameView: View {
   // MARK: Reducer
 
+  @FocusState
+  var isFocused
+
   @Bindable
   var store: StoreOf<CreateEnvelopeName>
 
@@ -19,7 +22,7 @@ struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeFilteredView() -> some View {
-    VStack {
+    ScrollView(.vertical) {
       let filteredPrevEnvelopes = store.filteredPrevEnvelopes
       ForEach(0 ..< filteredPrevEnvelopes.count, id: \.self) { ind in
         let current = filteredPrevEnvelopes[ind]
@@ -36,14 +39,16 @@ struct CreateEnvelopeNameView: View {
             .modifier(SSTypoModifier(.text_xs))
             .foregroundStyle(SSColor.gray40)
 
-          Text(current.eventDate.description)
+          Text(CustomDateFormatter.getString(from: current.eventDate, dateFormat: "yyyy.MM.dd"))
             .modifier(SSTypoModifier(.text_xs))
             .foregroundStyle(SSColor.gray40)
+
+          Spacer()
         }
         .onTapGesture {
           store.send(.view(.tappedFilterItem(name: current.name)))
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 8)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -68,10 +73,24 @@ struct CreateEnvelopeNameView: View {
 
       // MARK: - TextFieldView
 
-      SSTextField(isDisplay: true, text: $store.textFieldText, property: .account, isHighlight: $store.textFieldIsHighlight)
-        .onChange(of: store.textFieldText) { _, newValue in
-          store.send(.view(.textFieldChange(newValue)))
-        }
+      TextField(
+        "",
+        text: $store.textFieldText.sending(\.view.changeText),
+        prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30)
+      )
+      .submitLabel(.done)
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
+      .focused($isFocused)
+      .onChange(of: isFocused) { _, newValue in
+        store.sendViewAction(.changeFocused(newValue))
+      }
+      .onChange(of: store.isFocused) { _, newValue in
+        isFocused = newValue
+      }
+      .onChange(of: store.textFieldText) { _, newValue in
+        store.sendViewAction(.changeText(newValue))
+      }
       Spacer()
         .frame(height: 24)
 

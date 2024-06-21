@@ -44,6 +44,7 @@ struct CreateEnvelopePriceView: View {
       // MARK: - TextFieldView
 
       ZStack {
+        // invisableTextField
         TextField(
           "",
           text: $store.textFieldText.sending(\.view.changeText),
@@ -60,6 +61,7 @@ struct CreateEnvelopePriceView: View {
           isFocused = newValue
         }
 
+        // Visiable TextField
         HStack(spacing: 0) {
           Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
             .modifier(SSTypoModifier(.title_xl))
