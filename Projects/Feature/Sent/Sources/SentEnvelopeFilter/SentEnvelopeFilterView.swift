@@ -110,7 +110,7 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeBottom() -> some View {
-    HStack(spacing: 0) {
+    HStack(spacing: 16) {
       makeResetButton()
       makeConfirmButton()
     }
