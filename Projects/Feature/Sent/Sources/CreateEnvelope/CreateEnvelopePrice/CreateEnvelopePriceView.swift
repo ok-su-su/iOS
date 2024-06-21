@@ -9,7 +9,9 @@ import ComposableArchitecture
 import Designsystem
 import OSLog
 import SSLayout
+import SSToast
 import SwiftUI
+import UIKit
 
 // MARK: - CreateEnvelopePriceView
 
@@ -18,6 +20,9 @@ struct CreateEnvelopePriceView: View {
 
   @Bindable
   var store: StoreOf<CreateEnvelopePrice>
+
+  @FocusState
+  var isFocused: Bool
 
   // MARK: Content
 
@@ -38,13 +43,39 @@ struct CreateEnvelopePriceView: View {
 
       // MARK: - TextFieldView
 
-      SSTextField(isDisplay: true, text: $store.textFieldText, property: .amount, isHighlight: $store.textFieldIsHighlight)
-        .onChange(of: store.textFieldText) { oldValue, newValue in
-          if oldValue == newValue {
-            return
-          }
-          store.send(.view(.changeText(newValue)))
+      ZStack {
+        TextField(
+          "",
+          text: $store.textFieldText.sending(\.view.changeText),
+          prompt: nil
+        )
+        .foregroundStyle(Color.clear)
+        .keyboardType(.numberPad)
+        .modifier(SSTypoModifier(.title_xl))
+        .focused($isFocused)
+        .onChange(of: isFocused) { _, newValue in
+          store.isFocused = newValue
         }
+        .onChange(of: store.isFocused) { _, newValue in
+          isFocused = newValue
+        }
+
+        HStack(spacing: 0) {
+          Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
+            .modifier(SSTypoModifier(.title_xl))
+            .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
+
+          if !store.textFieldText.isEmpty {
+            Text("원")
+              .modifier(SSTypoModifier(.title_xl))
+              .foregroundStyle(SSColor.gray100)
+          }
+          Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: 46)
+        .background(SSColor.gray15)
+      }
+      .frame(height: 44)
 
       Spacer()
         .frame(height: 32)
@@ -77,8 +108,10 @@ struct CreateEnvelopePriceView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+
       VStack(alignment: .leading) {
         makeContentView()
+          .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
         makeNextButton()
       }
     }

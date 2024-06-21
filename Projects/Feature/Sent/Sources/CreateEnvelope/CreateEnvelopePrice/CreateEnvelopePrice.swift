@@ -10,6 +10,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
+import SSToast
 
 @Reducer
 struct CreateEnvelopePrice {
@@ -20,7 +22,9 @@ struct CreateEnvelopePrice {
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
-
+    var isFocused = false
+    var toast: SSToastReducer.State = .init(.init(toastMessage: " 금액 글자수 안내", trailingType: .none, duration: 2))
+    var wrappedText: String = ""
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
 
@@ -67,6 +71,7 @@ struct CreateEnvelopePrice {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {
@@ -80,10 +85,15 @@ struct CreateEnvelopePrice {
       CreateEnvelopeBottomOfNextButton()
     }
 
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
+        state.isFocused = true
         return .none
 
       case .delegate(.dismissCreateFlow):
@@ -92,9 +102,7 @@ struct CreateEnvelopePrice {
         return .none
 
       case let .view(.tappedGuidValue(value)):
-        return .run { send in
-          await send(.inner(.convertPrice(value)))
-        }
+        return .send(.view(.changeText(value)))
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
@@ -110,15 +118,23 @@ struct CreateEnvelopePrice {
 
       case let .view(.changeText(value)):
         if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
-          state.textFieldText = formattedValue
+          state.wrappedText = formattedValue
         }
-        let pushable = state.textFieldText != ""
+        state.textFieldText = value
+        // Logic to Pushable
+        let pushable = value.count < 10
         return .run { send in
+          if !pushable {
+            await send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다."))))
+          }
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
 
       case .inner(.push):
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
+        return .none
+
+      case .scope(.toast):
         return .none
       }
     }

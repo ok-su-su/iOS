@@ -32,7 +32,7 @@ public struct SSTextFieldReducerProperty: Equatable {
   var lineStatus: LineStatus {
     if status == .error {
       return .red
-    } else if status == .active && text.isEmpty {
+    } else if (status == .active && text.isEmpty) || (status == .notDisplayError) {
       return .gray
     }
     return .black
@@ -68,6 +68,7 @@ public struct SSTextFieldReducerProperty: Equatable {
   public enum TextFieldStatus {
     case active
     case error
+    case notDisplayError
   }
 
   public enum LineStatus {
@@ -165,7 +166,7 @@ public struct SSTextFieldView: View {
           isFocus = newValue
         }
 
-        if !store.property.text.isEmpty {
+        if !store.property.text.isEmpty && store.property.status != .notDisplayError {
           SSImage
             .signupClose
             .onTapGesture {
@@ -174,8 +175,10 @@ public struct SSTextFieldView: View {
             .padding(.horizontal, 12)
         }
 
-        Text("\(store.property.textLength)/\(store.property.maximumTextLength)")
-          .foregroundStyle(store.property.status == .active ? SSColor.gray30 : .red60)
+        if store.property.status != .notDisplayError {
+          Text("\(store.property.textLength)/\(store.property.maximumTextLength)")
+            .foregroundStyle(store.property.status == .active ? SSColor.gray30 : .red60)
+        }
       }
       .frame(maxHeight: 56)
       .padding(8)
