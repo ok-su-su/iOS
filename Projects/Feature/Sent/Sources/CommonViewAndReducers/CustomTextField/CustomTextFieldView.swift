@@ -63,6 +63,6 @@ struct CustomTextFieldView: View {
   private enum Metrics {}
 
   private enum Constants {
-    static let prompt = Text("찾고 싶은 봉투를 검색해보세요")
+    static let prompt = Text("찾고 싶은 봉투를 검색해보세요").foregroundStyle(SSColor.gray60)
   }
 }
