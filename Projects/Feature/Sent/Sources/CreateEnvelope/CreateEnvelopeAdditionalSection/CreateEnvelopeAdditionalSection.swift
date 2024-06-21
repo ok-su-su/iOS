@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import FeatureAction
 import Foundation
 
 @Reducer
@@ -17,7 +18,7 @@ struct CreateEnvelopeAdditionalSection {
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
@@ -39,7 +40,9 @@ struct CreateEnvelopeAdditionalSection {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -49,9 +52,7 @@ struct CreateEnvelopeAdditionalSection {
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -73,11 +74,12 @@ struct CreateEnvelopeAdditionalSection {
       case .scope(.createEnvelopeSelectionItems):
         return .none
 
-      case .delegate(.push):
+      case .inner(.push):
+        CreateAdditionalRouterPublisher.shared.push(from: .selectSection)
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.delegate(.push))
+        return .send(.inner(.push))
       case .scope(.nextButton):
         return .none
       }

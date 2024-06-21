@@ -8,8 +8,9 @@
 
 import ComposableArchitecture
 import Designsystem
+import FeatureAction
 import Foundation
-import OSLog
+import SSBottomSelectSheet
 
 // MARK: - SentMain
 
@@ -23,9 +24,12 @@ struct SentMain {
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var floatingButton: FloatingButton.State = .init()
+    var networkHelper = SentMainNetwork()
+    var isLoading = true
+    var isOnAppear = false
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
-    @Presents var filterDial: FilterDial.State?
+    @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
     @Presents var searchEnvelope: SearchEnvelope.State?
     @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
@@ -33,11 +37,7 @@ struct SentMain {
     @Shared var sentMainProperty: SentMainProperty
 
     // TODO: Change With APIS
-    var envelopes: IdentifiedArrayOf<Envelope.State> = [
-      .init(envelopeProperty: .init()),
-      .init(envelopeProperty: .init()),
-      .init(envelopeProperty: .init()),
-    ]
+    var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
     init() {
       _sentMainProperty = Shared(.init())
@@ -58,11 +58,15 @@ struct SentMain {
     case tappedSortButton
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
+    case onAppear(Bool)
+    case tappedFilteredPersonButton(id: UUID)
   }
 
   @CasePathable
   enum InnerAction: Equatable {
     case showCreateEnvelopRouter
+    case updateEnvelopes([EnvelopeProperty])
+    case isLoading(Bool)
   }
 
   @CasePathable
@@ -74,8 +78,7 @@ struct SentMain {
     case tabBar(SSTabBarFeature.Action)
 
     case floatingButton(FloatingButton.Action)
-
-    case filterDial(PresentationAction<FilterDial.Action>)
+    case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
     case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
@@ -106,7 +109,7 @@ struct SentMain {
     Reduce { state, action in
       switch action {
       case .view(.tappedEmptyEnvelopeButton):
-        return .none
+        return .send(.inner(.showCreateEnvelopRouter))
 
       // Navigation Specific Router
       case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
@@ -118,9 +121,7 @@ struct SentMain {
         return .none
 
       case .scope(.floatingButton(.tapped)):
-        return .run { send in
-          await send(.inner(.showCreateEnvelopRouter))
-        }
+        return .send(.inner(.showCreateEnvelopRouter))
 
       case .delegate(.pushSearchEnvelope):
         return .none
@@ -136,7 +137,7 @@ struct SentMain {
         return .none
 
       case .view(.tappedSortButton):
-        state.filterDial = FilterDial.State(filterDialProperty: state.$sentMainProperty.filterDialProperty)
+        state.filterBottomSheet = .init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial)
         return .none
 
       case .view(.tappedFilterButton):
@@ -144,6 +145,29 @@ struct SentMain {
         return .none
 
       case .scope:
+        return .none
+      case let .view(.onAppear(appear)):
+        if state.isOnAppear {
+          return .none
+        }
+        state.isOnAppear = appear
+
+        return .run { [helper = state.networkHelper] send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await helper.requestInitialScreenData()
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
+      case let .inner(.updateEnvelopes(val)):
+        state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
+        return .none
+
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
+        return .none
+
+      case let .view(.tappedFilteredPersonButton(id: id)):
+        state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
         return .none
       }
     }
@@ -166,8 +190,8 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
   }
 
   func subFeatures2() -> some ReducerOf<Self> {
-    ifLet(\.$filterDial, action: \.scope.filterDial) {
-      FilterDial()
+    ifLet(\.$filterBottomSheet, action: \.scope.filterBottomSheet) {
+      SSSelectableBottomSheetReducer()
     }
     .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
       SpecificEnvelopeHistoryRouter()
@@ -175,5 +199,32 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
     .forEach(\.envelopes, action: \.scope.envelopes) {
       Envelope()
     }
+  }
+}
+
+// MARK: - FilterDialItem
+
+struct FilterDialItem: SSSelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
+
+  init(description: String, id: Int) {
+    self.description = description
+    self.id = id
+  }
+}
+
+extension [FilterDialItem] {
+  static var `default`: Self {
+    return [
+      .init(description: "최신순", id: 0),
+      .init(description: "오래된순", id: 1),
+      .init(description: "금액 높은 순", id: 2),
+      .init(description: "금액 낮은 순", id: 3),
+    ]
+  }
+
+  static var initialValue: FilterDialItem {
+    .init(description: "최신순", id: 0)
   }
 }

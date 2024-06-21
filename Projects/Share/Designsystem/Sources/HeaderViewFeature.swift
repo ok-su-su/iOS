@@ -93,6 +93,7 @@ public struct HeaderViewProperty: Equatable {
 
   public enum HeaderViewPropertyType: Equatable {
     case defaultType
+    case defaultNonIconType
 
     @available(*, deprecated, renamed: "depth2CustomIcon(IconType:)", message: "depth2Icon was deprecated. use depth2CustomIcon plz ")
     case depth2Icon
@@ -131,7 +132,8 @@ public struct HeaderViewProperty: Equatable {
       .icon(SSImage.commonSearch)
     case let .depth2CustomIcon(icon):
       .icon(icon.image)
-    case .depth2Default,
+    case .defaultNonIconType,
+         .depth2Default,
          .depthProgressBar:
       .none
     case let .depth2Text(text):

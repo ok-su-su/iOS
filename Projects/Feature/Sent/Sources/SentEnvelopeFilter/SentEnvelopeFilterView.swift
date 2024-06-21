@@ -61,13 +61,16 @@ struct SentEnvelopeFilterView: View {
   }
 
   @ViewBuilder
+  /// ProgressView를 만듭니다.
   private func makeProgressView() -> some View {
     VStack(alignment: .leading, spacing: 16) {
       Text(Constants.progressTitleText)
         .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray100)
       VStack(alignment: .leading, spacing: 8) {
         Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
           .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.gray100)
 
         HStack(spacing: 0) {
           SliderView(slider: sliderProperty)
@@ -78,8 +81,12 @@ struct SentEnvelopeFilterView: View {
   }
 
   @ViewBuilder
-  private func makeSelectedPeople() -> some View {
+  private func makeBottomButtonOfDeselectable() -> some View {
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+      // Slider ResetButton
+      makeSliderFilterButton()
+
+      // FilterPeople ResetButton
       ForEach(0 ..< store.filterHelper.selectedPerson.count, id: \.self) { index in
         if index < store.filterHelper.selectedPerson.count {
           let person = store.filterHelper.selectedPerson[index]
@@ -103,7 +110,7 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   private func makeBottom() -> some View {
-    WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+    HStack(spacing: 16) {
       makeResetButton()
       makeConfirmButton()
     }
@@ -157,6 +164,7 @@ struct SentEnvelopeFilterView: View {
     VStack(alignment: .leading, spacing: 0) {
       Text(Constants.searchTextFieldTitle)
         .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray100)
 
       CustomTextFieldView(store: store.scope(state: \.customTextField, action: \.customTextField))
         .padding(.vertical, 16)
@@ -176,8 +184,7 @@ struct SentEnvelopeFilterView: View {
       makeProgressView()
       Spacer()
       VStack(alignment: .leading, spacing: 8) {
-        makeSliderFilterButton()
-        makeSelectedPeople()
+        makeBottomButtonOfDeselectable()
       }
       makeBottom()
     }
@@ -188,13 +195,12 @@ struct SentEnvelopeFilterView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
-      VStack {
+      VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
+          .padding(.bottom, 24)
         makeContentView()
-        Spacer()
+          .padding(.horizontal, 16)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 16)
     }
     .navigationBarBackButtonHidden()
     .onAppear {

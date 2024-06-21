@@ -53,7 +53,7 @@ public struct SSButton: View {
         minWidth: property.frame.minWidth,
         idealWidth: property.frame.idealWidth,
         maxWidth: property.frame.maxWidth,
-        minHeight: property.frame.minHeight,
+        minHeight: property.size.height,
         idealHeight: property.frame.idealHeight,
         maxHeight: property.frame.maxHeight,
         alignment: property.frame.alignment

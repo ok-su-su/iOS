@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import FeatureAction
 import Foundation
 
 @Reducer
@@ -18,7 +19,7 @@ struct CreateEnvelopeRelation {
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
-    init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.relationHelper.defaultRelations,
@@ -40,7 +41,9 @@ struct CreateEnvelopeRelation {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -50,9 +53,7 @@ struct CreateEnvelopeRelation {
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {
-    case push
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -67,12 +68,13 @@ struct CreateEnvelopeRelation {
         state.isOnAppear = isAppear
         return .none
 
-      case .delegate:
+      case .inner(.push):
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .run { send in
-          await send(.delegate(.push))
+          await send(.inner(.push))
         }
 
       case .scope(.nextButton):

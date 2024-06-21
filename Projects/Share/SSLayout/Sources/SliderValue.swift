@@ -1,4 +1,5 @@
 import Combine
+import OSLog
 import SwiftUI
 
 // MARK: - SliderValue
@@ -21,6 +22,8 @@ struct SliderValue {
 // MARK: - SliderHandle
 
 public class SliderHandle: ObservableObject {
+  var isLeftHandle = false
+  weak var otherSlide: SliderHandle? = nil
   /// Slider Size
   let sliderWidth: CGFloat
   let sliderHeight: CGFloat
@@ -73,7 +76,12 @@ public class SliderHandle: ObservableObject {
     }
 
   private func restrictSliderBtnLocation(_ dragLocation: CGPoint) {
-    // On Slider Width
+    // 왼쪽 핸들 오른쪽 핸들 분기
+    if (isLeftHandle && dragLocation.x > otherSlide!.currentLocation.x) ||
+      (!isLeftHandle && dragLocation.x < otherSlide!.currentLocation.x) {
+      return
+    }
+
     if dragLocation.x > CGPoint.zero.x && dragLocation.x < sliderWidth {
       calcSliderBtnLocation(dragLocation)
     }
@@ -93,7 +101,7 @@ public class SliderHandle: ObservableObject {
   }
 
   public var currentValueBy1000: Int {
-    return Int(sliderValueStart + currentPercentage.wrappedValue * sliderValueRange) / 1000 * 1000
+    return Int(currentValue) / 1000 * 1000
   }
 }
 
@@ -139,6 +147,13 @@ public class CustomSlider: ObservableObject {
       sliderValueEnd: valueEnd,
       startPercentage: _lowHandleStartPercentage
     )
+
+    // MARK: Dependency Injection Other Handle
+
+    highHandle.otherSlide = lowHandle
+    highHandle.isLeftHandle = false
+    lowHandle.otherSlide = highHandle
+    lowHandle.isLeftHandle = true
 
     anyCancellableHigh = highHandle.objectWillChange.sink { _ in
       self.objectWillChange.send()

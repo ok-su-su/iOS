@@ -9,7 +9,7 @@
 import Foundation
 
 struct SentMainProperty: Equatable {
-  var filterDialProperty: FilterDialProperty = .init()
+  var selectedFilterDial: FilterDialItem? = [FilterDialItem].initialValue
   var sentPeopleFilterHelper: SentPeopleFilterHelper = .init()
   var searchHelper: SearchEnvelopeHelper = .init()
 }

@@ -8,33 +8,39 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 // MARK: - SentMainView
 
 struct SentMainView: View {
-  @Bindable var store: StoreOf<SentMain>
+  @Bindable
+  var store: Store<SentMain.State, SentMain.Action>
 
   init(store: StoreOf<SentMain>) {
     self.store = store
+    store.send(.view(.onAppear(true)))
   }
 
   @ViewBuilder
   private func makeEnvelope() -> some View {
     if store.state.envelopes.isEmpty {
+      // 봉투가 한개도 없을 때
       VStack {
         Spacer()
         Text(Constants.emptyEnvelopesText)
           .modifier(SSTypoModifier(.text_s))
           .foregroundStyle(SSColor.gray50)
         SSButton(Constants.emptyEnvelopeButtonProperty) {
-          store.send(.view(.tappedEmptyEnvelopeButton))
+          store.sendViewAction(.tappedEmptyEnvelopeButton)
         }
         Spacer()
       }
     } else {
       ScrollView {
-        ForEach(store.scope(state: \.envelopes, action: \.scope.envelopes)) { store in
+        ForEach(
+          store.scope(state: \.envelopes, action: \.scope.envelopes)
+        ) { store in
           EnvelopeView(store: store)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -43,30 +49,64 @@ struct SentMainView: View {
   }
 
   @ViewBuilder
-  func showFilterDialView() -> some View {
-//    FilterDialView(store: store.scope(state: \.filterDial, action: \.scope.filterDial))
-  }
-
-  @ViewBuilder
   func makeFilterSection() -> some View {
     // MARK: - 필터 버튼
 
-    HStack(spacing: Constants.topButtonsSpacing) {
-      SSButton(.init(
-        size: .sh32,
-        status: .active,
-        style: .ghost,
-        color: .black,
-        leftIcon: .icon(SSImage.commonFilter),
-        buttonText: store.sentMainProperty.filterDialProperty.currentType.name
-      )) {
-        store.send(.view(.tappedSortButton))
-      }
+    ScrollView(.horizontal) {
+      HStack(spacing: Constants.topButtonsSpacing) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          leftIcon: .icon(SSImage.commonFilter),
+          buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
+        )) {
+          store.sendViewAction(.tappedSortButton)
+        }
 
-      // MARK: - 정렬 버튼
+        // MARK: - 정렬 버튼
 
-      SSButton(Constants.notSelectedFilterButtonProperty) {
-        store.send(.view(.tappedFilterButton))
+        // 정렬된 사람이 없을 때
+        if store.sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty {
+          SSButton(Constants.notSelectedFilterButtonProperty) {
+            store.send(.view(.tappedFilterButton))
+          }
+        } else {
+          // 정렬된 사람이 있을 때
+
+          Button {
+            store.send(.view(.tappedFilterButton))
+          } label: {
+            SSImage.commonFilterWhite
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .frame(height: 32, alignment: .center)
+              .background(SSColor.gray100)
+              .cornerRadius(4)
+          }
+          
+          if store.sentMainProperty.sentPeopleFilterHelper
+
+          let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
+          ForEach(0 ..< filtered.count, id: \.self) { index in
+            if index < filtered.count {
+              let person = filtered[index]
+              SSButton(
+                .init(
+                  size: .sh32,
+                  status: .active,
+                  style: .filled,
+                  color: .black,
+                  rightIcon: .icon(SSImage.commonDeleteWhite),
+                  buttonText: person.name
+                )
+              ) {
+                store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
+              }
+            }
+          }
+        }
       }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -91,19 +131,24 @@ struct SentMainView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      ZStack(alignment: .bottomTrailing) {
-        VStack {
-          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-          Spacer()
-            .frame(height: 16)
+
+      // Content
+      VStack(spacing: 16) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+
+        VStack(spacing: 16) {
           makeFilterSection()
           makeEnvelope()
         }
-        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
-      }.padding(.horizontal, Constants.leadingAndTrailingSpacing)
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+      }
+
+      // FloatingButton
+      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
     .navigationBarBackButtonHidden()
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .safeAreaInset(edge: .bottom) { makeTabBar() }
     .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
       CreateEnvelopeRouterView(store: store)
@@ -114,11 +159,10 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
       SearchEnvelopeView(store: store)
     }
-    .sheet(item: $store.scope(state: \.filterDial, action: \.scope.filterDial)) { store in
-      FilterDialView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationDragIndicator(.automatic)
-    }
+    .modifier(
+      SSSelectableBottomSheetModifier(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet)
+      )
+    )
     .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
       SpecificEnvelopeHistoryRouterView(store: store)
     }

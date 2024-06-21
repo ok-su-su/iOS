@@ -20,7 +20,7 @@ public struct SliderView: View {
 
   public var body: some View {
     RoundedRectangle(cornerRadius: slider.lineWidth)
-      .fill(Color.gray.opacity(0.2))
+      .fill(SSColor.orange20)
       .frame(width: slider.width, height: slider.lineWidth)
       .overlay(
         ZStack {

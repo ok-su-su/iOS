@@ -21,7 +21,7 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
 
   private let keyChainShared = SSKeychain.shared
   private let jsonEncoder = JSONEncoder()
-  let accessTokenString = "accessToken"
+  let accessTokenString = "X-SUSU-AUTH-TOKEN"
   let refreshTokenString = "refreshToken"
 
   func getToken() -> (accessToken: String, refreshToken: String)? {
