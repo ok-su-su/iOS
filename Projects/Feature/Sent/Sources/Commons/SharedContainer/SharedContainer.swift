@@ -13,19 +13,17 @@ import Foundation
 final class SharedContainer {
   private init() {}
   private static var shared = SharedContainer()
-  private let cache: NSCache<NSString, AnyObject> = .init()
+  private var cache: [String: Any] = [:]
 
   /// Save value at memory
   /// - Parameter value: Class type obejct
-  static func setValue<T: AnyObject>(_ value: T) {
-    shared.cache.setObject(value, forKey: String(describing: T.self) as NSString)
+  static func setValue<T>(_ value: T) {
+    shared.cache[String(describing: T.self)] = value
   }
 
   /// Get value from memory cache
   /// - Parameter value: class Type Object
-  ///
-  /// let value = SharedStateContainer.getValue(MyClass.self)
-  static func getValue<T: AnyObject>(_: T.Type) -> T? {
-    shared.cache.object(forKey: String(describing: T.self) as NSString) as? T
+  static func getValue<T>(_: T.Type) -> T? {
+    shared.cache[String(describing: T.self)] as? T
   }
 }
