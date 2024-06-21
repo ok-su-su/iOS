@@ -24,13 +24,14 @@ struct SentEnvelopeFilter {
 
     // MARK: - Scope
 
-    var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
-    var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42)
+    var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
+    @Shared var sliderProperty: CustomSlider
     var customTextField: CustomTextField.State
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
       _textFieldText = .init("")
       customTextField = .init(text: _textFieldText)
+      _sliderProperty = .init(.init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42))
 
       // TODO: - Use SERVER API
       self.filterHelper.setFakeData()

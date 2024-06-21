@@ -59,6 +59,7 @@ struct SentMain {
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
     case onAppear(Bool)
+    case tappedFilteredPersonButton(id: UUID)
   }
 
   @CasePathable
@@ -160,8 +161,13 @@ struct SentMain {
       case let .inner(.updateEnvelopes(val)):
         state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
         return .none
+
       case let .inner(.isLoading(val)):
         state.isLoading = val
+        return .none
+
+      case let .view(.tappedFilteredPersonButton(id: id)):
+        state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
         return .none
       }
     }

@@ -195,13 +195,12 @@ struct SentEnvelopeFilterView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
-      VStack {
+      VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
+          .padding(.bottom, 24)
         makeContentView()
-        Spacer()
+          .padding(.horizontal, 16)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 16)
     }
     .navigationBarBackButtonHidden()
     .onAppear {

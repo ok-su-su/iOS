@@ -52,22 +52,61 @@ struct SentMainView: View {
   func makeFilterSection() -> some View {
     // MARK: - 필터 버튼
 
-    HStack(spacing: Constants.topButtonsSpacing) {
-      SSButton(.init(
-        size: .sh32,
-        status: .active,
-        style: .ghost,
-        color: .black,
-        leftIcon: .icon(SSImage.commonFilter),
-        buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
-      )) {
-        store.sendViewAction(.tappedSortButton)
-      }
+    ScrollView(.horizontal) {
+      HStack(spacing: Constants.topButtonsSpacing) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          leftIcon: .icon(SSImage.commonFilter),
+          buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
+        )) {
+          store.sendViewAction(.tappedSortButton)
+        }
 
-      // MARK: - 정렬 버튼
+        // MARK: - 정렬 버튼
 
-      SSButton(Constants.notSelectedFilterButtonProperty) {
-        store.send(.view(.tappedFilterButton))
+        // 정렬된 사람이 없을 때
+        if store.sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty {
+          SSButton(Constants.notSelectedFilterButtonProperty) {
+            store.send(.view(.tappedFilterButton))
+          }
+        } else {
+          // 정렬된 사람이 있을 때
+
+          Button {
+            store.send(.view(.tappedFilterButton))
+          } label: {
+            SSImage.commonFilterWhite
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .frame(height: 32, alignment: .center)
+              .background(SSColor.gray100)
+              .cornerRadius(4)
+          }
+          
+          if store.sentMainProperty.sentPeopleFilterHelper
+
+          let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
+          ForEach(0 ..< filtered.count, id: \.self) { index in
+            if index < filtered.count {
+              let person = filtered[index]
+              SSButton(
+                .init(
+                  size: .sh32,
+                  status: .active,
+                  style: .filled,
+                  color: .black,
+                  rightIcon: .icon(SSImage.commonDeleteWhite),
+                  buttonText: person.name
+                )
+              ) {
+                store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
+              }
+            }
+          }
+        }
       }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -92,20 +131,24 @@ struct SentMainView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      ZStack(alignment: .bottomTrailing) {
-        VStack {
-          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-          Spacer()
-            .frame(height: 16)
+
+      // Content
+      VStack(spacing: 16) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+
+        VStack(spacing: 16) {
           makeFilterSection()
           makeEnvelope()
         }
         .modifier(SSLoadingModifier(isLoading: store.isLoading))
-        FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
-      }.padding(.horizontal, Constants.leadingAndTrailingSpacing)
+        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+      }
+
+      // FloatingButton
+      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
+        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
     .navigationBarBackButtonHidden()
-    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .safeAreaInset(edge: .bottom) { makeTabBar() }
     .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
       CreateEnvelopeRouterView(store: store)
