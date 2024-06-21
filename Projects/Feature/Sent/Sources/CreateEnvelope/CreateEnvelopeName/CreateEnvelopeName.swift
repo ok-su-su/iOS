@@ -86,6 +86,11 @@ struct CreateEnvelopeName {
         }
 
       case .inner(.push):
+        /// SharedContainer에 현재 이름 저장
+        var body = CreateFriendRequestBody()
+        body.name = state.textFieldText
+        SharedContainer.setValue(body)
+        /// Push Screen
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
         return .none
 
