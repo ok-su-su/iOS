@@ -11,5 +11,6 @@ import Foundation
 enum RelationShipType: Int {
   case friend = 1
   case family
-  
+  case relative
+  case comp
 }
