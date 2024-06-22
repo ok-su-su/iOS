@@ -69,16 +69,13 @@ public struct SSDateSelectBottomSheetView: View {
     HStack {
       ZStack {
         SSImage.commonRefresh
-      }.onTapGesture {
-        store.send(.reset)
-      }
-      .padding(10)
-      .overlay {
         RoundedRectangle(cornerRadius: 100)
           .inset(by: 0.5)
           .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1)
-          .background(SSColor.gray100)
+      }.onTapGesture {
+        store.send(.reset)
       }
+      .frame(width: 44, height: 44)
       SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
         store.send(.didTapConfirmButton)
       }

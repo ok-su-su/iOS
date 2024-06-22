@@ -11,6 +11,7 @@ import OSLog
 
 enum CreateEnvelopeRequestShared {
   static func setEvent(id: Int) {
+    os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
     body.category?.id = id
     setBody(body)
@@ -27,6 +28,13 @@ enum CreateEnvelopeRequestShared {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
     body.category?.customCategory = name
+    setBody(body)
+  }
+
+  static func setDate(_ date: Date) {
+    os_log("CreateEnvelopeRequest의 Date을 저장합니다.\nEventName = \(date.description)")
+    var body = getBody()
+    body.handedOverAt = date.ISO8601Format()
     setBody(body)
   }
 

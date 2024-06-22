@@ -87,6 +87,7 @@ struct CreateEnvelopeDate {
         }
 
       case .inner(.push):
+        CreateEnvelopeRequestShared.setDate(state.selectedDate)
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(state.$createEnvelopeProperty)))
         return .none
 
