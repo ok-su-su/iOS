@@ -13,7 +13,7 @@ struct CreateFriendRequestBody: Codable, Equatable {
   var phoneNumber: String? = nil
   var relationshipId: Int? = nil
   var customRelation: String? = nil
-  
+
   enum CodingKeys: CodingKey {
     case name
     case phoneNumber

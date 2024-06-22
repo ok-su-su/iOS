@@ -46,15 +46,16 @@ struct CreateEnvelopeNetwork: Equatable {
   func searchInitialEnvelope() async throws -> [PrevEnvelope] {
     let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: nil))
     return data.data.compactMap { dto -> PrevEnvelope? in
-      guard let recentEnvelope = dto.recentEnvelope else {
+      guard let recentEnvelope = dto.recentEnvelope,
+            let targetDate = CustomDateFormatter.getDate(from: recentEnvelope.handedOverAt)
+      else {
         return nil
       }
       return .init(
         name: dto.friend.name,
         relationShip: dto.relationship.relation,
         eventName: recentEnvelope.category,
-        //      eventDate: $0.recentEnvelope.handedOverAt
-        eventDate: .now
+        eventDate: targetDate
       )
     }
   }
@@ -71,7 +72,6 @@ struct CreateEnvelopeNetwork: Equatable {
         name: dto.friend.name,
         relationShip: dto.relationship.relation,
         eventName: recentEnvelope.category,
-        //      eventDate: $0.recentEnvelope.handedOverAt
         eventDate: targetDate
       )
     }

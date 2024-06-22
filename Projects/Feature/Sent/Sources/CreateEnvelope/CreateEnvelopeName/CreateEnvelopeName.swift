@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 
 @Reducer
 struct CreateEnvelopeName {
@@ -16,16 +17,11 @@ struct CreateEnvelopeName {
   struct State: Equatable {
     var isOnAppear = false
     var textFieldText: String = ""
-    var textFieldIsHighlight: Bool = false
     var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var networkHelper = CreateEnvelopeNetwork()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-
-    var isAbleToPush: Bool {
-      return textFieldText != ""
-    }
 
     var filteredPrevEnvelopes: [PrevEnvelope] {
       return textFieldText == "" ? createEnvelopeProperty.prevEnvelopes : createEnvelopeProperty.filteredName(textFieldText)
@@ -55,6 +51,7 @@ struct CreateEnvelopeName {
   enum InnerAction: Equatable {
     case push
     case updateEnvelopes([PrevEnvelope])
+    case searchName(String)
   }
 
   enum AsyncAction: Equatable {}
@@ -66,6 +63,11 @@ struct CreateEnvelopeName {
 
   enum DelegateAction: Equatable {}
 
+  enum ThrottleID {
+    case search
+  }
+
+  @Dependency(\.mainQueue) var mainQueue
   @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
@@ -86,11 +88,7 @@ struct CreateEnvelopeName {
         }
 
       case .inner(.push):
-        /// SharedContainer에 현재 이름 저장
-        var body = CreateFriendRequestBody()
-        body.name = state.textFieldText
-        SharedContainer.setValue(body)
-        /// Push Screen
+        CreateFriendRequestShared.setName(state.textFieldText)
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
         return .none
 
@@ -107,19 +105,33 @@ struct CreateEnvelopeName {
         return .none
 
       case let .view(.changeText(text)):
-        let pushable = text != ""
         state.textFieldText = text
-        return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        /// 만약 이름 검색 조건을 만족한다면
+        if NameRegexManager.isValid(name: text) {
+          return .run { send in
+            await send(.inner(.searchName(text)))
+            await send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
+          }
+          .throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
         }
+        
+        /// 만약 이름 검색 조건을 만족하지 않는다면
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(false)))))
 
       case let .view(.changeFocused(val)):
         state.isFocused = val
         return .none
 
       case let .inner(.updateEnvelopes(prevEnvelopes)):
-        state.createEnvelopeProperty.prevEnvelopes = prevEnvelopes
+        let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
+        state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
         return .none
+
+      case let .inner(.searchName(val)):
+        return .run { [helper = state.networkHelper] send in
+          let prevEnvelopes = try await helper.searchPrevName(val)
+          await send(.inner(.updateEnvelopes(prevEnvelopes)))
+        }
       }
     }
   }

@@ -39,7 +39,7 @@ struct CreateEnvelopeProperty: Equatable {
 // MARK: - PrevEnvelope
 
 // TODO: - change DTO
-struct PrevEnvelope: Equatable {
+struct PrevEnvelope: Equatable, Hashable {
   let name: String
   let relationShip: String
   let eventName: String
