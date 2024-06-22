@@ -29,16 +29,29 @@ struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelec
 struct CreateEnvelopeEventPropertyHelper: Equatable {
   var selectedID: [Int] = []
   private var defaultEventStrings: [String] = []
-  var defaultEvent: [CreateEnvelopeEventProperty]
+  var defaultEvent: [CreateEnvelopeEventProperty] = []
 
-  var customEvent: CreateEnvelopeEventProperty?
+  var customEvent: CreateEnvelopeEventProperty? = nil
 
   func getSelectedItemID() -> Int? {
-    selectedID.filter { $0 != 1024 }.first
+    selectedID.first
   }
 
-  init() {
-    defaultEvent = defaultEventStrings.enumerated().map { .init(id: Int($0.offset), title: $0.element) }
-    customEvent = .init(id: Int(1024), title: "")
+  func getSelectedCustomItemName() -> String? {
+    if selectedID.first == customEvent?.id {
+      return customEvent?.title
+    }
+    return nil
   }
+
+  /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
+  mutating func updateItems(_ items: [CreateEnvelopeEventProperty]) {
+    var items = items
+    _ = items.popLast()
+    // TODO: API로직 바꿔달라고 말 하기
+    defaultEvent = items
+    customEvent = .init(id: items.count, title: "")
+  }
+
+  init() {}
 }

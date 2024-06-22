@@ -81,9 +81,12 @@ struct CreateEnvelopeEvent {
         }
 
       case .inner(.push):
+        // Set ID
         if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
           CreateEnvelopeRequestShared.setEvent(id: selectedID)
-        } else if let customName = state.createEnvelopeProperty.eventHelper.customEvent?.title {
+        }
+        // Set Custom Name if exist
+        if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {
           CreateEnvelopeRequestShared.setCustomEvent(customName)
         }
 
@@ -111,7 +114,7 @@ struct CreateEnvelopeEvent {
         return .none
 
       case let .inner(.update(events)):
-        state.createEnvelopeProperty.eventHelper.defaultEvent = events
+        state.createEnvelopeProperty.eventHelper.updateItems(events)
         return .none
       }
     }

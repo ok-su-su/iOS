@@ -58,11 +58,11 @@ enum CreateEnvelopeRequestShared {
     body.gift = val
     setBody(body)
   }
-  
+
   static func reset() {
     setBody(.init(type: "SENT"))
   }
-  
+
   static func resetAdditional() {
     var body = getBody()
     body.gift = nil

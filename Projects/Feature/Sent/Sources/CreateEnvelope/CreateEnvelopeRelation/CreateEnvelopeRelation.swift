@@ -82,9 +82,13 @@ struct CreateEnvelopeRelation {
         }
 
       case .inner(.push):
+        // Set ID
         if let selectedID = state.createEnvelopeProperty.relationHelper.getSelectedID() {
           CreateFriendRequestShared.setRelation(id: selectedID)
-        } else if let customRelationName = state.createEnvelopeProperty.relationHelper.customRelation?.title {
+        }
+
+        // Set CustomRelationName if Exist
+        if let customRelationName = state.createEnvelopeProperty.relationHelper.getSelectedCustomItemName() {
           CreateFriendRequestShared.setCustomRelation(name: customRelationName)
         }
 
@@ -113,7 +117,7 @@ struct CreateEnvelopeRelation {
         return .none
 
       case let .inner(.update(items)):
-        state.createEnvelopeProperty.relationHelper.defaultRelations = items
+        state.createEnvelopeProperty.relationHelper.updateItems(items)
         return .none
       }
     }

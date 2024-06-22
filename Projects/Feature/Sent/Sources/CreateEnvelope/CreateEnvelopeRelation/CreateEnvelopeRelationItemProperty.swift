@@ -17,7 +17,22 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
   /// 선택된 items 중 사용자가 입력하지 않은 ID를 리턴합니다.
   func getSelectedID() -> Int? {
-    return selectedID.filter { $0 != 1024 }.first
+    return selectedID.first
+  }
+
+  func getSelectedCustomItemName() -> String? {
+    if selectedID.first == customRelation?.id {
+      return customRelation?.title
+    }
+    return nil
+  }
+
+  /// 마지막에 기타 아이템이 와야 합니다. 기타 아이템을 없앱니다.
+  mutating func updateItems(_ items: [CreateEnvelopeRelationItemProperty]) {
+    var items = items
+    _ = items.popLast()
+    defaultRelations = items
+    customRelation = .init(id: items.count, title: "")
   }
 
   init() {}
