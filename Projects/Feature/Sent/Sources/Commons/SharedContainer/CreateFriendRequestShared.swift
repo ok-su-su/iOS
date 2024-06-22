@@ -15,6 +15,10 @@ enum CreateFriendRequestShared {
     setBody(body)
   }
 
+  static func getName() -> String? {
+    getBody().name
+  }
+
   static func setRelation(id: Int) {
     var body = getBody()
     body.relationshipId = id

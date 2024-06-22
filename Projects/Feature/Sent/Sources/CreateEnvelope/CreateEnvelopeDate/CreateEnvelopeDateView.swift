@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 struct CreateEnvelopeDateView: View {
@@ -22,7 +23,7 @@ struct CreateEnvelopeDateView: View {
     SSButton(
       .init(
         size: .mh60,
-        status: store.isAbleToPush ? .active : .inactive,
+        status: .active,
         style: .filled,
         color: .black,
         buttonText: "다음",
@@ -36,61 +37,55 @@ struct CreateEnvelopeDateView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading) {
+      Spacer()
+        .frame(height: 20)
+
       HStack(spacing: 4) {
         // TODO: change Property
-        Text("김철수님에게")
+        Text("\(store.envelopeTargetName)님에게")
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
         Text(Constants.nameDescriptionText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
+
+        Spacer()
       }
+      .padding(.bottom, 12)
+
       HStack(spacing: 0) {
-        TextField(
-          "",
-          text: $store.yearTextFieldText,
-          prompt: Constants.yearTextFieldTextPrompt
-            .foregroundStyle(SSColor.gray30)
-        )
-        .multilineTextAlignment(.trailing)
-        .modifier(SSTypoModifier(.title_xl))
-        .keyboardType(.numberPad)
+        Text(store.yearStringText)
+          .modifier(SSTypoModifier(.title_xl))
+          .foregroundStyle(store.isInitialStateOfDate ? SSColor.gray30 : SSColor.gray100)
 
         Text("년 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100)
 
-        TextField(
-          "",
-          text: $store.monthTextFieldText,
-          prompt: Constants.monthTextFieldTextPrompt
-            .foregroundStyle(SSColor.gray30)
-        )
-        .multilineTextAlignment(.trailing)
-        .modifier(SSTypoModifier(.title_xl))
-        .keyboardType(.numberPad)
+        Text(store.monthStringText)
+          .modifier(SSTypoModifier(.title_xl))
+          .foregroundStyle(store.isInitialStateOfDate ? SSColor.gray30 : SSColor.gray100)
 
         Text("월 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100)
 
-        TextField(
-          "",
-          text: $store.dayTextFieldText,
-          prompt: Constants.dayTextFieldTextPrompt
-            .foregroundStyle(SSColor.gray30)
-        )
-        .multilineTextAlignment(.trailing)
-        .modifier(SSTypoModifier(.title_xl))
-        .keyboardType(.numberPad)
+        Text(store.dayStringText)
+          .modifier(SSTypoModifier(.title_xl))
+          .foregroundStyle(store.isInitialStateOfDate ? SSColor.gray30 : SSColor.gray100)
 
         Text("일 ")
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(SSColor.gray100)
+
+        Spacer()
       }
 
       Spacer()
+    }
+    .onTapGesture {
+      store.sendViewAction(.tappedDateSheet)
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
@@ -105,6 +100,7 @@ struct CreateEnvelopeDateView: View {
         makeNextButton()
       }
     }
+    .modifier(SSDateBottomSheetModifier(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

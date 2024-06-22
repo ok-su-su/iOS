@@ -85,11 +85,19 @@ struct CreateEnvelopePriceView: View {
       // MARK: - Price Guid View
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        ForEach(store.formattedGuidPrices, id: \.self) { item in
+        ForEach(store.guidPrices, id: \.self) { price in
+          let item = CustomNumberFormatter.formattedByThreeZero(price)
           SSButton(
-            .init(size: .sh32, status: .active, style: .filled, color: .orange, buttonText: "\(item)원")) {
-              store.send(.view(.tappedGuidValue(item)))
-            }
+            .init(
+              size: .sh32,
+              status: .active,
+              style: .filled,
+              color: .orange,
+              buttonText: "\(item ?? price.description)원"
+            )
+          ) {
+            store.send(.view(.tappedGuidValue(price.description)))
+          }
         }
       }
 

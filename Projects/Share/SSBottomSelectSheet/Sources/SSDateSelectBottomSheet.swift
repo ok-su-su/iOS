@@ -14,11 +14,18 @@ import SwiftUI
 
 @Reducer
 public struct SSDateSelectBottomSheetReducer {
+  public init() {}
   @ObservableState
-  public struct State {
-    @Shared var selectedDate: Date?
-    var initialStartDate = Date.now
-    var initialEndDate = Calendar.current.date(byAdding: .year, value: 1, to: .now)!
+  public struct State: Equatable {
+    @Shared var selectedDate: Date
+    @Shared var isInitialStateOfDate: Bool
+    var initialStartDate = Date(timeIntervalSince1970: -1_230_768_000)
+    var initialEndDate = Date(timeIntervalSince1970: 1_924_905_600)
+
+    public init(selectedDate: Shared<Date>, isInitialStateOfDate: Shared<Bool>) {
+      _selectedDate = selectedDate
+      _isInitialStateOfDate = isInitialStateOfDate
+    }
   }
 
   public enum Action: Equatable {
@@ -32,13 +39,15 @@ public struct SSDateSelectBottomSheetReducer {
     Reduce { state, action in
       switch action {
       case .reset:
-        state.selectedDate = nil
+        state.isInitialStateOfDate = true
+        state.selectedDate = .now
         return .none
       case .didTapConfirmButton:
         return .run { _ in
           await dismiss()
         }
       case let .didSelectedStartDate(date):
+        state.isInitialStateOfDate = false
         state.selectedDate = date
         return .none
       }
@@ -68,6 +77,7 @@ public struct SSDateSelectBottomSheetView: View {
         RoundedRectangle(cornerRadius: 100)
           .inset(by: 0.5)
           .stroke(Color(red: 0.91, green: 0.91, blue: 0.91), lineWidth: 1)
+          .background(SSColor.gray100)
       }
       SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
         store.send(.didTapConfirmButton)
@@ -80,24 +90,33 @@ public struct SSDateSelectBottomSheetView: View {
   private func makeContentView() -> some View {
     GeometryReader { geometry in
       VStack(alignment: .leading) {
-        DatePicker("", selection: $store.initialStartDate.sending(\.didSelectedStartDate), in: store.initialStartDate ... store.initialEndDate, displayedComponents: [.date])
-          .clipped()
-          .frame(maxWidth: .infinity)
-          .datePickerStyle(.wheel)
-          .labelsHidden()
-          .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko-kr"))
-          .padding()
-          .colorMultiply(SSColor.gray100)
-          .font(.custom(.title_xxs))
+        DatePicker(
+          "",
+          selection: $store.selectedDate.sending(\.didSelectedStartDate),
+          in: store.initialStartDate ... store.initialEndDate,
+          displayedComponents: [.date]
+        )
+        .clipped()
+        .frame(maxWidth: .infinity)
+        .datePickerStyle(.wheel)
+        .labelsHidden()
+        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko-kr"))
+        .padding()
+        .colorMultiply(SSColor.gray100)
+        .font(.custom(.title_xxs))
+        .preferredColorScheme(.light)
 
       }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
     }.edgesIgnoringSafeArea(.all)
   }
 
   public var body: some View {
-    VStack {
-      makeContentView()
-      makeFilterContentView()
+    ZStack {
+      SSColor.gray10
+      VStack {
+        makeContentView()
+        makeFilterContentView()
+      }
     }
   }
 }

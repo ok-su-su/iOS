@@ -76,11 +76,12 @@ struct CreateEnvelopeEvent {
         return .run { send in
           await send(.inner(.isLoading(true)))
           let data = try await network.getEventItems()
+          await send(.inner(.update(data)))
           await send(.inner(.isLoading(false)))
         }
 
       case .inner(.push):
-        if let selectedID = state.createEnvelopeProperty.eventHelper.selectedID.first {
+        if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
           CreateEnvelopeRequestShared.setEvent(id: selectedID)
         } else if let customName = state.createEnvelopeProperty.eventHelper.customEvent?.title {
           CreateEnvelopeRequestShared.setCustomEvent(customName)
@@ -104,9 +105,11 @@ struct CreateEnvelopeEvent {
 
       case .scope(.createEnvelopeSelectionItems):
         return .none
+
       case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
+
       case let .inner(.update(events)):
         state.createEnvelopeProperty.eventHelper.defaultEvent = events
         return .none

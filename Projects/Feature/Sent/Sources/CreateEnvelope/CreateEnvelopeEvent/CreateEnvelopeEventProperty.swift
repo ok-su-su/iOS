@@ -28,18 +28,17 @@ struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelec
 
 struct CreateEnvelopeEventPropertyHelper: Equatable {
   var selectedID: [Int] = []
-  private var defaultEventStrings: [String] = [
-    "결혼식",
-    "돌잔치",
-    "장례식",
-    "생일기념일",
-  ]
+  private var defaultEventStrings: [String] = []
   var defaultEvent: [CreateEnvelopeEventProperty]
 
   var customEvent: CreateEnvelopeEventProperty?
 
+  func getSelectedItemID() -> Int? {
+    selectedID.filter { $0 != 1024 }.first
+  }
+
   init() {
     defaultEvent = defaultEventStrings.enumerated().map { .init(id: Int($0.offset), title: $0.element) }
-    customEvent = .init(id: Int(defaultEventStrings.count), title: "")
+    customEvent = .init(id: Int(1024), title: "")
   }
 }

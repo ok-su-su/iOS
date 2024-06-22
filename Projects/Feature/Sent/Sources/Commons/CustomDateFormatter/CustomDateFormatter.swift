@@ -36,5 +36,20 @@ final class CustomDateFormatter {
     return formatter.string(from: val)
   }
 
+  static func getYear(from val: Date) -> String {
+    formatter.dateFormat = "yyyy"
+    return formatter.string(from: val)
+  }
+
+  static func getMonth(from val: Date) -> String {
+    formatter.dateFormat = "MM"
+    return formatter.string(from: val)
+  }
+
+  static func getDay(from val: Date) -> String {
+    formatter.dateFormat = "dd"
+    return formatter.string(from: val)
+  }
+
   private init() {}
 }

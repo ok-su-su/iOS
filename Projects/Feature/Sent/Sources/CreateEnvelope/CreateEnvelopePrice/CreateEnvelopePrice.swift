@@ -28,7 +28,7 @@ struct CreateEnvelopePrice {
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
 
-    private var guidPrices: [Int] = [
+    var guidPrices: [Int] = [
       10000, 30000, 50000, 100_000, 500_000,
     ]
 

@@ -13,8 +13,12 @@ import Foundation
 struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var selectedID: [Int] = []
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
+  var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: 1024, title: "")
 
-  var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: 6, title: "")
+  /// 선택된 items 중 사용자가 입력하지 않은 ID를 리턴합니다.
+  func getSelectedID() -> Int? {
+    return selectedID.filter { $0 != 1024 }.first
+  }
 
   init() {}
 }
