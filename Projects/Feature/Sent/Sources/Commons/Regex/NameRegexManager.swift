@@ -10,7 +10,7 @@ import Foundation
 
 enum NameRegexManager {
   static func isValid(name: String) -> Bool {
-    let regex = /^[가-힣]{1,10}$/
+    let regex = /^[가-힣| ]{1,10}$/
     return name.contains(regex)
   }
 }
