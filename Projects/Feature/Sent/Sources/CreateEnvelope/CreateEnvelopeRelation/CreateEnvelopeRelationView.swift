@@ -51,6 +51,7 @@ struct CreateEnvelopeRelationView: View {
   @ViewBuilder
   private func makeDefaultRelationButton() -> some View {
     CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+      .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
   @ViewBuilder
@@ -70,7 +71,6 @@ struct CreateEnvelopeRelationView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
-
         makeNextButton()
       }
     }

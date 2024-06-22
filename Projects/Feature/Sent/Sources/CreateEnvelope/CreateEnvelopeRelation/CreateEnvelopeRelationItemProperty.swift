@@ -12,13 +12,7 @@ import Foundation
 
 struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var selectedID: [Int] = []
-  var defaultRelations: [CreateEnvelopeRelationItemProperty] = [
-    .init(id: 1, title: "친구"),
-    .init(id: 2, title: "가족"),
-    .init(id: 3, title: "친적"),
-    .init(id: 4, title: "동료"),
-    .init(id: 5, title: "직장"),
-  ]
+  var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
 
   var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: 6, title: "")
 

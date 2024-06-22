@@ -128,7 +128,7 @@ struct CreateEnvelopeName {
         return .none
 
       case let .inner(.searchName(val)):
-        return .run {  send in
+        return .run { send in
           let prevEnvelopes = try await network.searchPrevName(val)
           await send(.inner(.updateEnvelopes(prevEnvelopes)))
         }

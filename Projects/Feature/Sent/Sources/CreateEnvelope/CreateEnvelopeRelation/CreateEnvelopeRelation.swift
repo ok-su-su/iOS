@@ -14,6 +14,7 @@ struct CreateEnvelopeRelation {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var isLoading = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
 
@@ -43,6 +44,8 @@ struct CreateEnvelopeRelation {
 
   enum InnerAction: Equatable {
     case push
+    case isLoading(Bool)
+    case update([CreateEnvelopeRelationItemProperty])
   }
 
   enum AsyncAction: Equatable {}
@@ -55,6 +58,8 @@ struct CreateEnvelopeRelation {
 
   enum DelegateAction: Equatable {}
 
+  @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
+
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
@@ -65,8 +70,16 @@ struct CreateEnvelopeRelation {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let defaultsItems = try await network.getRelationItems()
+          await send(.inner(.update(defaultsItems)))
+          await send(.inner(.isLoading(false)))
+        }
 
       case .inner(.push):
         if let selectedID = state.createEnvelopeProperty.relationHelper.selectedID.first {
@@ -91,7 +104,16 @@ struct CreateEnvelopeRelation {
         return .run { send in
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
         }
+
       case .scope(.createEnvelopeSelectionItems):
+        return .none
+
+      case let .inner(.isLoading(bool)):
+        state.isLoading = bool
+        return .none
+
+      case let .inner(.update(items)):
+        state.createEnvelopeProperty.relationHelper.defaultRelations = items
         return .none
       }
     }

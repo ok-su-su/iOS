@@ -43,6 +43,7 @@ struct CreateEnvelopeEventView: View {
   @ViewBuilder
   private func makeItem() -> some View {
     CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+      .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
   @ViewBuilder

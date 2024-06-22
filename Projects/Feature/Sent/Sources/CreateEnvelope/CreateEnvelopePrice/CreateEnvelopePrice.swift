@@ -122,7 +122,8 @@ struct CreateEnvelopePrice {
         }
         state.textFieldText = value
         // Logic to Pushable
-        let pushable = value.count < 10
+        // 자리 보다 크고 10자리 보다 작아야 함
+        let pushable = value.count < 10 && value.count > 4
         return .run { send in
           if !pushable {
             await send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다."))))
