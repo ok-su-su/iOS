@@ -14,7 +14,7 @@ import Designsystem
 public struct SSDateSelectBottomSheetReducer {
   @ObservableState
   public struct State {
-    @Shared var selectedDate: Date? 
+    @Shared var selectedDate: Date?
     var initialStartDate = Date.now
     var initialEndDate = Calendar.current.date(byAdding: .year, value: 1, to: .now)!
   }
@@ -25,10 +25,19 @@ public struct SSDateSelectBottomSheetReducer {
     case didSelectedStartDate(Date)
   }
   
+  @Dependency(\.dismiss) var dismiss
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      default:
+      case .reset:
+        state.selectedDate = nil
+        return .none
+      case .didTapConfirmButton:
+        return .run { send in
+          await dismiss()
+        }
+      case let .didSelectedStartDate(date):
+        state.selectedDate = date
         return .none
       }
     }
