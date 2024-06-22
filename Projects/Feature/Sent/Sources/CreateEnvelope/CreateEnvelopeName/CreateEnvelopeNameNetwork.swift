@@ -1,20 +1,29 @@
 //
-//  CreateEnvelopeNetwork.swift
+//  CreateEnvelopeNameNetwork.swift
 //  Sent
 //
 //  Created by MaraMincho on 6/21/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
 
-// MARK: - CreateEnvelopeNetwork
+extension DependencyValues {
+  var createEnvelopeNameNetwork: CreateEnvelopeNameNetwork {
+    get { self[CreateEnvelopeNameNetwork.self] }
+    set { self[CreateEnvelopeNameNetwork.self] = newValue }
+  }
+}
 
-struct CreateEnvelopeNetwork: Equatable {
-  static func == (_: CreateEnvelopeNetwork, _: CreateEnvelopeNetwork) -> Bool {
+// MARK: - CreateEnvelopeNameNetwork
+
+struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
+  static var liveValue: CreateEnvelopeNameNetwork = .init()
+  static func == (_: CreateEnvelopeNameNetwork, _: CreateEnvelopeNameNetwork) -> Bool {
     return true
   }
 
@@ -25,7 +34,7 @@ struct CreateEnvelopeNetwork: Equatable {
 
     var method: Moya.Method {
       switch self {
-      case let .searchFriend(name):
+      case .searchFriend:
         return .get
       }
     }

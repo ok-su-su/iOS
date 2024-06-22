@@ -19,7 +19,6 @@ struct CreateEnvelopeName {
     var textFieldText: String = ""
     var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
-    var networkHelper = CreateEnvelopeNetwork()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
@@ -69,6 +68,7 @@ struct CreateEnvelopeName {
 
   @Dependency(\.mainQueue) var mainQueue
   @Dependency(\.dismiss) var dismiss
+  @Dependency(\.createEnvelopeNameNetwork) var network
 
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
@@ -82,8 +82,8 @@ struct CreateEnvelopeName {
         }
         state.isOnAppear = isAppear
         state.isFocused = true
-        return .run { [helper = state.networkHelper] send in
-          let prevEnvelopes = try await helper.searchInitialEnvelope()
+        return .run { send in
+          let prevEnvelopes = try await network.searchInitialEnvelope()
           await send(.inner(.updateEnvelopes(prevEnvelopes)))
         }
 
@@ -128,8 +128,8 @@ struct CreateEnvelopeName {
         return .none
 
       case let .inner(.searchName(val)):
-        return .run { [helper = state.networkHelper] send in
-          let prevEnvelopes = try await helper.searchPrevName(val)
+        return .run {  send in
+          let prevEnvelopes = try await network.searchPrevName(val)
           await send(.inner(.updateEnvelopes(prevEnvelopes)))
         }
       }
