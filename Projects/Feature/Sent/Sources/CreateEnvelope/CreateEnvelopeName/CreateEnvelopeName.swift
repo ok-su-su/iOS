@@ -106,7 +106,7 @@ struct CreateEnvelopeName {
 
       case let .view(.changeText(text)):
         state.textFieldText = text
-        /// 만약 이름 검색 조건을 만족한다면
+        // 만약 이름 검색 조건을 만족한다면
         if NameRegexManager.isValid(name: text) {
           return .run { send in
             await send(.inner(.searchName(text)))
@@ -114,8 +114,8 @@ struct CreateEnvelopeName {
           }
           .throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
         }
-        
-        /// 만약 이름 검색 조건을 만족하지 않는다면
+
+        // 만약 이름 검색 조건을 만족하지 않는다면
         return .send(.scope(.nextButton(.delegate(.isAbleToPush(false)))))
 
       case let .view(.changeFocused(val)):

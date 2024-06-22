@@ -11,14 +11,14 @@ import Foundation
 // MARK: - CreateEnvelopeEventProperty
 
 struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: UUID
+  var id: Int
   var title: String
 
   mutating func setTitle(_ val: String) {
     title = val
   }
 
-  init(id: UUID, title: String) {
+  init(id: Int, title: String) {
     self.id = id
     self.title = title
   }
@@ -27,7 +27,7 @@ struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelec
 // MARK: - CreateEnvelopeEventPropertyHelper
 
 struct CreateEnvelopeEventPropertyHelper: Equatable {
-  var selectedID: [UUID] = []
+  var selectedID: [Int] = []
   private var defaultEventStrings: [String] = [
     "결혼식",
     "돌잔치",
@@ -39,7 +39,7 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
   var customEvent: CreateEnvelopeEventProperty?
 
   init() {
-    defaultEvent = defaultEventStrings.enumerated().map { .init(id: UUID($0.offset), title: $0.element) }
-    customEvent = .init(id: UUID(defaultEventStrings.count), title: "")
+    defaultEvent = defaultEventStrings.enumerated().map { .init(id: Int($0.offset), title: $0.element) }
+    customEvent = .init(id: Int(defaultEventStrings.count), title: "")
   }
 }

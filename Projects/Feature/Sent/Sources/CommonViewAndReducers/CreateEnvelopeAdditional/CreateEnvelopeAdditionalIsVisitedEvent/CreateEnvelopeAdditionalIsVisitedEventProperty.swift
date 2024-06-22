@@ -11,7 +11,7 @@ import Foundation
 // MARK: - CreateEnvelopeAdditionalIsVisitedEventProperty
 
 struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: UUID
+  var id: Int
 
   var title: String
   mutating func setTitle(_: String) {
@@ -23,8 +23,8 @@ struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, 
 
 struct CreateEnvelopeAdditionalIsVisitedEventHelper: Equatable {
   var items: [CreateEnvelopeAdditionalIsVisitedEventProperty] = [
-    .init(id: UUID(0), title: "예"),
-    .init(id: UUID(1), title: "아니오"),
+    .init(id: 0, title: "예"),
+    .init(id: 1, title: "아니오"),
   ]
-  var selectedID: [UUID] = []
+  var selectedID: [Int] = []
 }

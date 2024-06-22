@@ -26,7 +26,7 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
     @Shared var items: [Item]
 
     /// 선택된 ID들 입니다.
-    @Shared var selectedID: [UUID]
+    @Shared var selectedID: [Int]
 
     /// CustomItem을 저장했는지 나타내는 변수 입니다.
     /// 만약 사용자가 CustomItem을 저장했다면 변수가 True바뀝니다.
@@ -45,7 +45,7 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
     ///   - isCustomItem: 사용자 입력을 통한 새로운 아이템을 받을지 여부를 나타냅니다.
     ///
     ///    isCustomItem을 Nil로 할 경우 "직접 입력" 버튼이 추가되지 않습니다.
-    init(items: Shared<[Item]>, selectedID: Shared<[UUID]>, isCustomItem: Shared<Item?>) {
+    init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>) {
       _items = items
       _selectedID = selectedID
       _isCustomItem = isCustomItem
@@ -63,15 +63,15 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedItem(id: UUID)
+    case tappedItem(id: Int)
     case tappedAddCustomRelation
     case tappedTextFieldCloseButton
     case tappedTextFieldSaveAndEditButton
   }
 
   enum InnerAction: Equatable {
-    case singleSelection(id: UUID)
-    case multipleSelection(id: UUID)
+    case singleSelection(id: Int)
+    case multipleSelection(id: Int)
     case startAddCustomRelation
     case endAddCustomRelation
   }
@@ -82,7 +82,7 @@ struct CreateEnvelopeSelectItems<Item: CreateEnvelopeSelectItemable> {
   enum ScopeAction: Equatable {}
 
   enum DelegateAction: Equatable {
-    case selected(id: [UUID])
+    case selected(id: [Int])
   }
 
   var multipleSelectionCount = 1
