@@ -116,7 +116,11 @@ struct CreateEnvelopeRouter {
 
       case .pushCreateEnvelopeAdditional:
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          return .run { _ in await dismiss() }
+          return .run { _ in
+            CreateEnvelopeRequestShared.printBody()
+            CreateFriendRequestShared.printBody()
+            await dismiss()
+          }
         }
         switch currentSection {
         case .isVisited:

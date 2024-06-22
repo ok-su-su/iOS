@@ -13,7 +13,7 @@ enum CreateEnvelopeRequestShared {
   static func setEvent(id: Int) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
-    body.category?.id = id
+    body.category = .init(id: id)
     setBody(body)
   }
 
@@ -27,7 +27,7 @@ enum CreateEnvelopeRequestShared {
   static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
-    body.category?.customCategory = name
+    body.category = .init(customCategory: name)
     setBody(body)
   }
 
@@ -44,19 +44,35 @@ enum CreateEnvelopeRequestShared {
     body.hasVisited = val
     setBody(body)
   }
-  
+
   static func setMemo(_ val: String) {
-    os_log("CreateEnvelopeRequest의 메모 저장합니다.\nEventName = \(val)")
+    os_log("CreateEnvelopeRequest의 메모 저장합니다.\nMemo = \(val)")
     var body = getBody()
     body.memo = val
     setBody(body)
   }
-  
+
   static func setGift(_ val: String) {
-    os_log("CreateEnvelopeRequest의 선물을 저장합니다.\nEventName = \(val)")
+    os_log("CreateEnvelopeRequest의 선물을 저장합니다.\nGift = \(val)")
     var body = getBody()
     body.gift = val
     setBody(body)
+  }
+  
+  static func reset() {
+    setBody(.init(type: "SENT"))
+  }
+  
+  static func resetAdditional() {
+    var body = getBody()
+    body.gift = nil
+    body.hasVisited = nil
+    body.memo = nil
+    setBody(body)
+  }
+
+  static func printBody() {
+    print(getBody())
   }
 
   private static func getBody() -> CreateEnvelopeRequestBody {

@@ -73,6 +73,7 @@ struct CreateEnvelopeAdditionalMemo {
         return .none
 
       case let .view(.textFieldChange(text)):
+        state.memoHelper.textFieldText = text
         let pushable = text != ""
         return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
 
