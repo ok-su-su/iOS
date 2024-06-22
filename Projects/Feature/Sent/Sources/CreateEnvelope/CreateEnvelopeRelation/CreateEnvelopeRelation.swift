@@ -69,6 +69,13 @@ struct CreateEnvelopeRelation {
         return .none
 
       case .inner(.push):
+        if let selectedID = state.createEnvelopeProperty.relationHelper.selectedID.first {
+          CreateFriendRequestShared.setRelation(id: selectedID)
+        }
+        else if let customRelationName = state.createEnvelopeProperty.relationHelper.customRelation?.title {
+          CreateFriendRequestShared.setCustomRelation(name: customRelationName)
+        }
+        
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
         return .none
 

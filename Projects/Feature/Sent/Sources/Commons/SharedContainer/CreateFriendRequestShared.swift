@@ -14,6 +14,19 @@ enum CreateFriendRequestShared {
     body.name = val
     setBody(body)
   }
+  
+  static func setRelation(id: Int) {
+    var body = getBody()
+    body.relationshipId = id
+    setBody(body)
+  }
+  
+  static func setCustomRelation(name: String) {
+    var body = getBody()
+    body.customRelation = name
+    setBody(body)
+  }
+  
 
   static func setPhoneNumber(_: String) {}
 

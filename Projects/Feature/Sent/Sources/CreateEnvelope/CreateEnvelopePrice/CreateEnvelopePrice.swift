@@ -64,7 +64,6 @@ struct CreateEnvelopePrice {
   enum InnerAction: Equatable {
     case convertPrice(String)
     case push
-    case updateRequestBody
   }
 
   enum AsyncAction: Equatable {}
@@ -132,17 +131,14 @@ struct CreateEnvelopePrice {
         }
 
       case .inner(.push):
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
-        return .run { send in
-          await send(.inner(.updateRequestBody))
+        if let amount = Int64(state.textFieldText) {
+          CreateEnvelopeRequestShared.setAmount(amount)
         }
-
-      case .scope(.toast):
+        
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
         return .none
 
-      case .inner(.updateRequestBody):
-        let body = CreateEnvelopeRequestBody(type: "SENT")
-        SharedContainer.setValue(body)
+      case .scope(.toast):
         return .none
       }
     }
