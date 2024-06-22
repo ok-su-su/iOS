@@ -47,10 +47,13 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
   /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
   mutating func updateItems(_ items: [CreateEnvelopeEventProperty]) {
     var items = items
-    _ = items.popLast()
+    guard let customItemID = items.popLast()?.id else {
+      return
+    }
+
     // TODO: API로직 바꿔달라고 말 하기
     defaultEvent = items
-    customEvent = .init(id: items.count, title: "")
+    customEvent = .init(id: customItemID, title: "")
   }
 
   init() {}

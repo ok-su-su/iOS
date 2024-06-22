@@ -30,9 +30,11 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   /// 마지막에 기타 아이템이 와야 합니다. 기타 아이템을 없앱니다.
   mutating func updateItems(_ items: [CreateEnvelopeRelationItemProperty]) {
     var items = items
-    _ = items.popLast()
+    guard let customItemID = items.popLast()?.id else {
+      return
+    }
     defaultRelations = items
-    customRelation = .init(id: items.count, title: "")
+    customRelation = .init(id: customItemID, title: "")
   }
 
   init() {}
