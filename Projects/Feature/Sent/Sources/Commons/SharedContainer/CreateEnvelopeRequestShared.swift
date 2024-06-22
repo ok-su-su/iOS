@@ -15,25 +15,25 @@ enum CreateEnvelopeRequestShared {
     body.category?.id = id
     setBody(body)
   }
-  
+
   static func setAmount(_ amount: Int64) {
     os_log("CreateEnvelopeRequest의 Amount을 저장합니다.\namount = \(amount.description)")
     var body = getBody()
     body.amount = amount
     setBody(body)
   }
-  
+
   static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
     body.category?.customCategory = name
     setBody(body)
   }
-  
-  private static func getBody() -> CreateEnvelopeRequestBody{
+
+  private static func getBody() -> CreateEnvelopeRequestBody {
     SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "SENT")
   }
-  
+
   private static func setBody(_ val: CreateEnvelopeRequestBody) {
     SharedContainer.setValue(val)
   }

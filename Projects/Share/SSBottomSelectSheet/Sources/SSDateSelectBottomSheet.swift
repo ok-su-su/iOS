@@ -7,8 +7,10 @@
 //
 
 import ComposableArchitecture
-import SwiftUI
 import Designsystem
+import SwiftUI
+
+// MARK: - SSDateSelectBottomSheetReducer
 
 @Reducer
 public struct SSDateSelectBottomSheetReducer {
@@ -18,13 +20,13 @@ public struct SSDateSelectBottomSheetReducer {
     var initialStartDate = Date.now
     var initialEndDate = Calendar.current.date(byAdding: .year, value: 1, to: .now)!
   }
-  
+
   public enum Action: Equatable {
     case reset
     case didTapConfirmButton
     case didSelectedStartDate(Date)
   }
-  
+
   @Dependency(\.dismiss) var dismiss
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -33,7 +35,7 @@ public struct SSDateSelectBottomSheetReducer {
         state.selectedDate = nil
         return .none
       case .didTapConfirmButton:
-        return .run { send in
+        return .run { _ in
           await dismiss()
         }
       case let .didSelectedStartDate(date):
@@ -44,12 +46,15 @@ public struct SSDateSelectBottomSheetReducer {
   }
 }
 
+// MARK: - SSDateSelectBottomSheetView
+
 public struct SSDateSelectBottomSheetView: View {
   @Bindable
   var store: StoreOf<SSDateSelectBottomSheetReducer>
   public init(store: StoreOf<SSDateSelectBottomSheetReducer>) {
     self.store = store
   }
+
   @ViewBuilder
   private func makeFilterContentView() -> some View {
     HStack {
@@ -67,10 +72,10 @@ public struct SSDateSelectBottomSheetView: View {
       SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
         store.send(.didTapConfirmButton)
       }
-      
+
     }.padding([.leading, .trailing], 16)
   }
-  
+
   @ViewBuilder
   private func makeContentView() -> some View {
     GeometryReader { geometry in
@@ -84,11 +89,11 @@ public struct SSDateSelectBottomSheetView: View {
           .padding()
           .colorMultiply(SSColor.gray100)
           .font(.custom(.title_xxs))
-        
+
       }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
     }.edgesIgnoringSafeArea(.all)
   }
-  
+
   public var body: some View {
     VStack {
       makeContentView()

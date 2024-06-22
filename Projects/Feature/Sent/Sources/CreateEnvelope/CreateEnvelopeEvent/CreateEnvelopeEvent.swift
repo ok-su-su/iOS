@@ -70,10 +70,10 @@ struct CreateEnvelopeEvent {
       case .inner(.push):
         if let selectedID = state.createEnvelopeProperty.eventHelper.selectedID.first {
           CreateEnvelopeRequestShared.setEvent(id: selectedID)
-        }else if let customName = state.createEnvelopeProperty.eventHelper.customEvent?.title {
+        } else if let customName = state.createEnvelopeProperty.eventHelper.customEvent?.title {
           CreateEnvelopeRequestShared.setCustomEvent(customName)
         }
-        
+
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
         return .none
       case .scope(.nextButton(.view(.tappedNextButton))):

@@ -11,7 +11,7 @@ import SwiftUI
 
 public struct SSDateBottomSheetModifier: ViewModifier {
   public init(store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>) {
-    self._store = store
+    _store = store
   }
 
   @Binding var store: StoreOf<SSDateSelectBottomSheetReducer>?

@@ -134,7 +134,7 @@ struct CreateEnvelopePrice {
         if let amount = Int64(state.textFieldText) {
           CreateEnvelopeRequestShared.setAmount(amount)
         }
-        
+
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
         return .none
 
