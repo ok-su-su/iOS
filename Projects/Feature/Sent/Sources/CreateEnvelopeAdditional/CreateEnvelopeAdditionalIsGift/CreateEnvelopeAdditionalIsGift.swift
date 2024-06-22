@@ -70,6 +70,7 @@ struct CreateEnvelopeAdditionalIsGift {
         return .send(.inner(.push))
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .gift)
+        CreateEnvelopeRequestShared.setGift(state.textFieldText)
         return .none
       case .scope(.nextButton(.delegate)):
         return .none

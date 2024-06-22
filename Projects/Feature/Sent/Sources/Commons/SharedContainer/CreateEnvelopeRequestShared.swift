@@ -38,6 +38,27 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
+  static func setIsVisited(_ val: Bool) {
+    os_log("CreateEnvelopeRequest의 방문 여부를 저장합니다.\nEventName = \(val)")
+    var body = getBody()
+    body.hasVisited = val
+    setBody(body)
+  }
+  
+  static func setMemo(_ val: String) {
+    os_log("CreateEnvelopeRequest의 메모 저장합니다.\nEventName = \(val)")
+    var body = getBody()
+    body.memo = val
+    setBody(body)
+  }
+  
+  static func setGift(_ val: String) {
+    os_log("CreateEnvelopeRequest의 선물을 저장합니다.\nEventName = \(val)")
+    var body = getBody()
+    body.gift = val
+    setBody(body)
+  }
+
   private static func getBody() -> CreateEnvelopeRequestBody {
     SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "SENT")
   }

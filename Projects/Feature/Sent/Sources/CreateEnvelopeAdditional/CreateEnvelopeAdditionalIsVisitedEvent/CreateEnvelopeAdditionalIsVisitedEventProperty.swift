@@ -27,4 +27,6 @@ struct CreateEnvelopeAdditionalIsVisitedEventHelper: Equatable {
     .init(id: 1, title: "아니오"),
   ]
   var selectedID: [Int] = []
+
+  var isVisited: Bool { return selectedID.first == 0 }
 }

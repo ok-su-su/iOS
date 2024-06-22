@@ -62,6 +62,7 @@ struct CreateEnvelopeAdditionalMemo {
         return .none
 
       case .inner(.push):
+        CreateEnvelopeRequestShared.setMemo(state.memoHelper.textFieldText)
         CreateAdditionalRouterPublisher.shared.push(from: .memo)
         return .none
 

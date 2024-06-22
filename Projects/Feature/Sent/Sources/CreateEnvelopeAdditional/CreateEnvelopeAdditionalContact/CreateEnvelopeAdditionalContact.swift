@@ -70,6 +70,7 @@ struct CreateEnvelopeAdditionalContact {
         return .send(.inner(.push))
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .contact)
+        CreateFriendRequestShared.setContacts(state.contactHelper.textFieldText)
         return .none
       case .scope(.nextButton):
         return .none

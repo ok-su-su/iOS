@@ -31,7 +31,11 @@ enum CreateFriendRequestShared {
     setBody(body)
   }
 
-  static func setPhoneNumber(_: String) {}
+  static func setContacts(_ val: String) {
+    var body = getBody()
+    body.phoneNumber = val
+    setBody(body)
+  }
 
   private static func getBody() -> CreateFriendRequestBody {
     return SharedContainer.getValue(CreateFriendRequestBody.self) ?? .init()
