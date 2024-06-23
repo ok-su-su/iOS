@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OSLog
 
 // MARK: - CreateEnvelopeRequestBody
 
@@ -28,7 +29,7 @@ struct CreateEnvelopeRequestBody: Codable, Equatable {
   /// 건넨 날짜를 입력받습니다.
   var handedOverAt: String? = nil
   /// 경조사에 대해서 나타냅니다.
-  var category: CategoryRequestBody? = nil
+  var category: CategoryRequestBody? = .init()
 
   enum CodingKeys: String, CodingKey {
     case type
@@ -40,6 +41,17 @@ struct CreateEnvelopeRequestBody: Codable, Equatable {
     case hasVisited
     case handedOverAt
     case category
+  }
+}
+
+extension CreateEnvelopeRequestBody {
+  func getData() -> Data {
+    do {
+      return try JSONEncoder.default.encode(self)
+    } catch {
+      os_log("Json Encoding에 실패했습니다. \(#function)\n\(error.localizedDescription)")
+      return Data()
+    }
   }
 }
 

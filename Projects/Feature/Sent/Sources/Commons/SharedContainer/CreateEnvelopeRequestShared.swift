@@ -10,10 +10,17 @@ import Foundation
 import OSLog
 
 enum CreateEnvelopeRequestShared {
+  static func setFriendID(id: Int) {
+    os_log("CreateEnvelopeRequest의 FriendID을 저장합니다.\nid = \(id)")
+    var body = getBody()
+    body.friendID = id
+    setBody(body)
+  }
+
   static func setEvent(id: Int) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
-    body.category = .init(id: id)
+    body.category?.id = id
     setBody(body)
   }
 
@@ -27,7 +34,7 @@ enum CreateEnvelopeRequestShared {
   static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
-    body.category = .init(customCategory: name)
+    body.category?.customCategory = name
     setBody(body)
   }
 
@@ -72,10 +79,10 @@ enum CreateEnvelopeRequestShared {
   }
 
   static func printBody() {
-    print(getBody())
+    dump(getBody())
   }
 
-  private static func getBody() -> CreateEnvelopeRequestBody {
+  static func getBody() -> CreateEnvelopeRequestBody {
     SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "SENT")
   }
 
