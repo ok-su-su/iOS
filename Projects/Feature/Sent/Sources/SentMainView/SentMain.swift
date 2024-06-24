@@ -61,6 +61,7 @@ struct SentMain {
     case tappedEmptyEnvelopeButton
     case onAppear(Bool)
     case tappedFilteredPersonButton(id: Int)
+    case tappedFilteredAmountButton
   }
 
   @CasePathable
@@ -178,6 +179,10 @@ struct SentMain {
 
       case let .view(.tappedFilteredPersonButton(id: id)):
         state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
+        return .none
+
+      case .view(.tappedFilteredAmountButton):
+        state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
         return .none
       }
     }

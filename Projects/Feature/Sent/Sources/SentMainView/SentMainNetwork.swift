@@ -47,7 +47,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
       case let .searchEnvelope(searchEnvelopeURLParameter):
         return .requestParameters(
           parameters: searchEnvelopeURLParameter.makeParameter(),
-          encoding: URLEncoding.queryString
+          encoding: URLEncoding(arrayEncoding: .noBrackets)
         )
       case let .searchFriends(type):
         return .requestParameters(parameters: ["sort": type.sortString], encoding: URLEncoding.queryString)

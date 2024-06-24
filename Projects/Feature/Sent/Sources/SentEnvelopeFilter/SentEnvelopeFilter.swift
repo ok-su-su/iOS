@@ -25,12 +25,11 @@ struct SentEnvelopeFilter {
     // MARK: - Scope
 
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
-    @Shared var sliderProperty: CustomSlider
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
+
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
-      _sliderProperty = .init(.init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 42))
     }
 
     var filterByTextField: [SentPerson] {
@@ -47,7 +46,7 @@ struct SentEnvelopeFilter {
     case tappedPerson(Int)
     case tappedSelectedPerson(Int)
     case reset
-    case tappedConfirmButton
+    case tappedConfirmButton(lowest: Int? = nil, highest: Int? = nil)
     case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
@@ -112,7 +111,7 @@ struct SentEnvelopeFilter {
 
       case let .customTextField(.changeTextField(text)):
         state.textFieldText = text
-        //TODO: Throttle을 호출할 떄 주의점에 대해서 블로그 포스팅 하기
+        // TODO: Throttle을 호출할 떄 주의점에 대해서 블로그 포스팅 하기
         if NameRegexManager.isValid(name: text) {
           return .send(.getFriendsDataByName(text))
             .throttle(id: ThrottleID.searchName, for: .seconds(2), scheduler: mainQueue, latest: true)
@@ -122,7 +121,9 @@ struct SentEnvelopeFilter {
       case .customTextField:
         return .none
 
-      case .tappedConfirmButton:
+      case let .tappedConfirmButton(lowestVal, highestVal):
+        state.filterHelper.lowestAmount = lowestVal
+        state.filterHelper.highestAmount = highestVal
         return .run { _ in await dismiss() }
 
       case let .isLoading(loading):

@@ -20,9 +20,26 @@ struct SentPeopleFilterHelper: Equatable {
   var selectedPerson: [SentPerson] = []
   var ssButtonProperties: [Int: SSButtonPropertyState] = [:]
 
-  init() { sentPeople = [] }
+  var lowestAmount: Int? = nil
+  var highestAmount: Int? = nil
 
-  init(sentPeople: [SentPerson]) {
+  var amountFilterBadgeText: String? {
+    guard let highestAmount,
+          let lowestAmount,
+          let lowVal = CustomNumberFormatter.formattedByThreeZero(lowestAmount, subFixString: nil),
+          let highVal = CustomNumberFormatter.formattedByThreeZero(highestAmount, subFixString: nil)
+    else {
+      return nil
+    }
+    return "\(lowVal)~\(highVal)"
+  }
+
+  mutating func deselectAmount() {
+    lowestAmount = nil
+    highestAmount = nil
+  }
+
+  init(sentPeople: [SentPerson] = []) {
     self.sentPeople = sentPeople
     setButtonProperties()
   }

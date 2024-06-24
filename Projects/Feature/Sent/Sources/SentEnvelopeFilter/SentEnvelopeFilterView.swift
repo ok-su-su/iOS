@@ -138,7 +138,12 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makeConfirmButton() -> some View {
     SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
-      store.send(.tappedConfirmButton)
+      store.send(
+        .tappedConfirmButton(
+          lowest: sliderProperty.lowHandle.currentValueBy1000,
+          highest: sliderProperty.highHandle.currentValueBy1000
+        )
+      )
     }
   }
 

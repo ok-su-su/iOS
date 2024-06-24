@@ -6,14 +6,14 @@ import SwiftUI
 
 /// SliderValue to restrict double range: 0.0 to 1.0
 @propertyWrapper
-struct SliderValue {
+public struct SliderValue {
   var value: Double
 
-  init(wrappedValue: Double) {
+  public init(wrappedValue: Double) {
     value = wrappedValue
   }
 
-  var wrappedValue: Double {
+  public var wrappedValue: Double {
     get { value }
     set { value = min(max(0.0, newValue), 1.0) }
   }
@@ -37,7 +37,7 @@ public class SliderHandle: ObservableObject {
   var startLocation: CGPoint
 
   /// Current Value
-  @Published var currentPercentage: SliderValue
+  @Published public var currentPercentage: SliderValue
 
   /// Slider Button Location
   @Published var onDrag: Bool
