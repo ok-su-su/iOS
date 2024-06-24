@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeAdditionalIsGiftView: View {
@@ -22,6 +23,15 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
     VStack(alignment: .leading, spacing: 32) {
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
+
+      TextField(
+        "",
+        text: $store.textFieldText.sending(\.view.changedTextField),
+        prompt: Text("무엇을 선물했나요?").foregroundStyle(SSColor.gray30),
+        axis: .vertical
+      )
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
 
       SSTextField(
         isDisplay: false,
@@ -48,6 +58,7 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

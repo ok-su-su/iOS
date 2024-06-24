@@ -67,7 +67,7 @@ struct CreateEnvelopeAdditionalSection {
       case .view(.onAppear):
         return .send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
 
-      case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: id)))):
+      case .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: _)))):
         return .none
 
       case .scope(.createEnvelopeSelectionItems):
@@ -79,6 +79,7 @@ struct CreateEnvelopeAdditionalSection {
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .send(.inner(.push))
+
       case .scope(.nextButton):
         return .none
       }

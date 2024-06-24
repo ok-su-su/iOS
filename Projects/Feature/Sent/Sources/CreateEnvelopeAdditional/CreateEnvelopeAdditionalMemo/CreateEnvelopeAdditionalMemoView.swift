@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeAdditionalMemoView: View {
@@ -25,12 +26,14 @@ struct CreateEnvelopeAdditionalMemoView: View {
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray60)
 
-      SSTextField(
-        isDisplay: false,
+      TextField(
+        "",
         text: $store.memoHelper.textFieldText.sending(\.view.textFieldChange),
-        property: .gift,
-        isHighlight: $store.memoHelper.isHighlight.sending(\.view.isHighlightChanged)
+        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
 
       Spacer()
     }
@@ -47,7 +50,7 @@ struct CreateEnvelopeAdditionalMemoView: View {
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
-
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

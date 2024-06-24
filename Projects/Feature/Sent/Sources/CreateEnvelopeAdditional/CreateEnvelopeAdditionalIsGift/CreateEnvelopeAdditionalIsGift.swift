@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSToast
 
 @Reducer
 struct CreateEnvelopeAdditionalIsGift {
@@ -17,6 +18,7 @@ struct CreateEnvelopeAdditionalIsGift {
     var isHighlight = false
     @Shared var textFieldText: String
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
 
     init(textFieldText: Shared<String>) {
       _textFieldText = textFieldText
@@ -47,6 +49,7 @@ struct CreateEnvelopeAdditionalIsGift {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -55,6 +58,10 @@ struct CreateEnvelopeAdditionalIsGift {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
+
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -62,19 +69,31 @@ struct CreateEnvelopeAdditionalIsGift {
         return .none
       case let .view(.changedTextField(newText)):
         state.textFieldText = newText
-        let pushable = newText != ""
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        let pushable = newText.count < 30 && !newText.isEmpty
+        let isToastShow = newText.count > 30
+        return .run { send in
+          if isToastShow {
+            await send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요"))))
+          }
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
+
       case .view(.changeIsHighlight(_)):
         return .none
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .send(.inner(.push))
+
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .gift)
         CreateEnvelopeRequestShared.setGift(state.textFieldText)
         return .none
       case .scope(.nextButton(.delegate)):
         return .none
+
       case .scope(.nextButton):
+        return .none
+
+      case .scope(.toast(_)):
         return .none
       }
     }
