@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSBottomSelectSheet
 
 // MARK: - SentMain
@@ -155,6 +156,7 @@ struct SentMain {
         return .none
 
       case let .view(.onAppear(appear)):
+        os_log("main View 나타났어요")
         if state.isOnAppear {
           return .none
         }

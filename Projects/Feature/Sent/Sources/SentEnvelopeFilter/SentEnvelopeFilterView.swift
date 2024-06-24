@@ -73,6 +73,7 @@ struct SentEnvelopeFilterView: View {
           .foregroundStyle(SSColor.gray100)
 
         HStack(spacing: 0) {
+          // TODO: View고치기
           SliderView(slider: sliderProperty)
         }
       }
@@ -138,6 +139,9 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makeConfirmButton() -> some View {
     SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
+      // MARK: - CustomSLider가 Reducer가 아니라 생명주기를 컨트롤하지 못하는 문제가 있습니다.
+
+      // 따라서 ObservedObject를 활용하여 해결했습니다. 차후 빠르게 Reducer를 활용하는 slider를 만들겠습니다.
       store.send(
         .tappedConfirmButton(
           lowest: sliderProperty.lowHandle.currentValueBy1000,
