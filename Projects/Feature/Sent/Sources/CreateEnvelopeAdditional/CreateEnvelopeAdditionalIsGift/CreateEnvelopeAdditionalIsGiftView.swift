@@ -33,16 +33,6 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
 
-      SSTextField(
-        isDisplay: false,
-        text: $store.textFieldText.sending(\.view.changedTextField),
-        property: .gift,
-        isHighlight: $store.isHighlight.sending(\.view.changeIsHighlight)
-      )
-      .onChange(of: store.textFieldText) { _, newValue in
-        store.send(.view(.changedTextField(newValue)))
-      }
-
       Spacer()
     }
   }

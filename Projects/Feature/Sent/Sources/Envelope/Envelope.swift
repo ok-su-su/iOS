@@ -29,8 +29,8 @@ struct Envelope {
       envelopePriceProgress = .init(
         envelopePriceProgressProperty:
         .init(
-          leadingPriceValue: envelopeProperty.totalReceivedPrice,
-          trailingPriceValue: envelopeProperty.totalSentPrice
+          leadingPriceValue: envelopeProperty.totalSentPrice,
+          trailingPriceValue: envelopeProperty.totalReceivedPrice
         )
       )
     }
