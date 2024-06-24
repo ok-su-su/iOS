@@ -11,14 +11,14 @@ import Foundation
 // MARK: - CreateEnvelopeEventProperty
 
 struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: UUID
+  var id: Int
   var title: String
 
   mutating func setTitle(_ val: String) {
     title = val
   }
 
-  init(id: UUID, title: String) {
+  init(id: Int, title: String) {
     self.id = id
     self.title = title
   }
@@ -27,19 +27,34 @@ struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelec
 // MARK: - CreateEnvelopeEventPropertyHelper
 
 struct CreateEnvelopeEventPropertyHelper: Equatable {
-  var selectedID: [UUID] = []
-  private var defaultEventStrings: [String] = [
-    "결혼식",
-    "돌잔치",
-    "장례식",
-    "생일기념일",
-  ]
-  var defaultEvent: [CreateEnvelopeEventProperty]
+  var selectedID: [Int] = []
+  private var defaultEventStrings: [String] = []
+  var defaultEvent: [CreateEnvelopeEventProperty] = []
 
-  var customEvent: CreateEnvelopeEventProperty?
+  var customEvent: CreateEnvelopeEventProperty? = nil
 
-  init() {
-    defaultEvent = defaultEventStrings.enumerated().map { .init(id: UUID($0.offset), title: $0.element) }
-    customEvent = .init(id: UUID(defaultEventStrings.count), title: "")
+  func getSelectedItemID() -> Int? {
+    selectedID.first
   }
+
+  func getSelectedCustomItemName() -> String? {
+    if selectedID.first == customEvent?.id {
+      return customEvent?.title
+    }
+    return nil
+  }
+
+  /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
+  mutating func updateItems(_ items: [CreateEnvelopeEventProperty]) {
+    var items = items
+    guard let customItemID = items.popLast()?.id else {
+      return
+    }
+
+    // TODO: API로직 바꿔달라고 말 하기
+    defaultEvent = items
+    customEvent = .init(id: customItemID, title: "")
+  }
+
+  init() {}
 }

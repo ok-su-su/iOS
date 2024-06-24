@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSToast
 
 @Reducer
 struct CreateEnvelopeAdditionalMemo {
@@ -17,6 +18,7 @@ struct CreateEnvelopeAdditionalMemo {
     @Shared var memoHelper: CreateEnvelopeAdditionalMemoHelper
 
     var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
 
     init(memoHelper: Shared<CreateEnvelopeAdditionalMemoHelper>) {
       _memoHelper = memoHelper
@@ -47,14 +49,19 @@ struct CreateEnvelopeAdditionalMemo {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
+
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -62,6 +69,7 @@ struct CreateEnvelopeAdditionalMemo {
         return .none
 
       case .inner(.push):
+        CreateEnvelopeRequestShared.setMemo(state.memoHelper.textFieldText)
         CreateAdditionalRouterPublisher.shared.push(from: .memo)
         return .none
 
@@ -72,11 +80,20 @@ struct CreateEnvelopeAdditionalMemo {
         return .none
 
       case let .view(.textFieldChange(text)):
-        let pushable = text != ""
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        state.memoHelper.textFieldText = text
+        let pushable = text.count < 30 && !text.isEmpty
+        let isShowToastMessage = text.count > 30
+        return .run { send in
+          if isShowToastMessage {
+            await send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요"))))
+          }
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
 
       case let .view(.isHighlightChanged(highlight)):
         state.memoHelper.isHighlight = highlight
+        return .none
+      case .scope(.toast):
         return .none
       }
     }

@@ -16,16 +16,16 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
 
   init() {}
 
-  var selectedID: [UUID] = []
+  var selectedID: [Int] = []
   var defaultItems: [Item] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
 
   var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
 
-  mutating func removeItem(_ id: UUID) {
+  mutating func removeItem(_ id: Int) {
     selectedID = selectedID.filter { $0 != id }
   }
 
-  mutating func addItem(_ id: UUID) {
+  mutating func addItem(_ id: Int) {
     if let curItem = CreateEnvelopeAdditionalSectionSceneType.allCases.first(where: { $0.id == id }) {
       selectedID.append(curItem.id)
     }
@@ -78,7 +78,7 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
 // MARK: - CreateEnvelopeAdditionalSectionProperty
 
 struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: UUID {
+  var id: Int {
     return type.id
   }
 
@@ -98,19 +98,19 @@ struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, CreateE
 // MARK: - CreateEnvelopeAdditionalSectionSceneType
 
 enum CreateEnvelopeAdditionalSectionSceneType: String, Equatable, CaseIterable, Identifiable {
-  var id: UUID {
-    return UUID(Self.allCases.firstIndex(of: self)!)
+  var id: Int {
+    return Int(Self.allCases.firstIndex(of: self)!)
   }
 
-  static let typeByUUID: [CreateEnvelopeAdditionalSectionSceneType: UUID] = {
-    var dict: [Self: UUID] = [:]
-    Self.allCases.enumerated().forEach { dict[$0.element] = UUID($0.offset) }
+  static let typeByUUID: [CreateEnvelopeAdditionalSectionSceneType: Int] = {
+    var dict: [Self: Int] = [:]
+    Self.allCases.enumerated().forEach { dict[$0.element] = Int($0.offset) }
     return dict
   }()
 
-  static let UUIDByType: [UUID: CreateEnvelopeAdditionalSectionSceneType] = {
-    var dict: [UUID: Self] = [:]
-    Self.allCases.enumerated().forEach { dict[UUID($0.offset)] = $0.element }
+  static let UUIDByType: [Int: CreateEnvelopeAdditionalSectionSceneType] = {
+    var dict: [Int: Self] = [:]
+    Self.allCases.enumerated().forEach { dict[Int($0.offset)] = $0.element }
     return dict
   }()
 

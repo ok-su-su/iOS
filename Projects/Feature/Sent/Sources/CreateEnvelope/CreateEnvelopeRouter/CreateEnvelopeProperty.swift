@@ -20,12 +20,8 @@ struct CreateEnvelopeProperty: Equatable {
   var memoHelper: CreateEnvelopeAdditionalMemoHelper = .init()
   init() {}
 
-  var prevNames: [PrevEnvelope] = [
-    .init(name: "김철수", relationShip: "친구", eventName: "결혼식", eventDate: .now),
-    .init(name: "김철수", relationShip: "친구", eventName: "결혼식", eventDate: .now),
-    .init(name: "김채원", relationShip: "동료", eventName: "결혼식", eventDate: .now),
-    .init(name: "김채소", relationShip: "동창", eventName: "결혼식", eventDate: .now),
-  ]
+  /// 이름검색시 Filter되어 나타내는 봉투의 친구들을 나타내기 위해서 사용됩니다.
+  var prevEnvelopes: [PrevEnvelope] = []
 
   var customRelation: [String] = [
     "동창",
@@ -36,14 +32,14 @@ struct CreateEnvelopeProperty: Equatable {
     guard let regex: Regex = try? .init("[\\w\\p{L}]*\(value)[\\w\\p{L}]*") else {
       return []
     }
-    return prevNames.filter { $0.name.contains(regex) }
+    return prevEnvelopes.filter { $0.name.contains(regex) }
   }
 }
 
 // MARK: - PrevEnvelope
 
 // TODO: - change DTO
-struct PrevEnvelope: Equatable {
+struct PrevEnvelope: Equatable, Hashable {
   let name: String
   let relationShip: String
   let eventName: String

@@ -24,7 +24,6 @@ struct SentMain {
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
     var floatingButton: FloatingButton.State = .init()
-    var networkHelper = SentMainNetwork()
     var isLoading = true
     var isOnAppear = false
 
@@ -43,6 +42,8 @@ struct SentMain {
       _sentMainProperty = Shared(.init())
     }
   }
+
+  @Dependency(\.sentMainNetwork) var network
 
   enum Action: Equatable, FeatureAction, BindableAction {
     case binding(BindingAction<State>)
@@ -152,9 +153,9 @@ struct SentMain {
         }
         state.isOnAppear = appear
 
-        return .run { [helper = state.networkHelper] send in
+        return .run { send in
           await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await helper.requestInitialScreenData()
+          let envelopeProperties = try await network.requestInitialScreenData()
           await send(.inner(.updateEnvelopes(envelopeProperties)))
           await send(.inner(.isLoading(false)))
         }

@@ -16,6 +16,7 @@ struct CreateEnvelopeEvent {
     var isOnAppear = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.State
+    var isLoading = false
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
@@ -42,6 +43,8 @@ struct CreateEnvelopeEvent {
 
   enum InnerAction: Equatable {
     case push
+    case isLoading(Bool)
+    case update([CreateEnvelopeEventProperty])
   }
 
   enum AsyncAction: Equatable {}
@@ -54,6 +57,8 @@ struct CreateEnvelopeEvent {
 
   enum DelegateAction: Equatable {}
 
+  @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
+
   var body: some Reducer<State, Action> {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
@@ -64,10 +69,27 @@ struct CreateEnvelopeEvent {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let data = try await network.getEventItems()
+          await send(.inner(.update(data)))
+          await send(.inner(.isLoading(false)))
+        }
 
       case .inner(.push):
+        // Set ID
+        if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
+          CreateEnvelopeRequestShared.setEvent(id: selectedID)
+        }
+        // Set Custom Name if exist
+        if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {
+          CreateEnvelopeRequestShared.setCustomEvent(customName)
+        }
+
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
         return .none
       case .scope(.nextButton(.view(.tappedNextButton))):
@@ -85,6 +107,14 @@ struct CreateEnvelopeEvent {
         return .none
 
       case .scope(.createEnvelopeSelectionItems):
+        return .none
+
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
+        return .none
+
+      case let .inner(.update(events)):
+        state.createEnvelopeProperty.eventHelper.updateItems(events)
         return .none
       }
     }

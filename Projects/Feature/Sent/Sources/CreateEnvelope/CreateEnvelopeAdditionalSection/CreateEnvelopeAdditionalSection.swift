@@ -65,11 +65,10 @@ struct CreateEnvelopeAdditionalSection {
     Reduce { _, action in
       switch action {
       case .view(.onAppear):
-        return .none
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
 
-      case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: id)))):
-        let pushable = !id.isEmpty
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+      case .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: _)))):
+        return .none
 
       case .scope(.createEnvelopeSelectionItems):
         return .none
@@ -80,6 +79,7 @@ struct CreateEnvelopeAdditionalSection {
 
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .send(.inner(.push))
+
       case .scope(.nextButton):
         return .none
       }

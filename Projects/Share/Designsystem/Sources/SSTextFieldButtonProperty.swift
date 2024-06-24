@@ -237,7 +237,6 @@ public extension SSTextFieldButtonProperty {
   var disableSaveButton: Bool { return textFieldText == "" }
 
   var buttonBackgroundColor: Color {
-    os_log("textFieldText = \(_textFieldText.wrappedValue)")
     if $textFieldText.wrappedValue == "" {
       return SSColor.gray40
     }

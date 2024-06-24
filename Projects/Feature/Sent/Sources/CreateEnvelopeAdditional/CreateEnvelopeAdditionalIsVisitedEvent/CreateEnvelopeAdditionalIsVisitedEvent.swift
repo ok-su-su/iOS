@@ -60,7 +60,6 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
       CreateEnvelopeBottomOfNextButton()
     }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      // TODO: 다른 로직 생각
       CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>()
     }
     Reduce { state, action in
@@ -71,6 +70,8 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
 
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .isVisitedEvent)
+        let isVisited = state.isVisitedEventHelper.isVisited
+        CreateEnvelopeRequestShared.setIsVisited(isVisited)
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):

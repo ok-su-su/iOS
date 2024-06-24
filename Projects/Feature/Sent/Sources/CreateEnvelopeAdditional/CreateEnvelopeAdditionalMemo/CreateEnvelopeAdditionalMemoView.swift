@@ -1,5 +1,5 @@
 //
-//  CreateEnvelopeAdditionalIsGiftView.swift
+//  CreateEnvelopeAdditonalMemoView.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/8/24.
@@ -7,31 +7,33 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
-struct CreateEnvelopeAdditionalIsGiftView: View {
+struct CreateEnvelopeAdditionalMemoView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<CreateEnvelopeAdditionalIsGift>
+  var store: StoreOf<CreateEnvelopeAdditionalMemo>
 
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 32) {
+      // TODO: change Property
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
+        .foregroundStyle(SSColor.gray60)
 
-      SSTextField(
-        isDisplay: false,
-        text: $store.textFieldText.sending(\.view.changedTextField),
-        property: .gift,
-        isHighlight: $store.isHighlight.sending(\.view.changeIsHighlight)
+      TextField(
+        "",
+        text: $store.memoHelper.textFieldText.sending(\.view.textFieldChange),
+        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
-      .onChange(of: store.textFieldText) { _, newValue in
-        store.send(.view(.changedTextField(newValue)))
-      }
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
 
       Spacer()
     }
@@ -42,12 +44,13 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack(alignment: .leading, spacing: 0) {
+      VStack {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -59,6 +62,6 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
   }
 
   private enum Constants {
-    static let titleText = "보낸 선물을 알려주세요"
+    static let titleText = "추가로 남기실 내용이 있나요"
   }
 }

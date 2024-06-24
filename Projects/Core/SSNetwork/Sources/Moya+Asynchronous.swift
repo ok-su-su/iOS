@@ -47,6 +47,8 @@ public extension MoyaProvider {
           // statusCode 검사
           if 200 ..< 300 ~= response.statusCode {
             guard let res = try? JSONDecoder.default.decode(T.self, from: response.data) else {
+              let data = String(data: response.data, encoding: .utf8) ?? ""
+              os_log("JSON mapping error occurred \n \(data)")
               continuation.resume(throwing: MoyaError.jsonMapping(response))
               return
             }
@@ -58,6 +60,25 @@ public extension MoyaProvider {
           }
           continuation.resume(with: .failure(MoyaError.statusCode(response)))
 
+        case let .failure(error):
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /// async방식으로 비동기 요청을 진행합니다. 서버의 response를 따로 mapping하지 않습니다.
+  func request(_ target: Target) async throws {
+    return try await withCheckedThrowingContinuation { continuation in
+      self.request(target) { result in
+        switch result {
+        case let .success(response):
+          // statusCode 검사
+          if 200 ..< 300 ~= response.statusCode {
+            continuation.resume(returning: ())
+            return
+          }
+          continuation.resume(with: .failure(MoyaError.statusCode(response)))
         case let .failure(error):
           continuation.resume(throwing: error)
         }

@@ -8,9 +8,14 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 enum CustomNumberFormatter {
-  static let numberFormatter = NumberFormatter()
+  static var numberFormatter: NumberFormatter {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    return formatter
+  }
 
   static func formattedByThreeZero(_ val: Int, subFixString: String? = nil) -> String? {
     numberFormatter.numberStyle = .decimal

@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeAdditionalContactView: View {
@@ -31,12 +32,15 @@ struct CreateEnvelopeAdditionalContactView: View {
           .foregroundStyle(SSColor.gray100)
       }
 
-      SSTextField(
-        isDisplay: false,
+      TextField(
+        "",
         text: $store.contactHelper.textFieldText.sending(\.view.changedTextField),
-        property: .contact,
-        isHighlight: $store.contactHelper.isHighlight.sending(\.view.changeIsHighlight)
+        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
+      .keyboardType(.numberPad)
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
 
       Spacer()
     }
@@ -53,7 +57,7 @@ struct CreateEnvelopeAdditionalContactView: View {
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
-
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

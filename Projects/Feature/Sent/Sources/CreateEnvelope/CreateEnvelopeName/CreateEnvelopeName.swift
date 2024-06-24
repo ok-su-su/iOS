@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 
 @Reducer
 struct CreateEnvelopeName {
@@ -16,17 +17,13 @@ struct CreateEnvelopeName {
   struct State: Equatable {
     var isOnAppear = false
     var textFieldText: String = ""
-    var textFieldIsHighlight: Bool = false
+    var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
-    var isAbleToPush: Bool {
-      return textFieldText != ""
-    }
-
     var filteredPrevEnvelopes: [PrevEnvelope] {
-      return textFieldText == "" ? [] : createEnvelopeProperty.filteredName(textFieldText)
+      return textFieldText == "" ? createEnvelopeProperty.prevEnvelopes : createEnvelopeProperty.filteredName(textFieldText)
     }
 
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
@@ -34,8 +31,7 @@ struct CreateEnvelopeName {
     }
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -43,14 +39,18 @@ struct CreateEnvelopeName {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedFilterItem(name: String)
-    case textFieldChange(String)
+    case changeText(String)
+    case changeFocused(Bool)
   }
 
   enum InnerAction: Equatable {
     case push
+    case updateEnvelopes([PrevEnvelope])
+    case searchName(String)
   }
 
   enum AsyncAction: Equatable {}
@@ -62,24 +62,33 @@ struct CreateEnvelopeName {
 
   enum DelegateAction: Equatable {}
 
+  enum ThrottleID {
+    case search
+  }
+
+  @Dependency(\.mainQueue) var mainQueue
   @Dependency(\.dismiss) var dismiss
+  @Dependency(\.createEnvelopeNameNetwork) var network
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
-
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
-
-      case .binding:
-        return .none
+        state.isFocused = true
+        return .run { send in
+          let prevEnvelopes = try await network.searchInitialEnvelope()
+          await send(.inner(.updateEnvelopes(prevEnvelopes)))
+        }
 
       case .inner(.push):
+        CreateFriendRequestShared.setName(state.textFieldText)
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
         return .none
 
@@ -95,10 +104,33 @@ struct CreateEnvelopeName {
       case .scope(.nextButton):
         return .none
 
-      case let .view(.textFieldChange(text)):
-        let pushable = text != ""
+      case let .view(.changeText(text)):
+        state.textFieldText = text
+        // 만약 이름 검색 조건을 만족한다면
+        if NameRegexManager.isValid(name: text) {
+          return .run { send in
+            await send(.inner(.searchName(text)))
+            await send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
+          }
+          .throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
+        }
+
+        // 만약 이름 검색 조건을 만족하지 않는다면
+        return .send(.scope(.nextButton(.delegate(.isAbleToPush(false)))))
+
+      case let .view(.changeFocused(val)):
+        state.isFocused = val
+        return .none
+
+      case let .inner(.updateEnvelopes(prevEnvelopes)):
+        let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
+        state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
+        return .none
+
+      case let .inner(.searchName(val)):
         return .run { send in
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+          let prevEnvelopes = try await network.searchPrevName(val)
+          await send(.inner(.updateEnvelopes(prevEnvelopes)))
         }
       }
     }

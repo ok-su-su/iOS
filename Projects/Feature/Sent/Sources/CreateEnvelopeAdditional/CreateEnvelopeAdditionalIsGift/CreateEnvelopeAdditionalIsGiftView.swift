@@ -1,5 +1,5 @@
 //
-//  CreateEnvelopeAdditonalMemoView.swift
+//  CreateEnvelopeAdditionalIsGiftView.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/8/24.
@@ -7,30 +7,31 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
-struct CreateEnvelopeAdditionalMemoView: View {
+struct CreateEnvelopeAdditionalIsGiftView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<CreateEnvelopeAdditionalMemo>
+  var store: StoreOf<CreateEnvelopeAdditionalIsGift>
 
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 32) {
-      // TODO: change Property
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray60)
 
-      SSTextField(
-        isDisplay: false,
-        text: $store.memoHelper.textFieldText.sending(\.view.textFieldChange),
-        property: .gift,
-        isHighlight: $store.memoHelper.isHighlight.sending(\.view.isHighlightChanged)
+      TextField(
+        "",
+        text: $store.textFieldText.sending(\.view.changedTextField),
+        prompt: Text("무엇을 선물했나요?").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
+      .foregroundStyle(SSColor.gray100)
+      .modifier(SSTypoModifier(.title_xl))
 
       Spacer()
     }
@@ -41,13 +42,13 @@ struct CreateEnvelopeAdditionalMemoView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
+      VStack(alignment: .leading, spacing: 0) {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
-
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -59,6 +60,6 @@ struct CreateEnvelopeAdditionalMemoView: View {
   }
 
   private enum Constants {
-    static let titleText = "추가로 남기실 내용이 있나요"
+    static let titleText = "보낸 선물을 알려주세요"
   }
 }

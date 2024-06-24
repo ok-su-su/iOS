@@ -85,8 +85,6 @@ struct SentMainView: View {
               .background(SSColor.gray100)
               .cornerRadius(4)
           }
-          
-          if store.sentMainProperty.sentPeopleFilterHelper
 
           let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
           ForEach(0 ..< filtered.count, id: \.self) { index in

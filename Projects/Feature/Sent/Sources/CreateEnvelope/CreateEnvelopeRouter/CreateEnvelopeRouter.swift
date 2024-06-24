@@ -15,6 +15,8 @@ import OSLog
 @Reducer
 struct CreateEnvelopeRouter {
   @Dependency(\.dismiss) var dismiss
+  @Dependency(\.createEnvelopeNetwork) var network
+  @Dependency(\.mainQueue) var queue
 
   @ObservableState
   struct State {
@@ -42,6 +44,7 @@ struct CreateEnvelopeRouter {
   private enum CancelID {
     case dismiss
     case publishNavigation
+    case finishEnvelope
   }
 
   @Dependency(\.mainQueue) var mainQueue
@@ -115,9 +118,21 @@ struct CreateEnvelopeRouter {
         // MARK: Additional Section 분기
 
       case .pushCreateEnvelopeAdditional:
+        // API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          return .run { _ in await dismiss() }
+          return .run { _ in
+            let friendProperty = CreateFriendRequestShared.getBody()
+            let friendID = try await network.getFriendID(friendProperty)
+            CreateEnvelopeRequestShared.setFriendID(id: friendID)
+            let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
+            try await network.createEnvelope(createEnvelopeProperty)
+
+            CreateFriendRequestShared.reset()
+            CreateEnvelopeRequestShared.reset()
+            await dismiss()
+          }.throttle(id: CancelID.finishEnvelope, for: 4, scheduler: queue, latest: false)
         }
+
         switch currentSection {
         case .isVisited:
           CreateEnvelopeRouterPublisher.shared

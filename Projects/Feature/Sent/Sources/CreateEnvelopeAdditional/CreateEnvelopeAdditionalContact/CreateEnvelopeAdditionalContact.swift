@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSToast
 
 @Reducer
 struct CreateEnvelopeAdditionalContact {
@@ -16,6 +17,7 @@ struct CreateEnvelopeAdditionalContact {
     var isOnAppear = false
     @Shared var contactHelper: CreateEnvelopeAdditionalContactHelper
     var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
 
     init(contactHelper: Shared<CreateEnvelopeAdditionalContactHelper>) {
       _contactHelper = contactHelper
@@ -46,6 +48,7 @@ struct CreateEnvelopeAdditionalContact {
   @CasePathable
   enum ScopeAction: Equatable {
     case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -54,24 +57,43 @@ struct CreateEnvelopeAdditionalContact {
     Scope(state: \.nextButton, action: \.scope.nextButton) {
       CreateEnvelopeBottomOfNextButton()
     }
+
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
+
       case let .view(.changedTextField(text)):
         state.contactHelper.textFieldText = text
-        let pushable = state.contactHelper.textFieldText != ""
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        let pushable = ContactsRegexManager.isValid(text)
+        let isShowToastMessage = text.count > 11
+        return .run { send in
+          if isShowToastMessage {
+            await send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요"))))
+          }
+          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        }
+
       case let .view(.changeIsHighlight(isHighlight)):
         state.contactHelper.isHighlight = isHighlight
         return .none
+
       case .scope(.nextButton(.view(.tappedNextButton))):
         return .send(.inner(.push))
+
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .contact)
+        CreateFriendRequestShared.setContacts(state.contactHelper.textFieldText)
         return .none
+
       case .scope(.nextButton):
+        return .none
+
+      case .scope(.toast):
         return .none
       }
     }

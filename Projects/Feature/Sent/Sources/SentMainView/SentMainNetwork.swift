@@ -6,14 +6,24 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
 
+extension DependencyValues {
+  var sentMainNetwork: SentMainNetwork {
+    get { self[SentMainNetwork.self] }
+    set { self[SentMainNetwork.self] = newValue }
+  }
+}
+
 // MARK: - SentMainNetwork
 
-struct SentMainNetwork: Equatable {
+struct SentMainNetwork: Equatable, DependencyKey {
+  static var liveValue: SentMainNetwork = .init()
+
   static func == (_: SentMainNetwork, _: SentMainNetwork) -> Bool {
     return true
   }
