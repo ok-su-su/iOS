@@ -34,6 +34,7 @@ struct SearchFriendsResponseDTO: Codable, Equatable {
 
 // MARK: - SearchFriendsResponseDataDTO
 
+/// 친구 검색 화면에 사용되는 ResponseDTO입니다. 친구가 누가 있는지 그리고 검색을 위해 활용됩니다.
 struct SearchFriendsResponseDataDTO: Codable, Equatable {
   let friend: SearchFriendsFriendResponseDTO
   let totalAmounts: Int

@@ -51,13 +51,18 @@ struct SentEnvelopeFilter {
     case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
+    case getFriendsDataByName(String?)
   }
 
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.sentEnvelopeFilterNetwork) var network
-  @Dependency(\.mainQueue) var mainQueue
+  @Dependency(\.mainRunLoop) var mainQueue
 
   enum ThrottleID {
+    case searchName
+  }
+
+  enum CancelID {
     case searchName
   }
 
@@ -90,6 +95,7 @@ struct SentEnvelopeFilter {
         return .none
 
       case let .onAppear(isAppear):
+        os_log("필터 뷰 생겼음!")
         if state.isOnAppear {
           return .none
         }
@@ -106,13 +112,10 @@ struct SentEnvelopeFilter {
 
       case let .customTextField(.changeTextField(text)):
         state.textFieldText = text
+        //TODO: Throttle을 호출할 떄 주의점에 대해서 블로그 포스팅 하기
         if NameRegexManager.isValid(name: text) {
-          return .run { send in
-            await send(.isLoading(true))
-            let data = try await network.findFriendsBy(name: text)
-            await send(.isLoading(false))
-          }
-          .throttle(id: ThrottleID.searchName, for: 0.5, scheduler: mainQueue, latest: true)
+          return .send(.getFriendsDataByName(text))
+            .throttle(id: ThrottleID.searchName, for: .seconds(2), scheduler: mainQueue, latest: true)
         }
         return .none
 
@@ -129,6 +132,17 @@ struct SentEnvelopeFilter {
       case let .update(items):
         state.filterHelper.updateSentPeople(items)
         return .none
+      case let .getFriendsDataByName(name):
+        return .run { send in
+          await send(.isLoading(true))
+          let data: [SentPerson] = if let name {
+            try await network.findFriendsBy(name: name)
+          } else {
+            try await network.getInitialData()
+          }
+          await send(.update(data))
+          await send(.isLoading(false))
+        }
       }
     }
   }

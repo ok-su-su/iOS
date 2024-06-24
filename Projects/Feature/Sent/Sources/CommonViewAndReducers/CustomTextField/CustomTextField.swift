@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 struct CustomTextField {
@@ -34,6 +35,7 @@ struct CustomTextField {
         return .none
 
       case let .changeTextField(text):
+        os_log("textField = \(text)")
         state.text = text
         return .none
       }

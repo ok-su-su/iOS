@@ -26,7 +26,7 @@ struct CustomTextFieldView: View {
       Spacer()
         .frame(width: 8)
 
-      TextField("", text: $store.text, prompt: Constants.prompt)
+      TextField("", text: $store.text.sending(\.changeTextField), prompt: Constants.prompt)
         .modifier(SSTypoModifier(.text_xxs))
         .frame(maxWidth: .infinity)
         .foregroundStyle(SSColor.gray100)

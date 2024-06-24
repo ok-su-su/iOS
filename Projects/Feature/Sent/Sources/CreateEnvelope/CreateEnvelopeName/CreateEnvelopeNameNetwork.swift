@@ -29,9 +29,9 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
 
   enum Network: SSNetworkTargetType {
     case searchFriend(name: String?)
+
     var additionalHeader: [String: String]? { nil }
     var path: String { "friends" }
-
     var method: Moya.Method {
       switch self {
       case .searchFriend:

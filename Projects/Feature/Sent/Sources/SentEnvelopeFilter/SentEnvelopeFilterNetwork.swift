@@ -9,6 +9,7 @@
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -18,12 +19,14 @@ struct SentEnvelopeFilterNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func getInitialData() async throws -> [SentPerson] {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.getInitialName)
+    os_log("이니셜 데이터 호출")
+    let data: SearchFriendsResponseDTO = try await provider.request(.getInitialName)
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 
   func findFriendsBy(name: String) async throws -> [SentPerson] {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.findByName(name))
+    os_log("\(name) 데이터 호출")
+    let data: SearchFriendsResponseDTO = try await provider.request(.findByName(name))
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 }
@@ -51,7 +54,7 @@ extension SentEnvelopeFilterNetwork: DependencyKey, Equatable {
     case find(name: String, lowest: Int, highest: Int)
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes/friend-statistics?" }
+    var path: String { "envelopes/friend-statistics" }
     var method: Moya.Method { .get }
     var task: Moya.Task {
       switch self {

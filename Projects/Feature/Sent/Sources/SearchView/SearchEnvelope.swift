@@ -20,12 +20,12 @@ struct SearchEnvelope {
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2Default))
     var customTextField: CustomTextField.State
     var specificEnvelope: SpecificEnvelopeHistoryRouter.State?
-    @Shared var textFieldText: String
+    var textFieldText: String = ""
     @Shared var searchHelper: SearchEnvelopeHelper
 
     init(searchHelper: Shared<SearchEnvelopeHelper>) {
-      _textFieldText = .init("")
-      customTextField = .init(text: _textFieldText)
+      textFieldText = .init("")
+      customTextField = .init(text: "")
       _searchHelper = searchHelper
     }
 
