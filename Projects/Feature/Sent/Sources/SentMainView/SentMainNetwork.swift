@@ -30,8 +30,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
 
   enum Network: SSNetworkTargetType {
     case searchEnvelope(SearchEnvelopeURLParameter)
-    case searchFriends(SearchFriendsCondition)
-
+    case searchFriends(FilterDialItem)
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
@@ -50,22 +49,15 @@ struct SentMainNetwork: Equatable, DependencyKey {
           parameters: searchEnvelopeURLParameter.makeParameter(),
           encoding: URLEncoding.queryString
         )
-      case .searchFriends:
-        return .requestPlain
+      case let .searchFriends(type):
+        return .requestParameters(parameters: ["sort": type.sortString], encoding: URLEncoding.queryString)
       }
     }
   }
 
-  enum SearchFriendsCondition {
-    case latest
-    case oldest
-    case highestAmount
-    case lowestAmount
-  }
-
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func requestSearchFriends(_ condition: SearchFriendsCondition = .latest) async throws -> [EnvelopeProperty] {
+  func requestSearchFriends(_ condition: FilterDialItem = .latest) async throws -> [EnvelopeProperty] {
     let data: SearchFriendsResponseDTO = try await provider.request(.searchFriends(condition))
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(

@@ -71,7 +71,9 @@ struct SentMain {
   }
 
   @CasePathable
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case updateEnvelopes(FilterDialItem?)
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -145,20 +147,19 @@ struct SentMain {
         state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
         return .none
 
+      case let .scope(.filterBottomSheet(.presented(.tapped(item: item)))):
+        return .send(.async(.updateEnvelopes(item)))
+
       case .scope:
         return .none
+
       case let .view(.onAppear(appear)):
         if state.isOnAppear {
           return .none
         }
         state.isOnAppear = appear
+        return .send(.async(.updateEnvelopes(state.sentMainProperty.selectedFilterDial)))
 
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestSearchFriends()
-          await send(.inner(.updateEnvelopes(envelopeProperties)))
-          await send(.inner(.isLoading(false)))
-        }
       case let .inner(.updateEnvelopes(val)):
         state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
         return .none
@@ -166,6 +167,14 @@ struct SentMain {
       case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
+
+      case let .async(.updateEnvelopes(item)):
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await network.requestSearchFriends(item ?? .latest)
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
 
       case let .view(.tappedFilteredPersonButton(id: id)):
         state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
@@ -205,27 +214,52 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
 
 // MARK: - FilterDialItem
 
-struct FilterDialItem: SSSelectBottomSheetPropertyItemable {
-  var description: String
-  var id: Int
+enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
+  case latest = 0
+  case oldest
+  case highestAmount
+  case lowestAmount
 
-  init(description: String, id: Int) {
-    self.description = description
-    self.id = id
+  var description: String {
+    switch self {
+    case .latest:
+      "최신순"
+    case .oldest:
+      "오래된순"
+    case .highestAmount:
+      "금액 높은 순"
+    case .lowestAmount:
+      "금액 낮은 순"
+    }
+  }
+
+  var id: Int { rawValue }
+
+  var sortString: String {
+    switch self {
+    case .latest:
+      "handedOverAt"
+    case .oldest:
+      "handedOverAt, desc"
+    case .highestAmount:
+      "amount, desc"
+    case .lowestAmount:
+      "amount"
+    }
   }
 }
 
 extension [FilterDialItem] {
   static var `default`: Self {
     return [
-      .init(description: "최신순", id: 0),
-      .init(description: "오래된순", id: 1),
-      .init(description: "금액 높은 순", id: 2),
-      .init(description: "금액 낮은 순", id: 3),
+      .latest,
+      .oldest,
+      .highestAmount,
+      .lowestAmount,
     ]
   }
 
   static var initialValue: FilterDialItem {
-    .init(description: "최신순", id: 0)
+    .latest
   }
 }
