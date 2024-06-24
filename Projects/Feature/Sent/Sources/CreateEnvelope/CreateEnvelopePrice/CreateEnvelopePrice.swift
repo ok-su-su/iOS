@@ -124,8 +124,9 @@ struct CreateEnvelopePrice {
         // Logic to Pushable
         // 자리 보다 크고 10자리 보다 작아야 함
         let pushable = value.count < 10 && value.count > 4
+        let isShowToastMessage = value.count > 10
         return .run { send in
-          if !pushable {
+          if isShowToastMessage {
             await send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다."))))
           }
           await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))

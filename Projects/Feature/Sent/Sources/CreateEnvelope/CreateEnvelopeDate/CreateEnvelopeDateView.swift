@@ -23,7 +23,7 @@ struct CreateEnvelopeDateView: View {
     SSButton(
       .init(
         size: .mh60,
-        status: .active,
+        status: store.isInitialStateOfDate ? .inactive : .active,
         style: .filled,
         color: .black,
         buttonText: "다음",

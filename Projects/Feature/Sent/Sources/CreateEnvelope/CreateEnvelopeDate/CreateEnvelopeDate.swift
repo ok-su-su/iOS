@@ -81,7 +81,6 @@ struct CreateEnvelopeDate {
         return .none
 
       case .view(.tappedNextButton):
-
         return .run { send in
           await send(.inner(.push))
         }

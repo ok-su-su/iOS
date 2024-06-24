@@ -20,7 +20,7 @@ enum CreateEnvelopeRequestShared {
   static func setEvent(id: Int) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
-    body.category?.id = id
+    body.category.id = id
     setBody(body)
   }
 
@@ -34,7 +34,7 @@ enum CreateEnvelopeRequestShared {
   static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
-    body.category?.customCategory = name
+    body.category.customCategory = name
     setBody(body)
   }
 

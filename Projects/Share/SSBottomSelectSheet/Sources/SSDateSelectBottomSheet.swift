@@ -21,6 +21,7 @@ public struct SSDateSelectBottomSheetReducer {
     @Shared var isInitialStateOfDate: Bool
     var initialStartDate = Date(timeIntervalSince1970: -1_230_768_000)
     var initialEndDate = Date(timeIntervalSince1970: 1_924_905_600)
+    var isOnAppear: Bool = false
 
     public init(selectedDate: Shared<Date>, isInitialStateOfDate: Shared<Bool>) {
       _selectedDate = selectedDate
@@ -29,6 +30,7 @@ public struct SSDateSelectBottomSheetReducer {
   }
 
   public enum Action: Equatable {
+    case onAppear(Bool)
     case reset
     case didTapConfirmButton
     case didSelectedStartDate(Date)
@@ -49,6 +51,12 @@ public struct SSDateSelectBottomSheetReducer {
       case let .didSelectedStartDate(date):
         state.isInitialStateOfDate = false
         state.selectedDate = date
+        return .none
+      case let .onAppear(appear):
+        if !state.isOnAppear {
+          state.isOnAppear = appear
+          state.isInitialStateOfDate = true
+        }
         return .none
       }
     }

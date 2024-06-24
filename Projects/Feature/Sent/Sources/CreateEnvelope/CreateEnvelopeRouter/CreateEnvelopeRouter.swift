@@ -126,7 +126,7 @@ struct CreateEnvelopeRouter {
             CreateEnvelopeRequestShared.setFriendID(id: friendID)
             let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
             try await network.createEnvelope(createEnvelopeProperty)
-            
+
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
             await dismiss()

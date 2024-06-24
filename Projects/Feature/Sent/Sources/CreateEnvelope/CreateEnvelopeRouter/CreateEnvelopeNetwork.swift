@@ -19,18 +19,21 @@ struct CreateEnvelopeNetwork: Equatable {
   static func == (_: CreateEnvelopeNetwork, _: CreateEnvelopeNetwork) -> Bool { true }
 
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func findFriendIDIfExistPrev(name: String, relationID: Int) async throws -> Int? {
+  func findIDIfExistPrev(name: String, relationID: Int) async throws -> Int? {
     let data: SearchFriendsByNameResponseDTO = try await provider.request(.findFriend(name))
     // 검색후에 relationID가 똑같은 경우가 있다면 ID를 리턴합니다.
     return data.data.filter { $0.relationship.id == relationID }.first?.friend.id
   }
 
+  /// FriendID를 가져옵니다.
   func getFriendID(_ bodyProperty: CreateFriendRequestBody) async throws -> Int {
     if let name = bodyProperty.name,
        let relationID = bodyProperty.relationshipId,
-       let id = try await findFriendIDIfExistPrev(name: name, relationID: relationID) {
+       // 만약 사용자가 입력한 이름과 관계가 서버에 존재하는경우 이전 아이디를 리턴합니다.
+       let id = try await findIDIfExistPrev(name: name, relationID: relationID) {
       return id
     }
+    // 만약 사용자가 입력한 이름과 관계가 서버에 존재하지 않는 경우 새 friendID를 만듭니다.
     return try await createFriend(bodyProperty)
   }
 

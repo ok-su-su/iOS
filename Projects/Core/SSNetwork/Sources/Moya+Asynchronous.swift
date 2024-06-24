@@ -67,6 +67,7 @@ public extension MoyaProvider {
     }
   }
 
+  /// async방식으로 비동기 요청을 진행합니다. 서버의 response를 따로 mapping하지 않습니다.
   func request(_ target: Target) async throws {
     return try await withCheckedThrowingContinuation { continuation in
       self.request(target) { result in
@@ -77,11 +78,7 @@ public extension MoyaProvider {
             continuation.resume(returning: ())
             return
           }
-          if let isSUSUError = String(data: response.data, encoding: .utf8) {
-            os_log("\(isSUSUError)")
-          }
           continuation.resume(with: .failure(MoyaError.statusCode(response)))
-
         case let .failure(error):
           continuation.resume(throwing: error)
         }

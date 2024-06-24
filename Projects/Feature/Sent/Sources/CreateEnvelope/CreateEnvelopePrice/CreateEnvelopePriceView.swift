@@ -26,6 +26,46 @@ struct CreateEnvelopePriceView: View {
 
   // MARK: Content
 
+  // TODO: TextField어떻게 만들었는지 Trouble shooting 글 작성
+  @ViewBuilder
+  private func makeTextField() -> some View {
+    ZStack {
+      // invisableTextField
+      TextField(
+        "",
+        text: $store.textFieldText.sending(\.view.changeText),
+        prompt: nil
+      )
+      .foregroundStyle(Color.clear)
+      .keyboardType(.numberPad)
+      .modifier(SSTypoModifier(.title_xl))
+      .focused($isFocused)
+      .onChange(of: isFocused) { _, newValue in
+        store.isFocused = newValue
+      }
+      .onChange(of: store.isFocused) { _, newValue in
+        isFocused = newValue
+      }
+
+      // Visiable TextField
+      HStack(spacing: 0) {
+        Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
+          .modifier(SSTypoModifier(.title_xl))
+          .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
+
+        if !store.textFieldText.isEmpty {
+          Text("원")
+            .modifier(SSTypoModifier(.title_xl))
+            .foregroundStyle(SSColor.gray100)
+        }
+        Spacer()
+      }
+      .frame(maxWidth: .infinity, maxHeight: 46)
+      .background(SSColor.gray15)
+    }
+    .frame(height: 44)
+  }
+
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -41,44 +81,7 @@ struct CreateEnvelopePriceView: View {
       Spacer()
         .frame(height: 34)
 
-      // MARK: - TextFieldView
-
-      ZStack {
-        // invisableTextField
-        TextField(
-          "",
-          text: $store.textFieldText.sending(\.view.changeText),
-          prompt: nil
-        )
-        .foregroundStyle(Color.clear)
-        .keyboardType(.numberPad)
-        .modifier(SSTypoModifier(.title_xl))
-        .focused($isFocused)
-        .onChange(of: isFocused) { _, newValue in
-          store.isFocused = newValue
-        }
-        .onChange(of: store.isFocused) { _, newValue in
-          isFocused = newValue
-        }
-
-        // Visiable TextField
-        HStack(spacing: 0) {
-          Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
-
-          if !store.textFieldText.isEmpty {
-            Text("원")
-              .modifier(SSTypoModifier(.title_xl))
-              .foregroundStyle(SSColor.gray100)
-          }
-          Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: 46)
-        .background(SSColor.gray15)
-      }
-      .frame(height: 44)
-
+      makeTextField()
       Spacer()
         .frame(height: 32)
 

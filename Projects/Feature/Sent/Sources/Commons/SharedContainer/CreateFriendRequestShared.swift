@@ -36,6 +36,7 @@ enum CreateFriendRequestShared {
     body.phoneNumber = val
     setBody(body)
   }
+
   static func reset() {
     setBody(.init())
   }
