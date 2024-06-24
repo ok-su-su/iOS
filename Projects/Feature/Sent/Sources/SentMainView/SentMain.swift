@@ -155,7 +155,7 @@ struct SentMain {
 
         return .run { send in
           await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestInitialScreenData()
+          let envelopeProperties = try await network.requestSearchFriends()
           await send(.inner(.updateEnvelopes(envelopeProperties)))
           await send(.inner(.isLoading(false)))
         }
