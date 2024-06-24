@@ -16,11 +16,11 @@ import Foundation
 
 struct SearchFriendsResponseDTO: Codable, Equatable {
   let data: [SearchFriendsResponseDataDTO]
-  let page: Int
-  let size: Int
+  let page: Int?
+  let size: Int?
   let totalPage: Int
   let totalCount: Int
-  let sort: SearchEnvelopeResponseSortDTO
+  let sort: SortResponseDTO
 
   enum CodingKeys: String, CodingKey {
     case data
@@ -66,11 +66,11 @@ struct SearchFriendsFriendResponseDTO: Codable, Equatable {
 
 struct SearchEnvelopeResponseDTO: Codable, Equatable {
   let data: [SearchEnvelopeResponseDataDTO]
-  let page: Int
-  let size: Int
+  let page: Int?
+  let size: Int?
   let totalPage: Int
   let totalCount: Int
-  let sort: SearchEnvelopeResponseSortDTO
+  let sort: SortResponseDTO
 
   enum CodingKeys: String, CodingKey {
     case data
@@ -200,13 +200,13 @@ struct SearchEnvelopeResponseRelationshipDTO: Codable, Equatable {
   }
 }
 
-// MARK: - SearchEnvelopeResponseSortDTO
+// MARK: - SortResponseDTO
 
-struct SearchEnvelopeResponseSortDTO: Codable, Equatable {
+struct SortResponseDTO: Codable, Equatable {
   ///
-  let empty: Bool
-  let sorted: Bool
-  let unsorted: Bool
+  let empty: Bool?
+  let sorted: Bool?
+  let unsorted: Bool?
 
   enum CodingKeys: String, CodingKey {
     case empty

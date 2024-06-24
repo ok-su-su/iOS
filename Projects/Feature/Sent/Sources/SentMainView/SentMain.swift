@@ -60,7 +60,7 @@ struct SentMain {
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
     case onAppear(Bool)
-    case tappedFilteredPersonButton(id: UUID)
+    case tappedFilteredPersonButton(id: Int)
   }
 
   @CasePathable

@@ -16,8 +16,8 @@ struct SearchEnvelopeHelper: Equatable {
     self.sentPeople = sentPeople
   }
 
-  var sentPeople: [SentPerson] = [.init(name: "김그남"), .init(name: "김그자"), .init(name: "김사랑")]
-  var latestSearch: [String] = ["김그남", "김그자", "김사랑"]
+  var sentPeople: [SentPerson] = []
+  var latestSearch: [String] = []
 
   func filterByTextField(_ textFieldText: String) -> [SentPerson] {
     guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {

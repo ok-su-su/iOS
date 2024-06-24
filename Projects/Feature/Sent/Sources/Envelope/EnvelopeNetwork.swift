@@ -59,11 +59,11 @@ struct EnvelopeNetwork: Equatable {
 
 struct SearchLatestOfThreeEnvelopeResponseDTO: Decodable {
   let data: [SearchLatestOfThreeEnvelopeDataResponseDTO]
-  let page: Int
-  let size: Int
+  let page: Int?
+  let size: Int?
   let totalPage: Int
   let totalCount: Int
-  let sort: SearchEnvelopeResponseSortDTO
+  let sort: SortResponseDTO
 }
 
 // MARK: - SearchLatestOfThreeEnvelopeDataResponseDTO

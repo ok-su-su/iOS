@@ -18,7 +18,7 @@ struct SentPeopleFilterHelper: Equatable {
 
   var sentPeople: [SentPerson]
   var selectedPerson: [SentPerson] = []
-  var ssButtonProperties: [UUID: SSButtonPropertyState] = [:]
+  var ssButtonProperties: [Int: SSButtonPropertyState] = [:]
 
   init() { sentPeople = [] }
 
@@ -40,30 +40,12 @@ struct SentPeopleFilterHelper: Equatable {
     }
   }
 
-  mutating func setFakeData() {
-    sentPeople = [
-      .init(name: "정국"),
-      .init(name: "국자"),
-      .init(name: "개코"),
-      .init(name: "최자"),
-      .init(name: "헤이즈"),
-      .init(name: "이지은"),
-      .init(name: "아이유"),
-      .init(name: "박재범"),
-      .init(name: "제이팍"),
-      .init(name: "지지지지"),
-      .init(name: "죽음의성물"),
-      .init(name: "론리즐리"),
-    ]
-    setButtonProperties()
-  }
-
   mutating func updateSentPeople(_ people: [SentPerson]) {
-    sentPeople = people
+    sentPeople = (people + sentPeople).uniqued()
     setButtonProperties()
   }
 
-  mutating func select(selectedId: UUID) {
+  mutating func select(selectedId: Int) {
     if
       let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
       let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
@@ -84,10 +66,11 @@ struct SentPeopleFilterHelper: Equatable {
 
 // MARK: - SentPerson
 
-struct SentPerson: Identifiable, Equatable {
-  let id = UUID()
+struct SentPerson: Identifiable, Equatable, Hashable {
+  let id: Int
   let name: String
-  init(name: String) {
+  init(id: Int, name: String) {
+    self.id = id
     self.name = name
   }
 }

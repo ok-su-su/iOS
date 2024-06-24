@@ -13,26 +13,28 @@ struct CustomTextField {
   @ObservableState
   struct State {
     var isOnAppear = false
-    @Shared var text: String
+    var text: String
   }
 
-  enum Action: Equatable, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable {
     case onAppear(Bool)
+    case changeTextField(String)
     case closeButtonTapped
   }
 
   var body: some Reducer<State, Action> {
-    BindingReducer()
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
+
       case .closeButtonTapped:
         state.text = ""
         return .none
-      default:
+
+      case let .changeTextField(text):
+        state.text = text
         return .none
       }
     }

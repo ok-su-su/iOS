@@ -91,11 +91,11 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
 
 struct SearchFriendsByNameResponseDTO: Codable, Equatable {
   let data: [SearchFriendsByNameDataResponseDTO]
-  let page: Int
-  let size: Int
+  let page: Int?
+  let size: Int?
   let totalPage: Int
   let totalCount: Int
-  let sort: SearchEnvelopeResponseSortDTO
+  let sort: SortResponseDTO
 
   enum CodingKeys: String, CodingKey {
     case data
