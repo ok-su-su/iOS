@@ -157,7 +157,12 @@ struct SentMain {
       case let .scope(.filterBottomSheet(.presented(.tapped(item: item)))):
         return .send(.async(.updateEnvelopes(item)))
 
+      // FilterView에서 confirmButton을 누른다면, Server에 FilterData를 요청합니다.
       case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
+        return .send(.async(.updateEnvelopesByFilter))
+
+      // specificEnvelopeHistoryRouter가 사라지면 서버로부터 요청을 보냅니다.
+      case .scope(.specificEnvelopeHistoryRouter(.dismiss)):
         return .send(.async(.updateEnvelopesByFilter))
 
       case .scope:

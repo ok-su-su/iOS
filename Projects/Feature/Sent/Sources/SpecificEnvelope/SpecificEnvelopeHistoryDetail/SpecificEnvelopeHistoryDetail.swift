@@ -42,7 +42,9 @@ struct SpecificEnvelopeHistoryDetail {
     case delete
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case deleteEnvelope
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -51,6 +53,8 @@ struct SpecificEnvelopeHistoryDetail {
 
   enum DelegateAction: Equatable {}
 
+  @Dependency(\.envelopeNetwork) var network
+  @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -77,6 +81,8 @@ struct SpecificEnvelopeHistoryDetail {
 
       // TODO: Navigate EditingScene
       case .inner(.editing):
+        SpecificEnvelopeHistoryRouterPublisher
+          .push(.specificEnvelopeHistoryEdit(.init(envelopeDetailProperty: state.envelopeDetailProperty)))
         return .none
 
       case .inner(.delete):
@@ -85,9 +91,15 @@ struct SpecificEnvelopeHistoryDetail {
       case .binding:
         return .none
 
-      // TODO: 들리트 버튼을 눌렀을 때 로직 실행
+      // 삭제 버튼 눌렀을 경우
       case .view(.tappedAlertConfirmButton):
-        return .none
+        return .send(.async(.deleteEnvelope))
+
+      case .async(.deleteEnvelope):
+        return .run { [id = state.envelopeDetailProperty.id] _ in
+          try await network.deleteEnvelope(id: id)
+          await dismiss()
+        }
       }
     }
   }

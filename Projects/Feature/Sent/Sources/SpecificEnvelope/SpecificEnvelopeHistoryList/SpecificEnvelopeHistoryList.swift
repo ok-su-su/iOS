@@ -141,6 +141,7 @@ struct SpecificEnvelopeHistoryList {
       case let .inner(.pushEnvelopeDetail(property)):
         SpecificEnvelopeHistoryRouterPublisher
           .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
+        state.isOnAppear = false
         return .none
       }
     }

@@ -31,6 +31,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
     case searchLatestOfThreeEnvelope(friendID: Int)
     case searchEnvelope(friendID: Int, page: Int)
     case deleteFriend(friendID: Int)
+    case deleteEnvelope(envelopeID: Int)
     case searchEnvelopeByID(Int)
 
     var additionalHeader: [String: String]? { nil }
@@ -42,6 +43,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
       case .deleteFriend:
         "friends"
       case let .searchEnvelopeByID(id):
+        "envelopes/\(id)"
+      case let .deleteEnvelope(envelopeID: id):
         "envelopes/\(id)"
       }
     }
@@ -79,7 +82,11 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
         )
       case let .deleteFriend(friendID: friendID):
         return .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
+
       case .searchEnvelopeByID:
+        return .requestPlain
+
+      case .deleteEnvelope:
         return .requestPlain
       }
     }
@@ -99,6 +106,10 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
   func deleteFriend(id: Int) async throws {
     try await provider.request(.deleteFriend(friendID: id))
+  }
+
+  func deleteEnvelope(id: Int) async throws {
+    try await provider.request(.deleteEnvelope(envelopeID: id))
   }
 
   func getEnvelopeDetailPropertyByEnvelope(id: Int) async throws -> EnvelopeDetailProperty {
