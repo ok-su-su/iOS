@@ -29,7 +29,7 @@ struct SpecificEnvelopeHistoryDetailView: View {
           .modifier(SSTypoModifier(.title_xxl))
           .foregroundStyle(SSColor.gray100)
 
-        ScrollView {
+        ScrollView(showsIndicators: false) {
           LazyVStack(spacing: 0) {
             let listViewContent = store.envelopeDetailProperty.makeListContent
             ForEach(0 ..< listViewContent.count, id: \.self) { ind in

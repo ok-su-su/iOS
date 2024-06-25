@@ -110,7 +110,10 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
       name: data.friend.name,
       relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
       date: CustomDateFormatter.getDate(from: data.envelope.handedOverAt) ?? .now,
-      isVisited: nil
+      isVisited: data.envelope.hasVisited,
+      gift: data.envelope.gift,
+      contacts: data.friend.phoneNumber,
+      memo: data.envelope.memo
     )
   }
 }
