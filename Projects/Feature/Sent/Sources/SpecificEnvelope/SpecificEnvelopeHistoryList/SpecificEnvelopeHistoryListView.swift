@@ -28,6 +28,7 @@ struct SpecificEnvelopeHistoryListView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text(store.envelopeProperty.totalPriceText)
+          .foregroundStyle(SSColor.gray100)
           .modifier(SSTypoModifier(.title_m))
 
         SmallBadge(
@@ -92,6 +93,9 @@ struct SpecificEnvelopeHistoryListView: View {
         .foregroundStyle(textColor)
     }
     .padding(.vertical, 12)
+    .onAppear {
+      // TODO: 무한 스크롤 로직 작성
+    }
     .onTapGesture {
       store.send(.view(.tappedSpecificEnvelope(property)))
     }
@@ -144,6 +148,6 @@ struct SpecificEnvelopeHistoryListView: View {
   }
 
   var sentSubReceivedTitleText: String {
-    CustomNumberFormatter.formattedByThreeZero(store.envelopeProperty.sentSubReceivedValue, subFixString: "원") ?? ""
+    CustomNumberFormatter.formattedByThreeZero(store.envelopeProperty.receivedSubSentValue, subFixString: "원") ?? ""
   }
 }

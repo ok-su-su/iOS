@@ -108,6 +108,7 @@ public struct MessageAlert: View {
   func titleView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(messageAlertProperty.titleText)
+        .foregroundStyle(SSColor.gray100)
         .multilineTextAlignment(.center)
         .modifier(SSTypoModifier(.title_xs))
         .bold()
@@ -115,6 +116,7 @@ public struct MessageAlert: View {
         .frame(maxWidth: .infinity)
 
       Text(messageAlertProperty.contentText)
+        .foregroundStyle(SSColor.gray80)
         .multilineTextAlignment(.center)
         .modifier(SSTypoModifier(.text_xxs))
         .frame(maxWidth: .infinity)

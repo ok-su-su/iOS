@@ -29,7 +29,7 @@ struct EnvelopeProperty: Equatable, Hashable, Identifiable {
     "전체 \(CustomNumberFormatter.formattedByThreeZero(totalPrice) ?? "")원"
   }
 
-  var sentSubReceivedValue: Int {
+  var receivedSubSentValue: Int {
     return totalSentPrice - totalReceivedPrice
   }
 

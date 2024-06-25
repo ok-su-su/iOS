@@ -30,10 +30,28 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   enum Network: SSNetworkTargetType {
     case searchLatestOfThreeEnvelope(friendID: Int)
     case searchEnvelope(friendID: Int, page: Int)
+    case deleteFriend(friendID: Int)
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes" }
-    var method: Moya.Method { .get }
+    var path: String {
+      switch self {
+      case .searchEnvelope,
+           .searchLatestOfThreeEnvelope:
+        "envelopes"
+      case .deleteFriend:
+        "friends"
+      }
+    }
+
+    var method: Moya.Method {
+      switch self {
+      case .deleteFriend:
+        return .delete
+      default:
+        return .get
+      }
+    }
+
     var task: Moya.Task {
       switch self {
       case let .searchLatestOfThreeEnvelope(friendID):
@@ -45,6 +63,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
           ],
           encoding: URLEncoding.queryString
         )
+
       case let .searchEnvelope(friendID: friendID, page: page):
         return .requestParameters(
           parameters: [
@@ -55,6 +74,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
           ],
           encoding: URLEncoding.queryString
         )
+      case let .deleteFriend(friendID: friendID):
+        return .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
       }
     }
   }
@@ -69,6 +90,10 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   func getEnvelope(id: Int) async throws -> [EnvelopeContent] {
     let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: id))
     return data.data.map { $0.toEnvelopeContent() }
+  }
+
+  func deleteFriend(id: Int) async throws {
+    try await provider.request(.deleteFriend(friendID: id))
   }
 }
 

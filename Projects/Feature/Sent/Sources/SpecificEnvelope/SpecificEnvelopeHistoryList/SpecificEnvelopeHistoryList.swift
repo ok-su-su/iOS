@@ -57,6 +57,7 @@ struct SpecificEnvelopeHistoryList {
 
   enum AsyncAction: Equatable {
     case getEnvelopeDetail(page: Int)
+    case deleteFriend
   }
 
   @CasePathable
@@ -65,6 +66,7 @@ struct SpecificEnvelopeHistoryList {
     case envelopePriceProgress(EnvelopePriceProgress.Action)
   }
 
+  @Dependency(\.dismiss) var dismiss
   @Dependency(\.envelopeNetwork) var network
 
   enum DelegateAction: Equatable {}
@@ -101,9 +103,11 @@ struct SpecificEnvelopeHistoryList {
 
       case .binding:
         return .none
-      // TODO: 만약 삭제 버튼을 눌렀다면 해야할 동작에 대해서 정의
+
+      // 친구 삭제를 누를 경우
       case .view(.tappedAlertConfirmButton):
-        return .none
+        return .send(.async(.deleteFriend))
+
       case let .async(.getEnvelopeDetail(page: page)):
         return .run { [id = state.envelopeProperty.id] send in
           await send(.inner(.isLoading(true)))
@@ -118,6 +122,12 @@ struct SpecificEnvelopeHistoryList {
       case let .inner(.updateEnvelopeContents(envelopeContents)):
         state.envelopeContents = envelopeContents
         return .none
+
+      case .async(.deleteFriend):
+        return .run { [id = state.envelopeProperty.id] _ in
+          try await network.deleteFriend(id: id)
+          await dismiss()
+        }
       }
     }
   }
