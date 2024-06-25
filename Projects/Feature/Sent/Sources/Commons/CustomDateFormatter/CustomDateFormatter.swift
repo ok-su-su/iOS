@@ -37,6 +37,11 @@ final class CustomDateFormatter {
     return formatter.string(from: val)
   }
 
+  static func getKoreanDateString(from date: Date) -> String {
+    formatter.dateFormat = "yyyy년 MM월 dd일"
+    return formatter.string(from: date)
+  }
+
   /// Date을 dateFormmate으로 변경시켜줍니다.
   static func getString(from val: Date, dateFormat: String? = nil) -> String {
     if let dateFormat {

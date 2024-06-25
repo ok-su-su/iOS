@@ -172,7 +172,7 @@ struct DateEditProperty: Equatable {
   var date: Date
 
   var dateText: String {
-    return "2023년 11월 25일"
+    return CustomDateFormatter.getKoreanDateString(from: date)
   }
 
   init(date: Date) {
@@ -185,52 +185,4 @@ struct DateEditProperty: Equatable {
 /// EditName을 하기 위해 사용됩니다.
 struct NameEditProperty: Equatable {
   var textFieldText: String
-}
-
-// MARK: - RelationSelectButtonItem
-
-struct RelationSelectButtonItem: SingleSelectButtonItemable {
-  var id: Int
-
-  var title: String
-
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
-  }
-}
-
-extension RelationSelectButtonItem {
-  static func defaultItems() -> [Self] {
-    let defaultRelationNames: [String] = [
-      "친구",
-      "가족",
-      "친척",
-      "동료",
-    ]
-    return defaultRelationNames.enumerated().map { .init(id: $0.offset, title: $0.element) }
-  }
-}
-
-// MARK: - EventSingeSelectButtonItem
-
-struct EventSingeSelectButtonItem: SingleSelectButtonItemable {
-  var id: Int
-  var title: String
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
-  }
-}
-
-extension EventSingeSelectButtonItem {
-  static func defaultItems() -> [Self] {
-    let defaultsEventNames: [String] = [
-      "결혼식",
-      "돌잔치",
-      "장례식",
-      "생일기념일",
-    ]
-    return defaultsEventNames.enumerated().map { .init(id: $0.offset, title: $0.element) }
-  }
 }
