@@ -46,7 +46,7 @@ struct EnvelopeNetwork: Equatable {
 
     return data.data.map {
       .init(
-        dateText: $0.envelope.handedOverAt,
+        dateText: CustomDateFormatter.getYearAndMonthDateString(from: $0.envelope.handedOverAt) ?? "",
         eventName: $0.relationship.relation,
         envelopeType: $0.envelope.type == "SENT" ? .sent : .receive,
         price: $0.envelope.amount

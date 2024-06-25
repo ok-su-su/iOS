@@ -122,7 +122,7 @@ struct SentMain {
         return .send(.inner(.showCreateEnvelopRouter))
 
       // Navigation Specific Router
-      case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
+      case let .scope(.envelopes(.element(id: _, action: .pushEnvelopeDetail(friendID: id)))):
         state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State()
         return .none
 
@@ -164,7 +164,6 @@ struct SentMain {
         return .none
 
       case let .view(.onAppear(appear)):
-        os_log("main View 나타났어요")
         if state.isOnAppear {
           return .none
         }

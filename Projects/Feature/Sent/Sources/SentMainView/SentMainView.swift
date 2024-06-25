@@ -156,7 +156,6 @@ struct SentMainView: View {
           makeEnvelope()
             .disabled(store.isLoading)
             .modifier(SSLoadingModifier(isLoading: store.isLoading))
-            
         }
 
         .padding(.horizontal, Constants.leadingAndTrailingSpacing)

@@ -43,6 +43,7 @@ struct Envelope {
     case getEnvelopeDetail
     case isLoading(Bool)
     case updateEnvelopeContent([EnvelopeContent])
+    case pushEnvelopeDetail(friendID: Int)
   }
 
   var body: some Reducer<State, Action> {
@@ -57,8 +58,10 @@ struct Envelope {
           return .send(.getEnvelopeDetail)
         }
         return .none
+
       case .tappedFullContentOfEnvelopeButton:
-        return .none
+        return .send(.pushEnvelopeDetail(friendID: state.envelopeProperty.id))
+
       case .envelopePRiceProgress:
         return .none
       case .getEnvelopeDetail:
@@ -73,6 +76,8 @@ struct Envelope {
         return .none
       case let .updateEnvelopeContent(val):
         state.envelopeProperty.envelopeContents = val
+        return .none
+      case let .pushEnvelopeDetail(friendID: friendID):
         return .none
       }
     }

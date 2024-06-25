@@ -131,11 +131,11 @@ struct SearchEnvelopeResponseEnvelopeDTO: Codable, Equatable {
   /// 금액
   let amount: Int
   /// 선물
-  let gift: String
+  let gift: String?
   /// 메모
-  let memo: String
+  let memo: String?
   /// 방문여부
-  let hasVisited: Bool
+  let hasVisited: Bool?
   /// 전달 일
   let handedOverAt: String
 
