@@ -82,7 +82,7 @@ struct SpecificEnvelopeHistoryListView: View {
           )
         )
 
-        Text(property.dateText) // TODO: 수정
+        Text(property.dateText)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(textColor)
       }
@@ -91,8 +91,9 @@ struct SpecificEnvelopeHistoryListView: View {
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(textColor)
     }
+    .padding(.vertical, 12)
     .onTapGesture {
-      store.send(.view(.tappedSpecificEnvelope(property.id)))
+      store.send(.view(.tappedSpecificEnvelope(property)))
     }
   }
 

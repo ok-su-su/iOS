@@ -46,7 +46,7 @@ struct SpecificEnvelopeHistoryList {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedSpecificEnvelope(Int)
+    case tappedSpecificEnvelope(EnvelopeContent)
     case tappedAlertConfirmButton
   }
 
@@ -92,7 +92,7 @@ struct SpecificEnvelopeHistoryList {
       case .scope(.header):
         return .none
 
-      case let .view(.tappedSpecificEnvelope(id)):
+      case let .view(.tappedSpecificEnvelope(property)):
         // TODO: 화면 전환 로직
         return .none
 

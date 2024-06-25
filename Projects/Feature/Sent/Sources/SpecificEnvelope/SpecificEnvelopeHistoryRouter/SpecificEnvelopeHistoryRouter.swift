@@ -25,8 +25,14 @@ struct SpecificEnvelopeHistoryRouter {
   }
 
   enum Action: Equatable {
+    case onAppear(Bool)
+    case push(SpecificEnvelopeHistoryRouterPath.State)
     case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)
     case envelopeHistory(SpecificEnvelopeHistoryList.Action)
+  }
+  
+  enum CancelID {
+    case pushPublisher
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -38,9 +44,7 @@ struct SpecificEnvelopeHistoryRouter {
       switch action {
       case .path(.push(id: _, state: _)):
         return .none
-
-      case let .path(.element(id: _, action: action)):
-        switch action {
+        
         // TODO: - ID를 통한 라우팅하는 흐름구현
 //        case let .specificEnvelopeHistoryList(.view(.tappedEnvelope(id))):
 //          state.path.append(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: .fakeData())))
@@ -53,6 +57,9 @@ struct SpecificEnvelopeHistoryRouter {
 //
 //        case .specificEnvelopeHistoryList:
 //          return .none
+      case let .path(.element(id: _, action: action)):
+        switch action {
+  
 
         case .specificEnvelopeHistoryDetail(.inner(.editing)):
           state.path.append(
@@ -72,10 +79,25 @@ struct SpecificEnvelopeHistoryRouter {
 
       case let .path(.popFrom(id: id)):
         return .none
+        
       case .envelopeHistory:
         return .none
+        
+      case let .onAppear(appear):
+        if state.isOnAppear {
+          return .none
+        }
+        state.isOnAppear = appear
+        return .publisher{
+          SpecificEnvelopeHistoryRouterPublisher
+            .publisher
+            .map{.push($0)}
+        }
+        .cancellable(id: CancelID.pushPublisher, cancelInFlight: true)
+      case let .push(pushState):
+        state.path.append(pushState)
+        return .none
       }
-
     }.forEach(\.path, action: \.path)
   }
 }
