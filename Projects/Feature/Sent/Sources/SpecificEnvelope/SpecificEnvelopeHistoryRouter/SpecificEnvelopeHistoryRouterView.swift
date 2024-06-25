@@ -18,23 +18,22 @@ struct SpecificEnvelopeHistoryRouterView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {}
+  private func makeContentView() -> some View {
+    SpecificEnvelopeHistoryListView(
+      store: store.scope(state: \.envelopeHistory, action: \.envelopeHistory)
+    )
+  }
 
   var body: some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      EmptyView()
+      makeContentView()
     } destination: { store in
       switch store.case {
-      case let .specificEnvelopeHistoryList(store):
-        SpecificEnvelopeHistoryListView(store: store)
       case let .specificEnvelopeHistoryDetail(store):
         SpecificEnvelopeHistoryDetailView(store: store)
       case let .specificEnvelopeHistoryEdit(store):
         SpecificEnvelopeHistoryEditView(store: store)
       }
-    }
-    .onAppear {
-      store.send(.onAppear(true))
     }
   }
 

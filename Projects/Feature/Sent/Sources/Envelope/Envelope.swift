@@ -18,7 +18,6 @@ struct Envelope {
     var showDetail: Bool = false
     var envelopePriceProgress: EnvelopePriceProgress.State = .init(envelopePriceProgressProperty: .makeFakeData())
     var isLoading: Bool = false
-    let networkHelper = EnvelopeNetwork()
 
     var progressValue: CGFloat {
       return 150
@@ -36,6 +35,8 @@ struct Envelope {
     }
   }
 
+  @Dependency(\.envelopeNetwork) var network
+
   enum Action: Equatable {
     case tappedDetailButton
     case tappedFullContentOfEnvelopeButton
@@ -43,7 +44,7 @@ struct Envelope {
     case getEnvelopeDetail
     case isLoading(Bool)
     case updateEnvelopeContent([EnvelopeContent])
-    case pushEnvelopeDetail(friendID: Int)
+    case pushEnvelopeDetail(EnvelopeProperty)
   }
 
   var body: some Reducer<State, Action> {
@@ -60,14 +61,14 @@ struct Envelope {
         return .none
 
       case .tappedFullContentOfEnvelopeButton:
-        return .send(.pushEnvelopeDetail(friendID: state.envelopeProperty.id))
+        return .send(.pushEnvelopeDetail(state.envelopeProperty))
 
       case .envelopePRiceProgress:
         return .none
       case .getEnvelopeDetail:
-        return .run { [helper = state.networkHelper, id = state.envelopeProperty.id] send in
+        return .run { [id = state.envelopeProperty.id] send in
           await send(.isLoading(true))
-          let value = try await helper.getEnvelope(id: id)
+          let value = try await network.getEnvelope(id: id)
           await send(.updateEnvelopeContent(value))
           await send(.isLoading(false))
         }
@@ -77,7 +78,7 @@ struct Envelope {
       case let .updateEnvelopeContent(val):
         state.envelopeProperty.envelopeContents = val
         return .none
-      case let .pushEnvelopeDetail(friendID: friendID):
+      case .pushEnvelopeDetail:
         return .none
       }
     }

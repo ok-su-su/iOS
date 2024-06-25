@@ -24,17 +24,17 @@ struct SpecificEnvelopeHistoryListView: View {
       Spacer()
         .frame(height: 24)
 
-      // MARK: TopView
+      // MARK: TopView, 상단 Progress 및 	title을 나타냅니다.
 
       VStack(alignment: .leading, spacing: 8) {
-        Text(Constants.titlePriceText)
+        Text(store.envelopeProperty.totalPriceText)
           .modifier(SSTypoModifier(.title_m))
 
         SmallBadge(
           property:
           .init(
             size: .xSmall,
-            badgeString: Constants.descriptionButtonText,
+            badgeString: sentSubReceivedTitleText,
             badgeColor: .gray30
           )
         )
@@ -60,7 +60,7 @@ struct SpecificEnvelopeHistoryListView: View {
   @ViewBuilder
   private func makeEnvelopeDetails() -> some View {
     LazyVStack {
-      ForEach(store.envelopeHistoryProperty.envelopeContents) { property in
+      ForEach(store.envelopeContents) { property in
         makeDetailContentView(property)
       }
       Spacer()
@@ -82,7 +82,7 @@ struct SpecificEnvelopeHistoryListView: View {
           )
         )
 
-        Text("23.07.18") // TODO: 수정
+        Text(property.dateText) // TODO: 수정
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(textColor)
       }
@@ -92,7 +92,7 @@ struct SpecificEnvelopeHistoryListView: View {
         .foregroundStyle(textColor)
     }
     .onTapGesture {
-      store.send(.view(.tappedEnvelope(property.id)))
+      store.send(.view(.tappedSpecificEnvelope(property.id)))
     }
   }
 
@@ -110,12 +110,12 @@ struct SpecificEnvelopeHistoryListView: View {
     .sSAlert(
       isPresented: $store.isDeleteAlertPresent,
       messageAlertProperty: .init(
-        titleText: store.envelopeHistoryProperty.alertTitleText,
-        contentText: store.envelopeHistoryProperty.alertDescriptionText,
+        titleText: Constants.alertTitleText,
+        contentText: Constants.alertDescriptionText,
         checkBoxMessage: .none,
         buttonMessage: .doubleButton(
-          left: store.envelopeHistoryProperty.alertLeftButtonText,
-          right: store.envelopeHistoryProperty.alertRightButtonText
+          left: Constants.alertLeftButtonText,
+          right: Constants.alertRightButtonText
         ),
         didTapCompletionButton: { _ in
           store.send(.view(.tappedAlertConfirmButton))
@@ -136,7 +136,13 @@ struct SpecificEnvelopeHistoryListView: View {
   }
 
   private enum Constants {
-    static let titlePriceText: String = "전체 100,000원"
-    static let descriptionButtonText: String = "-40,000원"
+    static let alertTitleText = "모든 봉투를 삭제할까요?"
+    static let alertDescriptionText = "삭제한 봉투는 다시 복구할 수 없어요"
+    static let alertLeftButtonText = "취소"
+    static let alertRightButtonText = "삭제"
+  }
+
+  var sentSubReceivedTitleText: String {
+    CustomNumberFormatter.formattedByThreeZero(store.envelopeProperty.sentSubReceivedValue, subFixString: "원") ?? ""
   }
 }

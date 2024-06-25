@@ -24,9 +24,13 @@ struct EnvelopeProperty: Equatable, Hashable, Identifiable {
   let totalReceivedPrice: Int
   /// envelopeUserName을 보여줍니다.
   var envelopeTargetUserNameText: String { envelopeTargetUserName }
-  /// 전체 금액에 관한 Text입니디.
+  /// 전체 금액에 관한 Text입니다.
   var totalPriceText: String {
     "전체 \(CustomNumberFormatter.formattedByThreeZero(totalPrice) ?? "")원"
+  }
+
+  var sentSubReceivedValue: Int {
+    return totalSentPrice - totalReceivedPrice
   }
 
   /// 봉투 세부 사항을 보여줍니다.
@@ -50,11 +54,15 @@ struct EnvelopeProperty: Equatable, Hashable, Identifiable {
 // MARK: - EnvelopeContent
 
 struct EnvelopeContent: Equatable, Hashable, Identifiable {
-  let id: UUID = .init()
-
+  /// 봉투의 아이디 입니다.
+  let id: Int
+  /// 봉투에 표시될 날짜 입ㄴ디ㅏ.
   let dateText: String
+  /// 봉투의 Event Name 입니다.
   let eventName: String
+  /// 봉투의 타입 입니다.
   let envelopeType: EnvelopeType
+  /// 봉투의 가격 입니다.
   let price: Int
 
   var priceText: String {
@@ -67,11 +75,13 @@ struct EnvelopeContent: Equatable, Hashable, Identifiable {
 
   /// EnvelopeContent를 정의합니다.
   /// - Parameters:
+  ///   - id: 봉투의 ID 입니다.
   ///   - date: 봉투를 보낸 날짜입니다.
   ///   - eventName: 이벤트 이름을 입력합니다.
   ///   - envelopeType: 받았는지 보냈는지 enum 을통해 입력받습니다.
   ///   - price: 가격을 입력합니다.
-  init(dateText: String, eventName: String, envelopeType: EnvelopeType, price: Int) {
+  init(id: Int, dateText: String, eventName: String, envelopeType: EnvelopeType, price: Int) {
+    self.id = id
     self.dateText = dateText
     self.eventName = eventName
     self.envelopeType = envelopeType

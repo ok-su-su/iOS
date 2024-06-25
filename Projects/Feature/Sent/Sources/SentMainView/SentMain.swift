@@ -122,8 +122,8 @@ struct SentMain {
         return .send(.inner(.showCreateEnvelopRouter))
 
       // Navigation Specific Router
-      case let .scope(.envelopes(.element(id: _, action: .pushEnvelopeDetail(friendID: id)))):
-        state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State()
+      case let .scope(.envelopes(.element(id: _, action: .pushEnvelopeDetail(property)))):
+        state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State(envelopeProperty: property)
         return .none
 
       case .scope(.header(.tappedSearchButton)):
