@@ -75,6 +75,7 @@ struct SentMain {
   @CasePathable
   enum AsyncAction: Equatable {
     case updateEnvelopes(FilterDialItem?)
+    case updateEnvelopesByFilter
   }
 
   @CasePathable
@@ -152,6 +153,9 @@ struct SentMain {
       case let .scope(.filterBottomSheet(.presented(.tapped(item: item)))):
         return .send(.async(.updateEnvelopes(item)))
 
+      case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
+        return .send(.async(.updateEnvelopesByFilter))
+
       case .scope:
         return .none
 
@@ -170,6 +174,20 @@ struct SentMain {
       case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
+
+      case let .async(.updateEnvelopesByFilter):
+        let urlParameter = SearchFriendsParameter(
+          friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+          fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+          toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
+          sort: state.sentMainProperty.selectedFilterDial ?? .latest
+        )
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
 
       case let .async(.updateEnvelopes(item)):
         return .run { send in
