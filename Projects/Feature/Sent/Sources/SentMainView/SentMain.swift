@@ -39,6 +39,10 @@ struct SentMain {
     // TODO: Change With APIS
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
+    var isFilteredHeaderButtonItem: Bool {
+      return !(sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.sentPeopleFilterHelper.isFilteredAmount)
+    }
+
     init() {
       _sentMainProperty = Shared(.init())
     }
@@ -175,7 +179,7 @@ struct SentMain {
         state.isLoading = val
         return .none
 
-      case let .async(.updateEnvelopesByFilter):
+      case .async(.updateEnvelopesByFilter):
         let urlParameter = SearchFriendsParameter(
           friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
           fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
@@ -199,11 +203,11 @@ struct SentMain {
 
       case let .view(.tappedFilteredPersonButton(id: id)):
         state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
-        return .none
+        return .send(.async(.updateEnvelopesByFilter))
 
       case .view(.tappedFilteredAmountButton):
         state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
-        return .none
+        return .send(.async(.updateEnvelopesByFilter))
       }
     }
     .subFeatures1()

@@ -27,6 +27,8 @@ struct SentEnvelopeFilter {
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
+    var sliderStartValue: Double = 0
+    var sliderEndValue: Double = 100_000
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
@@ -122,8 +124,11 @@ struct SentEnvelopeFilter {
         return .none
 
       case let .tappedConfirmButton(lowestVal, highestVal):
-        state.filterHelper.lowestAmount = lowestVal
-        state.filterHelper.highestAmount = highestVal
+        // 만약 입력된 값이 초기값과 똑같지 않을 경우(Slider에 변화가 있을 경우)
+        if !(lowestVal == Int(state.sliderStartValue) && highestVal == Int(state.sliderEndValue)) {
+          state.filterHelper.lowestAmount = lowestVal
+          state.filterHelper.highestAmount = highestVal
+        }
         return .run { _ in await dismiss() }
 
       case let .isLoading(loading):

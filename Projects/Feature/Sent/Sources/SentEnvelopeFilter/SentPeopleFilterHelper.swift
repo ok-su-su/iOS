@@ -23,6 +23,10 @@ struct SentPeopleFilterHelper: Equatable {
   var lowestAmount: Int? = nil
   var highestAmount: Int? = nil
 
+  var isFilteredAmount: Bool {
+    return lowestAmount != nil && highestAmount != nil
+  }
+
   var amountFilterBadgeText: String? {
     guard let highestAmount,
           let lowestAmount,

@@ -100,13 +100,18 @@ struct SearchFriendsParameter {
   var sort: FilterDialItem = .latest
 
   func getURLParameters() -> [String: Any] {
-    [
+    var res: [String: Any] = [
       "friendIds": friendIds,
-      "fromTotalAmounts": fromTotalAmounts as Any,
-      "toTotalAmounts": toTotalAmounts as Any,
       "page": page,
       "size": size,
       "sort": sort.sortString,
     ]
+    if let fromTotalAmounts {
+      res["fromTotalAmounts"] = fromTotalAmounts
+    }
+    if let toTotalAmounts {
+      res["toTotalAmounts"] = toTotalAmounts
+    }
+    return res
   }
 }

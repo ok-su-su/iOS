@@ -75,6 +75,12 @@ struct SentEnvelopeFilterView: View {
         HStack(spacing: 0) {
           // TODO: View고치기
           SliderView(slider: sliderProperty)
+            .onChange(of: store.sliderEndValue) { _, newValue in
+              sliderProperty.updateSlider(start: store.sliderStartValue, end: newValue)
+            }
+            .onChange(of: store.sliderStartValue) { _, newValue in
+              sliderProperty.updateSlider(start: newValue, end: store.sliderEndValue)
+            }
         }
       }
     }

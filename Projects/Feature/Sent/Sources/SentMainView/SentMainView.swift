@@ -68,7 +68,7 @@ struct SentMainView: View {
         // MARK: - 정렬 버튼
 
         // 정렬된 사람이 없을 때
-        if store.sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty {
+        if !store.state.isFilteredHeaderButtonItem {
           SSButton(Constants.notSelectedFilterButtonProperty) {
             store.send(.view(.tappedFilterButton))
           }
@@ -154,8 +154,11 @@ struct SentMainView: View {
         VStack(spacing: 16) {
           makeFilterSection()
           makeEnvelope()
+            .disabled(store.isLoading)
+            .modifier(SSLoadingModifier(isLoading: store.isLoading))
+            
         }
-        .modifier(SSLoadingModifier(isLoading: store.isLoading))
+
         .padding(.horizontal, Constants.leadingAndTrailingSpacing)
       }
 
