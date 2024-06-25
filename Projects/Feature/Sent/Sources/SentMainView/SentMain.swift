@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSBottomSelectSheet
 
 // MARK: - SentMain
@@ -38,6 +39,10 @@ struct SentMain {
     // TODO: Change With APIS
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
+    var isFilteredHeaderButtonItem: Bool {
+      return !(sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.sentPeopleFilterHelper.isFilteredAmount)
+    }
+
     init() {
       _sentMainProperty = Shared(.init())
     }
@@ -60,7 +65,8 @@ struct SentMain {
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
     case onAppear(Bool)
-    case tappedFilteredPersonButton(id: UUID)
+    case tappedFilteredPersonButton(id: Int)
+    case tappedFilteredAmountButton
   }
 
   @CasePathable
@@ -71,7 +77,10 @@ struct SentMain {
   }
 
   @CasePathable
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case updateEnvelopes(FilterDialItem?)
+    case updateEnvelopesByFilter
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -113,7 +122,7 @@ struct SentMain {
         return .send(.inner(.showCreateEnvelopRouter))
 
       // Navigation Specific Router
-      case .scope(.envelopes(.element(id: _, action: .tappedFullContentOfEnvelopeButton))):
+      case let .scope(.envelopes(.element(id: _, action: .pushEnvelopeDetail(friendID: id)))):
         state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State()
         return .none
 
@@ -145,20 +154,22 @@ struct SentMain {
         state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
         return .none
 
+      case let .scope(.filterBottomSheet(.presented(.tapped(item: item)))):
+        return .send(.async(.updateEnvelopes(item)))
+
+      case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
+        return .send(.async(.updateEnvelopesByFilter))
+
       case .scope:
         return .none
+
       case let .view(.onAppear(appear)):
         if state.isOnAppear {
           return .none
         }
         state.isOnAppear = appear
+        return .send(.async(.updateEnvelopes(state.sentMainProperty.selectedFilterDial)))
 
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestInitialScreenData()
-          await send(.inner(.updateEnvelopes(envelopeProperties)))
-          await send(.inner(.isLoading(false)))
-        }
       case let .inner(.updateEnvelopes(val)):
         state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
         return .none
@@ -167,9 +178,35 @@ struct SentMain {
         state.isLoading = val
         return .none
 
+      case .async(.updateEnvelopesByFilter):
+        let urlParameter = SearchFriendsParameter(
+          friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+          fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+          toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
+          sort: state.sentMainProperty.selectedFilterDial ?? .latest
+        )
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
+
+      case let .async(.updateEnvelopes(item)):
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await network.requestSearchFriends(item ?? .latest)
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
+
       case let .view(.tappedFilteredPersonButton(id: id)):
         state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
-        return .none
+        return .send(.async(.updateEnvelopesByFilter))
+
+      case .view(.tappedFilteredAmountButton):
+        state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
+        return .send(.async(.updateEnvelopesByFilter))
       }
     }
     .subFeatures1()
@@ -205,27 +242,52 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
 
 // MARK: - FilterDialItem
 
-struct FilterDialItem: SSSelectBottomSheetPropertyItemable {
-  var description: String
-  var id: Int
+enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
+  case latest = 0
+  case oldest
+  case highestAmount
+  case lowestAmount
 
-  init(description: String, id: Int) {
-    self.description = description
-    self.id = id
+  var description: String {
+    switch self {
+    case .latest:
+      "최신순"
+    case .oldest:
+      "오래된순"
+    case .highestAmount:
+      "금액 높은 순"
+    case .lowestAmount:
+      "금액 낮은 순"
+    }
+  }
+
+  var id: Int { rawValue }
+
+  var sortString: String {
+    switch self {
+    case .latest:
+      "handedOverAt"
+    case .oldest:
+      "handedOverAt, desc"
+    case .highestAmount:
+      "amount, desc"
+    case .lowestAmount:
+      "amount"
+    }
   }
 }
 
 extension [FilterDialItem] {
   static var `default`: Self {
     return [
-      .init(description: "최신순", id: 0),
-      .init(description: "오래된순", id: 1),
-      .init(description: "금액 높은 순", id: 2),
-      .init(description: "금액 낮은 순", id: 3),
+      .latest,
+      .oldest,
+      .highestAmount,
+      .lowestAmount,
     ]
   }
 
   static var initialValue: FilterDialItem {
-    .init(description: "최신순", id: 0)
+    .latest
   }
 }

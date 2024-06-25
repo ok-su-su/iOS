@@ -6,14 +6,14 @@ import SwiftUI
 
 /// SliderValue to restrict double range: 0.0 to 1.0
 @propertyWrapper
-struct SliderValue {
+public struct SliderValue {
   var value: Double
 
-  init(wrappedValue: Double) {
+  public init(wrappedValue: Double) {
     value = wrappedValue
   }
 
-  var wrappedValue: Double {
+  public var wrappedValue: Double {
     get { value }
     set { value = min(max(0.0, newValue), 1.0) }
   }
@@ -37,7 +37,7 @@ public class SliderHandle: ObservableObject {
   var startLocation: CGPoint
 
   /// Current Value
-  @Published var currentPercentage: SliderValue
+  @Published public var currentPercentage: SliderValue
 
   /// Slider Button Location
   @Published var onDrag: Bool
@@ -109,12 +109,12 @@ public class SliderHandle: ObservableObject {
 
 public class CustomSlider: ObservableObject {
   /// Slider Size
-  let width: CGFloat
+  var width: CGFloat
   let lineWidth: CGFloat = 8
 
   /// Slider value range from valueStart to valueEnd
-  let valueStart: Double
-  let valueEnd: Double
+  var valueStart: Double
+  var valueEnd: Double
 
   /// Slider Handle
   @Published public var highHandle: SliderHandle
@@ -126,6 +126,27 @@ public class CustomSlider: ObservableObject {
 
   var anyCancellableHigh: AnyCancellable?
   var anyCancellableLow: AnyCancellable?
+
+  public func updateSlider(start: Double, end: Double) {
+    valueStart = start
+    valueEnd = end
+
+    highHandle = SliderHandle(
+      sliderWidth: width,
+      sliderHeight: lineWidth,
+      sliderValueStart: valueStart,
+      sliderValueEnd: valueEnd,
+      startPercentage: _highHandleStartPercentage
+    )
+
+    lowHandle = SliderHandle(
+      sliderWidth: width,
+      sliderHeight: lineWidth,
+      sliderValueStart: valueStart,
+      sliderValueEnd: valueEnd,
+      startPercentage: _lowHandleStartPercentage
+    )
+  }
 
   public init(start: Double, end: Double, width: CGFloat = 300) {
     self.width = width

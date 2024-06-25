@@ -68,7 +68,7 @@ struct SentMainView: View {
         // MARK: - 정렬 버튼
 
         // 정렬된 사람이 없을 때
-        if store.sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty {
+        if !store.state.isFilteredHeaderButtonItem {
           SSButton(Constants.notSelectedFilterButtonProperty) {
             store.send(.view(.tappedFilterButton))
           }
@@ -86,6 +86,23 @@ struct SentMainView: View {
               .cornerRadius(4)
           }
 
+          // amount Range Button
+          if let amountRangeBadgeText = store.sentMainProperty.sentPeopleFilterHelper.amountFilterBadgeText {
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: amountRangeBadgeText
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredAmountButton)
+            }
+          }
+
+          // 사람 버튼에 대한 표시
           let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
           ForEach(0 ..< filtered.count, id: \.self) { index in
             if index < filtered.count {
@@ -137,8 +154,10 @@ struct SentMainView: View {
         VStack(spacing: 16) {
           makeFilterSection()
           makeEnvelope()
+            .disabled(store.isLoading)
+            .modifier(SSLoadingModifier(isLoading: store.isLoading))
         }
-        .modifier(SSLoadingModifier(isLoading: store.isLoading))
+
         .padding(.horizontal, Constants.leadingAndTrailingSpacing)
       }
 

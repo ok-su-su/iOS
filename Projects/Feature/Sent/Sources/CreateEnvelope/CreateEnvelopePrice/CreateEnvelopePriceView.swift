@@ -30,7 +30,7 @@ struct CreateEnvelopePriceView: View {
   @ViewBuilder
   private func makeTextField() -> some View {
     ZStack {
-      // invisableTextField
+      // invisiableTextField
       TextField(
         "",
         text: $store.textFieldText.sending(\.view.changeText),
