@@ -24,7 +24,7 @@ struct SpecificEnvelopeHistoryListView: View {
       Spacer()
         .frame(height: 24)
 
-      // MARK: TopView, 상단 Progress 및 	title을 나타냅니다.
+      // MARK: TopView, 상단 Progress 및   title을 나타냅니다.
 
       VStack(alignment: .leading, spacing: 8) {
         Text(store.envelopeProperty.totalPriceText)
@@ -44,15 +44,17 @@ struct SpecificEnvelopeHistoryListView: View {
 
         EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress))
           .padding(.vertical, 24)
+      }
+      .padding(.horizontal, Metrics.horizontalSpacing)
 
-        SSColor.gray20
-          .frame(maxWidth: .infinity, maxHeight: 8)
+      SSColor.gray20
+        .frame(maxWidth: .infinity, maxHeight: 8)
 
-        Spacer()
-          .frame(height: 16)
-        ScrollView {
-          makeEnvelopeDetails()
-        }
+      Spacer()
+        .frame(height: 16)
+      ScrollView(.vertical, showsIndicators: false) {
+        makeEnvelopeDetails()
+          .padding(.horizontal, Metrics.horizontalSpacing)
       }
     }
   }
@@ -62,6 +64,9 @@ struct SpecificEnvelopeHistoryListView: View {
     LazyVStack {
       ForEach(store.envelopeContents) { property in
         makeDetailContentView(property)
+          .onTapGesture {
+            store.sendViewAction(.tappedSpecificEnvelope(property))
+          }
       }
       Spacer()
         .frame(height: 16)
@@ -95,9 +100,6 @@ struct SpecificEnvelopeHistoryListView: View {
     .onAppear {
       // TODO: 무한 스크롤 로직 작성
     }
-    .onTapGesture {
-      store.send(.view(.tappedSpecificEnvelope(property)))
-    }
   }
 
   var body: some View {
@@ -108,12 +110,10 @@ struct SpecificEnvelopeHistoryListView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
-          .padding(.horizontal, Metrics.horizontalSpacing)
       }
-      
     }
     .sSAlert(
-      isPresented: $store.isDeleteAlertPresent,
+      isPresented: $store.isDeleteAlertPresent.sending(\.view.presentAlert),
       messageAlertProperty: .init(
         titleText: Constants.alertTitleText,
         contentText: Constants.alertDescriptionText,

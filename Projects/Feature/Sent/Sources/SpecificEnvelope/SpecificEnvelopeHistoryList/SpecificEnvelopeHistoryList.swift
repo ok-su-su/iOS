@@ -35,8 +35,7 @@ struct SpecificEnvelopeHistoryList {
     }
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -44,8 +43,10 @@ struct SpecificEnvelopeHistoryList {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case presentAlert(Bool)
     case tappedSpecificEnvelope(EnvelopeContent)
     case tappedAlertConfirmButton
   }
@@ -53,11 +54,13 @@ struct SpecificEnvelopeHistoryList {
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
+    case pushEnvelopeDetail(EnvelopeDetailProperty)
   }
 
   enum AsyncAction: Equatable {
     case getEnvelopeDetail(page: Int)
     case deleteFriend
+    case getEnvelopeDetailByID(Int)
   }
 
   @CasePathable
@@ -76,8 +79,6 @@ struct SpecificEnvelopeHistoryList {
       EnvelopePriceProgress()
     }
 
-    BindingReducer()
-
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
@@ -94,14 +95,12 @@ struct SpecificEnvelopeHistoryList {
       case .scope(.header):
         return .none
 
+      // envelope Detail 화면으로 이동
       case let .view(.tappedSpecificEnvelope(property)):
-        // TODO: 화면 전환 로직
-        return .none
+        let id = property.id
+        return .send(.async(.getEnvelopeDetailByID(id)))
 
       case .scope(.envelopePriceProgress):
-        return .none
-
-      case .binding:
         return .none
 
       // 친구 삭제를 누를 경우
@@ -128,6 +127,21 @@ struct SpecificEnvelopeHistoryList {
           try await network.deleteFriend(id: id)
           await dismiss()
         }
+
+      case let .view(.presentAlert(present)):
+        state.isDeleteAlertPresent = present
+        return .none
+
+      case let .async(.getEnvelopeDetailByID(id)):
+        return .run { send in
+          let envelopeDetailProperty = try await network.getEnvelopeDetailPropertyByEnvelope(id: id)
+          await send(.inner(.pushEnvelopeDetail(envelopeDetailProperty)))
+        }
+
+      case let .inner(.pushEnvelopeDetail(property)):
+        SpecificEnvelopeHistoryRouterPublisher
+          .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
+        return .none
       }
     }
   }

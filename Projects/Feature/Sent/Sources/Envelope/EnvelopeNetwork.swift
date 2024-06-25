@@ -31,6 +31,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
     case searchLatestOfThreeEnvelope(friendID: Int)
     case searchEnvelope(friendID: Int, page: Int)
     case deleteFriend(friendID: Int)
+    case searchEnvelopeByID(Int)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -40,6 +41,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
         "envelopes"
       case .deleteFriend:
         "friends"
+      case let .searchEnvelopeByID(id):
+        "envelopes/\(id)"
       }
     }
 
@@ -76,6 +79,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
         )
       case let .deleteFriend(friendID: friendID):
         return .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
+      case .searchEnvelopeByID:
+        return .requestPlain
       }
     }
   }
@@ -94,6 +99,19 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
   func deleteFriend(id: Int) async throws {
     try await provider.request(.deleteFriend(friendID: id))
+  }
+
+  func getEnvelopeDetailPropertyByEnvelope(id: Int) async throws -> EnvelopeDetailProperty {
+    let data: SearchEnvelopeResponseDataDTO = try await provider.request(.searchEnvelopeByID(id))
+    return .init(
+      id: data.envelope.id,
+      price: data.envelope.amount,
+      eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
+      name: data.friend.name,
+      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
+      date: CustomDateFormatter.getDate(from: data.envelope.handedOverAt) ?? .now,
+      isVisited: nil
+    )
   }
 }
 

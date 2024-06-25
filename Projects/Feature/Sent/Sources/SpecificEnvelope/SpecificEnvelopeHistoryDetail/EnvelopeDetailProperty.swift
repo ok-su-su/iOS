@@ -11,15 +11,15 @@ import Foundation
 struct EnvelopeDetailProperty: Equatable, Identifiable {
   /// 봉투의 아이디 입니다.
   let id: Int
-  ///현재 봉투의 가격을 나타냅니다.
+  /// 현재 봉투의 가격을 나타냅니다.
   let price: Int
-   ///현재 봉투의 경조사 이름을 나타냅니다.
+  /// 현재 봉투의 경조사 이름을 나타냅니다.
   let eventName: String
   /// 봉투를 받은 사람의 이름을 나타냅니다.
   let name: String
   ///  현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
   let relation: String
-  ///현재 봉투를 주고받은 날짜를 나타냅니다.
+  /// 현재 봉투를 주고받은 날짜를 나타냅니다.
   let date: Date
   /// 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
   let isVisited: Bool?
@@ -58,7 +58,7 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
     (eventNameTitle, eventName),
     (nameTitle, name),
     (relationTitle, relation),
-    (dateTitle, dateText)
+    (dateTitle, dateText),
   ] + makeOptionalListContent() }
 
   func makeOptionalListContent() -> [(String, String)] {
@@ -87,7 +87,7 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   ///   - relation: 현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
   ///   - date: 현재 봉투를 주고받은 날짜를 나타냅니다.
   ///   - isVisited: 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
-  init(id: Int, price: Int, eventName: String, name: String, relation: String, date: Date, isVisited: Bool) {
+  init(id: Int, price: Int, eventName: String, name: String, relation: String, date: Date, isVisited: Bool?, gift: String? = nil, contacts: String? = nil, memo: String? = nil) {
     self.id = id
     self.price = price
     self.eventName = eventName
@@ -95,5 +95,8 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
     self.relation = relation
     self.date = date
     self.isVisited = isVisited
+    self.gift = gift
+    self.contacts = contacts
+    self.memo = memo
   }
 }

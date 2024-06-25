@@ -59,7 +59,7 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
       isCustomItem: nil,
       customTextFieldPrompt: nil
     )
-    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited)
+    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited ?? true)
 
     giftEditProperty = .init(gift: envelopeDetailProperty.gift ?? "")
 

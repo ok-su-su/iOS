@@ -22,6 +22,9 @@ struct SpecificEnvelopeHistoryRouterView: View {
     SpecificEnvelopeHistoryListView(
       store: store.scope(state: \.envelopeHistory, action: \.envelopeHistory)
     )
+    .onAppear {
+      store.send(.onAppear(true))
+    }
   }
 
   var body: some View {

@@ -22,9 +22,8 @@ struct SpecificEnvelopeHistoryEdit {
     @Shared var editHelper: SpecificEnvelopeHistoryEditHelper
 
     // TODO: BottomOFCompleteButton(다른 브런치에 있는 것 가져와서 수정)
-    init(editHelper: Shared<SpecificEnvelopeHistoryEditHelper>) {
-      _editHelper = editHelper
-
+    init(envelopeDetailProperty: EnvelopeDetailProperty) {
+      _editHelper = .init(.init(envelopeDetailProperty: envelopeDetailProperty))
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
       visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
@@ -119,7 +118,7 @@ struct SpecificEnvelopeHistoryEdit {
         return .run { send in
           await send(.scope(.eventSection(.initialValue(initialEvent))))
           await send(.scope(.relationSection(.initialValue(initialRelation))))
-          await send(.scope(.visitedSection(.initialValue(initialVisited))))
+          await send(.scope(.visitedSection(.initialValue(initialVisited ?? ""))))
         }
       }
     }

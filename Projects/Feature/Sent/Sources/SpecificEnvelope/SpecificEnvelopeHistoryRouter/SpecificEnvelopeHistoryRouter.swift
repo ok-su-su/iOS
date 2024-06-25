@@ -17,9 +17,7 @@ struct SpecificEnvelopeHistoryRouter {
     var isOnAppear = false
     var path: StackState<SpecificEnvelopeHistoryRouterPath.State> = .init()
     var envelopeHistory: SpecificEnvelopeHistoryList.State
-    @Shared var envelopeHistoryRouterHelper: SpecificEnvelopeHistoryRouterHelper
     init(envelopeProperty: EnvelopeProperty) {
-      _envelopeHistoryRouterHelper = .init(.init())
       envelopeHistory = .init(envelopeProperty: envelopeProperty)
     }
   }
@@ -45,37 +43,7 @@ struct SpecificEnvelopeHistoryRouter {
       case .path(.push(id: _, state: _)):
         return .none
 
-      // TODO: - ID를 통한 라우팅하는 흐름구현
-//        case let .specificEnvelopeHistoryList(.view(.tappedEnvelope(id))):
-//          state.path.append(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: .fakeData())))
-//          return .none
-//
-//        case .specificEnvelopeHistoryList(.scope(.header(.tappedDismissButton))):
-//          return .run { _ in
-//            await dismiss()
-//          }
-//
-//        case .specificEnvelopeHistoryList:
-//          return .none
-      case let .path(.element(id: _, action: action)):
-        switch action {
-        case .specificEnvelopeHistoryDetail(.inner(.editing)):
-          state.path.append(
-            .specificEnvelopeHistoryEdit(
-              SpecificEnvelopeHistoryEdit.State(
-                editHelper: state.$envelopeHistoryRouterHelper.envelopeHistoryEditHelper
-              )
-            )
-          )
-          return .none
-        case .specificEnvelopeHistoryDetail:
-          return .none
-
-        case .specificEnvelopeHistoryEdit:
-          return .none
-        }
-
-      case let .path(.popFrom(id: id)):
+      case .path:
         return .none
 
       case .envelopeHistory:
@@ -92,6 +60,7 @@ struct SpecificEnvelopeHistoryRouter {
             .map { .push($0) }
         }
         .cancellable(id: CancelID.pushPublisher, cancelInFlight: true)
+
       case let .push(pushState):
         state.path.append(pushState)
         return .none
