@@ -57,6 +57,7 @@ struct SpecificEnvelopeHistoryRouter {
         return .publisher {
           SpecificEnvelopeHistoryRouterPublisher
             .publisher
+            .receive(on: RunLoop.main)
             .map { .push($0) }
         }
         .cancellable(id: CancelID.pushPublisher, cancelInFlight: true)

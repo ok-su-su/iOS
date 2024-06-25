@@ -127,6 +127,22 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
       memo: data.envelope.memo
     )
   }
+
+  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int) async throws -> SpecificEnvelopeHistoryEditHelper {
+    let relationAndEventNetwork = CreateEnvelopeRelationAndEventNetwork()
+    // 맨 뒤 기타는 제거 합니다.
+    var events = try await relationAndEventNetwork.getEventItems()
+    _ = events.popLast()
+    // 맨 뒤 기타는 제거 합니다.
+    var relations = try await relationAndEventNetwork.getRelationItems()
+    _ = relations.popLast()
+
+    return try await .init(
+      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelope(id: envelopeID),
+      eventItems: events,
+      relationItems: relations
+    )
+  }
 }
 
 // MARK: - SearchLatestOfThreeEnvelopeResponseDTO

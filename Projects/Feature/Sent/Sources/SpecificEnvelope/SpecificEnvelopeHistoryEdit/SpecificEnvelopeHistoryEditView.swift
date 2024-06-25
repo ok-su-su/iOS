@@ -174,6 +174,7 @@ struct SpecificEnvelopeHistoryEditView: View {
         .ignoresSafeArea()
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .padding(.bottom, 16)
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
       }

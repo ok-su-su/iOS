@@ -13,11 +13,11 @@ import Foundation
 struct SpecificEnvelopeHistoryEditHelper: Equatable {
   var envelopeDetailProperty: EnvelopeDetailProperty
 
-  var eventSectionButtonHelper: SingleSelectButtonHelper<EventSingeSelectButtonItem>
-  var eventSectionButtonCustomItem: EventSingeSelectButtonItem = .init(title: "")
+  var eventSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeEventProperty>
+  var eventSectionButtonCustomItem: CreateEnvelopeEventProperty = .init(id: -1, title: "")
 
-  var relationSectionButtonHelper: SingleSelectButtonHelper<RelationSelectButtonItem>
-  var relationSectionButtonCustomItem: RelationSelectButtonItem = .init(title: "")
+  var relationSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeRelationItemProperty>
+  var relationSectionButtonCustomItem: CreateEnvelopeRelationItemProperty = .init(id: -1, title: "")
 
   var nameEditProperty: NameEditProperty
 
@@ -32,24 +32,39 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
 
   var memoEditProperty: MemoEditProperty
 
-  init(envelopeDetailProperty: EnvelopeDetailProperty) {
+  init(
+    envelopeDetailProperty: EnvelopeDetailProperty,
+    eventItems: [CreateEnvelopeEventProperty],
+    relationItems: [CreateEnvelopeRelationItemProperty]
+  ) {
     self.envelopeDetailProperty = envelopeDetailProperty
 
+    // 만약 현재 이벤트가 default 이벤트에 존재 하지 않는다면
+    eventSectionButtonCustomItem = .init(
+      id: eventItems.count,
+      title: !eventItems.contains { $0.title == envelopeDetailProperty.eventName } ? envelopeDetailProperty.eventName : ""
+    )
+
     eventSectionButtonHelper = .init(
-      titleText: envelopeDetailProperty.eventName,
-      items: EventSingeSelectButtonItem.defaultItems(),
+      titleText: envelopeDetailProperty.eventNameTitle,
+      items: eventItems,
       isCustomItem: eventSectionButtonCustomItem,
       customTextFieldPrompt: "경조사 이름"
     )
 
+    relationSectionButtonCustomItem = .init(
+      id: eventItems.count,
+      title: !eventItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
+    )
+
     relationSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.relationTitle,
-      items: RelationSelectButtonItem.defaultItems(),
+      items: relationItems,
       isCustomItem: relationSectionButtonCustomItem,
       customTextFieldPrompt: "관계 이름"
     )
 
-    nameEditProperty = .init(textFieldText: envelopeDetailProperty.eventName)
+    nameEditProperty = .init(textFieldText: envelopeDetailProperty.name)
 
     dateEditProperty = .init(date: envelopeDetailProperty.date)
 
@@ -59,6 +74,7 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
       isCustomItem: nil,
       customTextFieldPrompt: nil
     )
+
     visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited ?? true)
 
     giftEditProperty = .init(gift: envelopeDetailProperty.gift ?? "")
@@ -127,12 +143,13 @@ struct VisitedEditProperty: Equatable {
 // MARK: - VisitedSelectButtonItem
 
 struct VisitedSelectButtonItem: SingleSelectButtonItemable {
-  var id: UUID = .init()
+  var id: Int
   var title: String = ""
   var isVisited: Bool
-  init(isVisited: Bool) {
+  init(id: Int, title: String = "", isVisited: Bool) {
+    self.id = id
+    self.title = title
     self.isVisited = isVisited
-    setTitle(by: isVisited)
   }
 
   mutating func setTitle(by isVisited: Bool) {
@@ -143,8 +160,8 @@ struct VisitedSelectButtonItem: SingleSelectButtonItemable {
 extension VisitedSelectButtonItem {
   static func defaultItems() -> [Self] {
     return [
-      .init(isVisited: true),
-      .init(isVisited: false),
+      .init(id: 0, title: "예", isVisited: true),
+      .init(id: 1, title: "아니오", isVisited: false),
     ]
   }
 }
@@ -173,11 +190,12 @@ struct NameEditProperty: Equatable {
 // MARK: - RelationSelectButtonItem
 
 struct RelationSelectButtonItem: SingleSelectButtonItemable {
-  var id: UUID = .init()
+  var id: Int
 
   var title: String
 
-  init(title: String) {
+  init(id: Int, title: String) {
+    self.id = id
     self.title = title
   }
 }
@@ -190,16 +208,17 @@ extension RelationSelectButtonItem {
       "친척",
       "동료",
     ]
-    return defaultRelationNames.map { .init(title: $0) }
+    return defaultRelationNames.enumerated().map { .init(id: $0.offset, title: $0.element) }
   }
 }
 
 // MARK: - EventSingeSelectButtonItem
 
 struct EventSingeSelectButtonItem: SingleSelectButtonItemable {
-  var id: UUID = .init()
+  var id: Int
   var title: String
-  init(title: String) {
+  init(id: Int, title: String) {
+    self.id = id
     self.title = title
   }
 }
@@ -212,6 +231,6 @@ extension EventSingeSelectButtonItem {
       "장례식",
       "생일기념일",
     ]
-    return defaultsEventNames.map { .init(title: $0) }
+    return defaultsEventNames.enumerated().map { .init(id: $0.offset, title: $0.element) }
   }
 }

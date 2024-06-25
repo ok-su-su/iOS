@@ -16,14 +16,13 @@ struct SpecificEnvelopeHistoryEdit {
   struct State: Equatable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
-    var eventSection: TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.State
-    var relationSection: TitleAndItemsWithSingleSelectButton<RelationSelectButtonItem>.State
+    var eventSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.State
+    var relationSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.State
     var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeHistoryEditHelper
 
-    // TODO: BottomOFCompleteButton(다른 브런치에 있는 것 가져와서 수정)
-    init(envelopeDetailProperty: EnvelopeDetailProperty) {
-      _editHelper = .init(.init(envelopeDetailProperty: envelopeDetailProperty))
+    init(editHelper: SpecificEnvelopeHistoryEditHelper) {
+      _editHelper = .init(editHelper)
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
       visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
@@ -56,8 +55,8 @@ struct SpecificEnvelopeHistoryEdit {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
-    case eventSection(TitleAndItemsWithSingleSelectButton<EventSingeSelectButtonItem>.Action)
-    case relationSection(TitleAndItemsWithSingleSelectButton<RelationSelectButtonItem>.Action)
+    case eventSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.Action)
+    case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
     case visitedSection(TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.Action)
   }
 

@@ -38,11 +38,11 @@ struct SpecificEnvelopeHistoryDetail {
   }
 
   enum InnerAction: Equatable {
-    case editing
     case delete
   }
 
   enum AsyncAction: Equatable {
+    case pushEditing
     case deleteEnvelope
   }
 
@@ -70,7 +70,7 @@ struct SpecificEnvelopeHistoryDetail {
       case let .scope(.header(.tappedDoubleTextButton(buttonPosition))):
         switch buttonPosition {
         case .leading:
-          return .send(.inner(.editing))
+          return .send(.async(.pushEditing))
         case .trailing:
           state.isDeleteAlertPresent = true
           return .send(.inner(.delete))
@@ -80,10 +80,13 @@ struct SpecificEnvelopeHistoryDetail {
         return .none
 
       // TODO: Navigate EditingScene
-      case .inner(.editing):
-        SpecificEnvelopeHistoryRouterPublisher
-          .push(.specificEnvelopeHistoryEdit(.init(envelopeDetailProperty: state.envelopeDetailProperty)))
-        return .none
+      case .async(.pushEditing):
+
+        return .run { [id = state.envelopeDetailProperty.id] _ in
+          let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: id)
+          SpecificEnvelopeHistoryRouterPublisher
+            .push(.specificEnvelopeHistoryEdit(.init(editHelper: helper)))
+        }
 
       case .inner(.delete):
         state.isDeleteAlertPresent = true

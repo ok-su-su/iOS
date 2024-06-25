@@ -14,15 +14,16 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var singleSelectButtonHelper: SingleSelectButtonHelper<Item>
-    var customTextFieldText: String = ""
+    var customTextFieldText: String
     init(singleSelectButtonHelper: Shared<SingleSelectButtonHelper<Item>>) {
       _singleSelectButtonHelper = singleSelectButtonHelper
+      customTextFieldText = singleSelectButtonHelper.isCustomItem?.title.wrappedValue ?? ""
     }
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case tappedID(UUID)
+    case tappedID(Int)
     case tappedAddCustomButton
     case changedText(String)
     case tappedCloseButton
@@ -35,7 +36,13 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
+        if let customItemName = state.singleSelectButtonHelper.isCustomItem?.title {
+          state.singleSelectButtonHelper.saveCustomTextField(title: customItemName)
+        }
         return .none
       case let .tappedID(id):
         state.singleSelectButtonHelper.selectItem(by: id)
