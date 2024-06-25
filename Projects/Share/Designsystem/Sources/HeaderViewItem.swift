@@ -104,6 +104,7 @@ extension HeaderView {
         .onTapGesture {
           store.send(.tappedTextButton)
         }
+        .padding(.trailing, 16)
     case let .doubleText(leadingText, trailingText):
       HStack(spacing: 16) {
         Text(leadingText)
