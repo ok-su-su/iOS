@@ -45,9 +45,8 @@ struct SpecificEnvelopeHistoryListView: View {
         EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress))
           .padding(.vertical, 24)
 
-        Spacer()
+        SSColor.gray20
           .frame(maxWidth: .infinity, maxHeight: 8)
-          .foregroundStyle(SSColor.gray20)
 
         Spacer()
           .frame(height: 16)
@@ -109,8 +108,9 @@ struct SpecificEnvelopeHistoryListView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+          .padding(.horizontal, Metrics.horizontalSpacing)
       }
-      .padding(.horizontal, Metrics.horizontalSpacing)
+      
     }
     .sSAlert(
       isPresented: $store.isDeleteAlertPresent,

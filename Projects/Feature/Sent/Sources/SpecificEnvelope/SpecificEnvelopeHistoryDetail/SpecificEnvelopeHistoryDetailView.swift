@@ -62,7 +62,6 @@ struct SpecificEnvelopeHistoryDetailView: View {
   }
 
   var body: some View {
-    let alertProperty = store.alertProperty
     ZStack {
       SSColor
         .gray10
@@ -97,4 +96,8 @@ struct SpecificEnvelopeHistoryDetailView: View {
   }
 
   private enum Constants {}
+  
+  var alertProperty: (title: String, description: String, cancelButtonText: String, confirmButtonText: String) {
+    return ("봉투를 삭제할까요?", "삭제한 봉투는 다시 복구할 수 없어요", "취소", "삭제")
+  }
 }
