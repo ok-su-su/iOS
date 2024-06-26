@@ -99,8 +99,8 @@ struct OnboardingLoginView: View {
         .foregroundStyle(SSColor.orange20)
 
       SectorShape(
-        startAngle: .init(degrees: 0),
-        endAngle: endAngle,
+        startAngle: endAngle,
+        endAngle: .init(degrees: 0),
         clockwise: false
       )
       .stroke(SSColor.orange50, lineWidth: 8)
