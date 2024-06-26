@@ -40,7 +40,8 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
           return .none
         }
         state.isOnAppear = isAppear
-        if let customItemName = state.singleSelectButtonHelper.isCustomItem?.title {
+        if state.singleSelectButtonHelper.isCustomItem?.title != "",
+           let customItemName = state.singleSelectButtonHelper.isCustomItem?.title {
           state.singleSelectButtonHelper.saveCustomTextField(title: customItemName)
         }
         return .none

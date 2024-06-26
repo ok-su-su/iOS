@@ -14,10 +14,10 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
   var envelopeDetailProperty: EnvelopeDetailProperty
 
   var eventSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeEventProperty>
-  var eventSectionButtonCustomItem: CreateEnvelopeEventProperty = .init(id: -1, title: "")
+  var eventSectionButtonCustomItem: CreateEnvelopeEventProperty
 
   var relationSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeRelationItemProperty>
-  var relationSectionButtonCustomItem: CreateEnvelopeRelationItemProperty = .init(id: -1, title: "")
+  var relationSectionButtonCustomItem: CreateEnvelopeRelationItemProperty
 
   var nameEditProperty: NameEditProperty
 
@@ -50,6 +50,11 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
       items: eventItems,
       isCustomItem: eventSectionButtonCustomItem,
       customTextFieldPrompt: "경조사 이름"
+    )
+
+    relationSectionButtonCustomItem = .init(
+      id: relationItems.count,
+      title: !relationItems.contains { $0.title != envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
     )
 
     relationSectionButtonCustomItem = .init(

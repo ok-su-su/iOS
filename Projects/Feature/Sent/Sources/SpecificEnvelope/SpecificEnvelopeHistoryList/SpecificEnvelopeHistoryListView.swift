@@ -54,9 +54,11 @@ struct SpecificEnvelopeHistoryListView: View {
 
       Spacer()
         .frame(height: 16)
-      ScrollView(.vertical, showsIndicators: false) {
+      ScrollView(.vertical) {
         makeEnvelopeDetails()
           .padding(.horizontal, Metrics.horizontalSpacing)
+        Spacer()
+          .frame(height: 50)
       }
     }
   }
@@ -72,11 +74,6 @@ struct SpecificEnvelopeHistoryListView: View {
           .onTapGesture {
             store.sendViewAction(.tappedSpecificEnvelope(property))
           }
-
-        if store.isLoading {
-          ProgressView()
-            .modifier(SSLoadingModifier(isLoading: store.isLoading))
-        }
       }
     }
   }
