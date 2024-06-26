@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import FeatureAction
 import Foundation
 import SSSearch
@@ -20,11 +21,15 @@ struct SentSearch {
     var path: StackState<SpecificEnvelopeHistoryRouterPath.State> = .init()
     @Shared var property: SentSearchProperty
     var search: SSSearchReducer<SentSearchProperty>.State
+    var header: HeaderViewFeature.State = .init(.init(type: .depth2Default))
     init() {
       _property = .init(
         .init(
-          prevSearchedItem: [],
-          nowSearchedItem: [],
+          prevSearchedItem: [
+            SentSearchItem(id: 0, title: "dddd", firstContentDescription: "asdf", secondContentDescription: "aswssws"),
+          ],
+          nowSearchedItem: [
+          ],
           textFieldPromptText: "찾고 싶은 봉투를 검색해보세요",
           prevSearchedNoContentTitleText: "어떤 투표를 찾아드릴까요?",
           prevSearchedNoContentDescriptionText: "궁금하신 것들의 키워드를\n검색해볼 수 있어요",
@@ -43,11 +48,19 @@ struct SentSearch {
     case search(SSSearchReducer<SentSearchProperty>.Action)
     case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)
     case push(SpecificEnvelopeHistoryRouterPath.State)
+    case header(HeaderViewFeature.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.header) {
+      HeaderViewFeature()
+    }
+    Scope(state: \.search, action: \.search) {
+      SSSearchReducer()
+    }
+
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
@@ -67,7 +80,7 @@ struct SentSearch {
       case let .search(action):
         switch action {
         case let .changeTextField(textFieldText):
-          // TextField가 바뀌었을 때 검색 로직 추가
+          state.property.nowSearchedItem = [SentSearchItem(id: 1, title: "dddd", firstContentDescription: "asdf", secondContentDescription: "aswssws")]
           return .none
         case let .tappedPrevItem(id: id):
           // 과거 검색 기록 아이템을 클릭 했을 때 로직 추가
@@ -83,6 +96,9 @@ struct SentSearch {
         }
       case let .push(pathState):
         state.path.append(pathState)
+        return .none
+
+      case .header:
         return .none
       }
     }

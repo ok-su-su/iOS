@@ -256,7 +256,7 @@ struct SentMain {
 private extension Reducer where State == SentMain.State, Action == SentMain.Action {
   func subFeatures1() -> some ReducerOf<Self> {
     ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
-      SearchEnvelope()
+      SentSearch()
     }
     .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
       SentEnvelopeFilter()

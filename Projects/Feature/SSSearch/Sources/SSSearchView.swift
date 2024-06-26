@@ -114,6 +114,8 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
                       .modifier(SSTypoModifier(.text_xxs))
                       .foregroundStyle(SSColor.gray40)
                   }
+
+                  Spacer()
                 }
               }
             }

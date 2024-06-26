@@ -24,14 +24,19 @@ struct SentSearchView: View {
 
   // MARK: Content
 
-  @ViewBuilder
-  private func makeContentView() -> some View {
-    VStack(spacing: 0) {}
-  }
-
   var body: some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      SSSearchView(store: store.scope(state: \.search, action: \.search))
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+          .padding(.bottom, 8)
+        SSSearchView(store: store.scope(state: \.search, action: \.search))
+          .navigationBarBackButtonHidden()
+          .onAppear {
+            store.send(.onAppear(true))
+          }
+          .padding(.horizontal, 16)
+      }
+
     } destination: { store in
       switch store.case {
       case let .specificEnvelopeHistoryDetail(store):
@@ -41,19 +46,6 @@ struct SentSearchView: View {
       case let .specificEnvelopeHistoryEdit(store):
         SpecificEnvelopeHistoryEditView(store: store)
       }
-    }
-
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
-      }
-    }
-    .navigationBarBackButtonHidden()
-    .onAppear {
-      store.send(.onAppear(true))
     }
   }
 
