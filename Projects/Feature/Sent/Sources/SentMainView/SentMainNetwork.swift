@@ -119,9 +119,9 @@ struct SentMainNetwork: Equatable, DependencyKey {
 // MARK: - SearchFriendsParameter
 
 struct SearchFriendsParameter {
-  var friendIds: [Int] = []
-  var fromTotalAmounts: Int?
-  var toTotalAmounts: Int?
+  var friendIds: [Int64] = []
+  var fromTotalAmounts: Int64?
+  var toTotalAmounts: Int64?
   var page: Int = 0
   var size: Int = 30
   var sort: FilterDialItem = .latest

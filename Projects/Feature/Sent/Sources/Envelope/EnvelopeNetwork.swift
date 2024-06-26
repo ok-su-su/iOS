@@ -29,11 +29,11 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   }
 
   enum Network: SSNetworkTargetType {
-    case searchLatestOfThreeEnvelope(friendID: Int)
-    case searchEnvelope(friendID: Int, page: Int)
-    case deleteFriend(friendID: Int)
-    case deleteEnvelope(envelopeID: Int)
-    case searchEnvelopeByID(Int)
+    case searchLatestOfThreeEnvelope(friendID: Int64)
+    case searchEnvelope(friendID: Int64, page: Int)
+    case deleteFriend(friendID: Int64)
+    case deleteEnvelope(envelopeID: Int64)
+    case searchEnvelopeByID(Int64)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -95,26 +95,26 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
   private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func getEnvelope(friendID: Int, page: Int) async throws -> [EnvelopeContent] {
+  func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
     os_log("요청한 Page \(page)")
     let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
     return data.data.map { $0.toEnvelopeContent() }
   }
 
-  func getEnvelope(id: Int) async throws -> [EnvelopeContent] {
+  func getEnvelope(id: Int64) async throws -> [EnvelopeContent] {
     let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: id))
     return data.data.map { $0.toEnvelopeContent() }
   }
 
-  func deleteFriend(id: Int) async throws {
+  func deleteFriend(id: Int64) async throws {
     try await provider.request(.deleteFriend(friendID: id))
   }
 
-  func deleteEnvelope(id: Int) async throws {
+  func deleteEnvelope(id: Int64) async throws {
     try await provider.request(.deleteEnvelope(envelopeID: id))
   }
 
-  func getEnvelopeDetailPropertyByEnvelope(id: Int) async throws -> EnvelopeDetailProperty {
+  func getEnvelopeDetailPropertyByEnvelope(id: Int64) async throws -> EnvelopeDetailProperty {
     let data: SearchEnvelopeResponseDataDTO = try await provider.request(.searchEnvelopeByID(id))
     return .init(
       id: data.envelope.id,
@@ -130,7 +130,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
     )
   }
 
-  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int) async throws -> SpecificEnvelopeHistoryEditHelper {
+  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeHistoryEditHelper {
     let relationAndEventNetwork = CreateEnvelopeRelationAndEventNetwork()
     // 맨 뒤 기타는 제거 합니다.
     var events = try await relationAndEventNetwork.getEventItems()

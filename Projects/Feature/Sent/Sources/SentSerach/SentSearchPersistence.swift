@@ -21,7 +21,7 @@ struct SentSearchPersistence {
       .split(separator: ",")
       .map { String($0) }
       .enumerated()
-      .map { .init(id: $0.offset, title: $0.element) }
+      .map { .init(id: Int64($0.offset), title: $0.element) }
   }
 
   func setSearchItems(_ item: SentSearchItem) {

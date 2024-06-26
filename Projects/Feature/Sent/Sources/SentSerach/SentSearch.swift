@@ -175,7 +175,7 @@ struct SentSearchProperty: SSSearchPropertiable {
 
 struct SentSearchItem: SSSearchItemable, Hashable {
   /// 친구의 아이디 입니다.
-  var id: Int
+  var id: Int64
   /// 친구의 이름 입니다.
   var title: String
   /// 경조사 이름 입니다.

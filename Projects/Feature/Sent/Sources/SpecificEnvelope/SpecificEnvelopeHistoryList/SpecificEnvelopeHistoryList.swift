@@ -63,7 +63,7 @@ struct SpecificEnvelopeHistoryList {
   enum AsyncAction: Equatable {
     case getEnvelopeDetail
     case deleteFriend
-    case getEnvelopeDetailByID(Int)
+    case getEnvelopeDetailByID(Int64)
   }
 
   @CasePathable

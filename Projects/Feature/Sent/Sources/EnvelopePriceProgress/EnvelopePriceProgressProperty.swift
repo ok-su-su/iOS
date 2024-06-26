@@ -17,13 +17,13 @@ struct EnvelopePriceProgressProperty: Equatable {
     return Double(leadingPriceValue) / Double(leadingPriceValue + trailingPriceValue)
   }
 
-  var leadingPriceValue: Int
-  var trailingPriceValue: Int
+  var leadingPriceValue: Int64
+  var trailingPriceValue: Int64
 
   var leadingDescriptionText: String = "보냈어요"
   var trailingDescriptionText: String = "받았어요"
 
-  init(leadingPriceValue: Int, trailingPriceValue: Int) {
+  init(leadingPriceValue: Int64, trailingPriceValue: Int64) {
     self.leadingPriceValue = leadingPriceValue
     self.trailingPriceValue = trailingPriceValue
   }

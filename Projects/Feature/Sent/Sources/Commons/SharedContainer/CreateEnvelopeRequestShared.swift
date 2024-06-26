@@ -10,7 +10,7 @@ import Foundation
 import OSLog
 
 enum CreateEnvelopeRequestShared {
-  static func setFriendID(id: Int) {
+  static func setFriendID(id: Int64) {
     os_log("CreateEnvelopeRequest의 FriendID을 저장합니다.\nid = \(id)")
     var body = getBody()
     body.friendID = id

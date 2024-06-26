@@ -25,9 +25,9 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
     case onAppear(Bool)
     case tappedCloseButton
     case changeTextField(String)
-    case tappedPrevItem(id: Int)
-    case tappedDeletePrevItem(id: Int)
-    case tappedSearchItem(id: Int)
+    case tappedPrevItem(id: Int64)
+    case tappedDeletePrevItem(id: Int64)
+    case tappedSearchItem(id: Int64)
   }
 
   public var body: some Reducer<State, Action> {

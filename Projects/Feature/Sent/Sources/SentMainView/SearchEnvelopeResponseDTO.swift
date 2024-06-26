@@ -37,9 +37,9 @@ struct SearchFriendsResponseDTO: Codable, Equatable {
 /// 친구 검색 화면에 사용되는 ResponseDTO입니다. 친구가 누가 있는지 그리고 검색을 위해 활용됩니다.
 struct SearchFriendsResponseDataDTO: Codable, Equatable {
   let friend: SearchFriendsFriendResponseDTO
-  let totalAmounts: Int
-  let sentAmounts: Int
-  let receivedAmounts: Int
+  let totalAmounts: Int64
+  let sentAmounts: Int64
+  let receivedAmounts: Int64
 
   enum CodingKeys: CodingKey {
     case friend
@@ -52,7 +52,7 @@ struct SearchFriendsResponseDataDTO: Codable, Equatable {
 // MARK: - SearchFriendsFriendResponseDTO
 
 struct SearchFriendsFriendResponseDTO: Codable, Equatable {
-  let id: Int
+  let id: Int64
   let name: String
   let phoneNumber: String?
 
@@ -142,9 +142,13 @@ struct SearchEnvelopeResponseDataDTO: Codable, Equatable {
 // MARK: - SearchEnvelopeResponseCategoryDTO
 
 struct SearchEnvelopeResponseCategoryDTO: Codable, Equatable {
+  /// 카테고리 아이디
   let id: Int
+  ///
   let seq: Int
+  /// 카테고리 이름
   let category: String
+  /// 커스텀 카테고리면 not nill
   let customCategory: String?
   let style: String?
 
@@ -161,13 +165,13 @@ struct SearchEnvelopeResponseCategoryDTO: Codable, Equatable {
 
 struct SearchEnvelopeResponseEnvelopeDTO: Codable, Equatable {
   ///  봉투 id
-  let id: Int
+  let id: Int64
   /// user id, 소유자
-  let uid: Int
+  let uid: Int64
   /// Sent or RECIVED
   let type: String
   /// 금액
-  let amount: Int
+  let amount: Int64
   /// 선물
   let gift: String?
   /// 메모
@@ -193,7 +197,7 @@ struct SearchEnvelopeResponseEnvelopeDTO: Codable, Equatable {
 
 struct SearchEnvelopeResponseFriendDTO: Codable, Equatable {
   /// 지인 ID
-  let id: Int
+  let id: Int64
   /// 지인 이름
   let name: String
   /// 지인 전화번호
@@ -209,8 +213,11 @@ struct SearchEnvelopeResponseFriendDTO: Codable, Equatable {
 // MARK: - SearchEnvelopeResponseFriendRelationshipDTO
 
 struct SearchEnvelopeResponseFriendRelationshipDTO: Codable, Equatable {
-  let id: Int
-  let friendID: Int
+  /// 지인 ID
+  let id: Int64
+  /// 지인 ID
+  let friendID: Int64
+  /// 관계 ID
   let relationshipID: Int
   let customRelation: String?
 
