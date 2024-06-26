@@ -170,6 +170,9 @@ struct EnvelopeView: View {
         .frame(height: 8)
       makeEnvelopeDetailView()
     }
+    .onAppear {
+      store.send(.isOnAppear(true))
+    }
   }
 
   private enum Metrics {

@@ -18,6 +18,7 @@ struct Envelope {
     var showDetail: Bool = false
     var envelopePriceProgress: EnvelopePriceProgress.State = .init(envelopePriceProgressProperty: .makeFakeData())
     var isLoading: Bool = false
+    var isAppear: Bool = false
 
     var progressValue: CGFloat {
       return 150
@@ -45,6 +46,7 @@ struct Envelope {
     case isLoading(Bool)
     case updateEnvelopeContent([EnvelopeContent])
     case pushEnvelopeDetail(EnvelopeProperty)
+    case isOnAppear(Bool)
   }
 
   var body: some Reducer<State, Action> {
@@ -79,6 +81,12 @@ struct Envelope {
         state.envelopeProperty.envelopeContents = val
         return .none
       case .pushEnvelopeDetail:
+        return .none
+      case let .isOnAppear(appeared):
+        if state.isAppear {
+          return .none
+        }
+        state.isAppear = appeared
         return .none
       }
     }

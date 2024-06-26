@@ -28,6 +28,8 @@ struct SentMain {
     var floatingButton: FloatingButton.State = .init()
     var isLoading = true
     var isOnAppear = false
+    var page: Int = 0
+    var isEndOfPage: Bool = false
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
@@ -37,7 +39,6 @@ struct SentMain {
 
     @Shared var sentMainProperty: SentMainProperty
 
-    // TODO: Change With APIS
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
     var isFilteredHeaderButtonItem: Bool {
@@ -79,8 +80,8 @@ struct SentMain {
 
   @CasePathable
   enum AsyncAction: Equatable {
-    case updateEnvelopes(FilterDialItem?)
     case updateEnvelopesByFilter
+    case updateEnvelopesByFilterInitialPage
   }
 
   @CasePathable
@@ -101,6 +102,10 @@ struct SentMain {
   enum DelegateAction: Equatable {
     case pushSearchEnvelope
     case pushFilter
+  }
+
+  private enum ThrottleID {
+    case getFriendThrottleID
   }
 
   var body: some Reducer<State, Action> {
@@ -155,16 +160,26 @@ struct SentMain {
         state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
         return .none
 
-      case let .scope(.filterBottomSheet(.presented(.tapped(item: item)))):
-        return .send(.async(.updateEnvelopes(item)))
+      case .scope(.filterBottomSheet(.presented(.tapped(item: _)))):
+        return .send(.async(.updateEnvelopesByFilter))
 
       // FilterView에서 confirmButton을 누른다면, Server에 FilterData를 요청합니다.
       case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
-        return .send(.async(.updateEnvelopesByFilter))
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       // specificEnvelopeHistoryRouter가 사라지면 서버로부터 요청을 보냅니다.
       case .scope(.specificEnvelopeHistoryRouter(.dismiss)):
-        return .send(.async(.updateEnvelopesByFilter))
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+      // 만약 envelope Reducer onAppear방출시 맨 마지막 일 경우이면서, endOfPage가 아닐 경우 서버로 요청합니다.
+      case let .scope(.envelopes(.element(id: uuid, action: .isOnAppear(true)))):
+        if state.envelopes.last?.id == uuid && !state.isEndOfPage {
+          let isEndOfPage = state.isEndOfPage.description
+          os_log("페이지를 요청합니다., \(isEndOfPage.description)")
+          return .send(.async(.updateEnvelopesByFilter))
+            .throttle(id: ThrottleID.getFriendThrottleID, for: 2, scheduler: RunLoop.main, latest: false)
+        }
+        return .none
 
       case .scope:
         return .none
@@ -174,10 +189,18 @@ struct SentMain {
           return .none
         }
         state.isOnAppear = appear
-        return .send(.async(.updateEnvelopes(state.sentMainProperty.selectedFilterDial)))
+        return .send(.async(.updateEnvelopesByFilter))
+          .throttle(id: ThrottleID.getFriendThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
 
       case let .inner(.updateEnvelopes(val)):
-        state.envelopes = .init(uniqueElements: val.map { .init(envelopeProperty: $0) })
+        let prevEnvelopesCount = state.envelopes.count
+        let currentEnvelopeProperty = (state.envelopes.map(\.envelopeProperty) + val).uniqued()
+        let uniqueElement = currentEnvelopeProperty.map { Envelope.State(envelopeProperty: $0) }
+
+        if prevEnvelopesCount == state.envelopes.count || val.count % 30 != 0 {
+          state.isEndOfPage = true
+        }
+        state.envelopes = .init(uniqueElements: uniqueElement)
         return .none
 
       case let .inner(.isLoading(val)):
@@ -185,11 +208,14 @@ struct SentMain {
         return .none
 
       case .async(.updateEnvelopesByFilter):
+        let page = state.page
+        state.page += 1
         let urlParameter = SearchFriendsParameter(
           friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
           fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
           toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
-          sort: state.sentMainProperty.selectedFilterDial ?? .latest
+          page: page,
+          sort: state.sentMainProperty.selectedFilterDial ?? .highestAmount
         )
         return .run { send in
           await send(.inner(.isLoading(true)))
@@ -198,21 +224,30 @@ struct SentMain {
           await send(.inner(.isLoading(false)))
         }
 
-      case let .async(.updateEnvelopes(item)):
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestSearchFriends(item ?? .latest)
-          await send(.inner(.updateEnvelopes(envelopeProperties)))
-          await send(.inner(.isLoading(false)))
-        }
-
       case let .view(.tappedFilteredPersonButton(id: id)):
         state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
-        return .send(.async(.updateEnvelopesByFilter))
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       case .view(.tappedFilteredAmountButton):
         state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
-        return .send(.async(.updateEnvelopesByFilter))
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+      case .async(.updateEnvelopesByFilterInitialPage):
+        state.page = 1
+        state.isEndOfPage = false
+        let urlParameter = SearchFriendsParameter(
+          friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+          fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+          toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
+          page: 0,
+          sort: state.sentMainProperty.selectedFilterDial ?? .latest
+        )
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+          await send(.inner(.updateEnvelopes(envelopeProperties)))
+          await send(.inner(.isLoading(false)))
+        }
       }
     }
     .subFeatures1()
