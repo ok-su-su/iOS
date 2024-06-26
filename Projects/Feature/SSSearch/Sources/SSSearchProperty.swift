@@ -50,8 +50,9 @@ public enum SSSearchIconType: Equatable, CaseIterable {
 // MARK: - SSSearchItemable
 
 public protocol SSSearchItemable: Equatable, Identifiable {
-  var id: Int64 { get }
   /// 검색시 표시될 아이디 입니다.
+  var id: Int64 { get }
+  /// 검색시 표시될 이름 입니다.
   var title: String { get }
   /// 검색시 표시될 설명의 첫번째 Text입니다. 보통 경조사 이름을 기재합니다.
   var firstContentDescription: String? { get }
