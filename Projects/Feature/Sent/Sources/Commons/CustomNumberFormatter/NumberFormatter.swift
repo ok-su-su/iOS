@@ -25,6 +25,14 @@ enum CustomNumberFormatter {
     return formatterString + (subFixString ?? "")
   }
 
+  static func formattedByThreeZero(_ val: Int64, subFixString: String? = nil) -> String? {
+    numberFormatter.numberStyle = .decimal
+    guard let formatterString = numberFormatter.string(for: val) else {
+      return nil
+    }
+    return formatterString + (subFixString ?? "")
+  }
+
   static func priceToInt(_ val: String) -> Int? {
     let converted = val.map { String($0) }.compactMap { Int($0) }.map { String($0) }.joined()
     return Int(converted)

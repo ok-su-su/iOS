@@ -23,7 +23,7 @@ struct FilterProperty: Equatable {
   }
 
   struct FilterEnvelopePrice: Equatable {
-    var maximum: Int
-    var minimum: Int
+    var maximum: Int64
+    var minimum: Int64
   }
 }

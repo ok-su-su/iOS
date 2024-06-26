@@ -45,10 +45,10 @@ struct SentEnvelopeFilter {
   enum Action: Equatable {
     case isLoading(Bool)
     case onAppear(Bool)
-    case tappedPerson(Int)
-    case tappedSelectedPerson(Int)
+    case tappedPerson(Int64)
+    case tappedSelectedPerson(Int64)
     case reset
-    case tappedConfirmButton(lowest: Int? = nil, highest: Int? = nil)
+    case tappedConfirmButton(lowest: Int64? = nil, highest: Int64? = nil)
     case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
@@ -125,7 +125,7 @@ struct SentEnvelopeFilter {
 
       case let .tappedConfirmButton(lowestVal, highestVal):
         // 만약 입력된 값이 초기값과 똑같지 않을 경우(Slider에 변화가 있을 경우)
-        if !(lowestVal == Int(state.sliderStartValue) && highestVal == Int(state.sliderEndValue)) {
+        if !(lowestVal == Int64(state.sliderStartValue) && highestVal == Int64(state.sliderEndValue)) {
           state.filterHelper.lowestAmount = lowestVal
           state.filterHelper.highestAmount = highestVal
         }

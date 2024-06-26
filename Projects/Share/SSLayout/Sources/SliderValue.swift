@@ -100,8 +100,8 @@ public class SliderHandle: ObservableObject {
     return sliderValueStart + currentPercentage.wrappedValue * sliderValueRange
   }
 
-  public var currentValueBy1000: Int {
-    return Int(currentValue) / 1000 * 1000
+  public var currentValueBy1000: Int64 {
+    return Int64(currentValue) / 1000 * 1000
   }
 }
 

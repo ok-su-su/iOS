@@ -67,7 +67,7 @@ struct SentMain {
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
     case onAppear(Bool)
-    case tappedFilteredPersonButton(id: Int)
+    case tappedFilteredPersonButton(id: Int64)
     case tappedFilteredAmountButton
   }
 

@@ -15,9 +15,9 @@ struct CreateEnvelopeRequestBody: Codable, Equatable {
   /// 봉투의 SENT혹은 RECIVE를 통해 타입을 전달합니다.
   var type: String
   /// 봉투의 친구 ID입니다.
-  var friendID: Int? = nil
+  var friendID: Int64? = nil
   /// NIL
-  var ledgerID: Int? = nil
+  var ledgerID: Int64? = nil
   /// 봉투의 총액입니다.
   var amount: Int64? = nil
   /// 어떤 선물을 주고받았는지 활용됩니다.

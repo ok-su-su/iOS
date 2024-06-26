@@ -18,10 +18,10 @@ struct SentPeopleFilterHelper: Equatable {
 
   var sentPeople: [SentPerson]
   var selectedPerson: [SentPerson] = []
-  var ssButtonProperties: [Int: SSButtonPropertyState] = [:]
+  var ssButtonProperties: [Int64: SSButtonPropertyState] = [:]
 
-  var lowestAmount: Int? = nil
-  var highestAmount: Int? = nil
+  var lowestAmount: Int64? = nil
+  var highestAmount: Int64? = nil
 
   var isFilteredAmount: Bool {
     return lowestAmount != nil && highestAmount != nil
@@ -66,7 +66,7 @@ struct SentPeopleFilterHelper: Equatable {
     setButtonProperties()
   }
 
-  mutating func select(selectedId: Int) {
+  mutating func select(selectedId: Int64) {
     if
       let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
       let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
@@ -88,9 +88,9 @@ struct SentPeopleFilterHelper: Equatable {
 // MARK: - SentPerson
 
 struct SentPerson: Identifiable, Equatable, Hashable {
-  let id: Int
+  let id: Int64
   let name: String
-  init(id: Int, name: String) {
+  init(id: Int64, name: String) {
     self.id = id
     self.name = name
   }
