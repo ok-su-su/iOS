@@ -23,8 +23,10 @@ final class CustomDateFormatter {
   }
 
   /// yyyy.MM.dd 의 String으로 반환해줍니다.
-  static func getYearAndMonthDateString(from val: String) -> String? {
-    guard let date = getDate(from: val) else {
+  static func getYearAndMonthDateString(from val: String?) -> String? {
+    guard let val,
+          let date = getDate(from: val)
+    else {
       return nil
     }
     formatter.dateFormat = "yyyy.MM.dd"
@@ -35,6 +37,11 @@ final class CustomDateFormatter {
   static func getFullDateString(from val: Date) -> String {
     formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
     return formatter.string(from: val)
+  }
+
+  static func getKoreanDateString(from date: Date) -> String {
+    formatter.dateFormat = "yyyy년 MM월 dd일"
+    return formatter.string(from: date)
   }
 
   /// Date을 dateFormmate으로 변경시켜줍니다.

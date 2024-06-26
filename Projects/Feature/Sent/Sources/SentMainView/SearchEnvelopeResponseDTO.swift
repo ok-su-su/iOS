@@ -41,7 +41,7 @@ struct SearchFriendsResponseDataDTO: Codable, Equatable {
   let sentAmounts: Int
   let receivedAmounts: Int
 
-  enum CodingKeys: String, CodingKey {
+  enum CodingKeys: CodingKey {
     case friend
     case totalAmounts
     case sentAmounts
@@ -80,6 +80,44 @@ struct SearchEnvelopeResponseDTO: Codable, Equatable {
     case totalPage
     case totalCount
     case sort
+  }
+}
+
+// MARK: - SearchEnvelopeResponseDTOWithOptional
+
+struct SearchEnvelopeResponseDTOWithOptional: Codable, Equatable {
+  let data: [SearchEnvelopeResponseDataDTOWithOptional]
+  let page: Int?
+  let size: Int?
+  let totalPage: Int
+  let totalCount: Int
+  let sort: SortResponseDTO
+
+  enum CodingKeys: String, CodingKey {
+    case data
+    case page
+    case size
+    case totalPage
+    case totalCount
+    case sort
+  }
+}
+
+// MARK: - SearchEnvelopeResponseDataDTOWithOptional
+
+struct SearchEnvelopeResponseDataDTOWithOptional: Codable, Equatable {
+  let envelope: SearchEnvelopeResponseEnvelopeDTO
+  let category: SearchEnvelopeResponseCategoryDTO?
+  let friend: SearchEnvelopeResponseFriendDTO?
+  let relationship: SearchEnvelopeResponseRelationshipDTO?
+  let friendRelationship: SearchEnvelopeResponseFriendRelationshipDTO?
+
+  enum CodingKeys: String, CodingKey {
+    case envelope
+    case category
+    case friend
+    case relationship
+    case friendRelationship
   }
 }
 

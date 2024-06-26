@@ -98,15 +98,18 @@ extension HeaderView {
     case let .text(text):
       Text(text)
         .modifier(SSTypoModifier(.title_xxs))
+        .foregroundStyle(SSColor.gray100)
         .padding(Constants.imagePadding)
         .frame(alignment: .trailing)
         .onTapGesture {
           store.send(.tappedTextButton)
         }
+        .padding(.trailing, 16)
     case let .doubleText(leadingText, trailingText):
       HStack(spacing: 16) {
         Text(leadingText)
           .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray100)
           .padding(Constants.imagePadding)
           .frame(alignment: .trailing)
           .onTapGesture {
@@ -114,6 +117,7 @@ extension HeaderView {
           }
         Text(trailingText)
           .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray100)
           .padding(Constants.imagePadding)
           .frame(alignment: .trailing)
           .onTapGesture {

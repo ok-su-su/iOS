@@ -9,6 +9,7 @@
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -64,6 +65,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
 
   func requestSearchFriends(_ parameter: SearchFriendsParameter) async throws -> [EnvelopeProperty] {
     let data: SearchFriendsResponseDTO = try await provider.request(.searchFriendsByParameter(parameter))
+    os_log("친구들의 봉투를 요청합니다.")
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(
         id: dto.friend.id,
@@ -85,6 +87,31 @@ struct SentMainNetwork: Equatable, DependencyKey {
         totalSentPrice: dto.sentAmounts,
         totalReceivedPrice: dto.receivedAmounts
       )
+    }
+  }
+
+  func requestSearchFriends(_ amount: Int) async throws -> [SentSearchItem] {
+    let data: SearchEnvelopeResponseDTOWithOptional = try await provider
+      .request(
+        .searchEnvelope(
+          .init(
+            types: [.SENT],
+            include: [.CATEGORY, .FRIEND, .RELATIONSHIP],
+            fromAmount: amount,
+            toAmount: amount,
+            size: 5
+          )
+        )
+      )
+    return data.data.compactMap { dto -> SentSearchItem? in
+      guard let friendID = dto.friend?.id,
+            let friendName = dto.friend?.name,
+            let dateString = CustomDateFormatter.getYearAndMonthDateString(from: dto.envelope.handedOverAt),
+            let relationshipName = dto.relationship?.relation
+      else {
+        return nil
+      }
+      return .init(id: friendID, title: friendName, firstContentDescription: relationshipName, secondContentDescription: dateString)
     }
   }
 }

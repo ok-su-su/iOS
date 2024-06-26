@@ -9,16 +9,25 @@
 import Foundation
 
 struct EnvelopeDetailProperty: Equatable, Identifiable {
-  let id: UUID = .init()
+  /// 봉투의 아이디 입니다.
+  let id: Int
+  /// 현재 봉투의 가격을 나타냅니다.
   let price: Int
+  /// 현재 봉투의 경조사 이름을 나타냅니다.
   let eventName: String
+  /// 봉투를 받은 사람의 이름을 나타냅니다.
   let name: String
+  ///  현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
   let relation: String
+  /// 현재 봉투를 주고받은 날짜를 나타냅니다.
   let date: Date
-  let isVisited: Bool
-
+  /// 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
+  let isVisited: Bool?
+  /// 봉투의 선물을 나타냅니다.
   var gift: String?
+  /// 봉투의 연락처를 나타냅니다.
   var contacts: String?
+  /// 봉투의 메모를 나타냅니다.
   var memo: String?
 
   var priceText: String {
@@ -26,11 +35,14 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   }
 
   var dateText: String {
-    return "2023년 11월 25일"
+    return CustomDateFormatter.getKoreanDateString(from: date)
   }
 
-  var isVisitedText: String {
-    return isVisited ? "예" : "아니오"
+  var isVisitedText: String? {
+    if let isVisited {
+      return isVisited ? "예" : "아니오"
+    }
+    return nil
   }
 
   var eventNameTitle = "경조사"
@@ -47,11 +59,13 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
     (nameTitle, name),
     (relationTitle, relation),
     (dateTitle, dateText),
-    (visitedTitle, isVisitedText),
   ] + makeOptionalListContent() }
 
   func makeOptionalListContent() -> [(String, String)] {
     var res: [(String, String)] = []
+    if let isVisitedText {
+      res.append((visitedTitle, isVisitedText))
+    }
     if let gift {
       res.append((giftTitle, gift))
     }
@@ -64,29 +78,25 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
     return res
   }
 
-  static func fakeData() -> Self {
-    return [
-      EnvelopeDetailProperty(price: 150_000, eventName: "돌잔치", name: "김민희", relation: "친구", date: .now, isVisited: true),
-      EnvelopeDetailProperty(price: 1500, eventName: "결혼식", name: "김철수", relation: "친구", date: .now, isVisited: true),
-      EnvelopeDetailProperty(price: 200_000, eventName: "장례식", name: "뉴진스", relation: "친구", date: .now, isVisited: true),
-      EnvelopeDetailProperty(price: 150_000, eventName: "집들이", name: "블랙핑크", relation: "친구", date: .now, isVisited: true),
-    ][Int.random(in: 0 ..< 4)]
-  }
-
   /// 봉투의 상세 내용을 표시하기 위해 사용됩니다.
   /// - Parameters:
+  ///   - id: 봉투의 아이디 입니다.
   ///   - price: 현재 봉투의 가격을 나타냅니다.
   ///   - eventName: 현재 봉투의 경조사 이름을 나타냅니다.
   ///   - name: 현재 봉투를 주고받은 대상의 이름을 나타냅니다.
   ///   - relation: 현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
   ///   - date: 현재 봉투를 주고받은 날짜를 나타냅니다.
   ///   - isVisited: 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
-  init(price: Int, eventName: String, name: String, relation: String, date: Date, isVisited: Bool) {
+  init(id: Int, price: Int, eventName: String, name: String, relation: String, date: Date, isVisited: Bool?, gift: String? = nil, contacts: String? = nil, memo: String? = nil) {
+    self.id = id
     self.price = price
     self.eventName = eventName
     self.name = name
     self.relation = relation
     self.date = date
     self.isVisited = isVisited
+    self.gift = gift
+    self.contacts = contacts
+    self.memo = memo
   }
 }

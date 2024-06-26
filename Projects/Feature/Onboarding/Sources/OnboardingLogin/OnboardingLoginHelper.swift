@@ -19,7 +19,7 @@ struct OnboardingLoginHelper: Equatable {
   private var currentPriceText: String
 
   init() {
-    currentSectorShapeDegree = 270
+    currentSectorShapeDegree = -360 + 45
     currentPercentageText = "87%"
     currentPriceText = "10만원"
   }

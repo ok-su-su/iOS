@@ -19,7 +19,6 @@ struct SentMainView: View {
 
   init(store: StoreOf<SentMain>) {
     self.store = store
-    store.send(.view(.onAppear(true)))
   }
 
   @ViewBuilder
@@ -170,11 +169,14 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
       CreateEnvelopeRouterView(store: store)
     }
+    .onAppear {
+      store.send(.view(.onAppear(true)))
+    }
     .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
       SentEnvelopeFilterView(store: store)
     }
     .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
-      SearchEnvelopeView(store: store)
+      SentSearchView(store: store)
     }
     .modifier(
       SSSelectableBottomSheetModifier(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet)

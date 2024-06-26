@@ -85,6 +85,23 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
       )
     }
   }
+
+  func searchFriendBy(name: String) async throws -> [SentSearchItem] {
+    let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: name))
+    return data.data.compactMap { dto -> SentSearchItem? in
+      guard let recentEnvelope = dto.recentEnvelope,
+            let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
+      else {
+        return nil
+      }
+      return .init(
+        id: dto.friend.id,
+        title: dto.friend.name,
+        firstContentDescription: dto.recentEnvelope?.category,
+        secondContentDescription: targetDate
+      )
+    }
+  }
 }
 
 // MARK: - SearchFriendsByNameResponseDTO

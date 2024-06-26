@@ -23,7 +23,7 @@ public protocol SSSearchPropertiable: Equatable {
   var iconType: SSSearchIconType { get set }
   /// 검색 결과가 없을 경우 보여줄 Title입니다.
   var noSearchResultTitle: String { get set }
-  /// 검색 결과가 없을 경우 보여줄 TItle의 설명입니다.
+  /// 검색 결과가 없을 경우 보여줄 Title의 설명입니다.
   var noSearchResultDescription: String { get set }
 
   /// 검색 혹은, 과거 검색 이력에 사용되는 타입입니다.

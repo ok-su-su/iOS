@@ -50,7 +50,8 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
 
         // 만약 CustomItem을 추가할 수 있을 떄
         if let customItem = store.singleSelectButtonHelper.isCustomItem {
-          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem || store.singleSelectButtonHelper.isSaved { // CustomText Field Button
+          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem || store.singleSelectButtonHelper.isSaved {
+            // CustomText Field Button
             SSTextFieldButton(
               .init(
                 size: .sh32,

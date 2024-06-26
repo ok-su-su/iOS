@@ -6,24 +6,59 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
+extension DependencyValues {
+  var envelopeNetwork: EnvelopeNetwork {
+    get { self[EnvelopeNetwork.self] }
+    set { self[EnvelopeNetwork.self] = newValue }
+  }
+}
+
 // MARK: - EnvelopeNetwork
 
-struct EnvelopeNetwork: Equatable {
+struct EnvelopeNetwork: Equatable, DependencyKey {
+  static var liveValue: EnvelopeNetwork = .init()
   static func == (_: EnvelopeNetwork, _: EnvelopeNetwork) -> Bool {
     return true
   }
 
   enum Network: SSNetworkTargetType {
     case searchLatestOfThreeEnvelope(friendID: Int)
+    case searchEnvelope(friendID: Int, page: Int)
+    case deleteFriend(friendID: Int)
+    case deleteEnvelope(envelopeID: Int)
+    case searchEnvelopeByID(Int)
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes" }
-    var method: Moya.Method { .get }
+    var path: String {
+      switch self {
+      case .searchEnvelope,
+           .searchLatestOfThreeEnvelope:
+        "envelopes"
+      case .deleteFriend:
+        "friends"
+      case let .searchEnvelopeByID(id):
+        "envelopes/\(id)"
+      case let .deleteEnvelope(envelopeID: id):
+        "envelopes/\(id)"
+      }
+    }
+
+    var method: Moya.Method {
+      switch self {
+      case .deleteFriend:
+        return .delete
+      default:
+        return .get
+      }
+    }
+
     var task: Moya.Task {
       switch self {
       case let .searchLatestOfThreeEnvelope(friendID):
@@ -35,23 +70,80 @@ struct EnvelopeNetwork: Equatable {
           ],
           encoding: URLEncoding.queryString
         )
+
+      case let .searchEnvelope(friendID: friendID, page: page):
+        return .requestParameters(
+          parameters: [
+            "friendIds": friendID,
+            "size": 15,
+            "include": "FRIEND,RELATIONSHIP,CATEGORY",
+            "page": page,
+          ],
+          encoding: URLEncoding.queryString
+        )
+      case let .deleteFriend(friendID: friendID):
+        return .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
+
+      case .searchEnvelopeByID:
+        return .requestPlain
+
+      case .deleteEnvelope:
+        return .requestPlain
       }
     }
   }
 
   private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
+  func getEnvelope(friendID: Int, page: Int) async throws -> [EnvelopeContent] {
+    os_log("요청한 Page \(page)")
+    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
+    return data.data.map { $0.toEnvelopeContent() }
+  }
+
   func getEnvelope(id: Int) async throws -> [EnvelopeContent] {
     let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: id))
+    return data.data.map { $0.toEnvelopeContent() }
+  }
 
-    return data.data.map {
-      .init(
-        dateText: CustomDateFormatter.getYearAndMonthDateString(from: $0.envelope.handedOverAt) ?? "",
-        eventName: $0.relationship.relation,
-        envelopeType: $0.envelope.type == "SENT" ? .sent : .receive,
-        price: $0.envelope.amount
-      )
-    }
+  func deleteFriend(id: Int) async throws {
+    try await provider.request(.deleteFriend(friendID: id))
+  }
+
+  func deleteEnvelope(id: Int) async throws {
+    try await provider.request(.deleteEnvelope(envelopeID: id))
+  }
+
+  func getEnvelopeDetailPropertyByEnvelope(id: Int) async throws -> EnvelopeDetailProperty {
+    let data: SearchEnvelopeResponseDataDTO = try await provider.request(.searchEnvelopeByID(id))
+    return .init(
+      id: data.envelope.id,
+      price: data.envelope.amount,
+      eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
+      name: data.friend.name,
+      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
+      date: CustomDateFormatter.getDate(from: data.envelope.handedOverAt) ?? .now,
+      isVisited: data.envelope.hasVisited,
+      gift: data.envelope.gift,
+      contacts: data.friend.phoneNumber,
+      memo: data.envelope.memo
+    )
+  }
+
+  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int) async throws -> SpecificEnvelopeHistoryEditHelper {
+    let relationAndEventNetwork = CreateEnvelopeRelationAndEventNetwork()
+    // 맨 뒤 기타는 제거 합니다.
+    var events = try await relationAndEventNetwork.getEventItems()
+    _ = events.popLast()
+    // 맨 뒤 기타는 제거 합니다.
+    var relations = try await relationAndEventNetwork.getRelationItems()
+    _ = relations.popLast()
+
+    return try await .init(
+      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelope(id: envelopeID),
+      eventItems: events,
+      relationItems: relations
+    )
   }
 }
 
@@ -73,4 +165,16 @@ struct SearchLatestOfThreeEnvelopeDataResponseDTO: Decodable {
   let category: SearchEnvelopeResponseCategoryDTO
   let relationship: SearchEnvelopeResponseRelationshipDTO
   let friend: SearchEnvelopeResponseFriendDTO
+}
+
+extension SearchLatestOfThreeEnvelopeDataResponseDTO {
+  func toEnvelopeContent() -> EnvelopeContent {
+    return .init(
+      id: envelope.id,
+      dateText: CustomDateFormatter.getYearAndMonthDateString(from: envelope.handedOverAt) ?? "",
+      eventName: relationship.relation,
+      envelopeType: envelope.type == "SENT" ? .sent : .receive,
+      price: envelope.amount
+    )
+  }
 }

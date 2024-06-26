@@ -77,6 +77,7 @@ struct SpecificEnvelopeHistoryEditView: View {
       TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.changeNameTextField), prompt: nil)
         .frame(maxWidth: .infinity)
         .modifier(SSTypoModifier(.title_s))
+        .foregroundStyle(SSColor.gray70)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
@@ -174,6 +175,7 @@ struct SpecificEnvelopeHistoryEditView: View {
         .ignoresSafeArea()
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .padding(.bottom, 16)
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
       }

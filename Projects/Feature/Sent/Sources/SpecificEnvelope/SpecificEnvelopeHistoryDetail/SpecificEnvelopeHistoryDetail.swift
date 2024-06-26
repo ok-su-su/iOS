@@ -21,10 +21,6 @@ struct SpecificEnvelopeHistoryDetail {
     init(envelopeDetailProperty: EnvelopeDetailProperty) {
       self.envelopeDetailProperty = envelopeDetailProperty
     }
-
-    var alertProperty: (title: String, description: String, cancelButtonText: String, confirmButtonText: String) {
-      return ("봉투를 삭제할까요?", "삭제한 봉투는 다시 복구할 수 없어요", "취소", "삭제")
-    }
   }
 
   enum Action: Equatable, FeatureAction, BindableAction {
@@ -42,11 +38,13 @@ struct SpecificEnvelopeHistoryDetail {
   }
 
   enum InnerAction: Equatable {
-    case editing
     case delete
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case pushEditing
+    case deleteEnvelope
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -55,6 +53,8 @@ struct SpecificEnvelopeHistoryDetail {
 
   enum DelegateAction: Equatable {}
 
+  @Dependency(\.envelopeNetwork) var network
+  @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -70,7 +70,7 @@ struct SpecificEnvelopeHistoryDetail {
       case let .scope(.header(.tappedDoubleTextButton(buttonPosition))):
         switch buttonPosition {
         case .leading:
-          return .send(.inner(.editing))
+          return .send(.async(.pushEditing))
         case .trailing:
           state.isDeleteAlertPresent = true
           return .send(.inner(.delete))
@@ -80,8 +80,13 @@ struct SpecificEnvelopeHistoryDetail {
         return .none
 
       // TODO: Navigate EditingScene
-      case .inner(.editing):
-        return .none
+      case .async(.pushEditing):
+
+        return .run { [id = state.envelopeDetailProperty.id] _ in
+          let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: id)
+          SpecificEnvelopeHistoryRouterPublisher
+            .push(.specificEnvelopeHistoryEdit(.init(editHelper: helper)))
+        }
 
       case .inner(.delete):
         state.isDeleteAlertPresent = true
@@ -89,9 +94,15 @@ struct SpecificEnvelopeHistoryDetail {
       case .binding:
         return .none
 
-      // TODO: 들리트 버튼을 눌렀을 때 로직 실행
+      // 삭제 버튼 눌렀을 경우
       case .view(.tappedAlertConfirmButton):
-        return .none
+        return .send(.async(.deleteEnvelope))
+
+      case .async(.deleteEnvelope):
+        return .run { [id = state.envelopeDetailProperty.id] _ in
+          try await network.deleteEnvelope(id: id)
+          await dismiss()
+        }
       }
     }
   }

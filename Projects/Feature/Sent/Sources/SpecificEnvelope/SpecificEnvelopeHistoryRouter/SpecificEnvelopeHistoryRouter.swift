@@ -15,77 +15,66 @@ struct SpecificEnvelopeHistoryRouter {
   @ObservableState
   struct State {
     var isOnAppear = false
-    var path: StackState<Path.State> = .init()
-    @Shared var envelopeHistoryRouterHelper: SpecificEnvelopeHistoryRouterHelper
-    init() {
-      _envelopeHistoryRouterHelper = .init(.init())
+    var path: StackState<SpecificEnvelopeHistoryRouterPath.State> = .init()
+    var envelopeHistory: SpecificEnvelopeHistoryList.State
+    init(envelopeProperty: EnvelopeProperty) {
+      envelopeHistory = .init(envelopeProperty: envelopeProperty)
     }
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case path(StackActionOf<Path>)
+    case push(SpecificEnvelopeHistoryRouterPath.State)
+    case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)
+    case envelopeHistory(SpecificEnvelopeHistoryList.Action)
+  }
+
+  enum CancelID {
+    case pushPublisher
   }
 
   @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
+    Scope(state: \.envelopeHistory, action: \.envelopeHistory) {
+      SpecificEnvelopeHistoryList()
+    }
     Reduce { state, action in
       switch action {
-      case let .onAppear(isAppear):
-        state.isOnAppear = isAppear
-        state.path.append(.specificEnvelopeHistoryList(
-          .init(envelopeHistoryHelper: state.$envelopeHistoryRouterHelper.specificEnvelopeHistoryListProperty)
-        ))
-        return .none
-
       case .path(.push(id: _, state: _)):
         return .none
 
-      case let .path(.element(id: _, action: action)):
-        switch action {
-        // TODO: - ID를 통한 라우팅하는 흐름구현
-        case let .specificEnvelopeHistoryList(.view(.tappedEnvelope(id))):
-          state.path.append(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: .fakeData())))
-          return .none
+      case .path:
+        return .none
 
-        case .specificEnvelopeHistoryList(.scope(.header(.tappedDismissButton))):
-          return .run { _ in
-            await dismiss()
-          }
+      case .envelopeHistory:
+        return .none
 
-        case .specificEnvelopeHistoryList:
-          return .none
-
-        case .specificEnvelopeHistoryDetail(.inner(.editing)):
-          state.path.append(
-            .specificEnvelopeHistoryEdit(
-              SpecificEnvelopeHistoryEdit.State(
-                editHelper: state.$envelopeHistoryRouterHelper.envelopeHistoryEditHelper
-              )
-            )
-          )
-          return .none
-        case .specificEnvelopeHistoryDetail:
-          return .none
-        case .specificEnvelopeHistoryEdit:
+      case let .onAppear(appear):
+        if state.isOnAppear {
           return .none
         }
+        state.isOnAppear = appear
+        return .publisher {
+          SpecificEnvelopeHistoryRouterPublisher
+            .publisher
+            .receive(on: RunLoop.main)
+            .map { .push($0) }
+        }
+        .cancellable(id: CancelID.pushPublisher, cancelInFlight: true)
 
-      case let .path(.popFrom(id: id)):
+      case let .push(pushState):
+        state.path.append(pushState)
         return .none
       }
-
     }.forEach(\.path, action: \.path)
   }
 }
 
-// MARK: SpecificEnvelopeHistoryRouter.Path
+// MARK: - SpecificEnvelopeHistoryRouterPath
 
-extension SpecificEnvelopeHistoryRouter {
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
-    case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
-    case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
-  }
+@Reducer(state: .equatable, action: .equatable)
+enum SpecificEnvelopeHistoryRouterPath {
+  case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
+  case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
+  case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
 }

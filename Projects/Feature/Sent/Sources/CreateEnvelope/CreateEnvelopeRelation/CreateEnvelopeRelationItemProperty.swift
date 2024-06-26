@@ -42,8 +42,8 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
 // MARK: - CreateEnvelopeRelationItemProperty
 
-struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  let id: Int
+struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable, SingleSelectButtonItemable {
+  var id: Int
   var title: String
 
   init(id: Int, title: String) {

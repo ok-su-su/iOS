@@ -12,15 +12,6 @@ struct SpecificEnvelopeHistoryRouterHelper: Equatable {
   var specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty
   var envelopeHistoryEditHelper: SpecificEnvelopeHistoryEditHelper
 
-  // TODO: API Logic
-  init() {
-    specificEnvelopeHistoryListProperty = .init(
-      envelopePriceProgressProperty: .makeFakeData(),
-      envelopeContents: []
-    )
-    envelopeHistoryEditHelper = .init(envelopeDetailProperty: .fakeData())
-  }
-
   init(
     specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty,
     envelopeHistoryEditHelper: SpecificEnvelopeHistoryEditHelper

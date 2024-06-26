@@ -11,7 +11,7 @@ import Foundation
 // MARK: - SingleSelectButtonItemable
 
 protocol SingleSelectButtonItemable: Identifiable, Equatable {
-  var id: UUID { get set }
+  var id: Int { get set }
   var title: String { get set }
 }
 
@@ -37,7 +37,7 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     self.customTextFieldPrompt = customTextFieldPrompt
   }
 
-  mutating func selectItem(by id: UUID) {
+  mutating func selectItem(by id: Int) {
     if let firstItemIndex = items.firstIndex(where: { $0.id == id }) {
       selectedItem = items[firstItemIndex]
     }
