@@ -18,6 +18,7 @@ import SSBottomSelectSheet
 @Reducer
 struct SentMain {
   init() {}
+
   @ObservableState
   struct State {
     // MARK: - Scope

@@ -9,6 +9,7 @@
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -95,6 +96,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func getEnvelope(friendID: Int, page: Int) async throws -> [EnvelopeContent] {
+    os_log("요청한 Page \(page)")
     let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
     return data.data.map { $0.toEnvelopeContent() }
   }

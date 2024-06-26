@@ -22,6 +22,8 @@ struct SpecificEnvelopeHistoryList {
     var envelopeProperty: EnvelopeProperty
     var envelopeContents: [EnvelopeContent] = []
     var isLoading: Bool = false
+    var page = 0
+    var isEndOfPage: Bool = false
 
     init(envelopeProperty: EnvelopeProperty) {
       self.envelopeProperty = envelopeProperty
@@ -49,6 +51,7 @@ struct SpecificEnvelopeHistoryList {
     case presentAlert(Bool)
     case tappedSpecificEnvelope(EnvelopeContent)
     case tappedAlertConfirmButton
+    case onAppearDetail(EnvelopeContent)
   }
 
   enum InnerAction: Equatable {
@@ -58,7 +61,7 @@ struct SpecificEnvelopeHistoryList {
   }
 
   enum AsyncAction: Equatable {
-    case getEnvelopeDetail(page: Int)
+    case getEnvelopeDetail
     case deleteFriend
     case getEnvelopeDetailByID(Int)
   }
@@ -74,6 +77,10 @@ struct SpecificEnvelopeHistoryList {
 
   enum DelegateAction: Equatable {}
 
+  enum ThrottleID {
+    case requestEnvelope
+  }
+
   var body: some Reducer<State, Action> {
     Scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress) {
       EnvelopePriceProgress()
@@ -86,7 +93,7 @@ struct SpecificEnvelopeHistoryList {
           return .none
         }
         state.isOnAppear = isAppear
-        return .send(.async(.getEnvelopeDetail(page: 0)))
+        return .send(.async(.getEnvelopeDetail))
 
       case .scope(.header(.tappedTextButton)):
         state.isDeleteAlertPresent = true
@@ -107,7 +114,9 @@ struct SpecificEnvelopeHistoryList {
       case .view(.tappedAlertConfirmButton):
         return .send(.async(.deleteFriend))
 
-      case let .async(.getEnvelopeDetail(page: page)):
+      case .async(.getEnvelopeDetail):
+        let page = state.page
+        state.page += 1
         return .run { [id = state.envelopeProperty.id] send in
           await send(.inner(.isLoading(true)))
           let envelopeContents = try await network.getEnvelope(friendID: id, page: page)
@@ -119,7 +128,11 @@ struct SpecificEnvelopeHistoryList {
         return .none
 
       case let .inner(.updateEnvelopeContents(envelopeContents)):
-        state.envelopeContents = envelopeContents
+        let prevEnvelopesCount = state.envelopeContents.count
+        state.envelopeContents = (state.envelopeContents + envelopeContents).uniqued()
+        if prevEnvelopesCount == state.envelopeContents.count {
+          state.isEndOfPage = true
+        }
         return .none
 
       case .async(.deleteFriend):
@@ -142,6 +155,13 @@ struct SpecificEnvelopeHistoryList {
         SpecificEnvelopeHistoryRouterPublisher
           .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
         state.isOnAppear = false
+        return .none
+
+      case let .view(.onAppearDetail(property)):
+        if property == state.envelopeContents.last && !state.isEndOfPage {
+          return .send(.async(.getEnvelopeDetail))
+            .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
+        }
         return .none
       }
     }

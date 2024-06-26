@@ -35,7 +35,7 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   }
 
   var dateText: String {
-    return "2023년 11월 25일"
+    return CustomDateFormatter.getKoreanDateString(from: date)
   }
 
   var isVisitedText: String? {

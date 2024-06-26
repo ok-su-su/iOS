@@ -106,7 +106,7 @@ public struct SSDateSelectBottomSheetView: View {
         .frame(maxWidth: .infinity)
         .datePickerStyle(.wheel)
         .labelsHidden()
-        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko-kr"))
+        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
         .padding()
         .colorMultiply(SSColor.gray100)
         .font(.custom(.title_xxs))

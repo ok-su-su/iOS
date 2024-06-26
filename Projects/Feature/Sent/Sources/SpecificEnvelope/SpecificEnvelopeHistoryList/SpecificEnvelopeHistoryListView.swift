@@ -11,6 +11,8 @@ import SSAlert
 import SwiftUI
 
 struct SpecificEnvelopeHistoryListView: View {
+  @State private var position = 0
+
   // MARK: Reducer
 
   @Bindable
@@ -64,12 +66,18 @@ struct SpecificEnvelopeHistoryListView: View {
     LazyVStack {
       ForEach(store.envelopeContents) { property in
         makeDetailContentView(property)
+          .onAppear {
+            store.sendViewAction(.onAppearDetail(property))
+          }
           .onTapGesture {
             store.sendViewAction(.tappedSpecificEnvelope(property))
           }
+
+        if store.isLoading {
+          ProgressView()
+            .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        }
       }
-      Spacer()
-        .frame(height: 16)
     }
   }
 
