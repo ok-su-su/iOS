@@ -196,7 +196,7 @@ struct SentMain {
         let prevEnvelopesCount = state.envelopes.count
         let currentEnvelopeProperty = (state.envelopes.map(\.envelopeProperty) + val).uniqued()
         let uniqueElement = currentEnvelopeProperty.map { Envelope.State(envelopeProperty: $0) }
-
+        // API 보낼 때 보내는사이즈가 30입니다. 30보다 적게 오는 경우 남은 봉투가 이보다 적다고 판단합니다.
         if prevEnvelopesCount == state.envelopes.count || val.count % 30 != 0 {
           state.isEndOfPage = true
         }
@@ -232,9 +232,11 @@ struct SentMain {
         state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
         return .send(.async(.updateEnvelopesByFilterInitialPage))
 
+      // 0페이지의 Envleope을 요청합니다. 현재 envelopes를 지웁니다. 
       case .async(.updateEnvelopesByFilterInitialPage):
         state.page = 1
         state.isEndOfPage = false
+        state.envelopes = .init(uniqueElements: [])
         let urlParameter = SearchFriendsParameter(
           friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
           fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
