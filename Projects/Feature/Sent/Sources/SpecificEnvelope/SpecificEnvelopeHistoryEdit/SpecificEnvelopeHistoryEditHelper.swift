@@ -52,14 +52,10 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
       customTextFieldPrompt: "경조사 이름"
     )
 
+    // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = .init(
       id: relationItems.count,
-      title: !relationItems.contains { $0.title != envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
-    )
-
-    relationSectionButtonCustomItem = .init(
-      id: eventItems.count,
-      title: !eventItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
+      title: !relationItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
     )
 
     relationSectionButtonHelper = .init(
