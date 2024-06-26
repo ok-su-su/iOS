@@ -34,7 +34,7 @@ struct SentMain {
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
-    @Presents var searchEnvelope: SearchEnvelope.State?
+    @Presents var searchEnvelope: SentSearch.State?
     @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
 
     @Shared var sentMainProperty: SentMainProperty
@@ -93,14 +93,13 @@ struct SentMain {
     case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
     case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
-    case searchEnvelope(PresentationAction<SearchEnvelope.Action>)
+    case searchEnvelope(PresentationAction<SentSearch.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
     case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
   }
 
   enum DelegateAction: Equatable {
-    case pushSearchEnvelope
     case pushFilter
   }
 
@@ -133,14 +132,11 @@ struct SentMain {
         return .none
 
       case .scope(.header(.tappedSearchButton)):
-        state.searchEnvelope = SearchEnvelope.State(searchHelper: state.$sentMainProperty.searchHelper)
+        state.searchEnvelope = .init()
         return .none
 
       case .scope(.floatingButton(.tapped)):
         return .send(.inner(.showCreateEnvelopRouter))
-
-      case .delegate(.pushSearchEnvelope):
-        return .none
 
       case .binding:
         return .none
@@ -232,7 +228,7 @@ struct SentMain {
         state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
         return .send(.async(.updateEnvelopesByFilterInitialPage))
 
-      // 0페이지의 Envleope을 요청합니다. 현재 envelopes를 지웁니다. 
+      // 0페이지의 Envleope을 요청합니다. 현재 envelopes를 지웁니다.
       case .async(.updateEnvelopesByFilterInitialPage):
         state.page = 1
         state.isEndOfPage = false

@@ -74,6 +74,7 @@ struct SpecificEnvelopeHistoryRouter {
 
 @Reducer(state: .equatable, action: .equatable)
 enum SpecificEnvelopeHistoryRouterPath {
+  case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
   case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
   case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
 }

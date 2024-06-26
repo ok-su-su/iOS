@@ -89,7 +89,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
       let searchResult = store.helper.nowSearchedItem
       if !searchResult.isEmpty {
-        // 최대 5개 까지
+        // 최대 5개 까지 나타냄
         ForEach(0 ..< min(searchResult.count, 5), id: \.self) { ind in
           if ind < searchResult.count {
             let currentItem = searchResult[ind]

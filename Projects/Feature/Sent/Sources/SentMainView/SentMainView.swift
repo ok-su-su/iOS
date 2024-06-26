@@ -176,7 +176,7 @@ struct SentMainView: View {
       SentEnvelopeFilterView(store: store)
     }
     .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
-      SearchEnvelopeView(store: store)
+      SentSearchView(store: store)
     }
     .modifier(
       SSSelectableBottomSheetModifier(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet)

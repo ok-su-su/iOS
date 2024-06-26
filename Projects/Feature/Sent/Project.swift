@@ -11,6 +11,7 @@ let project = Project.makeModule(
       .core(.coreLayers),
       .share(.shareLayer),
       .share(.sSLayout),
+      .feature(.sSSearch),
     ],
     testDependencies: []
   )
