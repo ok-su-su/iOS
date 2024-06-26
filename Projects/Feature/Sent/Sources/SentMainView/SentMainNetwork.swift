@@ -89,6 +89,18 @@ struct SentMainNetwork: Equatable, DependencyKey {
       )
     }
   }
+  
+  func requestSearchFriends(_ amount: Int) async throws -> [SentSearchItem] {
+    let data: SearchFriendsResponseDTO = try await provider.request(.searchEnvelope(.init(types: [.SENT], include: [.CATEGORY, .FRIEND],fromAmount: amount, toAmount: amount)))
+    return data.data.map{
+      .init(
+        id: $0.friend.id,
+        title: $0.friend.name,
+        firstContentDescription: $0.category?.category,
+        secondContentDescription: CustomDateFormatter.getYearAndMonthDateString(from: $0.envelope?.handedOverAt)
+    )
+    }
+  }
 }
 
 // MARK: - SearchFriendsParameter

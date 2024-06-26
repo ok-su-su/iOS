@@ -37,12 +37,16 @@ struct SearchFriendsResponseDTO: Codable, Equatable {
 /// 친구 검색 화면에 사용되는 ResponseDTO입니다. 친구가 누가 있는지 그리고 검색을 위해 활용됩니다.
 struct SearchFriendsResponseDataDTO: Codable, Equatable {
   let friend: SearchFriendsFriendResponseDTO
+  let envelope: SearchEnvelopeResponseEnvelopeDTO?
+  let category: SearchEnvelopeResponseCategoryDTO?
   let totalAmounts: Int
   let sentAmounts: Int
   let receivedAmounts: Int
 
-  enum CodingKeys: String, CodingKey {
+  enum CodingKeys: CodingKey {
     case friend
+    case envelope
+    case category
     case totalAmounts
     case sentAmounts
     case receivedAmounts

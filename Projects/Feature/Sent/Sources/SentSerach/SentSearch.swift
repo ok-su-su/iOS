@@ -43,15 +43,25 @@ struct SentSearch {
     }
   }
 
+  @Dependency(\.sentSearchNetwork) var network
+  @Dependency(\.sentSearchPersistence) var persistence
+  
   enum Action: Equatable {
     case onAppear(Bool)
     case search(SSSearchReducer<SentSearchProperty>.Action)
     case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)
     case push(SpecificEnvelopeHistoryRouterPath.State)
     case header(HeaderViewFeature.Action)
+    case searchEnvelope
+    case updateSearchResult([SentSearchItem])
+    case updatePrevSearchedItems
   }
 
   enum DelegateAction: Equatable {}
+  
+  enum ThrottleID {
+    case searchThrottleID
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
@@ -68,10 +78,13 @@ struct SentSearch {
           return .none
         }
         state.isOnAppear = isAppear
-        return .publisher {
-          SpecificEnvelopeHistoryRouterPublisher.publisher
-            .map { .push($0) }
-        }
+        return .merge(
+          .publisher {
+            SpecificEnvelopeHistoryRouterPublisher.publisher
+              .map { .push($0) }
+          },
+          .send(.updatePrevSearchedItems)
+        )
       case .path:
         return .none
 
@@ -80,7 +93,10 @@ struct SentSearch {
       case let .search(action):
         switch action {
         case let .changeTextField(textFieldText):
-          state.property.nowSearchedItem = [SentSearchItem(id: 1, title: "dddd", firstContentDescription: "asdf", secondContentDescription: "aswssws")]
+          if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
+            return .send(.searchEnvelope)
+              .throttle(id: ThrottleID.searchThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: true)
+          }
           return .none
         case let .tappedPrevItem(id: id):
           // 과거 검색 기록 아이템을 클릭 했을 때 로직 추가
@@ -99,6 +115,26 @@ struct SentSearch {
         return .none
 
       case .header:
+        return .none
+
+      case .searchEnvelope:
+        let currentTextFieldText = state.property.textFieldText
+        return .run { send in
+          // 이름을 통해 검색
+          var searchedEnvelopes = try await network.searchFriendsBy(name: currentTextFieldText)
+          // 금액을 통해 검색
+          if let amount = Int(currentTextFieldText) {
+            searchedEnvelopes += try await network.searchEnvelopeBy(amount: amount)
+          }
+          await send(.updateSearchResult(searchedEnvelopes.uniqued()))
+        }
+        
+      case let .updateSearchResult(results):
+        state.property.nowSearchedItem = results
+        return .none
+        
+      case .updatePrevSearchedItems:
+        state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
         return .none
       }
     }
@@ -132,9 +168,13 @@ struct SentSearchProperty: SSSearchPropertiable {
 
 // MARK: - SentSearchItem
 
-struct SentSearchItem: SSSearchItemable {
+struct SentSearchItem: SSSearchItemable, Hashable {
+  /// 친구의 아이디 입니다.
   var id: Int
+  /// 친구의 이름 입니다.
   var title: String
+  /// 경조사 이름 입니다.
   var firstContentDescription: String?
+  /// 날짜 이름 입니다.
   var secondContentDescription: String?
 }

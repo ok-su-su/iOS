@@ -9,13 +9,13 @@
 import Foundation
 
 public final class SSUserDefaultsManager {
-  static var shared = SSUserDefaultsManager()
+  public static var shared = SSUserDefaultsManager()
 
   private let userDefaults: UserDefaults = .standard
 
   private init() {}
 
-  public func setValue(key: String, value: AnyObject) {
+  public func setValue(key: String, value: Any) {
     userDefaults.setValue(value, forKey: key)
   }
 
