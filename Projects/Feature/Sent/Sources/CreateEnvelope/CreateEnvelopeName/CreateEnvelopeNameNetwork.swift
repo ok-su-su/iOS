@@ -85,12 +85,12 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
       )
     }
   }
-  
+
   func searchFriendBy(name: String) async throws -> [SentSearchItem] {
     let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: name))
     return data.data.compactMap { dto -> SentSearchItem? in
       guard let recentEnvelope = dto.recentEnvelope,
-            let targetDate = CustomDateFormatter.getDate(from: recentEnvelope.handedOverAt)
+            let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
       else {
         return nil
       }
@@ -98,7 +98,8 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
         id: dto.friend.id,
         title: dto.friend.name,
         firstContentDescription: dto.recentEnvelope?.category,
-        secondContentDescription: CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt ?? ""))
+        secondContentDescription: targetDate
+      )
     }
   }
 }

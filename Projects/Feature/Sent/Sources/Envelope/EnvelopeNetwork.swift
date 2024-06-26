@@ -129,7 +129,6 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
       memo: data.envelope.memo
     )
   }
-  
 
   func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int) async throws -> SpecificEnvelopeHistoryEditHelper {
     let relationAndEventNetwork = CreateEnvelopeRelationAndEventNetwork()

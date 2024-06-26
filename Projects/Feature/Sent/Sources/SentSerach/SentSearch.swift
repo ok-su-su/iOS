@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSSearch
 
 // MARK: - SentSearch
@@ -45,7 +46,7 @@ struct SentSearch {
 
   @Dependency(\.sentSearchNetwork) var network
   @Dependency(\.sentSearchPersistence) var persistence
-  
+
   enum Action: Equatable {
     case onAppear(Bool)
     case search(SSSearchReducer<SentSearchProperty>.Action)
@@ -58,7 +59,7 @@ struct SentSearch {
   }
 
   enum DelegateAction: Equatable {}
-  
+
   enum ThrottleID {
     case searchThrottleID
   }
@@ -120,6 +121,7 @@ struct SentSearch {
       case .searchEnvelope:
         let currentTextFieldText = state.property.textFieldText
         return .run { send in
+          os_log("검색 시작합니다. \(currentTextFieldText)")
           // 이름을 통해 검색
           var searchedEnvelopes = try await network.searchFriendsBy(name: currentTextFieldText)
           // 금액을 통해 검색
@@ -128,11 +130,14 @@ struct SentSearch {
           }
           await send(.updateSearchResult(searchedEnvelopes.uniqued()))
         }
-        
+
       case let .updateSearchResult(results):
+        let count = state.property.nowSearchedItem.count
+        let text = state.property.textFieldText
+        os_log("검색 결과 카운트 = \(count), text = \(text)")
         state.property.nowSearchedItem = results
         return .none
-        
+
       case .updatePrevSearchedItems:
         state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
         return .none
