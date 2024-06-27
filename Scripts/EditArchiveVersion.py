@@ -33,6 +33,14 @@ def version_weight(current) :
     else :
         raise TypeError
 
+def get_new_version(current_version, current_version_weight):
+    new_version = current_version[:]
+    for ind in len(current_version_weight):
+        if ind == 1:
+            new_version[ind] += 1
+            break
+    return new_version
+
 def set_version(versionValue: str):
     vw = version_weight(versionValue)
     file_path = 'Projects/App/Project.swift'
@@ -48,7 +56,9 @@ def set_version(versionValue: str):
                 build_start_index = ind
                 break
         marketing_target_name_match = re.search(r'"CFBundleShortVersionString": "(\d)+\.(\d)+\.(\d)+"', content)
-        new_target_marketing_version = f'{marketing_target_name_match.group(1) + vw[0]}.{int(marketing_target_name_match.group(2)) + vw[1]}.{marketing_target_name_match.group(3) + vw[2]}'
+        current_version_list = [int(marketing_target_name_match.group(1)), int(marketing_target_name_match.group(2)), int(marketing_target_name_match.group(3))]
+        new_version = get_new_version(current_version_list, vw)
+        new_target_marketing_version = f'{new_version[0]}.{new_version[1]}.{new_version[2]}'
         new_marketing_version = f'      "CFBundleShortVersionString": "{new_target_marketing_version}",'
         
         build_target_name_match = re.search(r'"CFBundleVersion": "(\d*)",', content)
