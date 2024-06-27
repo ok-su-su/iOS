@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
+import AuthenticationServices
 
 // MARK: - OnboardingLoginView
 
@@ -148,6 +149,12 @@ struct OnboardingLoginView: View {
           store.send(.view(.tappedKakaoLoginButton))
         }
         .padding(.horizontal, 16)
+      
+      SignInWithAppleButton(.signUp) { request in
+          // authorization request for an Apple ID
+      } onCompletion: { result in
+          // completion handler that is called when the sign-in completes
+      }
     }
   }
 
