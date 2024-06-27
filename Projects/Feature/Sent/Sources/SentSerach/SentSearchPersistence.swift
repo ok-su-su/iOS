@@ -23,8 +23,8 @@ struct SentSearchPersistence {
     while prevItems.count > 5 {
       _ = prevItems.popLast()
     }
-    prevItems.append(item)
-    setItems(prevItems + [item])
+    let uniqueSetItems = (prevItems + [item]).uniqued()
+    setItems(uniqueSetItems)
   }
 
   private func setItems(_ items: [SentSearchItem]) {

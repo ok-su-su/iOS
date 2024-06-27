@@ -27,8 +27,10 @@ struct SentSearchView: View {
   var body: some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       ZStack {
-        SSColor.gray10
-        
+        SSColor
+          .gray10
+          .ignoresSafeArea()
+
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.header))
             .padding(.bottom, 8)
@@ -40,7 +42,6 @@ struct SentSearchView: View {
             .padding(.horizontal, 16)
         }
       }
-     
 
     } destination: { store in
       switch store.case {
