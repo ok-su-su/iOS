@@ -34,11 +34,14 @@ def version_weight(current) :
         raise TypeError
 
 def get_new_version(current_version, current_version_weight):
+    zeroFlag = False
     new_version = current_version[:]
     for ind in range(len(current_version_weight)):
         if ind == 1:
             new_version[ind] += 1
-            break
+            zeroFlag = True
+        if zeroFlag:
+            new_version[ind] = 0
     return new_version
 
 def set_version(versionValue: str):
