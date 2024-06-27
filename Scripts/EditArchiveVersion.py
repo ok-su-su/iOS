@@ -22,7 +22,31 @@ def print_current_version():
     except Exception as e:
         print(f"Error modifying the file: {e}")
 
-def set_version():
+
+def version_weight(current) :
+    if current == "M":
+        return [1, 0, 0]
+    elif current == "m":
+        return [0, 1, 0]
+    elif current == "p":
+        return [0, 0, 1]
+    else :
+        raise TypeError
+
+def get_new_version(current_version, current_version_weight):
+    zeroFlag = False
+    new_version = current_version[:]
+    for ind in range(len(current_version_weight)):
+        if current_version_weight[ind] == 1:
+            new_version[ind] += 1
+            zeroFlag = True
+            continue
+        if zeroFlag:
+            new_version[ind] = 0
+    return new_version
+
+def set_version(versionValue: str):
+    vw = version_weight(versionValue)
     file_path = 'Projects/App/Project.swift'
     try:
         # Read the content of the Swift file
@@ -36,7 +60,11 @@ def set_version():
                 build_start_index = ind
                 break
         marketing_target_name_match = re.search(r'"CFBundleShortVersionString": "(\d)+\.(\d)+\.(\d)+"', content)
-        new_target_marketing_version = f'{marketing_target_name_match.group(1)}.{int(marketing_target_name_match.group(2)) + 1}.{marketing_target_name_match.group(3)}'
+        
+        current_version_list = [int(marketing_target_name_match.group(1)), int(marketing_target_name_match.group(2)), int(marketing_target_name_match.group(3))]
+        new_version = get_new_version(current_version_list, vw)
+        new_target_marketing_version = f'{new_version[0]}.{new_version[1]}.{new_version[2]}'
+        
         new_marketing_version = f'      "CFBundleShortVersionString": "{new_target_marketing_version}",'
         
         build_target_name_match = re.search(r'"CFBundleVersion": "(\d*)",', content)
@@ -76,8 +104,11 @@ def check_version_regular_expression(version):
         return False
 
 if __name__ == "__main__":
+    print_current_version()
     is_new_version = input("버전을 올리시겠습니까? (y/n): ")
     
-    print_current_version()
+    
     if is_new_version == "y":
-        set_version()
+        versionString = input("메이저 버전(M), 마이너 버전(m), 패치 버전(p): ")
+        set_version(versionString)
+        print_current_version()
