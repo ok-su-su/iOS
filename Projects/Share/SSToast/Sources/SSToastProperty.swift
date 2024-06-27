@@ -29,9 +29,8 @@ public struct SSToastProperty: Equatable {
     self.toastMessage = toastMessage
     self.type = type
     self.duration = duration
-    
   }
-  
+
   /// ToastMessage에 필요한 Type을 정의합니다.
   /// - Parameters:
   ///   - toastMessage: Toast에 표시할 메시지입니다.

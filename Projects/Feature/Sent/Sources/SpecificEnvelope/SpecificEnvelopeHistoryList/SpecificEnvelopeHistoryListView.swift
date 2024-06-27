@@ -26,7 +26,7 @@ struct SpecificEnvelopeHistoryListView: View {
       Spacer()
         .frame(height: 24)
 
-      // MARK: TopView, 상단 Progress 및   title을 나타냅니다.
+      // MARK: TopView, 상단 Progress 및 title을 나타냅니다.
 
       VStack(alignment: .leading, spacing: 8) {
         Text(store.envelopeProperty.totalPriceText)

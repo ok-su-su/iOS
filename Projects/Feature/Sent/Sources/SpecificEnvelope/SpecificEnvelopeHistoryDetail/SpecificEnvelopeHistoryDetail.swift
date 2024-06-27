@@ -101,6 +101,8 @@ struct SpecificEnvelopeHistoryDetail {
       case .async(.deleteEnvelope):
         return .run { [id = state.envelopeDetailProperty.id] _ in
           try await network.deleteEnvelope(id: id)
+          // Shared State 저장
+          SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
           await dismiss()
         }
       }
