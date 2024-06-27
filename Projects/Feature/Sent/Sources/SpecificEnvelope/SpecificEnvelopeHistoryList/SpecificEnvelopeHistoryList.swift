@@ -58,6 +58,7 @@ struct SpecificEnvelopeHistoryList {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
     case pushEnvelopeDetail(EnvelopeDetailProperty)
+    case updateEnvelopeDetailIfUserDeleteEnvelope
   }
 
   enum AsyncAction: Equatable {
@@ -90,7 +91,7 @@ struct SpecificEnvelopeHistoryList {
       switch action {
       case let .view(.onAppear(isAppear)):
         if state.isOnAppear {
-          return .none
+          return .send(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope))
         }
         state.isOnAppear = isAppear
         return .send(.async(.getEnvelopeDetail))
@@ -161,6 +162,11 @@ struct SpecificEnvelopeHistoryList {
         if property == state.envelopeContents.last && !state.isEndOfPage {
           return .send(.async(.getEnvelopeDetail))
             .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
+        }
+        return .none
+      case .inner(.updateEnvelopeDetailIfUserDeleteEnvelope):
+        if let id = SpecificEnvelopeSharedState.shared.getDeletedEnvelopeID() {
+          state.envelopeContents.removeAll(where: { $0.id == id })
         }
         return .none
       }
