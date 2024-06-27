@@ -26,8 +26,8 @@ let project = Project.makeModule(
     infoPlist: [
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
-      "CFBundleShortVersionString": "0.1.2",
-      "CFBundleVersion": "202406073",
+      "CFBundleShortVersionString": "0.2.2",
+      "CFBundleVersion": "202406274",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
       // KAKAO InfoPlist
