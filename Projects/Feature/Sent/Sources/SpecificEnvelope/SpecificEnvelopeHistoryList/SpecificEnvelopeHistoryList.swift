@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSAlert
 
 @Reducer
@@ -155,7 +156,6 @@ struct SpecificEnvelopeHistoryList {
       case let .inner(.pushEnvelopeDetail(property)):
         SpecificEnvelopeHistoryRouterPublisher
           .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
-        state.isOnAppear = false
         return .none
 
       case let .view(.onAppearDetail(property)):
