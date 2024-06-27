@@ -37,9 +37,10 @@ def get_new_version(current_version, current_version_weight):
     zeroFlag = False
     new_version = current_version[:]
     for ind in range(len(current_version_weight)):
-        if ind == 1:
+        if current_version_weight[ind] == 1:
             new_version[ind] += 1
             zeroFlag = True
+            continue
         if zeroFlag:
             new_version[ind] = 0
     return new_version
@@ -59,9 +60,11 @@ def set_version(versionValue: str):
                 build_start_index = ind
                 break
         marketing_target_name_match = re.search(r'"CFBundleShortVersionString": "(\d)+\.(\d)+\.(\d)+"', content)
+        
         current_version_list = [int(marketing_target_name_match.group(1)), int(marketing_target_name_match.group(2)), int(marketing_target_name_match.group(3))]
         new_version = get_new_version(current_version_list, vw)
         new_target_marketing_version = f'{new_version[0]}.{new_version[1]}.{new_version[2]}'
+        
         new_marketing_version = f'      "CFBundleShortVersionString": "{new_target_marketing_version}",'
         
         build_target_name_match = re.search(r'"CFBundleVersion": "(\d*)",', content)
