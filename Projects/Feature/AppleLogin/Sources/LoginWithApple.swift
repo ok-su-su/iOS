@@ -11,22 +11,22 @@ import AuthenticationServices
 import SSPersistancy
 import OSLog
 
-final class LoginWithApple {
+public final class LoginWithApple {
   private static let shared = LoginWithApple()
   
   static func loginWithApple() {
     
   }
   
-  static var loginWithAppleOnRequest: (ASAuthorizationAppleIDRequest) -> Void = { auth in
-    // The request object is of the type ASAuthorizationOpenIDRequest and allows us to /
+  public static var loginWithAppleOnRequest: (ASAuthorizationAppleIDRequest) -> Void = { auth in
+    /// The request object is of the type ASAuthorizationOpenIDRequest and allows us to /
     /// set up the contact information to be requested when authenticating /
     /// the user by setting up the requested scope.
     auth.requestedScopes = []
     return
   }
   
-  static var loginWithAppleOnCompletion: (Result<ASAuthorization, any Error>) -> Void = { result in
+  public static var loginWithAppleOnCompletion: (Result<ASAuthorization, any Error>) -> Void = { result in
     switch result {
     case let .success(authorization):
       shared.handleSuccessfulLogin(with: authorization)
@@ -35,7 +35,7 @@ final class LoginWithApple {
     }
   }
   
-  static var identityToken: String? {
+  public static var identityToken: String? {
     guard let data = SSKeychain.shared.load(key: LoginWithApple.Constants.AppleIdentityToken.rawValue),
           let token = String(data: data, encoding: .utf8) else {
       return nil
@@ -43,7 +43,7 @@ final class LoginWithApple {
     return token
   }
   
-  static var userIdentifier: String? {
+  public static var userIdentifier: String? {
     guard let data = SSKeychain.shared.load(key: LoginWithApple.Constants.AppleIdentityToken.rawValue),
           let identifier = String(data: data, encoding: .utf8) else {
       return nil

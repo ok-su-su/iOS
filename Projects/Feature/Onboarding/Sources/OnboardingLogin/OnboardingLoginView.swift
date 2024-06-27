@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 import AuthenticationServices
+import AppleLogin
 
 // MARK: - OnboardingLoginView
 
@@ -141,6 +142,7 @@ struct OnboardingLoginView: View {
   @ViewBuilder
   private func makeLoginButtonView() -> some View {
     VStack(spacing: 4) {
+      // KAKAO Login Button
       SSImage
         .signInKakaoLarge
         .resizable()
@@ -150,11 +152,18 @@ struct OnboardingLoginView: View {
         }
         .padding(.horizontal, 16)
       
-      SignInWithAppleButton(.signUp) { request in
-          // authorization request for an Apple ID
-      } onCompletion: { result in
-          // completion handler that is called when the sign-in completes
-      }
+      // Apple Login Button
+      SignInWithAppleButton(
+        .continue,
+        onRequest: LoginWithApple.loginWithAppleOnRequest) { result in
+          LoginWithApple.loginWithAppleOnCompletion(result)
+          switch result {
+          case .success:
+            store.sendViewAction(.successAppleLogin)
+          case .failure(let failure):
+            break
+          }
+        }
     }
   }
 

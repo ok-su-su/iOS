@@ -33,6 +33,7 @@ struct OnboardingLogin {
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedKakaoLoginButton
+    case successAppleLogin
   }
 
   enum InnerAction: Equatable {
@@ -108,6 +109,9 @@ struct OnboardingLogin {
           await helper.loginWithSUSU(loginType: loginType)
           NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         }
+        
+      case .view(.successAppleLogin):
+        return .none
       }
     }
   }
