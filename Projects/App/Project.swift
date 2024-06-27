@@ -5,7 +5,6 @@ let project = Project.makeModule(
   name: "susu",
   targets: .app(
     name: "susu",
-    productName: "수수",
     testingOptions: [.unitTest, .uiTest],
     entitlements: nil,
     dependencies: [
@@ -24,6 +23,7 @@ let project = Project.makeModule(
     ],
     testDependencies: [],
     infoPlist: [
+      "CFBundleDisplayName": "수수",
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
       "CFBundleShortVersionString": "0.2.3",
