@@ -65,7 +65,6 @@ struct SentMainNetwork: Equatable, DependencyKey {
 
   func requestSearchFriends(_ parameter: SearchFriendsParameter) async throws -> [EnvelopeProperty] {
     let data: SearchFriendsResponseDTO = try await provider.request(.searchFriendsByParameter(parameter))
-    os_log("친구들의 봉투를 요청합니다.")
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(
         id: dto.friend.id,

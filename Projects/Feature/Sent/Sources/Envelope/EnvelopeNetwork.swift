@@ -173,7 +173,7 @@ extension SearchLatestOfThreeEnvelopeDataResponseDTO {
     return .init(
       id: envelope.id,
       dateText: CustomDateFormatter.getYearAndMonthDateString(from: envelope.handedOverAt) ?? "",
-      eventName: relationship.relation,
+      eventName: category.category,
       envelopeType: envelope.type == "SENT" ? .sent : .receive,
       price: envelope.amount
     )

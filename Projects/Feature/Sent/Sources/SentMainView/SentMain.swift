@@ -164,8 +164,8 @@ struct SentMain {
         return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       // specificEnvelopeHistoryRouter가 사라지면 서버로부터 요청을 보냅니다.
-      case .scope(.specificEnvelopeHistoryRouter(.dismiss)),
-          .scope(.createEnvelopeRouter(.dismiss)) :
+      case .scope(.createEnvelopeRouter(.dismiss)),
+           .scope(.specificEnvelopeHistoryRouter(.dismiss)):
         return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       // 만약 envelope Reducer onAppear방출시 맨 마지막 일 경우이면서, endOfPage가 아닐 경우 서버로 요청합니다.
