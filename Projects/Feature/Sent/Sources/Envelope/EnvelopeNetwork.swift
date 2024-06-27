@@ -52,7 +52,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
     var method: Moya.Method {
       switch self {
-      case .deleteFriend:
+      case .deleteEnvelope,
+           .deleteFriend:
         return .delete
       default:
         return .get
