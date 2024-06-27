@@ -159,6 +159,8 @@ def createFeatureDirectoryAndFile(feature_name: str):
     
     create_test_dir(feature_name)
     
-    create_preview_module(feature_name)
+    make_preview = input("Preview Module도 추가하시겠습니까? (y/n): ")
+    if make_preview == "y" or make_preview == "Y" :
+        create_preview_module(feature_name)
 
     print(f"{feature_name} 폴더와 파일이 생성되었습니다.")
