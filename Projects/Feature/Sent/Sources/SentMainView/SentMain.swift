@@ -157,7 +157,7 @@ struct SentMain {
         return .none
 
       case .scope(.filterBottomSheet(.presented(.tapped(item: _)))):
-        return .send(.async(.updateEnvelopesByFilter))
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       // FilterView에서 confirmButton을 누른다면, Server에 FilterData를 요청합니다.
       case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
@@ -233,6 +233,8 @@ struct SentMain {
       case .async(.updateEnvelopesByFilterInitialPage):
         state.page = 1
         state.isEndOfPage = false
+        let currentState = state.sentMainProperty.selectedFilterDial?.sortString
+        os_log("current Selected Section \(currentState ?? "nil")")
         state.envelopes = .init(uniqueElements: [])
         let urlParameter = SearchFriendsParameter(
           friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
@@ -306,13 +308,13 @@ enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
   var sortString: String {
     switch self {
     case .latest:
-      "handedOverAt"
+      "createdAt,desc"
     case .oldest:
-      "handedOverAt, desc"
+      "createdAt,asc"
     case .highestAmount:
-      "amount, desc"
+      "amount,desc"
     case .lowestAmount:
-      "amount"
+      "amount,asc"
     }
   }
 }
