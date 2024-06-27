@@ -28,7 +28,8 @@ public enum SSImage {
   public static let commonUnCheckBox = Image(.commonUncheckBox)
 
   /// 로그인 화면 icon
-  public static let signInKakao = Image(.signinKakao)
+  public static let signInKakaoMedium = Image(.kakaoLoginMediumWide)
+  public static let signInKakaoLarge = Image(.kakaoLoginLargeWide)
   public static let signInMainLogo = Image(.signinMainlogo)
   public static let signInTrademark = Image(.signinTrademark)
 

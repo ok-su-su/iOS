@@ -60,7 +60,7 @@ struct OnboardingLogin {
         state.isOnAppear = isAppear
         return .run { send in
           await send(.inner(.showPieChart))
-          await send(.inner(.showPercentageAndPriceText), animation: .bouncy(duration: 1))
+          await send(.inner(.showPercentageAndPriceText))
         }
 
       case .inner(.showPieChart):
