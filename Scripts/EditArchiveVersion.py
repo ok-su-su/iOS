@@ -35,7 +35,7 @@ def version_weight(current) :
 
 def get_new_version(current_version, current_version_weight):
     new_version = current_version[:]
-    for ind in len(current_version_weight):
+    for ind in range(len(current_version_weight)):
         if ind == 1:
             new_version[ind] += 1
             break
