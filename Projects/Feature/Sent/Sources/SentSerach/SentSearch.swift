@@ -168,7 +168,7 @@ struct SentSearchProperty: SSSearchPropertiable {
   var noSearchResultDescription: String
   mutating func searchItem(by _: String) {}
 
-  mutating func deletePrevItem(prevItemID _: Int) {}
+  mutating func deletePrevItem(prevItemID _: Int64) {}
 }
 
 // MARK: - SentSearchItem

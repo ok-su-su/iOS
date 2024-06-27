@@ -23,6 +23,7 @@ public extension [Target] {
   ///   - infoPlist: App에서 설정할 infoPlist
   static func app(
     name: String,
+    productName: String? = nil,
     testingOptions: Set<TestingOption> = [],
     entitlements: Entitlements? = nil,
     dependencies: [TargetDependency] = [],
@@ -66,6 +67,7 @@ public extension [Target] {
         name: name,
         destinations: .iOS,
         product: .app,
+        productName: productName,
         bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased()).app",
         deploymentTargets: ProjectEnvironment.default.deploymentTargets,
         infoPlist: .extendingDefault(with: mergedInfoPlist),

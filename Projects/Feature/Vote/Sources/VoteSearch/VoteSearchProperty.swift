@@ -12,7 +12,7 @@ import SSSearch
 // MARK: - VoteSearchItem
 
 struct VoteSearchItem: SSSearchItemable {
-  var id: Int
+  var id: Int64
   var title: String
   var firstContentDescription: String?
   var secondContentDescription: String?
@@ -56,12 +56,12 @@ struct VoteSearchProperty: SSSearchPropertiable {
     nowSearchedItem = fakeVotes.filter { $0.title.contains(regex) }
   }
 
-  mutating func deletePrevItem(prevItemID id: Int) {
+  mutating func deletePrevItem(prevItemID id: Int64) {
     // TODO: 삭제 기능 구현.
     prevSearchedItem = prevSearchedItem.filter { $0.id != id }
   }
 
-  func titleByPrevItem(id: Int) -> String {
+  func titleByPrevItem(id: Int64) -> String {
     return prevSearchedItem.first(where: { $0.id == id })?.title ?? ""
   }
 

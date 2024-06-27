@@ -32,11 +32,6 @@ public protocol SSSearchPropertiable: Equatable {
   var prevSearchedItem: [item] { get set }
   /// 검색 결과를 보관합니다.
   var nowSearchedItem: [item] { get set }
-
-  /// 검색하는 함수 입니다.
-  mutating func searchItem(by: String)
-  /// 과거 기록을 id를 통해 지우는 함수 입니다.
-  mutating func deletePrevItem(prevItemID: Int)
 }
 
 // MARK: - SSSearchIconType
