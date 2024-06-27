@@ -17,13 +17,18 @@ import SSNetwork
 struct SentSearchNetwork {
   @Dependency(\.createEnvelopeNameNetwork) var searchFriendsNetwork
   @Dependency(\.sentMainNetwork) var searchAmountEnvelopeNetwork
+  @Dependency(\.sentMainNetwork) var searchEnvelopeNetwork
 
   func searchFriendsBy(name: String) async throws -> [SentSearchItem] {
     return try await searchFriendsNetwork.searchFriendBy(name: name)
   }
 
-  func searchEnvelopeBy(amount: Int) async throws -> [SentSearchItem] {
+  func searchEnvelopeBy(amount: Int64) async throws -> [SentSearchItem] {
     return try await searchAmountEnvelopeNetwork.requestSearchFriends(amount)
+  }
+
+  func getEnvelopePropertyBy(id: Int64) async throws -> EnvelopeProperty? {
+    try await searchEnvelopeNetwork.requestSearchFriends(SearchFriendsParameter(friendIds: [id])).first
   }
 }
 
