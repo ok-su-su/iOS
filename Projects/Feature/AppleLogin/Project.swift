@@ -7,7 +7,9 @@ let project = Project.makeModule(
   targets: .feature(
     .appleLogin,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .core(.sSPersistancy)
+    ],
     testDependencies: []
   )
 )
