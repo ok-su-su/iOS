@@ -82,6 +82,7 @@ struct SentSearch {
         return .merge(
           .publisher {
             SpecificEnvelopeHistoryRouterPublisher.publisher
+              .receive(on: RunLoop.main)
               .map { .push($0) }
           },
           .send(.updatePrevSearchedItems)
@@ -96,18 +97,31 @@ struct SentSearch {
         case let .changeTextField(textFieldText):
           if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
             return .send(.searchEnvelope)
-              .throttle(id: ThrottleID.searchThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: true)
+              .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: RunLoop.main, latest: true)
           }
           return .none
+
         case let .tappedPrevItem(id: id):
-          // 과거 검색 기록 아이템을 클릭 했을 때 로직 추가
-          return .none
+          guard let currentPrevItem = state.property.prevSearchedItem.first(where: { $0.id == id }) else {
+            return .none
+          }
+          return .send(.search(.changeTextField(currentPrevItem.title)))
+
         case let .tappedDeletePrevItem(id: id):
-          // 과거 검색 기록을 삭제하는 로직 추가
+          persistence.deleteSearchItem(id: id)
+          state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
           return .none
         case let .tappedSearchItem(id: id):
-          // 검색 결과를 클릭했을 때 움직이는 로직 추가
-          return .none
+          let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
+          return .run { _ in
+            // 만약 id검색에 성공한다면 화면 푸쉬를 진행합니다.
+            guard let envelopeProperty = try await network.getEnvelopePropertyBy(id: id) else {
+              return
+            }
+            persistence.setSearchItems(searchedItem)
+            SpecificEnvelopeHistoryRouterPublisher
+              .push(.specificEnvelopeHistoryList(.init(envelopeProperty: envelopeProperty)))
+          }
         default:
           return .none
         }
@@ -125,7 +139,7 @@ struct SentSearch {
           // 이름을 통해 검색
           var searchedEnvelopes = try await network.searchFriendsBy(name: currentTextFieldText)
           // 금액을 통해 검색
-          if let amount = Int(currentTextFieldText) {
+          if let amount = Int64(currentTextFieldText) {
             searchedEnvelopes += try await network.searchEnvelopeBy(amount: amount)
           }
           await send(.updateSearchResult(searchedEnvelopes.uniqued()))
@@ -166,14 +180,11 @@ struct SentSearchProperty: SSSearchPropertiable {
   var iconType: SSSearchIconType
   var noSearchResultTitle: String
   var noSearchResultDescription: String
-  mutating func searchItem(by _: String) {}
-
-  mutating func deletePrevItem(prevItemID _: Int64) {}
 }
 
 // MARK: - SentSearchItem
 
-struct SentSearchItem: SSSearchItemable, Hashable {
+struct SentSearchItem: SSSearchItemable, Hashable, Codable {
   /// 친구의 아이디 입니다.
   var id: Int64
   /// 친구의 이름 입니다.

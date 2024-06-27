@@ -20,9 +20,9 @@ struct SearchEnvelopeURLParameter {
   /// 포함할 데이터 목록
   var include: [IncludeType] = []
   /// 금액 조건 from
-  var fromAmount: Int?
+  var fromAmount: Int64?
   /// 금액 조건 to
-  var toAmount: Int?
+  var toAmount: Int64?
   /// 페이지
   var page: Int = 0
   /// 불러올 봉투 갯수

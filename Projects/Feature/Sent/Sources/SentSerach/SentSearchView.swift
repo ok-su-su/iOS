@@ -26,16 +26,21 @@ struct SentSearchView: View {
 
   var body: some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      VStack(spacing: 0) {
-        HeaderView(store: store.scope(state: \.header, action: \.header))
-          .padding(.bottom, 8)
-        SSSearchView(store: store.scope(state: \.search, action: \.search))
-          .navigationBarBackButtonHidden()
-          .onAppear {
-            store.send(.onAppear(true))
-          }
-          .padding(.horizontal, 16)
+      ZStack {
+        SSColor.gray10
+        
+        VStack(spacing: 0) {
+          HeaderView(store: store.scope(state: \.header, action: \.header))
+            .padding(.bottom, 8)
+          SSSearchView(store: store.scope(state: \.search, action: \.search))
+            .navigationBarBackButtonHidden()
+            .onAppear {
+              store.send(.onAppear(true))
+            }
+            .padding(.horizontal, 16)
+        }
       }
+     
 
     } destination: { store in
       switch store.case {

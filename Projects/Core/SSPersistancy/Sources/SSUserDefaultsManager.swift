@@ -13,17 +13,20 @@ public final class SSUserDefaultsManager {
 
   private let userDefaults: UserDefaults = .standard
 
+  private let jsonDecoder = JSONDecoder()
+  private let jsonEncoder = JSONEncoder()
+
   private init() {}
 
-  public func setValue(key: String, value: Any) {
-    userDefaults.setValue(value, forKey: key)
+  public func setValue(key: String, value: Encodable) {
+    let data = try? jsonEncoder.encode(value)
+    userDefaults.setValue(data, forKey: key)
   }
 
-  public func getValue(key: String) -> Any? {
-    return userDefaults.value(forKey: key)
-  }
-
-  public func getValue<T>(key: String) -> T? {
-    return userDefaults.value(forKey: key) as? T
+  public func getValue<T: Decodable>(key: String) -> T? {
+    guard let data = userDefaults.value(forKey: key) as? Data else {
+      return nil
+    }
+    return try? jsonDecoder.decode(T.self, from: data)
   }
 }

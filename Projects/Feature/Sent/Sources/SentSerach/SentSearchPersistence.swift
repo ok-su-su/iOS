@@ -14,20 +14,26 @@ import SSPersistancy
 
 struct SentSearchPersistence {
   func getPrevSentSearchItems() -> [SentSearchItem] {
-    guard let value = SSUserDefaultsManager.shared.getValue(key: key) as? String else {
-      return []
-    }
-    return value
-      .split(separator: ",")
-      .map { String($0) }
-      .enumerated()
-      .map { .init(id: Int64($0.offset), title: $0.element) }
+    return SSUserDefaultsManager.shared.getValue(key: key) ?? []
   }
 
-  func setSearchItems(_ item: SentSearchItem) {
-    let value = (SSUserDefaultsManager.shared.getValue(key: key) as? String) ?? ""
-    let setValue = item.title + "," + value
-    SSUserDefaultsManager.shared.setValue(key: key, value: setValue)
+  func setSearchItems(_ item: SentSearchItem?) {
+    guard let item else { return }
+    var prevItems: [SentSearchItem] = SSUserDefaultsManager.shared.getValue(key: key) ?? []
+    while prevItems.count > 5 {
+      _ = prevItems.popLast()
+    }
+    prevItems.append(item)
+    setItems(prevItems + [item])
+  }
+
+  private func setItems(_ items: [SentSearchItem]) {
+    SSUserDefaultsManager.shared.setValue(key: key, value: items)
+  }
+
+  func deleteSearchItem(id: Int64) {
+    let items = getPrevSentSearchItems().filter { $0.id != id }
+    setItems(items)
   }
 
   private let key: String = .init(describing: SentSearchItem.self).description

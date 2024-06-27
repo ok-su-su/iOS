@@ -89,7 +89,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
     }
   }
 
-  func requestSearchFriends(_ amount: Int) async throws -> [SentSearchItem] {
+  func requestSearchFriends(_ amount: Int64) async throws -> [SentSearchItem] {
     let data: SearchEnvelopeResponseDTOWithOptional = try await provider
       .request(
         .searchEnvelope(
