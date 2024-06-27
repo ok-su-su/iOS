@@ -5,7 +5,7 @@ let project = Project.makeModule(
   name: "susu",
   targets: .app(
     name: "susu",
-    productName: "수수(susu)-경조사비 기록 장부",
+    productName: "수수",
     testingOptions: [.unitTest, .uiTest],
     entitlements: nil,
     dependencies: [
