@@ -70,7 +70,7 @@ struct OnboardingVote {
       case .async(.getVoteItems):
         return .run { [helper = state.networkHelper] send in
           let items = await helper.getOnboardingVoteItems()
-          await send(.inner(.updateVoteItems(items)))
+          await send(.inner(.updateVoteItems(items)), animation: .default)
         }
         .cancellable(id: CancelID.getOnboardingVoteItems, cancelInFlight: true)
       case let .inner(.updateVoteItems(items)):
