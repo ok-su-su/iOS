@@ -21,7 +21,7 @@ struct MyPageMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var header: HeaderViewFeature.State = .init(.init(type: .defaultType))
+    var header: HeaderViewFeature.State = .init(.init(type: .defaultNonIconType))
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
