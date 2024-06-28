@@ -163,7 +163,7 @@ struct OnboardingLoginView: View {
           }
         }
         // isOnApper되고 나서 로그인 버튼 뷰 게층 뒤쪽에 쌓임.
-        // 코드를 이렇게 짠 이유는 Modifier가 생각처럼 잘 안먹었음. 
+        // 코드를 이렇게 짠 이유는 Modifier가 생각처럼 잘 안먹었음.
         .opacity(store.isOnAppear ? 1 : .zero)
         .frame(maxWidth: .infinity, maxHeight: 56)
 
