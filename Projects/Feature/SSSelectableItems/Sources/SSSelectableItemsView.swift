@@ -1,24 +1,29 @@
-// 
+//
 //  SSSelectableItemsView.swift
 //  SSSelectableItems
 //
 //  Created by MaraMincho on 6/28/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<SSSelectableItemsReducer<Item>>
-  
+
+  public init(store: StoreOf<SSSelectableItemsReducer<Item>>) {
+    self.store = store
+  }
+
   // MARK: Content
-  
+
   @ViewBuilder
   private func makeContentView() -> some View {}
-  
+
   public var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       makeDefaultItems()
@@ -27,7 +32,7 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
       }
     }
   }
-  
+
   @ViewBuilder
   private func makeDefaultItems() -> some View {
     ForEach(store.items) { item in
@@ -44,7 +49,7 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
         }
     }
   }
-  
+
   @ViewBuilder
   private func makeCustomItem() -> some View {
     if
@@ -81,9 +86,9 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
         }
     }
   }
-  
+
   private enum Metrics {}
-  
+
   private enum Constants {
     static var makeAddCustomRelationButtonText: String { "직접 입력" }
     static var addNewRelationTextFieldPrompt: String { "입력해주세요" }

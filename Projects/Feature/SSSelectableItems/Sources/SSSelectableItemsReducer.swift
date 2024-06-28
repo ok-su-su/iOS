@@ -1,12 +1,12 @@
-// 
+//
 //  SSSelectableItems.swift
 //  SSSelectableItems
 //
 //  Created by MaraMincho on 6/28/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 @Reducer
 public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
@@ -78,11 +78,11 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
 
   public var multipleSelectionCount = 1
 
-  init(multipleSelectionCount: Int = 1) {
+  public init(multipleSelectionCount: Int = 1) {
     self.multipleSelectionCount = multipleSelectionCount
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {

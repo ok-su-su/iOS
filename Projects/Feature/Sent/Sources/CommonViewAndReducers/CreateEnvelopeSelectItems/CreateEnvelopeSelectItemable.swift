@@ -10,10 +10,3 @@ import Foundation
 import SSSelectableItems
 
 typealias CreateEnvelopeSelectItemable = SSSelectableItemable
-
-//protocol CreateEnvelopeSelectItemable: Identifiable, Equatable {
-//  var title: String { get }
-//  var id: Int { get }
-//
-//  mutating func setTitle(_ val: String)
-//}

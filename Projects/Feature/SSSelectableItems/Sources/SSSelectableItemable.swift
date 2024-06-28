@@ -9,10 +9,9 @@
 import Foundation
 
 public protocol SSSelectableItemable: Identifiable, Equatable {
-  
   var title: String { get }
   var id: Int { get }
-  
+
   /// 커스텀 아이템의 Title을 변경할 때 사용합니다.
   mutating func setTitle(_ val: String)
 }

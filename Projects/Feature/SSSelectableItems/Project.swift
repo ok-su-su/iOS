@@ -10,7 +10,7 @@ let project = Project.makeModule(
     dependencies: [
       .core(.featureAction),
       .thirdParty(.ComposableArchitecture),
-      .share(.designsystem)
+      .share(.designsystem),
     ],
     testDependencies: []
   )
