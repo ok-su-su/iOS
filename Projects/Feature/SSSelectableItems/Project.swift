@@ -7,7 +7,11 @@ let project = Project.makeModule(
   targets: .feature(
     .sSSelectableItems,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .core(.featureAction),
+      .thirdParty(.ComposableArchitecture),
+      .share(.designsystem)
+    ],
     testDependencies: []
   )
 )
