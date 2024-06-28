@@ -135,9 +135,17 @@ struct MyPageMainView: View {
         .gray20
         .ignoresSafeArea()
 
+      VStack {
+        SSColor
+          .gray10
+          .frame(maxWidth: .infinity, maxHeight: 60)
+
+        Spacer()
+      }
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-          .backgroundStyle(SSColor.orange50)
+          .background(SSColor.gray10)
         Spacer()
         makeContentView()
       }

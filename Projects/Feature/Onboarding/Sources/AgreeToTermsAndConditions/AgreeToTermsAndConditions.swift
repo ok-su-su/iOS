@@ -18,7 +18,7 @@ struct AgreeToTermsAndConditions {
     var isLoading = true
     var isOnAppear = false
     var viewDidLoad: Bool = false
-    var header = HeaderViewFeature.State(.init(title: "약관 동의", type: .defaultNonIconType))
+    var header = HeaderViewFeature.State(.init(title: "약관 동의", type: .depth2NonIconType))
     var helper: AgreeToTermsAndConditionsHelper
     let networkHelper = AgreeToTermsAndConditionsNetworkHelper()
     init() {
