@@ -23,6 +23,7 @@ struct MyPageMain {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var isLoading: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
+    var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -99,7 +100,7 @@ struct MyPageMain {
           return .none
         }
         state.isOnAppear = isAppear
-        return .none
+        return .send(.async(.getMyInformation))
 
       case .scope(.tabBar):
         return .none
@@ -178,7 +179,7 @@ struct MyPageMain {
         return .send(.route(.myPageInformation))
 
       case let .inner(.updateMyInformation(dto)):
-        state.header.updateProperty(.init(title: dto.name, type: .defaultNonIconType))
+        state.userInfo = dto
         return .none
 
       case .async(.getMyInformation):

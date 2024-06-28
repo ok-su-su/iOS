@@ -94,7 +94,7 @@ struct MyPageMainView: View {
   @ViewBuilder
   private func makeMyNameAndMyInformationButtonView() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      Text("김수수") // TODO: logic 연결
+      Text(store.userInfo.name)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
 
