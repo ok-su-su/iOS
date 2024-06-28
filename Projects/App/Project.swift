@@ -6,7 +6,7 @@ let project = Project.makeModule(
   targets: .app(
     name: "susu",
     testingOptions: [.unitTest, .uiTest],
-    entitlements: .file(path: "Projects/App/susu.entitlements"),
+    entitlements: .file(path: "."),
     dependencies: [
       .share(.designsystem),
       .share(.sSAlert),
