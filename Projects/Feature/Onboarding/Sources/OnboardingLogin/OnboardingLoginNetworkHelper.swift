@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import KakaoLogin
 import Moya
@@ -30,6 +31,7 @@ struct OnboardingLoginNetworkHelper: Equatable {
     var path: String {
       switch self {
       case let .isNewUser(loginType, _):
+        os_log("요청 URL: oauth/\(loginType.rawValue)/sign-up/valid")
         return "oauth/\(loginType)/sign-up/valid"
       case let .loginWithSUSU(loginType, _):
         return "oauth/\(loginType)/login"
@@ -60,13 +62,9 @@ struct OnboardingLoginNetworkHelper: Equatable {
     return await LoginWithKakao.loginWithKakao()
   }
 
-  func isNewUser(loginType: LoginType) async -> Bool {
-    guard let token = getTokenFormManager(loginType) else {
-      os_log("Oauth의 저장된 토큰이 없습니다. 심각한 오류 입니다. \(#function)")
-      return true
-    }
-
+  func isNewUser(loginType: LoginType, token: String) async -> Bool {
     do {
+      os_log("새로운 유저인지 확인합니다. loginType: \(loginType.rawValue) \n token : \(token)")
       let newUserDTO: isNewUserResponseDTO = try await provider.request(.isNewUser(loginType, token))
       return newUserDTO.canRegister
     } catch {
@@ -75,12 +73,7 @@ struct OnboardingLoginNetworkHelper: Equatable {
     }
   }
 
-  func loginWithSUSU(loginType: LoginType) async {
-    guard let token = getTokenFormManager(loginType) else {
-      os_log("저장된 토큰이 없습니다. \(#function)")
-      return
-    }
-
+  func loginWithSUSU(loginType: LoginType, token: String) async {
     do {
       let tokenData = try JSONEncoder().encode(LoginWithSUSUBodyDTO(accessToken: token))
       let susuToken: SignUpResponseDTO = try await provider.request(.loginWithSUSU(loginType, tokenData))
@@ -93,22 +86,24 @@ struct OnboardingLoginNetworkHelper: Equatable {
         )
       )
     } catch {
-      os_log("loginWIthSUSUError \(#function) \(error)")
-    }
-  }
-
-  private func getTokenFormManager(_ type: LoginType) -> String? {
-    switch type {
-    case .KAKAO:
-      return LoginWithKakao.getToken()
-    case .APPLE:
-      fatalError("로그인 방식이 구현되지 않았습니다.")
-    case .GOOGLE:
-      fatalError("로그인 방식이 구현되지 않았습니다.")
+      os_log("loginWithSUSUError \(#function) \(error)")
     }
   }
 
   init() {}
+}
+
+// MARK: DependencyKey
+
+extension OnboardingLoginNetworkHelper: DependencyKey {
+  static var liveValue: OnboardingLoginNetworkHelper = .init()
+}
+
+extension DependencyValues {
+  var onBoardingLoginNetwork: OnboardingLoginNetworkHelper {
+    get { self[OnboardingLoginNetworkHelper.self] }
+    set { self[OnboardingLoginNetworkHelper.self] = newValue }
+  }
 }
 
 // MARK: - LoginWithSUSUBodyDTO

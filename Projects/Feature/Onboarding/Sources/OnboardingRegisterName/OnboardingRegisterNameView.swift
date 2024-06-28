@@ -70,8 +70,17 @@ struct OnboardingRegisterNameView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
-        Spacer()
-        makeNextScreenButton()
+        if store.textFieldProperty.getIsFocused {
+          Spacer()
+          makeNextScreenButton()
+        }
+      }
+      // KeyBoard 레이아웃을 조정하기 위한 장치
+      if !store.textFieldProperty.getIsFocused {
+        VStack {
+          Spacer()
+          makeNextScreenButton()
+        }.ignoresSafeArea()
       }
     }
     .navigationBarBackButtonHidden()

@@ -3,15 +3,12 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Onboarding",
+  name: "AppleLogin",
   targets: .feature(
-    .onboarding,
+    .appleLogin,
     testingOptions: [.unitTest],
     dependencies: [
-      .share(.shareLayer),
-      .core(.coreLayers),
-      .core(.kakaoLogin),
-      .feature(.appleLogin),
+      .core(.sSPersistancy),
     ],
     testDependencies: []
   )

@@ -19,13 +19,21 @@ public extension Project {
       base: ["ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES"],
       configurations: settingConfiguration
     )
+    
+    let options: Project.Options = .options(
+      automaticSchemesOptions: .disabled,
+      defaultKnownRegions: ["en", "ko"],
+      developmentRegion: "ko",
+      disableBundleAccessors: true,
+      disableSynthesizedResourceAccessors: true
+    )
 
     let schemes: [Scheme] = [.makeScheme(name: name)]
 
     return Project(
       name: name,
       organizationName: ProjectEnvironment.default.prefixBundleID,
-      options: .options(automaticSchemesOptions: .disabled, disableBundleAccessors: true, disableSynthesizedResourceAccessors: true),
+      options: options,
       packages: packages,
       settings: settings,
       targets: targets,

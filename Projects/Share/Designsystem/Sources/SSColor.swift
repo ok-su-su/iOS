@@ -46,4 +46,8 @@ public enum SSColor {
   public static let red80: Color = .red80
   public static let red90: Color = .red90
   public static let red100: Color = .red100
+
+  // for Login
+  public static let kakaoLoginButtonBackgroundColor: Color = .kakaoLoginButtonBackground
+  public static let appleLoginButtonBackgroundColor: Color = .gray100
 }

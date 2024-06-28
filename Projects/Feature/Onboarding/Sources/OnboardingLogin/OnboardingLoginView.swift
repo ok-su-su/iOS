@@ -5,6 +5,8 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import AppleLogin
+import AuthenticationServices
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
@@ -140,14 +142,62 @@ struct OnboardingLoginView: View {
   @ViewBuilder
   private func makeLoginButtonView() -> some View {
     VStack(spacing: 4) {
-      SSImage
-        .signInKakaoLarge
-        .resizable()
-        .frame(maxWidth: .infinity, maxHeight: 56)
-        .onTapGesture {
-          store.send(.view(.tappedKakaoLoginButton))
+      // KAKAO Login Button
+
+      makeLoginButtonViewByLoginType(.KAKAO) {
+        store.send(.view(.tappedKakaoLoginButton))
+      }
+      .allowsHitTesting(false)
+
+      ZStack {
+        SignInWithAppleButton(
+          .continue,
+          onRequest: LoginWithApple.loginWithAppleOnRequest
+        ) { result in
+          LoginWithApple.loginWithAppleOnCompletion(result)
+          switch result {
+          case .success:
+            store.sendViewAction(.successAppleLogin)
+          case .failure:
+            break
+          }
         }
-        .padding(.horizontal, 16)
+        // isOnApper되고 나서 로그인 버튼 뷰 게층 뒤쪽에 쌓임.
+        // 코드를 이렇게 짠 이유는 Modifier가 생각처럼 잘 안먹었음. 
+        .opacity(store.isOnAppear ? 1 : .zero)
+        .frame(maxWidth: .infinity, maxHeight: 56)
+
+        makeLoginButtonViewByLoginType(.APPLE) {}
+          .allowsHitTesting(false)
+      }
+    }
+    .padding(.horizontal, 16)
+  }
+
+  @ViewBuilder
+  private func makeLoginButtonViewByLoginType(_ loginType: LoginType, completion: @escaping () -> Void) -> some View {
+    HStack(alignment: .center, spacing: 0) {
+      loginType
+        .logo
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 32, height: 23)
+
+      Spacer()
+
+      Text(loginType.buttonTitle)
+        .modifier(SSTypoModifier(.text_xs))
+        .foregroundStyle(loginType.titleColor)
+
+      Spacer()
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 12)
+    .frame(maxWidth: .infinity, maxHeight: 56)
+    .background(loginType.buttonBackgroundColor)
+    .cornerRadius(4)
+    .onTapGesture {
+      completion()
     }
   }
 
@@ -235,5 +285,51 @@ struct SectorShape: Shape {
     path.closeSubpath()
 
     return path
+  }
+}
+
+private extension LoginType {
+  var logo: Image {
+    switch self {
+    case .KAKAO:
+      return SSImage.signInKakaoLogo
+    case .APPLE:
+      return SSImage.signInAppleLogo
+    case .GOOGLE:
+      fatalError()
+    }
+  }
+
+  var buttonTitle: String {
+    switch self {
+    case .KAKAO:
+      "카카오로 계속하기"
+    case .APPLE:
+      "Apple로 계속하기"
+    case .GOOGLE:
+      fatalError()
+    }
+  }
+
+  var titleColor: Color {
+    switch self {
+    case .KAKAO:
+      SSColor.gray100.opacity(0.85)
+    case .APPLE:
+      SSColor.gray10
+    case .GOOGLE:
+      fatalError()
+    }
+  }
+
+  var buttonBackgroundColor: Color {
+    switch self {
+    case .KAKAO:
+      SSColor.kakaoLoginButtonBackgroundColor
+    case .APPLE:
+      SSColor.appleLoginButtonBackgroundColor
+    case .GOOGLE:
+      fatalError()
+    }
   }
 }

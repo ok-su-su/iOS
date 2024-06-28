@@ -29,6 +29,10 @@ public struct SSTextFieldReducerProperty: Equatable {
     return text
   }
 
+  public var getIsFocused: Bool {
+    return isFocus
+  }
+
   var lineStatus: LineStatus {
     if status == .error {
       return .red
@@ -117,6 +121,7 @@ public struct SSTextFieldReducer {
     case changeTextField(String)
     case tappedCloseButton
     case checkValidation
+    case changedOnFocused(Bool)
   }
 
   public var body: some ReducerOf<Self> {
@@ -131,6 +136,9 @@ public struct SSTextFieldReducer {
       case .checkValidation:
         let isValid = state.property.isValidation()
         state.property.status = isValid ? .active : .error
+        return .none
+      case let .changedOnFocused(focused):
+        state.property.isFocus = focused
         return .none
       }
     }
@@ -164,6 +172,9 @@ public struct SSTextFieldView: View {
         .focused($isFocus)
         .onChange(of: store.property.isFocus) { _, newValue in
           isFocus = newValue
+        }
+        .onChange(of: isFocus) { _, newValue in
+          store.send(.changedOnFocused(newValue))
         }
 
         if !store.property.text.isEmpty && store.property.status != .notDisplayError {
