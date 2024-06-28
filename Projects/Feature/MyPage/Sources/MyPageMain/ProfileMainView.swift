@@ -148,6 +148,7 @@ struct MyPageMainView: View {
           .background(SSColor.gray10)
         Spacer()
         makeContentView()
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }

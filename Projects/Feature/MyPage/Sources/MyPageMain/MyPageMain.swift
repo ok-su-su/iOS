@@ -22,7 +22,7 @@ struct MyPageMain {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var isLoading: Bool = false
-    var header: HeaderViewFeature.State = .init(.init(title: " ",type: .defaultNonIconType))
+    var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -81,7 +81,7 @@ struct MyPageMain {
     case logout
     case resign
   }
-  
+
   @Dependency(\.myPageMainNetwork) var network
 
   var body: some Reducer<State, Action> {
@@ -176,17 +176,20 @@ struct MyPageMain {
 
       case .view(.tappedMyPageInformationSection):
         return .send(.route(.myPageInformation))
+
       case let .inner(.updateMyInformation(dto)):
         state.header.updateProperty(.init(title: dto.name, type: .defaultNonIconType))
         return .none
+
       case .async(.getMyInformation):
         return .run { send in
           await send(.inner(.isLoading(true)))
           let dto = try await network.getMyInformation()
+          MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.inner(.updateMyInformation(dto)))
           await send(.inner(.isLoading(false)))
         }
-        
+
       case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
