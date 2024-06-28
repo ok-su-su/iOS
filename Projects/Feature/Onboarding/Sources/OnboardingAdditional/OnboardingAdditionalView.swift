@@ -121,7 +121,6 @@ struct OnboardingAdditionalView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
-
       VStack {
         Spacer()
         makeNextScreenButton()

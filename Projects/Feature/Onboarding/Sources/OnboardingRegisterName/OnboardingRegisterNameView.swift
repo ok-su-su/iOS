@@ -70,9 +70,12 @@ struct OnboardingRegisterNameView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+      }
+
+      VStack {
         Spacer()
         makeNextScreenButton()
-      }
+      }.ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
     .onAppear {
