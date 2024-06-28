@@ -21,7 +21,8 @@ struct MyPageMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var header: HeaderViewFeature.State = .init(.init(type: .defaultNonIconType))
+    var isLoading: Bool = false
+    var header: HeaderViewFeature.State = .init(.init(title: " ",type: .defaultNonIconType))
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -52,9 +53,13 @@ struct MyPageMain {
     case topSection(TopPageListSection)
     case middleSection(MiddlePageSection)
     case bottomSection(BottomPageSection)
+    case updateMyInformation(UserInfoResponseDTO)
+    case isLoading(Bool)
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case getMyInformation
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -76,6 +81,8 @@ struct MyPageMain {
     case logout
     case resign
   }
+  
+  @Dependency(\.myPageMainNetwork) var network
 
   var body: some Reducer<State, Action> {
     Scope(state: \.tabBar, action: \.scope.tabBar) {
@@ -88,6 +95,9 @@ struct MyPageMain {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
         return .none
 
@@ -166,6 +176,20 @@ struct MyPageMain {
 
       case .view(.tappedMyPageInformationSection):
         return .send(.route(.myPageInformation))
+      case let .inner(.updateMyInformation(dto)):
+        state.header.updateProperty(.init(title: dto.name, type: .defaultNonIconType))
+        return .none
+      case .async(.getMyInformation):
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let dto = try await network.getMyInformation()
+          await send(.inner(.updateMyInformation(dto)))
+          await send(.inner(.isLoading(false)))
+        }
+        
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
+        return .none
       }
     }
     .subFeatures0()
