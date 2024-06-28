@@ -3,16 +3,11 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Inventory",
+  name: "SSSelectableItems",
   targets: .feature(
-    .inventory,
+    .sSSelectableItems,
     testingOptions: [.unitTest],
-    dependencies: [
-      .core(.coreLayers),
-      .share(.shareLayer),
-      .share(.sSLayout),
-      .feature(.sSSelectableItems),
-    ],
+    dependencies: [],
     testDependencies: []
   )
 )
