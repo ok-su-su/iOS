@@ -5,11 +5,11 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import AppleLogin
+import AuthenticationServices
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
-import AuthenticationServices
-import AppleLogin
 
 // MARK: - OnboardingLoginView
 
@@ -151,19 +151,20 @@ struct OnboardingLoginView: View {
           store.send(.view(.tappedKakaoLoginButton))
         }
         .padding(.horizontal, 16)
-      
+
       // Apple Login Button
       SignInWithAppleButton(
         .continue,
-        onRequest: LoginWithApple.loginWithAppleOnRequest) { result in
-          LoginWithApple.loginWithAppleOnCompletion(result)
-          switch result {
-          case .success:
-            store.sendViewAction(.successAppleLogin)
-          case .failure(let failure):
-            break
-          }
+        onRequest: LoginWithApple.loginWithAppleOnRequest
+      ) { result in
+        LoginWithApple.loginWithAppleOnCompletion(result)
+        switch result {
+        case .success:
+          store.sendViewAction(.successAppleLogin)
+        case let .failure(failure):
+          break
         }
+      }
     }
   }
 

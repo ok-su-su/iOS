@@ -11,7 +11,7 @@ let project = Project.makeModule(
       .share(.shareLayer),
       .core(.coreLayers),
       .core(.kakaoLogin),
-      .feature(.appleLogin)
+      .feature(.appleLogin),
     ],
     testDependencies: []
   )

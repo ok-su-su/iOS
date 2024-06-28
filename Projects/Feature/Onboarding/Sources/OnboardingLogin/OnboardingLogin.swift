@@ -10,6 +10,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import KakaoLogin
+import OSLog
 
 @Reducer
 struct OnboardingLogin {
@@ -17,8 +18,6 @@ struct OnboardingLogin {
   struct State: Equatable {
     var isOnAppear = false
     var helper: OnboardingLoginHelper = .init()
-    var networkHelper = OnboardingLoginNetworkHelper()
-
     init() {}
   }
 
@@ -45,14 +44,17 @@ struct OnboardingLogin {
 
   enum AsyncAction: Equatable {
     case loginWithKakaoTalk
-    case checkIsNewUser(loginType: LoginType)
-    case loginWithSUSU(loginType: LoginType)
+    case checkIsNewUser(loginType: LoginType, token: String?)
+    case loginWithSUSU(loginType: LoginType, token: String)
   }
 
   @CasePathable
   enum ScopeAction: Equatable {}
 
   enum DelegateAction: Equatable {}
+
+  @Dependency(\.onBoardingLoginNetwork) var network
+  @Dependency(\.loginTokenManager) var persistence
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -75,11 +77,16 @@ struct OnboardingLogin {
       case .view(.tappedKakaoLoginButton):
         return .send(.async(.loginWithKakaoTalk))
 
+      case .view(.successAppleLogin):
+        let appleToken = persistence.getToken(.APPLE)
+        return .send(.async(.checkIsNewUser(loginType: .APPLE, token: appleToken)))
+
       case .async(.loginWithKakaoTalk):
-        return .run(priority: .high) { [helper = state.networkHelper] send in
-          let isSuccessLoginWithKAKAOTalk = await helper.loginWithKakao()
+        return .run(priority: .high) { send in
+          let isSuccessLoginWithKAKAOTalk = await network.loginWithKakao()
           if isSuccessLoginWithKAKAOTalk {
-            await send(.async(.checkIsNewUser(loginType: .KAKAO)))
+            let kakaoToken = persistence.getToken(.KAKAO)
+            await send(.async(.checkIsNewUser(loginType: .KAKAO, token: kakaoToken)))
           }
         }
 
@@ -93,25 +100,26 @@ struct OnboardingLogin {
         SharedStateContainer.setValue(property)
         return .none
 
-      case let .async(.checkIsNewUser(loginType: loginType)):
-        return .run { [helper = state.networkHelper] send in
+      case let .async(.checkIsNewUser(loginType: loginType, token: token)):
+        guard let token else {
+          os_log("토큰값이 유효하지 않습니다. loginType =\(loginType.rawValue)")
+          return .none
+        }
+        return .run { send in
           // 새로운 유저라면
-          if await helper.isNewUser(loginType: loginType) {
-            await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(.KAKAO)))
+          if await network.isNewUser(loginType: loginType, token: token) {
+            await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(loginType)))
             await send(.inner(.navigateTermsView))
             return
           }
           // 만약 이전에 가입한 유저라면
-          await send(.async(.loginWithSUSU(loginType: loginType)))
+          await send(.async(.loginWithSUSU(loginType: loginType, token: token)))
         }
-      case let .async(.loginWithSUSU(loginType: loginType)):
-        return .run { [helper = state.networkHelper] _ in
-          await helper.loginWithSUSU(loginType: loginType)
+      case let .async(.loginWithSUSU(loginType: loginType, token: token)):
+        return .run { _ in
+          await network.loginWithSUSU(loginType: loginType, token: token)
           NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         }
-        
-      case .view(.successAppleLogin):
-        return .none
       }
     }
   }

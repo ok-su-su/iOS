@@ -8,7 +8,7 @@ let project = Project.makeModule(
     .appleLogin,
     testingOptions: [.unitTest],
     dependencies: [
-      .core(.sSPersistancy)
+      .core(.sSPersistancy),
     ],
     testDependencies: []
   )
