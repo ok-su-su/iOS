@@ -33,7 +33,7 @@ public extension Project {
     return Project(
       name: name,
       organizationName: ProjectEnvironment.default.prefixBundleID,
-      options: .options(automaticSchemesOptions: .disabled, disableBundleAccessors: true, disableSynthesizedResourceAccessors: true),
+      options: options,
       packages: packages,
       settings: settings,
       targets: targets,
