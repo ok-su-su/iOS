@@ -9,46 +9,83 @@ import SwiftUI
 import ComposableArchitecture
 import Designsystem
 
-struct SSSelectableItemsView: View {
-
+public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
   // MARK: Reducer
   @Bindable
-  var store: StoreOf<SSSelectableItemsReducerReducer>
+  var store: StoreOf<SSSelectableItemsReducer<Item>>
   
-  //MARK: Init
-  init(store: StoreOf<SSSelectableItemsReducerReducer>) {
-    self.store = store
-    self.store.send(.view(.isInited(true)))
-  }
-
   // MARK: Content
+  
   @ViewBuilder
-  private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      
-    }
-  }
-
-  var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
+  private func makeContentView() -> some View {}
+  
+  public var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      makeDefaultItems()
+      if store.isCustomItem != nil {
+        makeCustomItem()
       }
     }
-    .navigationBarBackButtonHidden()
-    .onAppear{
-      store.send(.view(.onAppear(true)))
-    }
-  }
-
-  private enum Metrics {
-
   }
   
+  @ViewBuilder
+  private func makeDefaultItems() -> some View {
+    ForEach(store.items) { item in
+      SSButton(
+        .init(
+          size: .mh60,
+          status: .active,
+          style: store.selectedID.contains(item.id) ? .filled : .ghost,
+          color: store.selectedID.contains(item.id) ? .orange : .black,
+          buttonText: item.title,
+          frame: .init(maxWidth: .infinity)
+        )) {
+          store.send(.view(.tappedItem(id: item.id)))
+        }
+    }
+  }
+  
+  @ViewBuilder
+  private func makeCustomItem() -> some View {
+    if
+      store.isAddingNewItem,
+      let item = store.isCustomItem {
+      SSTextFieldButton(
+        .init(
+          size: .mh60,
+          status: store.customItemSaved ? .saved : .filled,
+          style: .filled,
+          color: store.selectedID.contains(item.id) ? .orange : .black,
+          textFieldText: $store.customTitleText,
+          showCloseButton: true,
+          showDeleteButton: true,
+          prompt: Constants.addNewRelationTextFieldPrompt
+        )) {
+          store.send(.view(.tappedItem(id: item.id)))
+        } onTapCloseButton: {
+          store.send(.view(.tappedTextFieldCloseButton))
+        } onTapSaveButton: {
+          store.send(.view(.tappedTextFieldSaveAndEditButton))
+        }
+    } else {
+      SSButton(
+        .init(
+          size: .mh60,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          buttonText: Constants.makeAddCustomRelationButtonText,
+          frame: .init(maxWidth: .infinity)
+        )) {
+          store.send(.view(.tappedAddCustomTextField))
+        }
+    }
+  }
+  
+  private enum Metrics {}
+  
   private enum Constants {
-    
+    static var makeAddCustomRelationButtonText: String { "직접 입력" }
+    static var addNewRelationTextFieldPrompt: String { "입력해주세요" }
   }
 }
