@@ -31,6 +31,7 @@ struct OnboardingLoginNetworkHelper: Equatable {
     var path: String {
       switch self {
       case let .isNewUser(loginType, _):
+        os_log("요청 URL: oauth/\(loginType.rawValue)/sign-up/valid")
         return "oauth/\(loginType)/sign-up/valid"
       case let .loginWithSUSU(loginType, _):
         return "oauth/\(loginType)/login"
@@ -63,6 +64,7 @@ struct OnboardingLoginNetworkHelper: Equatable {
 
   func isNewUser(loginType: LoginType, token: String) async -> Bool {
     do {
+      os_log("새로운 유저인지 확인합니다. loginType: \(loginType.rawValue) \n token : \(token)")
       let newUserDTO: isNewUserResponseDTO = try await provider.request(.isNewUser(loginType, token))
       return newUserDTO.canRegister
     } catch {

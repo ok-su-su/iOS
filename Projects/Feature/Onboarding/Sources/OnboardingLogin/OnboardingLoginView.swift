@@ -161,12 +161,12 @@ struct OnboardingLoginView: View {
         switch result {
         case .success:
           store.sendViewAction(.successAppleLogin)
-        case .failure(_):
+        case .failure:
           break
         }
       }
       .frame(maxWidth: .infinity, maxHeight: 56)
-      .padding(.horizontal, 16)	
+      .padding(.horizontal, 16)
     }
   }
 
