@@ -42,6 +42,7 @@ struct MyPageEdit {
     }
   }
 
+  @CasePathable
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
@@ -59,7 +60,10 @@ struct MyPageEdit {
     case selectedYearItem(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    /// 초기 TextField, BirthField, GenderField를 설정합니다.
+    case updateInitialProperty
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -77,6 +81,33 @@ struct MyPageEdit {
   enum Routing: Equatable {
     case dismiss
   }
+  
+
+  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+    switch action {
+    case let .onAppear(isOnAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = isOnAppear
+      return .none
+      
+    case let .selectGender(gender):
+      state.helper.editedValue.gender = gender
+      return .none
+      
+    case let .nameEdited(text):
+      state.helper.editName(text: text)
+      return .none
+      
+    case .selectedYearItem:
+      state.bottomSheet = .init(
+        items: .default,
+        selectedItem: state.$selectedBottomSheetItem
+      )
+      return .none
+    }
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -89,9 +120,8 @@ struct MyPageEdit {
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
 
       case .scope(.header):
         return .none
@@ -103,21 +133,6 @@ struct MyPageEdit {
         routingPublisher.send(destination)
         return .none
 
-      case let .view(.nameEdited(text)):
-        state.helper.editName(text: text)
-        return .none
-
-      case let .view(.selectGender(gender)):
-        state.helper.editedValue.gender = gender
-        return .none
-
-      case let .view(.selectedYearItem(present)):
-        state.bottomSheet = .init(
-          items: .default,
-          selectedItem: state.$selectedBottomSheetItem
-        )
-        return .none
-
       case let .scope(.selectYear(.tappedYear(title))):
         state.selectYearIsPresented = false
         state.helper.setEditDate(by: title)
@@ -125,7 +140,11 @@ struct MyPageEdit {
 
       case .scope(.toast):
         return .none
+
       case .scope(.bottomSheet(_)):
+        return .none
+
+      case .inner(.updateInitialProperty):
         return .none
       }
     }

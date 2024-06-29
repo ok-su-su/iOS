@@ -21,7 +21,7 @@ struct MyPageMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var isLoading: Bool = false
+    var isLoading: Bool = true
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
     var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
 
