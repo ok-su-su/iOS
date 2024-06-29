@@ -30,7 +30,7 @@ struct MyPageEdit {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isPushable: Bool {
-      if (userInfo.name != nameTextFieldText) ||
+      if (userInfo.name != nameTextFieldText && RegexManager.isValidName(nameTextFieldText)) ||
         (userInfo.gender != selectedGender?.genderIdentifierString) ||
         (userInfo.birth != selectedBottomSheetItem?.id) {
         return true
@@ -115,6 +115,9 @@ struct MyPageEdit {
 
     case let .nameEdited(text):
       state.nameTextFieldText = text
+      if state.nameTextFieldText.count > 10 {
+        return .send(.scope(.toast(.showToastMessage("이름은 한글 또는 영문 10글자 이내로 입력해주세요"))))
+      }
       return .none
 
     case .selectedYearItem:
@@ -138,6 +141,10 @@ struct MyPageEdit {
 
     Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
+    }
+
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
     }
 
     Reduce { state, action in

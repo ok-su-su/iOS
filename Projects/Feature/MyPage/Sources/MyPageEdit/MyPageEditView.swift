@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
+import SSToast
 import SwiftUI
 
 struct MyPageEditView: View {
@@ -163,6 +164,7 @@ struct MyPageEditView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
