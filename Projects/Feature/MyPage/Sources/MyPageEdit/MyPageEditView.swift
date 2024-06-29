@@ -7,6 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
+import SSToast
 import SwiftUI
 
 struct MyPageEditView: View {
@@ -72,8 +74,8 @@ struct MyPageEditView: View {
 
       TextField(
         "",
-        text: $store.helper.editedValue.name.sending(\.view.nameEdited),
-        prompt: Text(store.helper.namePromptText).foregroundStyle(SSColor.gray40)
+        text: $store.nameTextFieldText.sending(\.view.nameEdited),
+        prompt: nil
       )
       .modifier(SSTypoModifier(.title_xs))
       .foregroundStyle(SSColor.gray100)
@@ -92,10 +94,10 @@ struct MyPageEditView: View {
         .foregroundStyle(SSColor.gray60)
 
       Spacer()
-      Text(store.helper.birthDayText)
+      Text(store.yearText)
         .frame(maxWidth: .infinity, alignment: .trailing)
         .modifier(SSTypoModifier(.title_xs))
-        .foregroundStyle(store.helper.isEditedBirthDay() ? SSColor.gray100 : SSColor.gray40)
+        .foregroundStyle(store.selectedBottomSheetItem != nil ? SSColor.gray100 : SSColor.gray40)
     }
     .frame(maxWidth: .infinity, maxHeight: 28)
     .padding(.vertical, Metrics.itemVerticalSpacing)
@@ -114,7 +116,7 @@ struct MyPageEditView: View {
       Spacer()
       HStack(spacing: 8) {
         ForEach(Gender.allCases, id: \.id) { gender in
-          let isSelected = store.helper.selectedGender == gender
+          let isSelected = store.selectedGender == gender
           SSButton(
             .init(
               size: .sh32,
@@ -140,7 +142,20 @@ struct MyPageEditView: View {
         .gray10
         .ignoresSafeArea()
       VStack(spacing: 0) {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+        ZStack {
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          HStack {
+            Spacer()
+            Text(Constants.confirmButtonText)
+              .modifier(SSTypoModifier(.title_xxs))
+              .foregroundStyle(store.isPushable ? SSColor.gray100 : SSColor.gray50)
+              .onTapGesture {
+                store.sendViewAction(.tappedEditConfirmButton)
+              }
+          }
+          .padding(.horizontal, 16)
+        }
+
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
       }
@@ -149,14 +164,8 @@ struct MyPageEditView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .sheet(isPresented: $store.selectYearIsPresented.sending(\.view.selectedYearItem)) {
-      IfLetStore(store.scope(state: \.selectYear, action: \.scope.selectYear)) { store in
-        SelectYearBottomSheetView(store: store)
-          .presentationDetents([.height(240), .medium, .large])
-          .presentationContentInteraction(.scrolls)
-          .presentationDragIndicator(.automatic)
-      }
-    }
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 
@@ -170,5 +179,6 @@ struct MyPageEditView: View {
     static let nameCellTitle: String = "이름"
     static let birthdayCellTitle: String = "생년월일"
     static let genderCellTitle: String = "성별"
+    static let confirmButtonText: String = "확인"
   }
 }

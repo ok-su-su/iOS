@@ -24,11 +24,9 @@ struct MyPageInformationListViewCell<Item: MyPageMainItemListCellItemable>: View
 
       Spacer()
 
-      if let subTitle = store.property.subTitle {
-        Text(subTitle)
-          .modifier(SSTypoModifier(.title_xxs))
-          .foregroundStyle(SSColor.gray100)
-      }
+      Text(store.property.subTitle ?? "미선택")
+        .modifier(SSTypoModifier(.title_xxs))
+        .foregroundStyle(SSColor.gray100)
     }
     .background(SSColor.gray10)
     .padding(.vertical, 12)

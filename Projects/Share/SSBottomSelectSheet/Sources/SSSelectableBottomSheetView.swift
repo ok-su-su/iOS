@@ -22,20 +22,30 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
-      ScrollView {
-        Spacer()
-          .frame(height: 16)
-        LazyVStack(spacing: 0) {
-          ForEach(store.items) { item in
-            Text(item.description)
-              .modifier(SSTypoModifier(.title_xxs))
-              .padding(.vertical, itemVerticalSpacing)
-              .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
-              .padding(.vertical, 12)
-              .onTapGesture {
-                store.send(.tapped(item: item))
-              }
+      ScrollViewReader { value in
+        ScrollView(showsIndicators: false) {
+          Spacer()
+            .frame(height: 16)
+          VStack(spacing: 0) {
+            // TODO: 블로그 작성
+            ForEach(store.items) { item in
+              Text(item.description)
+                .modifier(SSTypoModifier(.title_xxs))
+                .padding(.vertical, itemVerticalSpacing)
+                .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .onTapGesture {
+                  store.send(.tapped(item: item))
+                }
+                .id(item.id)
+            }
           }
+          .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.viewAligned)
+        .onAppear {
+          value.scrollTo(store.selectedItem?.id, anchor: .center)
         }
       }
     }

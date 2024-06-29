@@ -94,6 +94,7 @@ public struct HeaderViewProperty: Equatable {
   public enum HeaderViewPropertyType: Equatable {
     case defaultType
     case defaultNonIconType
+    case depth2NonIconType
 
     @available(*, deprecated, renamed: "depth2CustomIcon(IconType:)", message: "depth2Icon was deprecated. use depth2CustomIcon plz ")
     case depth2Icon
@@ -111,10 +112,13 @@ public struct HeaderViewProperty: Equatable {
   }
 
   var isLogoImage: Bool {
-    if case .defaultType = type {
+    switch type {
+    case .defaultNonIconType,
+         .defaultType:
       return true
+    default:
+      return false
     }
-    return false
   }
 
   var centerItem: HeaderView.CenterItemTypes {
@@ -134,6 +138,7 @@ public struct HeaderViewProperty: Equatable {
       .icon(icon.image)
     case .defaultNonIconType,
          .depth2Default,
+         .depth2NonIconType,
          .depthProgressBar:
       .none
     case let .depth2Text(text):

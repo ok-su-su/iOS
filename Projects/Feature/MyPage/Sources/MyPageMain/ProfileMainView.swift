@@ -94,7 +94,7 @@ struct MyPageMainView: View {
   @ViewBuilder
   private func makeMyNameAndMyInformationButtonView() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      Text("김수수") // TODO: logic 연결
+      Text(store.userInfo.name)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
 
@@ -135,11 +135,20 @@ struct MyPageMainView: View {
         .gray20
         .ignoresSafeArea()
 
+      VStack {
+        SSColor
+          .gray10
+          .frame(maxWidth: .infinity, maxHeight: 60)
+
+        Spacer()
+      }
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-          .backgroundStyle(SSColor.orange50)
+          .background(SSColor.gray10)
         Spacer()
         makeContentView()
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
     .safeAreaInset(edge: .bottom) { makeTabBar() }

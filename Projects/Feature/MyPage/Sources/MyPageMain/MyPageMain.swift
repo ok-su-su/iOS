@@ -8,6 +8,7 @@
 import Combine
 import ComposableArchitecture
 import Designsystem
+import FeatureAction
 import Foundation
 
 // MARK: - MyPageMain
@@ -20,7 +21,9 @@ struct MyPageMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var header: HeaderViewFeature.State = .init(.init(type: .defaultType))
+    var isLoading: Bool = false
+    var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
+    var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -51,9 +54,13 @@ struct MyPageMain {
     case topSection(TopPageListSection)
     case middleSection(MiddlePageSection)
     case bottomSection(BottomPageSection)
+    case updateMyInformation(UserInfoResponseDTO)
+    case isLoading(Bool)
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case getMyInformation
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -76,6 +83,8 @@ struct MyPageMain {
     case resign
   }
 
+  @Dependency(\.myPageMainNetwork) var network
+
   var body: some Reducer<State, Action> {
     Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
@@ -88,7 +97,7 @@ struct MyPageMain {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
+        return .send(.async(.getMyInformation))
 
       case .scope(.tabBar):
         return .none
@@ -165,6 +174,26 @@ struct MyPageMain {
 
       case .view(.tappedMyPageInformationSection):
         return .send(.route(.myPageInformation))
+
+      case let .inner(.updateMyInformation(dto)):
+        state.userInfo = dto
+        return .none
+
+      case .async(.getMyInformation):
+        if let info = MyPageSharedState.shared.getMyUserInfoDTO() {
+          return .send(.inner(.updateMyInformation(info)))
+        }
+        return .run { send in
+          await send(.inner(.isLoading(true)))
+          let dto = try await network.getMyInformation()
+          MyPageSharedState.shared.setUserInfoResponseDTO(dto)
+          await send(.inner(.updateMyInformation(dto)))
+          await send(.inner(.isLoading(false)))
+        }
+
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
+        return .none
       }
     }
     .subFeatures0()
