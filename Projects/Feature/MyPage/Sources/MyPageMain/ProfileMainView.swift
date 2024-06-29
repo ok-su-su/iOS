@@ -7,6 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
+import SSToast
 import SwiftUI
 
 struct MyPageMainView: View {
@@ -153,6 +155,18 @@ struct MyPageMainView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .sSAlert(
+      isPresented: $store.showMessageAlert.sending(\.view.showAlert),
+      messageAlertProperty: .init(
+        titleText: "로그아웃 할까요?",
+        contentText: "",
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(left: "취소", right: "로그아웃"),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedLogOut)
+        }
+      )
+    )
   }
 
   private enum Metrics {

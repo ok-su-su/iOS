@@ -25,6 +25,10 @@ final class MyPageMainNetwork {
   func updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponseDTO {
     return try await provider.request(.updateMyProfile(userID: userID, body: requestBody))
   }
+
+  func logout() async throws {
+    try await provider.request(.logout)
+  }
 }
 
 extension DependencyValues {
@@ -41,6 +45,7 @@ extension MyPageMainNetwork: DependencyKey {
   private enum Network: SSNetworkTargetType {
     case myPageInformation
     case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)
+    case logout
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -49,6 +54,8 @@ extension MyPageMainNetwork: DependencyKey {
         "users/my-info"
       case let .updateMyProfile(userID: userID, _):
         "users/\(userID.description)"
+      case .logout:
+        "auth/logout"
       }
     }
 
@@ -58,12 +65,15 @@ extension MyPageMainNetwork: DependencyKey {
         .get
       case .updateMyProfile:
         .patch
+      case .logout:
+        .post
       }
     }
 
     var task: Moya.Task {
       switch self {
-      case .myPageInformation:
+      case .logout,
+           .myPageInformation:
         .requestPlain
       case let .updateMyProfile(_, body: body):
         .requestData(body.getBody())

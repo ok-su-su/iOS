@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSAlert
 
 // MARK: - MyPageMain
 
@@ -32,6 +33,8 @@ struct MyPageMain {
     var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
+    var showMessageAlert = false
+
     init() {}
   }
 
@@ -44,10 +47,13 @@ struct MyPageMain {
     case route(Routing)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedFeedbackButton
     case tappedMyPageInformationSection
+    case showAlert(Bool)
+    case tappedLogOut
   }
 
   enum InnerAction: Equatable {
@@ -60,6 +66,7 @@ struct MyPageMain {
 
   enum AsyncAction: Equatable {
     case getMyInformation
+    case logout
   }
 
   @CasePathable
@@ -157,7 +164,7 @@ struct MyPageMain {
       case let .inner(.bottomSection(currentSection)):
         switch currentSection {
         case .logout:
-          routingPublisher.send(.logout)
+          state.showMessageAlert = true
           return .none
 
         case .resign:
@@ -196,6 +203,17 @@ struct MyPageMain {
       case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
+      case let .view(.showAlert(bool)):
+        state.showMessageAlert = bool
+        return .none
+      case .view(.tappedLogOut):
+        return .send(.async(.logout))
+
+      case .async(.logout):
+        return .run { _ in
+          try await network.logout()
+          NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
+        }
       }
     }
     .subFeatures0()
