@@ -8,12 +8,14 @@
 
 import Designsystem
 import Received
+import SSPersistancy
 import SwiftUI
 
 @main
 struct InventoryPreviewMain: App {
   init() {
     Font.registerFont()
+    FakeTokenManager.saveFakeToken(fakeToken: .uid5)
   }
 
   var body: some Scene {

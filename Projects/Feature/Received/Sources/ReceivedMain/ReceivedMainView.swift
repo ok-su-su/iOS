@@ -115,6 +115,10 @@ struct ReceivedMainView: View {
 
   var body: some View {
     ZStack(alignment: .bottomTrailing) {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         Spacer()
