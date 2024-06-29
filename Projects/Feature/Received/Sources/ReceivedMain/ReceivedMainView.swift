@@ -13,11 +13,11 @@ import SwiftUI
 // MARK: - ReceivedMainView
 
 public struct ReceivedMainView: View {
-  @Bindable var inventoryStore: StoreOf<ReceivedMain>
+  @Bindable var store: StoreOf<ReceivedMain>
   private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
-  public init(store _: StoreOf<ReceivedMain>) {
-    inventoryStore = inventoryStore
+  public init(store: StoreOf<ReceivedMain>) {
+    self.store = store
   }
 
   @ViewBuilder
@@ -34,14 +34,14 @@ public struct ReceivedMainView: View {
       )
       .fixedSize()
       .onTapGesture {
-        inventoryStore.send(.didTapAddInventoryButton)
+        store.send(.didTapAddInventoryButton)
       }
   }
 
   @ViewBuilder
   public func makeEmptyView() -> some View {
     GeometryReader { geometry in
-      if inventoryStore.inventorys.isEmpty {
+      if store.inventorys.isEmpty {
         VStack {
           makeDotLineButton()
             .padding(.horizontal, InventoryFilterConstants.commonSpacing)
@@ -58,11 +58,11 @@ public struct ReceivedMainView: View {
       } else {
         ScrollView {
           LazyVGrid(columns: inventoryColumns) {
-            ForEach(inventoryStore.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { store in
-              InventoryBoxView(inventoryBoxstore: store)
+            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
+              InventoryBoxView(store: boxStore)
                 .padding(.trailing, InventoryFilterConstants.commonSpacing)
                 .onTapGesture {
-                  inventoryStore.send(.didTapInventoryView)
+                  store.send(.didTapInventoryView)
                 }
             }
             VStack {
@@ -84,27 +84,27 @@ public struct ReceivedMainView: View {
           status: .active,
           style: .ghost,
           color: .black,
-          buttonText: inventoryStore.selectedSortItem.rawValue
+          buttonText: store.selectedSortItem.rawValue
         )) {
-          inventoryStore.send(.didTapLatestButton)
+          store.send(.didTapLatestButton)
         }
-
-        ZStack {
-          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
-            .init(
-              startDate: Shared(.now),
-              endDate: Shared(.now),
-              selectedFilter: Shared([]),
-              ssButtonProperties: Shared([:])
-            )
-          )
-          ) {
-            SSButton(InventoryFilterConstants.filterButtonProperty) {
-              inventoryStore.send(.didTapFilterButton)
-            }
-            .allowsHitTesting(false)
-          }
-        }.frame(maxWidth: .infinity, alignment: .topLeading)
+//
+//        ZStack {
+//          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
+//            .init(
+//              startDate: Shared(.now),
+//              endDate: Shared(.now),
+//              selectedFilter: Shared([]),
+//              ssButtonProperties: Shared([:])
+//            )
+//          )
+//          ) {
+//            SSButton(InventoryFilterConstants.filterButtonProperty) {
+//              inventoryStore.send(.didTapFilterButton)
+//            }
+//            .allowsHitTesting(false)
+//          }
+//        }.frame(maxWidth: .infinity, alignment: .topLeading)
       }
       .frame(width: geometry.size.width, height: 32, alignment: .topLeading)
       .padding(.horizontal, InventoryFilterConstants.commonSpacing)
@@ -114,7 +114,7 @@ public struct ReceivedMainView: View {
   public var body: some View {
     ZStack(alignment: .bottomTrailing) {
       VStack {
-        HeaderView(store: inventoryStore.scope(state: \.headerType, action: \.setHeaderView))
+        HeaderView(store: store.scope(state: \.headerType, action: \.setHeaderView))
         Spacer()
           .frame(height: 16)
 
@@ -122,12 +122,12 @@ public struct ReceivedMainView: View {
           .frame(height: 32)
         makeEmptyView()
       }
-      InventoryFloatingButton(floatingStore: inventoryStore.scope(state: \.floatingState, action: \.setFloatingView))
+      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
         .padding(.trailing, 20)
         .padding(.bottom, 20)
 
     }.safeAreaInset(edge: .bottom) {
-      SSTabbar(store: inventoryStore.scope(state: \.tabbarType, action: \.setTabbarView))
+      SSTabbar(store: store.scope(state: \.tabbarType, action: \.setTabbarView))
         .background {
           Color.white
         }
@@ -136,12 +136,12 @@ public struct ReceivedMainView: View {
         .toolbar(.hidden, for: .tabBar)
     }
     .navigationBarBackButtonHidden()
-    .sheet(item: $inventoryStore.scope(state: \.sortSheet, action: \.sortSheet)) { store in
+    .sheet(item: $store.scope(state: \.sortSheet, action: \.sortSheet)) { store in
       InventorySortSheetView(store: store)
         .presentationDetents([.height(240), .medium, .large])
         .presentationDragIndicator(.automatic)
     }
-    .fullScreenCover(item: $inventoryStore.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
+    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
       InventorySearchView(store: store)
     }
   }

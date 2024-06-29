@@ -36,7 +36,13 @@ public enum InventoryType: Int, CaseIterable {
 // MARK: - InventoryBoxView
 
 public struct InventoryBoxView: View {
-  @Bindable var inventoryBoxstore: StoreOf<InventoryBox>
+  
+  init(store: StoreOf<InventoryBox>) {
+    self.store = store
+  }
+  
+  @Bindable var store: StoreOf<InventoryBox>
+  
 
   @ViewBuilder
   public func makeContentView() -> some View {
