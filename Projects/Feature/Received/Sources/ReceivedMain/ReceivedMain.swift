@@ -10,14 +10,12 @@ import Foundation
 
 import ComposableArchitecture
 import Designsystem
+import FeatureAction
 
 @Reducer
 public struct ReceivedMain {
   @ObservableState
   public struct State {
-    var inventorys: IdentifiedArrayOf<InventoryBox.State> = [
-      .init(inventoryType: .Wedding, inventoryTitle: "나의 결혼식", inventoryAmount: "4,388,000", inventoryCount: 164),
-    ]
     var isLoading: Bool = false
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
@@ -38,11 +36,10 @@ public struct ReceivedMain {
   public init() {}
 
   @CasePathable
-  public enum Action {
+  public enum Action: FeatureAction {
     case setHeaderView(HeaderViewFeature.Action)
     case setTabbarView(SSTabBarFeature.Action)
     case setFloatingView(InventoryFloating.Action)
-    case reloadInvetoryItems(IdentifiedActionOf<InventoryBox>)
     case showSearchView(PresentationAction<InventorySearch.Action>)
 
     case sortSheet(PresentationAction<InventorySortSheet.Action>)
@@ -99,8 +96,6 @@ public struct ReceivedMain {
       default:
         return .none
       }
-    }.forEach(\.inventorys, action: \.reloadInvetoryItems) {
-      InventoryBox()
     }
   }
 }

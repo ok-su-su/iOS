@@ -58,13 +58,14 @@ public struct ReceivedMainView: View {
       } else {
         ScrollView {
           LazyVGrid(columns: inventoryColumns) {
-            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
-              InventoryBoxView(store: boxStore)
-                .padding(.trailing, InventoryFilterConstants.commonSpacing)
-                .onTapGesture {
-                  store.send(.didTapInventoryView)
-                }
-            }
+            // TODO: LedgerBox View 연결
+//            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
+//              LedgerBoxView(store: boxStore)
+//                .padding(.trailing, InventoryFilterConstants.commonSpacing)
+//                .onTapGesture {
+//                  store.send(.didTapInventoryView)
+//                }
+//            }
             VStack {
               makeDotLineButton()
                 .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
