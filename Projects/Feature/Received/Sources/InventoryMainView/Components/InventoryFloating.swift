@@ -15,11 +15,11 @@ import Designsystem
 public struct InventoryFloating {
   public init() {}
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var isTapped = false
   }
 
-  public enum Action {
+  public enum Action: Equatable {
     case didTapFloatingButton
   }
 

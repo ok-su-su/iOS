@@ -12,16 +12,16 @@ import SwiftUI
 
 // MARK: - ReceivedMainView
 
-public struct ReceivedMainView: View {
+struct ReceivedMainView: View {
   @Bindable var store: StoreOf<ReceivedMain>
   private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
-  public init(store: StoreOf<ReceivedMain>) {
+  init(store: StoreOf<ReceivedMain>) {
     self.store = store
   }
 
   @ViewBuilder
-  public func makeDotLineButton() -> some View {
+  func makeDotLineButton() -> some View {
     Rectangle()
       .strokeBorder(style: StrokeStyle(lineWidth: 1, lineCap: .butt, dash: [4]))
       .foregroundColor(SSColor.gray40)
@@ -34,14 +34,14 @@ public struct ReceivedMainView: View {
       )
       .fixedSize()
       .onTapGesture {
-        store.send(.didTapAddInventoryButton)
+        store.sendViewAction(.didTapInventoryView)
       }
   }
 
   @ViewBuilder
-  public func makeEmptyView() -> some View {
+  func makeEmptyView() -> some View {
     GeometryReader { geometry in
-      if store.inventorys.isEmpty {
+      if store.ledgersProperty.isEmpty {
         VStack {
           makeDotLineButton()
             .padding(.horizontal, InventoryFilterConstants.commonSpacing)
@@ -77,18 +77,19 @@ public struct ReceivedMainView: View {
   }
 
   @ViewBuilder
-  public func makeFilterView() -> some View {
+  func makeFilterView() -> some View {
     GeometryReader { geometry in
-      HStack(spacing: InventoryFilterConstants.filterSpacing) {
-        SSButton(.init(
-          size: .sh32,
-          status: .active,
-          style: .ghost,
-          color: .black,
-          buttonText: store.selectedSortItem.rawValue
-        )) {
-          store.send(.didTapLatestButton)
-        }
+      VStack {
+//      HStack(spacing: InventoryFilterConstants.filterSpacing) {
+//        SSButton(.init(
+//          size: .sh32,
+//          status: .active,
+//          style: .ghost,
+//          color: .black,
+//          buttonText: store.selectedSortItem.rawValue
+//        )) {
+//          store.send(.didTapLatestButton)
+//        }
 //
 //        ZStack {
 //          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
@@ -112,10 +113,10 @@ public struct ReceivedMainView: View {
     }
   }
 
-  public var body: some View {
+  var body: some View {
     ZStack(alignment: .bottomTrailing) {
       VStack {
-        HeaderView(store: store.scope(state: \.headerType, action: \.setHeaderView))
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         Spacer()
           .frame(height: 16)
 
@@ -123,12 +124,12 @@ public struct ReceivedMainView: View {
           .frame(height: 32)
         makeEmptyView()
       }
-      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
-        .padding(.trailing, 20)
-        .padding(.bottom, 20)
+//      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
+//        .padding(.trailing, 20)
+//        .padding(.bottom, 20)
 
     }.safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabbarType, action: \.setTabbarView))
+      SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         .background {
           Color.white
         }
@@ -137,14 +138,14 @@ public struct ReceivedMainView: View {
         .toolbar(.hidden, for: .tabBar)
     }
     .navigationBarBackButtonHidden()
-    .sheet(item: $store.scope(state: \.sortSheet, action: \.sortSheet)) { store in
-      InventorySortSheetView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationDragIndicator(.automatic)
-    }
-    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
-      InventorySearchView(store: store)
-    }
+//    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
+//      InventorySortSheetView(store: store)
+//        .presentationDetents([.height(240), .medium, .large])
+//        .presentationDragIndicator(.automatic)
+//    }
+//    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
+//      InventorySearchView(store: store)
+//    }
   }
 
   private enum InventoryFilterConstants {

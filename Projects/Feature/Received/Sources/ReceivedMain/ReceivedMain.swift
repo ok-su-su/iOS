@@ -13,88 +13,63 @@ import Designsystem
 import FeatureAction
 
 @Reducer
-public struct ReceivedMain {
+struct ReceivedMain {
   @ObservableState
-  public struct State {
+  struct State: Equatable {
     var isLoading: Bool = false
-    var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
+    var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
-    var tabbarType = SSTabBarFeature.State(tabbarType: .received)
+    var tabBar = SSTabBarFeature.State(tabbarType: .received)
 
-    @Presents var searchInvenotry: InventorySearch.State?
-    @Presents var sortSheet: InventorySortSheet.State?
-    @Presents var inventoryAccount: InventoryAccountDetailRouter.State?
-    @Shared var searchInventoryHelper: InventorySearchHelper
-    @Shared var selectedSortItem: SortTypes
-
-    init() {
-      _searchInventoryHelper = Shared(.init())
-      _selectedSortItem = Shared(.latest)
-    }
+    var ledgersProperty: [LedgerBoxProperty] = []
+    init() {}
   }
 
   public init() {}
 
   @CasePathable
-  public enum Action: FeatureAction {
-    case setHeaderView(HeaderViewFeature.Action)
-    case setTabbarView(SSTabBarFeature.Action)
-    case setFloatingView(InventoryFloating.Action)
-    case showSearchView(PresentationAction<InventorySearch.Action>)
+  enum Action: FeatureAction, Equatable {
+    case view(ViewAction)
+    case inner(InnerAction)
+    case async(AsyncAction)
+    case scope(ScopeAction)
+    case delegate(DelegateAction)
+  }
 
-    case sortSheet(PresentationAction<InventorySortSheet.Action>)
-    case showInventoryDetailView(PresentationAction<InventoryAccountDetailRouter.Action>)
+  enum ViewAction: Equatable {
     case didTapInventoryView
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
   }
 
-  public var body: some Reducer<State, Action> {
-    Scope(state: \.headerType, action: /Action.setHeaderView) {
+  enum InnerAction: Equatable {}
+
+  enum AsyncAction: Equatable {}
+
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+    case tabBar(SSTabBarFeature.Action)
+    case sortSheet(PresentationAction<InventorySortSheet.Action>)
+  }
+
+  enum DelegateAction: Equatable {}
+
+  var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
 
-    Scope(state: \.tabbarType, action: /Action.setTabbarView) {
+    Scope(state: \.tabBar, action: \.scope.tabBar) {
       SSTabBarFeature()
     }
 
-    Scope(state: \.floatingState, action: /Action.setFloatingView) {
-      InventoryFloating()
-    }
-
-    .ifLet(\.$searchInvenotry, action: \.showSearchView) {
-      InventorySearch()
-    }
-
-    .ifLet(\.$sortSheet, action: \.sortSheet) {
-      InventorySortSheet()
-    }
-
-    .ifLet(\.$inventoryAccount, action: \.showInventoryDetailView) {
-      InventoryAccountDetailRouter()
-    }
-
-    Reduce { state, action in
+    Reduce { _, action in
+      return .none
       switch action {
-      case .reloadInvetoryItems:
-        state.isLoading.toggle()
-        return .none
-      case .didTapLatestButton:
-        state.sortSheet = InventorySortSheet.State(selectedSortItem: state.$selectedSortItem)
-        return .none
-      case .setHeaderView(.tappedSearchButton):
-        state.searchInvenotry = InventorySearch.State(searchHelper: state.$searchInventoryHelper)
-        return .none
-      case .didTapFilterButton:
-        return .none
-      case .didTapInventoryView:
-        state.inventoryAccount = InventoryAccountDetailRouter.State()
-        return .none
-      case .didTapAddInventoryButton:
-        return .none
       default:
-        return .none
+        break
       }
     }
   }
