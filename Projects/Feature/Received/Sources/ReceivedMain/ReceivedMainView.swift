@@ -1,5 +1,5 @@
 //
-//  InventoryView.swift
+//  ReceivedMainView.swift
 //  susu
 //
 //  Created by Kim dohyun on 4/30/24.
@@ -10,13 +10,13 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-// MARK: - InventoryView
+// MARK: - ReceivedMainView
 
-public struct InventoryView: View {
-  @Bindable var inventoryStore: StoreOf<InventoryViewFeature>
+public struct ReceivedMainView: View {
+  @Bindable var inventoryStore: StoreOf<ReceivedMain>
   private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
-  public init(inventoryStore: StoreOf<InventoryViewFeature>) {
+  public init(store: StoreOf<ReceivedMain>) {
     self.inventoryStore = inventoryStore
   }
 

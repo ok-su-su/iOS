@@ -18,7 +18,7 @@ struct InventoryPreviewMain: App {
 
   var body: some Scene {
     WindowGroup {
-      InventoryBuilderView()
+      ReceivedBuilderView()
     }
   }
 }

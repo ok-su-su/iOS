@@ -93,7 +93,7 @@ public struct ContentView: View {
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .received: AnyView(InventoryBuilderView()),
+    .received: AnyView(ReceivedBuilderView()),
     .vote: AnyView(VoteBuilder()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsBuilderView()),

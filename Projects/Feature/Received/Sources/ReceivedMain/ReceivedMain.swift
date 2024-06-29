@@ -1,5 +1,5 @@
 //
-//  InventoryViewFeature.swift
+//  ReceivedMain.swift
 //  susu
 //
 //  Created by Kim dohyun on 4/30/24.
@@ -12,7 +12,7 @@ import ComposableArchitecture
 import Designsystem
 
 @Reducer
-public struct InventoryViewFeature {
+public struct ReceivedMain {
   @ObservableState
   public struct State {
     var inventorys: IdentifiedArrayOf<InventoryBox.State> = [

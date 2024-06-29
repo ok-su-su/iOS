@@ -38,7 +38,7 @@ struct InventoryRouter {
           return .none
         }
       case .onAppear(true):
-        state.path.append(.inventoryItem(InventoryViewFeature.State()))
+        state.path.append(.inventoryItem(ReceivedMain.State()))
         return .none
       case .onAppear(false):
         return .none
@@ -52,7 +52,7 @@ struct InventoryRouter {
 extension InventoryRouter {
   @Reducer
   enum Path {
-    case inventoryItem(InventoryViewFeature)
+    case inventoryItem(ReceivedMain)
     case inventoryFilterItem(InventoryFilter)
   }
 }

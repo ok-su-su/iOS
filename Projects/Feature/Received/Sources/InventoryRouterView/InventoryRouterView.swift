@@ -24,7 +24,7 @@ struct InventoryRouterView: View {
     } destination: { store in
       switch store.case {
       case let .inventoryItem(store):
-        InventoryView(inventoryStore: store)
+        ReceivedMainView(inventoryStore: store)
       case let .inventoryFilterItem(store):
         InventoryFilterView(store: store)
       }
