@@ -10,6 +10,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSBottomSelectSheet
+import SSToast
 
 // MARK: - MyPageEdit
 
@@ -19,13 +21,25 @@ struct MyPageEdit {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("등록")))
-    var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
+    var userInfo: UserInfoResponseDTO
     var helper: MyPageEditHelper = .init()
     var selectYearIsPresented: Bool = false
     var selectYear: SelectYearBottomSheet.State?
+    @Presents var bottomSheet: SSSelectableBottomSheetReducer<SelectYearBottomSheetItem>.State?
+    @Shared var selectedBottomSheetItem: SelectYearBottomSheetItem?
+    var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2NonIconType))
+    var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
-    init() {}
+    init() {
+      userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: "M", birth: 1965)
+      _selectedBottomSheetItem = .init(nil)
+    }
+
+    init(_ userInfo: UserInfoResponseDTO) {
+      self.userInfo = userInfo
+      _selectedBottomSheetItem = .init(nil)
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -54,6 +68,8 @@ struct MyPageEdit {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
     case selectYear(SelectYearBottomSheet.Action)
+    case toast(SSToastReducer.Action)
+    case bottomSheet(PresentationAction<SSSelectableBottomSheetReducer<SelectYearBottomSheetItem>.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -76,16 +92,17 @@ struct MyPageEdit {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
-      case .scope(.header(.tappedTextButton)):
-        // TODO: 저장버튼 눌렀을 때 어떤 변화가 생겨야할지
-        return .none
+
       case .scope(.header):
         return .none
+
       case .scope(.tabBar):
         return .none
+
       case let .route(destination):
         routingPublisher.send(destination)
         return .none
+
       case let .view(.nameEdited(text)):
         state.helper.editName(text: text)
         return .none
@@ -95,19 +112,20 @@ struct MyPageEdit {
         return .none
 
       case let .view(.selectedYearItem(present)):
-        if present == true {
-          state.selectYearIsPresented = true
-          state.selectYear = .init(originalYear: state.helper.birthDayDate)
-        } else {
-          state.selectYearIsPresented = false
-          state.selectYear = nil
-        }
-
+        state.bottomSheet = .init(
+          items: .default,
+          selectedItem: state.$selectedBottomSheetItem
+        )
         return .none
 
       case let .scope(.selectYear(.tappedYear(title))):
         state.selectYearIsPresented = false
         state.helper.setEditDate(by: title)
+        return .none
+
+      case .scope(.toast):
+        return .none
+      case .scope(.bottomSheet(_)):
         return .none
       }
     }
@@ -120,5 +138,24 @@ extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdi
     ifLet(\.selectYear, action: \.scope.selectYear) {
       SelectYearBottomSheet()
     }
+    .ifLet(\.$bottomSheet, action: \.scope.bottomSheet) {
+      SSSelectableBottomSheetReducer()
+    }
   }
+}
+
+extension [SelectYearBottomSheetItem] {
+  static var `default`: Self {
+    return (1930 ... Int(CustomDateFormatter.getYear(from: .now))!)
+      .map { .init(description: $0.description, id: $0) }
+  }
+}
+
+// MARK: - SelectYearBottomSheetItem
+
+struct SelectYearBottomSheetItem: SSSelectBottomSheetPropertyItemable {
+  /// BottomSheet의 Title을 나타냅니다.
+  var description: String
+  /// 아이디 입니다.
+  var id: Int
 }

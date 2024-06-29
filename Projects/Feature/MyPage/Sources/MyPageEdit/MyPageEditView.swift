@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 struct MyPageEditView: View {
@@ -149,6 +150,7 @@ struct MyPageEditView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .sheet(isPresented: $store.selectYearIsPresented.sending(\.view.selectedYearItem)) {
       IfLetStore(store.scope(state: \.selectYear, action: \.scope.selectYear)) { store in
         SelectYearBottomSheetView(store: store)

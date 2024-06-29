@@ -33,6 +33,15 @@ final class MyPageEditRouter: UIHostingController<MyPageEditView> {
       }
   }
 
+  init(_: UserInfoResponseDTO) {
+    let reducer = MyPageEdit()
+    self.reducer = reducer
+
+    super.init(rootView: MyPageEditView(store: .init(initialState: MyPageEdit.State()) {
+      reducer
+    }))
+  }
+
   init() {
     let reducer = MyPageEdit()
     self.reducer = reducer
