@@ -21,7 +21,7 @@ public struct InventoryViewFeature {
     var isLoading: Bool = false
     var headerType = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
-    var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+    var tabbarType = SSTabBarFeature.State(tabbarType: .received)
 
     @Presents var searchInvenotry: InventorySearch.State?
     @Presents var sortSheet: InventorySortSheet.State?

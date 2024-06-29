@@ -7,7 +7,7 @@
 //
 
 import Designsystem
-import Inventory
+import Received
 import SwiftUI
 
 @main
