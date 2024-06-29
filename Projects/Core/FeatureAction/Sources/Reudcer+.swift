@@ -6,10 +6,10 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 
-// MARK: - Recommended Use Like This
+// MARK: - FeatureViewAction
 
 // var body: some Reducer<State, Action> {
 //  Reduce { state, action in
@@ -50,24 +50,31 @@ import ComposableArchitecture
 //  return .none
 // }
 
-
 public protocol FeatureViewAction: Reducer where Action: FeatureAction {
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> { get set }
 }
+
+// MARK: - FeatureScopeAction
 
 public protocol FeatureScopeAction: Reducer where Action: FeatureAction {
   var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> { get set }
 }
 
+// MARK: - FeatureAsyncAction
+
 public protocol FeatureAsyncAction: Reducer where Action: FeatureAction {
   var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> { get set
-   }
+  }
 }
+
+// MARK: - FeatureInnerAction
 
 public protocol FeatureInnerAction: Reducer where Action: FeatureAction {
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> { get set}
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> { get }
 }
 
-public protocol FeatureDelegateAction : Reducer where Action: FeatureAction {
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> { get set}
+// MARK: - FeatureDelegateAction
+
+public protocol FeatureDelegateAction: Reducer where Action: FeatureAction {
+  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> { get set }
 }
