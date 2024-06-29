@@ -32,7 +32,12 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
         case .exportExcel:
           return
         case .privacyPolicy:
-          let vc = SFSafariViewController(url: .init(string: "https://sites.google.com/view/team-oksusu/%ED%99%88")!)
+          guard let urlString = Constants.privateURLString,
+                let url = URL(string: urlString)
+          else {
+            return
+          }
+          let vc = SFSafariViewController(url: url)
           self?.present(vc, animated: true)
         case .appVersion:
           return
@@ -41,8 +46,12 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
         case .resign:
           return
         case .feedBack:
-          let vc = SFSafariViewController(url: .init(string: "https://forms.gle/FHky26kAQdde9RcD7")!)
-          self?.present(vc, animated: true)
+          guard let urlString = Constants.feedBackURLString,
+                let url = URL(string: urlString)
+          else {
+            return
+          }
+          let vc = SFSafariViewController(url: url)
         }
       }
   }
@@ -59,4 +68,13 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   @MainActor dynamic required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  private enum Constants {
+    static let privateURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["PRIVACY_POLICY_URL"] as? String
+    static let feedBackURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["SUSU_GOOGLE_FROM_URL"] as? String
+  }
 }
+
+// MARK: - BundleFinder
+
+private class BundleFinder {}
