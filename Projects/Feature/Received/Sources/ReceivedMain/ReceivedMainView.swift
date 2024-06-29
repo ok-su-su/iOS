@@ -16,8 +16,8 @@ public struct ReceivedMainView: View {
   @Bindable var inventoryStore: StoreOf<ReceivedMain>
   private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
-  public init(store: StoreOf<ReceivedMain>) {
-    self.inventoryStore = inventoryStore
+  public init(store _: StoreOf<ReceivedMain>) {
+    inventoryStore = inventoryStore
   }
 
   @ViewBuilder
