@@ -167,6 +167,7 @@ struct MyPageMain {
 
       // TODO: Routing FeedBackPage
       case .view(.tappedFeedbackButton):
+        routingPublisher.send(.feedBack)
         return .none
 
       case let .route(next):

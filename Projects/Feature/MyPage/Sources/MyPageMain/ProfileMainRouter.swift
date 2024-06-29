@@ -33,7 +33,7 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
           return
         case .privacyPolicy:
           let vc = SFSafariViewController(url: .init(string: "https://sites.google.com/view/team-oksusu/%ED%99%88")!)
-          self?.navigationController?.pushViewController(vc, animated: true)
+          self?.present(vc, animated: true)
         case .appVersion:
           return
         case .logout:
@@ -42,7 +42,7 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
           return
         case .feedBack:
           let vc = SFSafariViewController(url: .init(string: "https://forms.gle/FHky26kAQdde9RcD7")!)
-          self?.navigationController?.pushViewController(vc, animated: true)
+          self?.present(vc, animated: true)
         }
       }
   }
