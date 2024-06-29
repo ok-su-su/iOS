@@ -13,7 +13,7 @@ let project = Project.makeModule(
       .core(.sSRoot),
       .core(.coreLayers),
       .feature(.sent),
-      .feature(.inventory),
+      .feature(.received),
       .feature(.myPage),
       .feature(.vote),
       .feature(.statistics),

@@ -12,7 +12,7 @@ import ProjectDescription
 
 public enum Feature: String {
   case sent
-  case inventory
+  case received
   case myPage
   case vote
   case sSSearch

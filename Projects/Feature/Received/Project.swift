@@ -3,9 +3,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Inventory",
+  name: "Received",
   targets: .feature(
-    .inventory,
+    .received,
     testingOptions: [.unitTest],
     dependencies: [
       .core(.coreLayers),
