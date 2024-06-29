@@ -53,6 +53,11 @@ struct OnboardingLogin {
 
   enum DelegateAction: Equatable {}
 
+  private enum CancelID {
+    case KakaoLogin
+    case AppleLogin
+  }
+
   @Dependency(\.onBoardingLoginNetwork) var network
   @Dependency(\.loginTokenManager) var persistence
 
@@ -76,10 +81,12 @@ struct OnboardingLogin {
 
       case .view(.tappedKakaoLoginButton):
         return .send(.async(.loginWithKakaoTalk))
+          .throttle(id: CancelID.KakaoLogin, for: .seconds(4), scheduler: RunLoop.main, latest: false)
 
       case .view(.successAppleLogin):
         let appleToken = persistence.getToken(.APPLE)
         return .send(.async(.checkIsNewUser(loginType: .APPLE, token: appleToken)))
+          .throttle(id: CancelID.AppleLogin, for: .seconds(4), scheduler: RunLoop.main, latest: false)
 
       case .async(.loginWithKakaoTalk):
         return .run(priority: .high) { send in

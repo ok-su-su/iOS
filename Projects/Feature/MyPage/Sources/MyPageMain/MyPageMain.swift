@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSAlert
+import SSPersistancy
 
 // MARK: - MyPageMain
 
@@ -213,6 +214,7 @@ struct MyPageMain {
         return .run { _ in
           try await network.logout()
           NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
+          SSTokenManager.shared.removeToken()
         }
       }
     }
