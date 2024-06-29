@@ -25,11 +25,20 @@ struct MyPageEdit {
     var helper: MyPageEditHelper = .init()
     var selectYearIsPresented: Bool = false
     var selectYear: SelectYearBottomSheet.State?
+    var selectedGender: Gender?
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<SelectYearBottomSheetItem>.State?
     @Shared var selectedBottomSheetItem: SelectYearBottomSheetItem?
     var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2NonIconType))
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+
+    var nameText: String {
+      userInfo.name
+    }
+
+    var yearText: String {
+      selectedBottomSheetItem?.description ?? CustomDateFormatter.getYear(from: .now)
+    }
 
     init() {
       userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: "M", birth: 1965)
@@ -81,7 +90,6 @@ struct MyPageEdit {
   enum Routing: Equatable {
     case dismiss
   }
-  
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
@@ -90,16 +98,16 @@ struct MyPageEdit {
         return .none
       }
       state.isOnAppear = isOnAppear
-      return .none
-      
+      return .send(.inner(.updateInitialProperty))
+
     case let .selectGender(gender):
       state.helper.editedValue.gender = gender
       return .none
-      
+
     case let .nameEdited(text):
       state.helper.editName(text: text)
       return .none
-      
+
     case .selectedYearItem:
       state.bottomSheet = .init(
         items: .default,
@@ -145,7 +153,17 @@ struct MyPageEdit {
         return .none
 
       case .inner(.updateInitialProperty):
-        return .none
+
+        if let birth = state.userInfo.birth {
+          state.selectedBottomSheetItem = .init(description: birth.description, id: birth)
+        }
+
+        if let genderString = state.userInfo.gender {
+          state.selectedGender = .initByString(genderString)
+        }
+
+        let name = state.userInfo.name
+        return .send(.view(.nameEdited(name)))
       }
     }
     .activateScope()
@@ -167,6 +185,7 @@ extension [SelectYearBottomSheetItem] {
   static var `default`: Self {
     return (1930 ... Int(CustomDateFormatter.getYear(from: .now))!)
       .map { .init(description: $0.description, id: $0) }
+      .reversed()
   }
 }
 

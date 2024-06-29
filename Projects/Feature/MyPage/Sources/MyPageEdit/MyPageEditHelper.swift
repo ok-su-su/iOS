@@ -91,6 +91,19 @@ enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible
       "여자"
     }
   }
+
+  var genderIdentifierString: String {
+    switch self {
+    case .male:
+      "M"
+    case .female:
+      "W"
+    }
+  }
+
+  static func initByString(_ val: String) -> Self? {
+    allCases.filter { $0.genderIdentifierString == val }.first
+  }
 }
 
 // MARK: - MyPageInformationPropertiable

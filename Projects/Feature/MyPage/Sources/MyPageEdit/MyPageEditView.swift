@@ -93,10 +93,10 @@ struct MyPageEditView: View {
         .foregroundStyle(SSColor.gray60)
 
       Spacer()
-      Text(store.helper.birthDayText)
+      Text(store.yearText + "년")
         .frame(maxWidth: .infinity, alignment: .trailing)
         .modifier(SSTypoModifier(.title_xs))
-        .foregroundStyle(store.helper.isEditedBirthDay() ? SSColor.gray100 : SSColor.gray40)
+        .foregroundStyle(store.selectedBottomSheetItem != nil ? SSColor.gray100 : SSColor.gray40)
     }
     .frame(maxWidth: .infinity, maxHeight: 28)
     .padding(.vertical, Metrics.itemVerticalSpacing)
