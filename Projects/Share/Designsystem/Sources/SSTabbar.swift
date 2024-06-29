@@ -14,7 +14,7 @@ import SwiftUI
 
 public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   case envelope
-  case inventory
+  case received
   case statistics
   case vote
   case mypage
@@ -23,7 +23,7 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     switch self {
     case .envelope:
       return "보내요"
-    case .inventory:
+    case .received:
       return "받아요"
     case .statistics:
       return "통계"
@@ -49,7 +49,7 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     switch self {
     case .envelope:
       return SSImage.envelopeOutline
-    case .inventory:
+    case .received:
       return SSImage.inventoryOutline
     case .statistics:
       return SSImage.statisticsOutline
@@ -64,7 +64,7 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     switch self {
     case .envelope:
       return SSImage.envelopeFill
-    case .inventory:
+    case .received:
       return SSImage.inventoryFill
     case .statistics:
       return SSImage.statisticsFill
@@ -104,7 +104,7 @@ public struct SSTabBarFeature {
         switch type {
         case .envelope:
           NotificationCenter.default.post(name: SSNotificationName.tappedEnveloped, object: nil)
-        case .inventory:
+        case .received:
           NotificationCenter.default.post(name: SSNotificationName.tappedInventory, object: nil)
         case .statistics:
           NotificationCenter.default.post(name: SSNotificationName.tappedStatistics, object: nil)

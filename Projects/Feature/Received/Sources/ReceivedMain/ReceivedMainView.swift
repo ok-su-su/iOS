@@ -1,5 +1,5 @@
 //
-//  InventoryView.swift
+//  ReceivedMainView.swift
 //  susu
 //
 //  Created by Kim dohyun on 4/30/24.
@@ -10,18 +10,18 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-// MARK: - InventoryView
+// MARK: - ReceivedMainView
 
-public struct InventoryView: View {
-  @Bindable var inventoryStore: StoreOf<InventoryViewFeature>
+struct ReceivedMainView: View {
+  @Bindable var store: StoreOf<ReceivedMain>
   private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
-  public init(inventoryStore: StoreOf<InventoryViewFeature>) {
-    self.inventoryStore = inventoryStore
+  init(store: StoreOf<ReceivedMain>) {
+    self.store = store
   }
 
   @ViewBuilder
-  public func makeDotLineButton() -> some View {
+  func makeDotLineButton() -> some View {
     Rectangle()
       .strokeBorder(style: StrokeStyle(lineWidth: 1, lineCap: .butt, dash: [4]))
       .foregroundColor(SSColor.gray40)
@@ -34,14 +34,14 @@ public struct InventoryView: View {
       )
       .fixedSize()
       .onTapGesture {
-        inventoryStore.send(.didTapAddInventoryButton)
+        store.sendViewAction(.didTapInventoryView)
       }
   }
 
   @ViewBuilder
-  public func makeEmptyView() -> some View {
+  func makeEmptyView() -> some View {
     GeometryReader { geometry in
-      if inventoryStore.inventorys.isEmpty {
+      if store.ledgersProperty.isEmpty {
         VStack {
           makeDotLineButton()
             .padding(.horizontal, InventoryFilterConstants.commonSpacing)
@@ -58,13 +58,14 @@ public struct InventoryView: View {
       } else {
         ScrollView {
           LazyVGrid(columns: inventoryColumns) {
-            ForEach(inventoryStore.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { store in
-              InventoryBoxView(inventoryBoxstore: store)
-                .padding(.trailing, InventoryFilterConstants.commonSpacing)
-                .onTapGesture {
-                  inventoryStore.send(.didTapInventoryView)
-                }
-            }
+            // TODO: LedgerBox View 연결
+//            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
+//              LedgerBoxView(store: boxStore)
+//                .padding(.trailing, InventoryFilterConstants.commonSpacing)
+//                .onTapGesture {
+//                  store.send(.didTapInventoryView)
+//                }
+//            }
             VStack {
               makeDotLineButton()
                 .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
@@ -76,45 +77,50 @@ public struct InventoryView: View {
   }
 
   @ViewBuilder
-  public func makeFilterView() -> some View {
+  func makeFilterView() -> some View {
     GeometryReader { geometry in
-      HStack(spacing: InventoryFilterConstants.filterSpacing) {
-        SSButton(.init(
-          size: .sh32,
-          status: .active,
-          style: .ghost,
-          color: .black,
-          buttonText: inventoryStore.selectedSortItem.rawValue
-        )) {
-          inventoryStore.send(.didTapLatestButton)
-        }
-
-        ZStack {
-          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
-            .init(
-              startDate: Shared(.now),
-              endDate: Shared(.now),
-              selectedFilter: Shared([]),
-              ssButtonProperties: Shared([:])
-            )
-          )
-          ) {
-            SSButton(InventoryFilterConstants.filterButtonProperty) {
-              inventoryStore.send(.didTapFilterButton)
-            }
-            .allowsHitTesting(false)
-          }
-        }.frame(maxWidth: .infinity, alignment: .topLeading)
+      VStack {
+//      HStack(spacing: InventoryFilterConstants.filterSpacing) {
+//        SSButton(.init(
+//          size: .sh32,
+//          status: .active,
+//          style: .ghost,
+//          color: .black,
+//          buttonText: store.selectedSortItem.rawValue
+//        )) {
+//          store.send(.didTapLatestButton)
+//        }
+//
+//        ZStack {
+//          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
+//            .init(
+//              startDate: Shared(.now),
+//              endDate: Shared(.now),
+//              selectedFilter: Shared([]),
+//              ssButtonProperties: Shared([:])
+//            )
+//          )
+//          ) {
+//            SSButton(InventoryFilterConstants.filterButtonProperty) {
+//              inventoryStore.send(.didTapFilterButton)
+//            }
+//            .allowsHitTesting(false)
+//          }
+//        }.frame(maxWidth: .infinity, alignment: .topLeading)
       }
       .frame(width: geometry.size.width, height: 32, alignment: .topLeading)
       .padding(.horizontal, InventoryFilterConstants.commonSpacing)
     }
   }
 
-  public var body: some View {
+  var body: some View {
     ZStack(alignment: .bottomTrailing) {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+
       VStack {
-        HeaderView(store: inventoryStore.scope(state: \.headerType, action: \.setHeaderView))
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         Spacer()
           .frame(height: 16)
 
@@ -122,12 +128,12 @@ public struct InventoryView: View {
           .frame(height: 32)
         makeEmptyView()
       }
-      InventoryFloatingButton(floatingStore: inventoryStore.scope(state: \.floatingState, action: \.setFloatingView))
-        .padding(.trailing, 20)
-        .padding(.bottom, 20)
+//      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
+//        .padding(.trailing, 20)
+//        .padding(.bottom, 20)
 
     }.safeAreaInset(edge: .bottom) {
-      SSTabbar(store: inventoryStore.scope(state: \.tabbarType, action: \.setTabbarView))
+      SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
         .background {
           Color.white
         }
@@ -136,14 +142,14 @@ public struct InventoryView: View {
         .toolbar(.hidden, for: .tabBar)
     }
     .navigationBarBackButtonHidden()
-    .sheet(item: $inventoryStore.scope(state: \.sortSheet, action: \.sortSheet)) { store in
-      InventorySortSheetView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationDragIndicator(.automatic)
-    }
-    .fullScreenCover(item: $inventoryStore.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
-      InventorySearchView(store: store)
-    }
+//    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
+//      InventorySortSheetView(store: store)
+//        .presentationDetents([.height(240), .medium, .large])
+//        .presentationDragIndicator(.automatic)
+//    }
+//    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
+//      InventorySearchView(store: store)
+//    }
   }
 
   private enum InventoryFilterConstants {

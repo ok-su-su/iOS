@@ -9,13 +9,13 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "InventoryPreview",
+  name: "ReceivedPreview",
   targets: .app(
-    name: "InventoryPreview",
+    name: "ReceivedPreview",
     testingOptions: [
     ],
     dependencies: [
-      .feature(.inventory),
+      .feature(.received),
     ]
   )
 )

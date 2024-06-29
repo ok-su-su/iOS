@@ -1,13 +1,12 @@
 //
-//  NumberFormatter.swift
-//  Sent
+//  CustomNumberFormatter.swift
+//  Received
 //
-//  Created by MaraMincho on 5/2/24.
+//  Created by MaraMincho on 6/29/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation
-import OSLog
 
 enum CustomNumberFormatter {
   static var numberFormatter: NumberFormatter {

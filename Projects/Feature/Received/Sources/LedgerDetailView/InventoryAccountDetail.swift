@@ -18,7 +18,7 @@ public struct InventoryAccountDetail {
   @ObservableState
   public struct State {
     var headerType = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
-    var tabbarType = SSTabBarFeature.State(tabbarType: .inventory)
+    var tabbarType = SSTabBarFeature.State(tabbarType: .received)
     var accountProperty: InventoryAccountDetailHelper
     var accountItems: IdentifiedArrayOf<InventoryAccount.State> = [
       .init(accountType: [.family, .unvisited, .visited], accountTitle: "김철수", accountPrice: "10000"),

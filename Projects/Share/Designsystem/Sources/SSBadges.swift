@@ -21,7 +21,7 @@ public struct SmallBadgeProperty {
     self.badgeColor = badgeColor
   }
 
-  public enum BadgeColor {
+  public enum BadgeColor: String {
     case gray20
     case orange60
     case blue60
@@ -111,37 +111,5 @@ public struct SmallBadge: View {
       property.backgroundColor
     }
     .cornerRadius(4)
-  }
-}
-
-#Preview {
-  VStack {
-    Spacer()
-    HStack {
-      SmallBadge(property: .init(size: .small, badgeString: "10000원", badgeColor: .gray20))
-      SmallBadge(property: .init(size: .small, badgeString: "가족", badgeColor: .orange60))
-      SmallBadge(property: .init(size: .small, badgeString: "미방문", badgeColor: .blue60))
-      SmallBadge(property: .init(size: .small, badgeString: "선물이", badgeColor: .gray90))
-    }
-    HStack {
-      SmallBadge(property: .init(size: .small, badgeString: "선물이", badgeColor: .gray40))
-      SmallBadge(property: .init(size: .small, badgeString: "10000원", badgeColor: .gray30))
-      SmallBadge(property: .init(size: .small, badgeString: "미방문", badgeColor: .red60))
-    }
-    Spacer()
-    HStack {
-      SmallBadge(property: .init(size: .xSmall, badgeString: "10000원", badgeColor: .gray20))
-      SmallBadge(property: .init(size: .xSmall, badgeString: "가족", badgeColor: .orange60))
-      SmallBadge(property: .init(size: .xSmall, badgeString: "미방문", badgeColor: .blue60))
-
-    }.padding(.bottom, 10)
-    HStack {
-      SmallBadge(property: .init(size: .xSmall, badgeString: "선물이", badgeColor: .gray90))
-      SmallBadge(property: .init(size: .xSmall, badgeString: "선물이", badgeColor: .gray40))
-      SmallBadge(property: .init(size: .xSmall, badgeString: "10000원", badgeColor: .gray30))
-      SmallBadge(property: .init(size: .xSmall, badgeString: "미방문", badgeColor: .red60))
-    }
-    Spacer()
-    Spacer()
   }
 }

@@ -1,11 +1,11 @@
 import Combine
 import ComposableArchitecture
 import Designsystem
-import Inventory
 import KakaoLogin
 import MyPage
 import Onboarding
 import OSLog
+import Received
 import Sent
 import SSAlert
 import SSLaunchScreen
@@ -25,7 +25,7 @@ final class ContentViewObject: ObservableObject {
       self.type = .envelope
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedInventory, object: nil, queue: .main) { _ in
-      self.type = .inventory
+      self.type = .received
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
       self.type = .statistics
@@ -93,7 +93,7 @@ public struct ContentView: View {
 
   var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .inventory: AnyView(InventoryBuilderView()),
+    .received: AnyView(ReceivedBuilderView()),
     .vote: AnyView(VoteBuilder()),
     .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
     .statistics: AnyView(StatisticsBuilderView()),
