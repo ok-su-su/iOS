@@ -21,7 +21,7 @@ struct MyPageMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var isLoading: Bool = true
+    var isLoading: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
     var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
 
@@ -96,9 +96,6 @@ struct MyPageMain {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .none
-        }
         state.isOnAppear = isAppear
         return .send(.async(.getMyInformation))
 
@@ -183,6 +180,9 @@ struct MyPageMain {
         return .none
 
       case .async(.getMyInformation):
+        if let info = MyPageSharedState.shared.getMyUserInfoDTO() {
+          return .send(.inner(.updateMyInformation(info)))
+        }
         return .run { send in
           await send(.inner(.isLoading(true)))
           let dto = try await network.getMyInformation()

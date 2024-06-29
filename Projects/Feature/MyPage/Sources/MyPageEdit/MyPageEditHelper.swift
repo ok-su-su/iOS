@@ -97,7 +97,7 @@ enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible
     case .male:
       "M"
     case .female:
-      "W"
+      "F"
     }
   }
 

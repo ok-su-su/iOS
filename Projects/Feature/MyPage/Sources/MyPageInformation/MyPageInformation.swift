@@ -26,9 +26,7 @@ struct MyPageInformation: Reducer {
       = .init(uniqueElements: [])
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var userInfo: UserInfoResponseDTO?
-    init() {
-      userInfo = MyPageSharedState.shared.getMyUserInfoDTO()
-    }
+    init() {}
   }
 
   enum Action: Equatable, FeatureAction {
@@ -81,16 +79,12 @@ struct MyPageInformation: Reducer {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .none
-        }
         state.isOnAppear = isAppear
-
+        state.userInfo = MyPageSharedState.shared.getMyUserInfoDTO()
         // 만약 캐시에 현재 정보가 저장 X 일 경우
         if state.userInfo == nil {
           return .send(.async(.getMyInformation))
         }
-
         return .send(.inner(.updateCellItems))
 
       case .scope(.header(.tappedTextButton)):

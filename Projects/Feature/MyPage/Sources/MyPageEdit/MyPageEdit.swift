@@ -43,11 +43,11 @@ struct MyPageEdit {
     }
 
     var yearText: String {
-      selectedBottomSheetItem?.description ?? CustomDateFormatter.getYear(from: .now)
+      selectedBottomSheetItem?.description ?? CustomDateFormatter.getYear(from: .now) + "년"
     }
 
     init() {
-      userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: "M", birth: 1965)
+      userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: nil, birth: nil)
       _selectedBottomSheetItem = .init(nil)
     }
 
@@ -124,7 +124,7 @@ struct MyPageEdit {
       )
       return .none
     case .tappedEditConfirmButton:
-      return .send(.async(.updateUserInformation))
+      return .send(.inner(.updateUserInformation))
     }
   }
 
@@ -164,7 +164,7 @@ struct MyPageEdit {
       case .inner(.updateInitialProperty):
 
         if let birth = state.userInfo.birth {
-          state.selectedBottomSheetItem = .init(description: birth.description, id: birth)
+          state.selectedBottomSheetItem = .init(description: birth.description + "년", id: birth)
         }
 
         if let genderString = state.userInfo.gender {
@@ -174,10 +174,7 @@ struct MyPageEdit {
         let name = state.userInfo.name
         return .send(.view(.nameEdited(name)))
       case .inner(.updateUserInformation):
-        return .run { send in
-          await send(.async(.updateUserInformation))
-          await dismiss()
-        }
+        return .send(.async(.updateUserInformation))
 
       case .async(.updateUserInformation):
         let updateName = state.nameTextFieldText
@@ -191,6 +188,7 @@ struct MyPageEdit {
         return .run { [id = state.userInfo.id] send in
           let dto = try await network.updateUserInformation(userID: id, requestBody: requestBody)
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
+          await send(.route(.dismiss))
         }
       }
     }

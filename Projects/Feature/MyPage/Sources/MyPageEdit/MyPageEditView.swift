@@ -93,7 +93,7 @@ struct MyPageEditView: View {
         .foregroundStyle(SSColor.gray60)
 
       Spacer()
-      Text(store.yearText + "년")
+      Text(store.yearText)
         .frame(maxWidth: .infinity, alignment: .trailing)
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(store.selectedBottomSheetItem != nil ? SSColor.gray100 : SSColor.gray40)
