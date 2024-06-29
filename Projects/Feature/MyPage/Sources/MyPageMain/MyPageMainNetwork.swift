@@ -9,6 +9,7 @@
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -19,6 +20,10 @@ final class MyPageMainNetwork {
 
   func getMyInformation() async throws -> UserInfoResponseDTO {
     return try await provider.request(.myPageInformation)
+  }
+
+  func updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponseDTO {
+    return try await provider.request(.updateMyProfile(userID: userID, body: requestBody))
   }
 }
 
@@ -35,12 +40,15 @@ extension MyPageMainNetwork: DependencyKey {
   static var liveValue: MyPageMainNetwork = .init()
   private enum Network: SSNetworkTargetType {
     case myPageInformation
+    case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
       switch self {
       case .myPageInformation:
         "users/my-info"
+      case let .updateMyProfile(userID: userID, _):
+        "users/\(userID.description)"
       }
     }
 
@@ -48,6 +56,8 @@ extension MyPageMainNetwork: DependencyKey {
       switch self {
       case .myPageInformation:
         .get
+      case .updateMyProfile:
+        .patch
       }
     }
 
@@ -55,6 +65,8 @@ extension MyPageMainNetwork: DependencyKey {
       switch self {
       case .myPageInformation:
         .requestPlain
+      case let .updateMyProfile(_, body: body):
+        .requestData(body.getBody())
       }
     }
   }
@@ -71,4 +83,23 @@ struct UserInfoResponseDTO: Equatable, Decodable {
   let gender: String?
   /// 출생 년도
   let birth: Int?
+}
+
+// MARK: - UpdateUserProfileRequestBody
+
+struct UpdateUserProfileRequestBody: Encodable {
+  let name: String
+  /// 성별 M: 남자, W 여자
+  let gender: String?
+  /// 출생 년도
+  let birth: Int?
+
+  func getBody() -> Data {
+    do {
+      return try JSONEncoder().encode(self)
+    } catch {
+      os_log("UpdateUserProfileRequestBody Encode 실패했습니다.")
+      return Data()
+    }
+  }
 }

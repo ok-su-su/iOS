@@ -27,7 +27,7 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
           Spacer()
             .frame(height: 16)
           VStack(spacing: 0) {
-            //TODO: 블로그 작성 
+            // TODO: 블로그 작성
             ForEach(store.items) { item in
               Text(item.description)
                 .modifier(SSTypoModifier(.title_xxs))

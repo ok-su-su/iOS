@@ -73,8 +73,8 @@ struct MyPageEditView: View {
 
       TextField(
         "",
-        text: $store.helper.editedValue.name.sending(\.view.nameEdited),
-        prompt: Text(store.helper.namePromptText).foregroundStyle(SSColor.gray40)
+        text: $store.nameTextFieldText.sending(\.view.nameEdited),
+        prompt: nil
       )
       .modifier(SSTypoModifier(.title_xs))
       .foregroundStyle(SSColor.gray100)
@@ -115,7 +115,7 @@ struct MyPageEditView: View {
       Spacer()
       HStack(spacing: 8) {
         ForEach(Gender.allCases, id: \.id) { gender in
-          let isSelected = store.helper.selectedGender == gender
+          let isSelected = store.selectedGender == gender
           SSButton(
             .init(
               size: .sh32,
@@ -141,7 +141,20 @@ struct MyPageEditView: View {
         .gray10
         .ignoresSafeArea()
       VStack(spacing: 0) {
-        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+        ZStack {
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          HStack {
+            Spacer()
+            Text(Constants.confirmButtonText)
+              .modifier(SSTypoModifier(.title_xxs))
+              .foregroundStyle(store.isPushable ? SSColor.gray100 : SSColor.gray50)
+              .onTapGesture {
+                store.sendViewAction(.tappedEditConfirmButton)
+              }
+          }
+          .padding(.horizontal, 16)
+        }
+
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
       }
@@ -151,14 +164,6 @@ struct MyPageEditView: View {
       store.send(.view(.onAppear(true)))
     }
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
-    .sheet(isPresented: $store.selectYearIsPresented.sending(\.view.selectedYearItem)) {
-      IfLetStore(store.scope(state: \.selectYear, action: \.scope.selectYear)) { store in
-        SelectYearBottomSheetView(store: store)
-          .presentationDetents([.height(240), .medium, .large])
-          .presentationContentInteraction(.scrolls)
-          .presentationDragIndicator(.automatic)
-      }
-    }
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 
@@ -172,5 +177,6 @@ struct MyPageEditView: View {
     static let nameCellTitle: String = "이름"
     static let birthdayCellTitle: String = "생년월일"
     static let genderCellTitle: String = "성별"
+    static let confirmButtonText: String = "확인"
   }
 }
