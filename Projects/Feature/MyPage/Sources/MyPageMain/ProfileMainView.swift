@@ -7,6 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
+import SSToast
 import SwiftUI
 
 struct MyPageMainView: View {
@@ -22,20 +24,14 @@ struct MyPageMainView: View {
     ScrollView {
       VStack(spacing: 0) {
         VStack(spacing: 8) {
-          makeMyNameAndMyInformationButtonView()
           makeTopSection()
           makeMiddleSection()
           makeBottomSection()
-          Spacer()
         }
-        Spacer()
-          .frame(height: 16)
-
         makeAppVersionText()
-
-        Spacer()
-          .frame(height: 32)
-
+          .padding(.leading, 15)
+          .padding(.top, 16)
+          .padding(.bottom, 32)
         makeFeedbackButton()
       }
     }
@@ -70,10 +66,13 @@ struct MyPageMainView: View {
 
   @ViewBuilder
   private func makeAppVersionText() -> some View {
-    Text("앱 버전 1.0.0")
-      .modifier(SSTypoModifier(.title_xxxs))
-      .foregroundStyle(SSColor.gray50)
-      .frame(alignment: .leading)
+    // TODO: Some Logic
+    HStack {
+      Text("앱 버전 1.0.0")
+        .modifier(SSTypoModifier(.title_xxxs))
+        .foregroundStyle(SSColor.gray50)
+      Spacer()
+    }
   }
 
   @ViewBuilder
@@ -147,6 +146,7 @@ struct MyPageMainView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           .background(SSColor.gray10)
         Spacer()
+        makeMyNameAndMyInformationButtonView()
         makeContentView()
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
@@ -155,6 +155,18 @@ struct MyPageMainView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .sSAlert(
+      isPresented: $store.showMessageAlert.sending(\.view.showAlert),
+      messageAlertProperty: .init(
+        titleText: "로그아웃 할까요?",
+        contentText: "",
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(left: "취소", right: "로그아웃"),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedLogOut)
+        }
+      )
+    )
   }
 
   private enum Metrics {

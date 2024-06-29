@@ -12,6 +12,10 @@ let project = Project.makeModule(
       .share(.sSLayout),
       .core(.coreLayers),
     ],
-    testDependencies: []
+    testDependencies: [],
+    infoPlist: [
+      "PRIVACY_POLICY_URL": "$(PRIVACY_POLICY_URL)",
+      "SUSU_GOOGLE_FROM_URL": "$(SUSU_GOOGLE_FROM_URL)",
+    ]
   )
 )

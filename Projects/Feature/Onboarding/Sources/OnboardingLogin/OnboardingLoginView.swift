@@ -147,7 +147,6 @@ struct OnboardingLoginView: View {
       makeLoginButtonViewByLoginType(.KAKAO) {
         store.send(.view(.tappedKakaoLoginButton))
       }
-      .allowsHitTesting(false)
 
       ZStack {
         SignInWithAppleButton(

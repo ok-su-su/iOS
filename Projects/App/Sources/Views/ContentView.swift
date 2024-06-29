@@ -39,6 +39,9 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
       self.nowScreenType = .main
     }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.logout, object: nil, queue: .main) { _ in
+      self.nowScreenType = .loginAndRegister
+    }
   }
 
   init() {

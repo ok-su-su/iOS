@@ -8,6 +8,7 @@
 
 import Combine
 import OSLog
+import SafariServices
 import SwiftUI
 
 // MARK: - MyPageMainRouter
@@ -27,17 +28,31 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
         case .myPageInformation:
           self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
         case .connectedSocialAccount:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .exportExcel:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .privacyPolicy:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          guard let urlString = Constants.privateURLString,
+                let url = URL(string: urlString)
+          else {
+            return
+          }
+          let vc = SFSafariViewController(url: url)
+          self?.present(vc, animated: true)
         case .appVersion:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .logout:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .resign:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
+        case .feedBack:
+          guard let urlString = Constants.feedBackURLString,
+                let url = URL(string: urlString)
+          else {
+            return
+          }
+          let vc = SFSafariViewController(url: url)
+          self?.present(vc, animated: true)
         }
       }
   }
@@ -54,4 +69,13 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   @MainActor dynamic required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  private enum Constants {
+    static let privateURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["PRIVACY_POLICY_URL"] as? String
+    static let feedBackURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["SUSU_GOOGLE_FROM_URL"] as? String
+  }
 }
+
+// MARK: - BundleFinder
+
+private class BundleFinder {}
