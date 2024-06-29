@@ -25,16 +25,11 @@ struct MyPageMainView: View {
           makeTopSection()
           makeMiddleSection()
           makeBottomSection()
-          Spacer()
         }
-        Spacer()
-          .frame(height: 16)
-
         makeAppVersionText()
-
-        Spacer()
-          .frame(height: 32)
-
+          .padding(.leading, 15)
+          .padding(.top, 16)
+          .padding(.bottom, 32)
         makeFeedbackButton()
       }
     }
@@ -70,10 +65,12 @@ struct MyPageMainView: View {
   @ViewBuilder
   private func makeAppVersionText() -> some View {
     // TODO: Some Logic
-    Text("앱 버전 1.0.0")
-      .modifier(SSTypoModifier(.title_xxxs))
-      .foregroundStyle(SSColor.gray50)
-      .frame(alignment: .leading)
+    HStack {
+      Text("앱 버전 1.0.0")
+        .modifier(SSTypoModifier(.title_xxxs))
+        .foregroundStyle(SSColor.gray50)
+      Spacer()
+    }
   }
 
   @ViewBuilder
