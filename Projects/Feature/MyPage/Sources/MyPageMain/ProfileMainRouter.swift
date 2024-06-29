@@ -52,6 +52,7 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
             return
           }
           let vc = SFSafariViewController(url: url)
+          self?.present(vc, animated: true)
         }
       }
   }

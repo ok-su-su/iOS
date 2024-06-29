@@ -22,7 +22,6 @@ struct MyPageMainView: View {
     ScrollView {
       VStack(spacing: 0) {
         VStack(spacing: 8) {
-          makeMyNameAndMyInformationButtonView()
           makeTopSection()
           makeMiddleSection()
           makeBottomSection()
@@ -70,6 +69,7 @@ struct MyPageMainView: View {
 
   @ViewBuilder
   private func makeAppVersionText() -> some View {
+    // TODO: Some Logic
     Text("앱 버전 1.0.0")
       .modifier(SSTypoModifier(.title_xxxs))
       .foregroundStyle(SSColor.gray50)
@@ -147,6 +147,7 @@ struct MyPageMainView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           .background(SSColor.gray10)
         Spacer()
+        makeMyNameAndMyInformationButtonView()
         makeContentView()
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
