@@ -8,6 +8,7 @@
 
 import Combine
 import OSLog
+import SafariServices
 import SwiftUI
 
 // MARK: - MyPageMainRouter
@@ -27,17 +28,21 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
         case .myPageInformation:
           self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
         case .connectedSocialAccount:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .exportExcel:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .privacyPolicy:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          let vc = SFSafariViewController(url: .init(string: "https://sites.google.com/view/team-oksusu/%ED%99%88")!)
+          self?.navigationController?.pushViewController(vc, animated: true)
         case .appVersion:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .logout:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
         case .resign:
-          self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
+          return
+        case .feedBack:
+          let vc = SFSafariViewController(url: .init(string: "https://forms.gle/FHky26kAQdde9RcD7")!)
+          self?.navigationController?.pushViewController(vc, animated: true)
         }
       }
   }

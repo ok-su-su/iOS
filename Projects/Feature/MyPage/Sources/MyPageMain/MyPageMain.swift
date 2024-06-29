@@ -81,6 +81,7 @@ struct MyPageMain {
     case appVersion
     case logout
     case resign
+    case feedBack
   }
 
   @Dependency(\.myPageMainNetwork) var network
