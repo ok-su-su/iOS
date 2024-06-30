@@ -11,7 +11,6 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
-import SSSearch
 
 @Reducer
 struct ReceivedMain {
@@ -24,7 +23,7 @@ struct ReceivedMain {
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
-    @Presents var search = SSSearchReducer.State(helper: <#T##Shared<SSSearchPropertiable>#>)
+    @Presents var search: ReceivedSearch.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
     init() {}
@@ -58,6 +57,7 @@ struct ReceivedMain {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
     case sortSheet(PresentationAction<InventorySortSheet.Action>)
+    case search(PresentationAction<ReceivedSearch.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -87,11 +87,16 @@ struct ReceivedMain {
 
    var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
      switch action {
+     case .header(.tappedSearchButton):
+       state.search = .init()
+       return .none
      case .header(_):
        return .none
      case .tabBar(_):
        return .none
      case .sortSheet(_):
+       return .none
+     case .search(_):
        return .none
      }
    }
@@ -114,6 +119,15 @@ struct ReceivedMain {
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
       }
+    }
+    .addFeatures()
+  }
+}
+
+extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    ifLet(\.$search, action: \.scope.search) {
+      ReceivedSearch()
     }
   }
 }
