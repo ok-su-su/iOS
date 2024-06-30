@@ -11,7 +11,12 @@ import Foundation
 // MARK: - FilterHelperProperty
 
 struct FilterHelperProperty: Equatable {
-  var selectableLedgers: [FilterSelectableItemProperty] = []
+  var selectableLedgers: [FilterSelectableItemProperty] = [
+    .init(id: 1, title: "결혼식"),
+    .init(id: 2, title: "영결식"),
+    .init(id: 3, title: "영춘권"),
+    .init(id: 4, title: "곰춘권"),
+  ]
   var selectedLedgers: [FilterSelectableItemProperty] = []
 
   var filteredDateTextString: String? {

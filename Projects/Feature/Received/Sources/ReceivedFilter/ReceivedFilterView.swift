@@ -21,12 +21,6 @@ struct ReceivedFilterView: View {
     self.store = store
   }
 
-  private func makeHeaderContentView() -> some View {
-    ZStack(alignment: .top) {
-      HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-    }
-  }
-
   @ViewBuilder
   private func makeFilterConfirmContentView() -> some View {
     HStack {
@@ -54,7 +48,6 @@ struct ReceivedFilterView: View {
       Text("경조사 카테고리")
         .modifier(SSTypoModifier(.title_xs))
         .foregroundColor(SSColor.gray100)
-        .padding(.top, 24)
         .padding(.leading, Spacing.leading)
 
       WrappingHStack(horizontalSpacing: 8) {
@@ -75,7 +68,6 @@ struct ReceivedFilterView: View {
         }
       }
     }
-    .frame(height: 72)
   }
 
   @ViewBuilder
@@ -100,61 +92,68 @@ struct ReceivedFilterView: View {
 
   @ViewBuilder
   private func makeDateFilterContentView() -> some View {
-    GeometryReader { _ in
-      VStack(alignment: .leading) {
-        Text("날짜")
-          .modifier(SSTypoModifier(.title_xs))
+    VStack(alignment: .leading) {
+      Text("날짜")
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundColor(SSColor.gray100)
+
+      HStack(spacing: 0) {
+        Rectangle()
+          .fill(SSColor.gray15)
+          .frame(width: 118, height: 36)
+          .overlay {
+            Text(store.startDateText ?? store.defaultDateText)
+              .modifier(SSTypoModifier(.title_xs))
+              .foregroundColor(SSColor.gray40)
+//              .foregroundColor(store.startDate == .now ? SSColor.gray100 : SSColor.gray40)
+          }
+
+        Text("부터")
+          .modifier(SSTypoModifier(.title_xxs))
           .foregroundColor(SSColor.gray100)
-          .padding(.leading, Spacing.leading)
-        HStack {
-          Rectangle()
-            .fill(SSColor.gray15)
-            .frame(width: 118, height: 36)
-            .overlay {
-              Text(store.startDateText ?? store.defaultDateText)
-                .modifier(SSTypoModifier(.title_xs))
-//                .foregroundColor(store.startDate == .now ? SSColor.gray100 : SSColor.gray40)
-            }
-            .onTapGesture {
-              store.sendViewAction(.tappedDateButton)
-            }
 
-          Text("부터")
-            .modifier(SSTypoModifier(.title_xxs))
-            .foregroundColor(SSColor.gray100)
+        Rectangle()
+          .fill(SSColor.gray15)
+          .frame(width: 118, height: 36)
+          .overlay {
+            Text(store.endDateText ?? store.defaultDateText)
+              .modifier(SSTypoModifier(.title_xs))
+              .foregroundColor(SSColor.gray40)
+          }
 
-          Rectangle()
-            .fill(SSColor.gray15)
-            .frame(width: 118, height: 36)
-            .overlay {
-              Text(store.endDateText ?? store.defaultDateText)
-                .modifier(SSTypoModifier(.title_xs))
-                .foregroundColor(SSColor.gray40)
-            }
-            .onTapGesture {
-              store.sendViewAction(.tappedDateButton)
-            }
-
-          Text("까지")
-            .modifier(SSTypoModifier(.title_xxs))
-            .foregroundColor(SSColor.gray100)
-        }
-        .padding(.leading, Spacing.leading)
+        Text("까지")
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundColor(SSColor.gray100)
+      }
+      .onTapGesture {
+        store.sendViewAction(.tappedDateButton)
       }
     }
+    .frame(maxWidth: .infinity)
+    .background(SSColor.orange60)
   }
 
   var body: some View {
-    makeHeaderContentView()
-    VStack {
-      makeFilterContentView()
-      Spacer()
-        .frame(height: 48)
-      makeDateFilterContentView()
-      Spacer()
-      VStack(alignment: .leading, spacing: 8) {
-        makeSelectedFilterContentView()
-        makeFilterConfirmContentView()
+    ZStack {
+      SSColor
+        .gray10
+        .ignoresSafeArea()
+
+      VStack {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .padding(.bottom, 24)
+
+        makeFilterContentView()
+          .padding(.horizontal, 16)
+          .padding(.bottom, 48)
+
+        makeDateFilterContentView()
+          .padding(.horizontal, 16)
+        Spacer()
+        VStack(alignment: .leading, spacing: 8) {
+          makeSelectedFilterContentView()
+          makeFilterConfirmContentView()
+        }
       }
     }
     .onAppear {
