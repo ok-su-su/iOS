@@ -27,7 +27,10 @@ struct ReceivedMain {
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
     @Presents var search: ReceivedSearch.State?
 
-    var ledgersProperty: [LedgerBoxProperty] = []
+    var ledgersProperty: [LedgerBoxProperty] = [
+      .init(id: 1, categoryName: "장례식", style: "orange60", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 50000, envelopesCount: 164),
+      .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
+    ]
     init() {}
   }
 

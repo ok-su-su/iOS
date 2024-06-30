@@ -58,20 +58,22 @@ struct ReceivedMainView: View {
         }
       } else {
         ScrollView {
-          LazyVGrid(columns: inventoryColumns) {
+          LazyVGrid(
+            columns: inventoryColumns,
+            alignment: .center,
+            spacing: 8
+          ) {
             // TODO: LedgerBox View 연결
-//            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
-//              LedgerBoxView(store: boxStore)
-//                .padding(.trailing, InventoryFilterConstants.commonSpacing)
-//                .onTapGesture {
-//                  store.send(.didTapInventoryView)
-//                }
-//            }
+            ForEach(store.ledgersProperty) { property in
+              LedgerBoxView(property)
+                .frame(height: ledgerBoxWithAndHeight)
+            }
             VStack {
               makeDotLineButton()
                 .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
             }
           }
+          .padding(.horizontal, 16)
         }
       }
     }
@@ -155,6 +157,9 @@ struct ReceivedMainView: View {
 //      InventorySearchView(store: store)
 //    }
   }
+
+  /// Box Size +  horizontal Spacing
+  var ledgerBoxWithAndHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
 
   private enum InventoryFilterConstants {
     // MARK: Property

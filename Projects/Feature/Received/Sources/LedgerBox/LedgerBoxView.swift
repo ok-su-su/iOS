@@ -58,18 +58,16 @@ public struct LedgerBoxView: View {
       Text(totalAmountText)
         .modifier(SSTypoModifier(.title_xxxs))
         .foregroundColor(SSColor.gray70)
-        .padding(.top, 20)
-        .padding(.leading, 16)
+        .padding(.bottom, 4)
 
       Text(totalAmountEnvelopeCountText)
         .modifier(SSTypoModifier(.title_xxxs))
         .foregroundColor(SSColor.gray50)
-        .padding(.top, 4)
-        .padding(.leading, 16)
     }
-    .cornerRadius(4)
+    .padding(.all, 16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(SSColor.gray10)
+    .cornerRadius(4)
   }
 
   public var body: some View {
@@ -101,7 +99,7 @@ struct LedgerBoxProperty: Equatable, Hashable, Identifiable {
   /// 장부 카테고리 색 입니다.
   let style: String
   /// 기타일 경우에 나타냅니다.
-  let isMiscCategory: Bool
+  let isMiscCategory: Bool?
   /// 카테고리의 부연 설명을 나타냅니다.
   let categoryDescription: String
   /// 전체 금액을 나타냅니다.
