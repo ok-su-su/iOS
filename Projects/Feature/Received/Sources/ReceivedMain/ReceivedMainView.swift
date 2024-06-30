@@ -107,7 +107,7 @@ struct ReceivedMainView: View {
         // MARK: - 정렬 버튼
 
         // 정렬된 사람이 없을 때
-        if !store.state.isFilteredHeaderButtonItem {
+        if !store.state.isFilteredItem {
           SSButton(Constants.notSelectedFilterButtonProperty) {
             store.send(.view(.tappedFilterButton))
           }

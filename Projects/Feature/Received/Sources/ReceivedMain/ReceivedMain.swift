@@ -36,8 +36,12 @@ struct ReceivedMain {
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
-    var isFilteredHeaderButtonItem: Bool {
-      return true
+    var isFilteredItem: Bool {
+      if (!filterProperty.selectedLedgers.isEmpty) ||
+        (filterProperty.selectedFilterDateTextString != nil) {
+        return true
+      }
+      return false
     }
 
     init() {
