@@ -82,6 +82,7 @@ struct ReceivedMain {
   enum AsyncAction: Equatable {
     case getLedgersInitialPage
     case getLedgers
+    case ledgersNetworkTask(SearchLedgersRequestParameter)
   }
 
   @CasePathable
@@ -203,6 +204,25 @@ struct ReceivedMain {
       let sortType = state.sortProperty.selectedFilterDial ?? .latest
       // TODO: 각자 맞게 수정해야함 파라미터들
       let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let property = try await network.getLedgers(param)
+        await send(.inner(.updateLedgers(property)))
+        await send(.inner(.isLoading(false)))
+      }
+    case let .ledgersNetworkTask(param):
+
+      //TODO: SLack 답변을 통해서 내부 구조 변경
+      let param = SearchLedgersRequestParameter(
+        title: nil, 
+        categoryIds: state.filterProperty.selectedLedgers.map{Int($0.id)},
+        fromStartAt: nil,
+        toStartAt: nil,
+        toEndAt: nil,
+        page: state.page,
+        sort: state.sortProperty.selectedFilterDial ?? .latest
+      )
+//      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
       return .run { send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getLedgers(param)

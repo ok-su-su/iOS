@@ -68,6 +68,8 @@ extension ReceivedMainNetwork: DependencyKey {
 struct SearchLedgersRequestParameter: Encodable, Equatable {
   /// 검색하는 장부 이름
   var title: String?
+  /// 검색하는 카테고리 ID들 
+  var categoryIds: [Int]
   /// 시작일
   var fromStartAt: Date?
   /// 종료일
