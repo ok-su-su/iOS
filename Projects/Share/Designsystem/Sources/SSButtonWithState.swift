@@ -50,7 +50,7 @@ public struct SSButtonWithState: View {
         maxWidth: property.frame.maxWidth,
         minHeight: property.frame.minHeight,
         idealHeight: property.frame.idealHeight,
-        maxHeight: property.frame.maxHeight,
+        maxHeight: property.size.height,
         alignment: property.frame.alignment
       )
       .background {

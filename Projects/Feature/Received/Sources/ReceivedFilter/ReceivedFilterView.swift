@@ -78,8 +78,8 @@ struct ReceivedFilterView: View {
           .init(
             size: .xsh28,
             status: .active,
-            style: .lined,
-            color: .black,
+            style: .filled,
+            color: .orange,
             leftIcon: .none,
             rightIcon: .icon(SSImage.commonDeleteWhite),
             buttonText: property.title
@@ -96,6 +96,7 @@ struct ReceivedFilterView: View {
       Text("날짜")
         .modifier(SSTypoModifier(.title_xs))
         .foregroundColor(SSColor.gray100)
+        .frame(alignment: .leading)
 
       HStack(spacing: 0) {
         Rectangle()
@@ -129,8 +130,7 @@ struct ReceivedFilterView: View {
         store.sendViewAction(.tappedDateButton)
       }
     }
-    .frame(maxWidth: .infinity)
-    .background(SSColor.orange60)
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   var body: some View {
@@ -152,6 +152,7 @@ struct ReceivedFilterView: View {
         Spacer()
         VStack(alignment: .leading, spacing: 8) {
           makeSelectedFilterContentView()
+            .padding(.horizontal, 16)
           makeFilterConfirmContentView()
         }
       }

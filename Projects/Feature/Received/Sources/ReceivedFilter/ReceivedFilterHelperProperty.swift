@@ -16,6 +16,10 @@ struct FilterHelperProperty: Equatable {
     .init(id: 2, title: "영결식"),
     .init(id: 3, title: "영춘권"),
     .init(id: 4, title: "곰춘권"),
+    .init(id: 5, title: "곰춘권"),
+    .init(id: 6, title: "곰춘권"),
+    .init(id: 7, title: "곰춘권"),
+    .init(id: 8, title: "곰춘권"),
   ]
   var selectedLedgers: [FilterSelectableItemProperty] = []
 
@@ -62,6 +66,11 @@ struct FilterHelperProperty: Equatable {
   mutating func resetDate() {
     startDate = nil
     endDate = nil
+  }
+
+  mutating func setInitialState() {
+    resetDate()
+    selectedLedgers = []
   }
 
   mutating func deleteSelectedItem(id: Int64) {

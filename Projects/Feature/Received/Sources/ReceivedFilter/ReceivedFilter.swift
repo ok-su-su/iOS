@@ -65,6 +65,7 @@ struct ReceivedFilter {
       return .none
 
     case let .tappedItem(filterSelectableItemProperty):
+      state.property.select(filterSelectableItemProperty.id)
       return .none
 
     case .tappedConfirmButton:
@@ -73,6 +74,7 @@ struct ReceivedFilter {
       }
 
     case .tappedResetButton:
+      state.property.resetDate()
       return .none
 
     case .tappedDateButton:
@@ -112,10 +114,15 @@ struct ReceivedFilter {
     case header(HeaderViewFeature.Action)
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case .datePicker:
       return .none
+
+    case .header(.tappedDismissButton):
+      state.property.setInitialState()
+      return .none
+
     case .header:
       return .none
     }
