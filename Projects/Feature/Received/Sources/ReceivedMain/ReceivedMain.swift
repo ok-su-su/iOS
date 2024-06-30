@@ -11,6 +11,7 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
+import SSBottomSelectSheet
 
 // MARK: - ReceivedMain
 
@@ -25,13 +26,23 @@ struct ReceivedMain {
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
+    @Shared var sortProperty: SortHelperProperty
+    @Shared var filterProperty: FilterHelperProperty
     @Presents var search: ReceivedSearch.State?
+    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
 
     var ledgersProperty: [LedgerBoxProperty] = [
       .init(id: 1, categoryName: "장례식", style: "orange60", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 50000, envelopesCount: 164),
       .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
     ]
-    init() {}
+
+    var isFilteredHeaderButtonItem: Bool {
+      return true
+    }
+    init() {
+      _sortProperty = .init(.init())
+      _filterProperty = .init(.init())
+    }
   }
 
   public init() {}
@@ -46,11 +57,12 @@ struct ReceivedMain {
   }
 
   enum ViewAction: Equatable {
-    case didTapInventoryView
-    case didTapLatestButton
-    case didTapFilterButton
-    case didTapAddInventoryButton
+    case tappedAddLedgerButton
+    case tappedFilterButton
+    case tappedFilteredAmountButton
+    case tappedFilteredPersonButton(id: Int64)
     case onAppear(Bool)
+    case tappedSortButton
   }
 
   enum InnerAction: Equatable {}
@@ -63,6 +75,7 @@ struct ReceivedMain {
     case tabBar(SSTabBarFeature.Action)
     case sortSheet(PresentationAction<InventorySortSheet.Action>)
     case search(PresentationAction<ReceivedSearch.Action>)
+    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -76,16 +89,22 @@ struct ReceivedMain {
       state.isOnAppear = isAppear
       return .none
 
-    case .didTapInventoryView:
+    case .tappedAddLedgerButton:
       return .none
 
-    case .didTapLatestButton:
+    case .tappedFilteredAmountButton:
+      state.filterProperty.resetDate()
       return .none
 
-    case .didTapFilterButton:
+    case .tappedFilterButton:
       return .none
 
-    case .didTapAddInventoryButton:
+    case let .tappedFilteredPersonButton(id: id):
+      state.filterProperty.deleteSelectedItem(id: id)
+      return .none
+
+    case .tappedSortButton:
+      state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
       return .none
     }
   }
@@ -102,6 +121,8 @@ struct ReceivedMain {
     case .sortSheet:
       return .none
     case .search:
+      return .none
+    case .sort:
       return .none
     }
   }
@@ -131,6 +152,9 @@ extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Acti
   func addFeatures() -> some ReducerOf<Self> {
     ifLet(\.$search, action: \.scope.search) {
       ReceivedSearch()
+    }
+    .ifLet(\.$sort, action: \.scope.sort) {
+      SSSelectableBottomSheetReducer()
     }
   }
 }

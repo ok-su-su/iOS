@@ -12,6 +12,7 @@ let project = Project.makeModule(
       .share(.shareLayer),
       .share(.sSLayout),
       .feature(.sSSelectableItems),
+      .feature(.sSSearch),
     ],
     testDependencies: []
   )

@@ -35,7 +35,7 @@ struct ReceivedMainView: View {
       )
       .fixedSize()
       .onTapGesture {
-        store.sendViewAction(.didTapInventoryView)
+        store.sendViewAction(.tappedAddLedgerButton)
       }
   }
 
@@ -45,12 +45,12 @@ struct ReceivedMainView: View {
       if store.ledgersProperty.isEmpty {
         VStack {
           makeDotLineButton()
-            .padding(.horizontal, InventoryFilterConstants.commonSpacing)
+            .padding(.horizontal, Constants.commonSpacing)
         }.frame(width: geometry.size.width, height: 160, alignment: .topLeading)
 
         VStack {
           Spacer()
-          Text(InventoryFilterConstants.emptyInventoryText)
+          Text(Constants.emptyInventoryText)
             .modifier(SSTypoModifier(.text_s))
             .foregroundColor(SSColor.gray50)
             .frame(width: geometry.size.width, height: 30, alignment: .center)
@@ -69,8 +69,9 @@ struct ReceivedMainView: View {
                 .frame(height: ledgerBoxWithAndHeight)
             }
             VStack {
+              // add Ledger View
               makeDotLineButton()
-                .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
+                .padding([.leading, .trailing], Constants.commonSpacing)
             }
           }
           .padding(.horizontal, 16)
@@ -78,6 +79,86 @@ struct ReceivedMainView: View {
       }
     }
   }
+
+  @ViewBuilder
+  func makeFilterSection() -> some View {
+    // MARK: - 필터 버튼
+
+    ScrollView(.horizontal) {
+      HStack(spacing: 8) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          leftIcon: .icon(SSImage.commonFilter),
+          buttonText: store.sortProperty.selectedFilterDial?.description ?? ""
+        )) {
+          store.sendViewAction(.tappedSortButton)
+        }
+
+        // MARK: - 정렬 버튼
+
+        // 정렬된 사람이 없을 때
+        if !store.state.isFilteredHeaderButtonItem {
+          SSButton(Constants.notSelectedFilterButtonProperty) {
+            store.send(.view(.tappedFilterButton))
+          }
+        } else {
+          // 정렬된 사람이 있을 때
+          Button {
+            store.send(.view(.tappedFilterButton))
+          } label: {
+            SSImage.commonFilterWhite
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .frame(height: 32, alignment: .center)
+              .background(SSColor.gray100)
+              .cornerRadius(4)
+          }
+
+          // amount Range Button
+          if let amountRangeBadgeText = store.filterProperty.filteredDateTextString {
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: amountRangeBadgeText
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredAmountButton)
+            }
+          }
+
+          // 사람 버튼에 대한 표시
+          let filtered = store.filterProperty.selectedLedger
+          ForEach(0 ..< filtered.count, id: \.self) { index in
+            if index < filtered.count {
+              let person = filtered[index]
+              SSButton(
+                .init(
+                  size: .sh32,
+                  status: .active,
+                  style: .filled,
+                  color: .black,
+                  rightIcon: .icon(SSImage.commonDeleteWhite),
+                  buttonText: person.categoryName
+                )
+              ) {
+                store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
+              }
+            }
+          }
+        }
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .padding(.bottom, 16)
+  }
+
 
   @ViewBuilder
   func makeFilterView() -> some View {
@@ -112,7 +193,7 @@ struct ReceivedMainView: View {
 //        }.frame(maxWidth: .infinity, alignment: .topLeading)
       }
       .frame(width: geometry.size.width, height: 32, alignment: .topLeading)
-      .padding(.horizontal, InventoryFilterConstants.commonSpacing)
+      .padding(.horizontal, Constants.commonSpacing)
     }
   }
 
@@ -161,7 +242,7 @@ struct ReceivedMainView: View {
   /// Box Size +  horizontal Spacing
   var ledgerBoxWithAndHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
 
-  private enum InventoryFilterConstants {
+  private enum Constants {
     // MARK: Property
 
     static let commonSpacing: CGFloat = 16
@@ -193,6 +274,15 @@ struct ReceivedMainView: View {
       color: .black,
       leftIcon: .icon(SSImage.commonAdd),
       buttonText: ""
+    )
+
+    static let notSelectedFilterButtonProperty: SSButtonProperty = .init(
+      size: .sh32,
+      status: .active,
+      style: .ghost,
+      color: .black,
+      leftIcon: .icon(SSImage.commonFilter),
+      buttonText: "필터"
     )
   }
 }
