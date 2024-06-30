@@ -6,11 +6,11 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
-
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
+import Foundation
+import OSLog
 import SSBottomSelectSheet
 
 // MARK: - ReceivedMain
@@ -64,6 +64,7 @@ struct ReceivedMain {
     case tappedFilteredAmountButton
     case tappedFilteredPersonButton(id: Int64)
     case onAppear(Bool)
+    case onAppearedLedger(LedgerBoxProperty)
     case tappedSortButton
     case tappedFloatingButton
   }
@@ -118,6 +119,12 @@ struct ReceivedMain {
     case .tappedFloatingButton:
       // create ledger 주입
       return .none
+
+    case let .onAppearedLedger(property):
+      if state.ledgersProperty.last?.id == property.id {
+        return .send(.async(.getLedgers))
+      }
+      return .none
     }
   }
 
@@ -150,10 +157,10 @@ struct ReceivedMain {
     case let .updateLedgers(val):
       let prevCount = state.ledgersProperty.count
       let currentProperty = (state.ledgersProperty + val).uniqued()
-      let currentCount = state.ledgersProperty.count
-      if prevCount == currentCount {
+      if prevCount == currentProperty.count {
         state.isEndOfPage = true
       }
+      state.page += 1
       state.ledgersProperty = currentProperty
       return .none
     }
@@ -162,10 +169,10 @@ struct ReceivedMain {
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getLedgersInitialPage:
-      state.page = 0
       state.ledgersProperty = []
       let sortType = state.sortProperty.selectedFilterDial ?? .latest
-      //TODO: 각자 맞게 수정해야함 파라미터들
+      state.page = 0
+      // TODO: 각자 맞게 수정해야함 파라미터들
       let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: 0, sort: sortType)
       return .run { send in
         await send(.inner(.isLoading(true)))
@@ -173,15 +180,14 @@ struct ReceivedMain {
         await send(.inner(.updateLedgers(property)))
         await send(.inner(.isLoading(false)))
       }
-      
+
     case .getLedgers:
       if state.isEndOfPage {
         return .none
       }
       let currentPage = state.page
-      state.page += 1
       let sortType = state.sortProperty.selectedFilterDial ?? .latest
-      //TODO: 각자 맞게 수정해야함 파라미터들
+      // TODO: 각자 맞게 수정해야함 파라미터들
       let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
       return .run { send in
         await send(.inner(.isLoading(true)))

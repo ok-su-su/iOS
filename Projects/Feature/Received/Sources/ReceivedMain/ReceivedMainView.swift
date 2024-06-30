@@ -71,6 +71,9 @@ struct ReceivedMainView: View {
             ForEach(store.ledgersProperty) { property in
               LedgerBoxView(property)
                 .frame(height: ledgerBoxHeight)
+                .onAppear {
+                  store.sendViewAction(.onAppearedLedger(property))
+                }
             }
             VStack {
               // add Ledger View
