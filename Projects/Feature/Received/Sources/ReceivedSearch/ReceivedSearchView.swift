@@ -1,27 +1,29 @@
-// 
+//
 //  ReceivedSearchView.swift
 //  Received
 //
 //  Created by MaraMincho on 6/30/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
 import SSSearch
+import SwiftUI
 
 struct ReceivedSearchView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<ReceivedSearch>
-  
-  //MARK: Init
+
+  // MARK: Init
+
   init(store: StoreOf<ReceivedSearch>) {
     self.store = store
   }
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
@@ -41,19 +43,14 @@ struct ReceivedSearchView: View {
         }
       }
       .navigationBarBackButtonHidden()
-      .onAppear{
+      .onAppear {
         store.send(.view(.onAppear(true)))
       }
-    } destination: { store in
-
+    } destination: { _ in
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }

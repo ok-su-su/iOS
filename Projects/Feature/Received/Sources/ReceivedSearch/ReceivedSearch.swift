@@ -1,19 +1,20 @@
-// 
+//
 //  ReceivedSearch.swift
 //  Received
 //
 //  Created by MaraMincho on 6/30/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
-import FeatureAction
-import SSSearch
 import Designsystem
+import FeatureAction
+import Foundation
+import SSSearch
+
+// MARK: - ReceivedSearch
 
 @Reducer
 struct ReceivedSearch {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -23,7 +24,7 @@ struct ReceivedSearch {
     var search: SSSearchReducer<ReceivedSearchProperty>.State
     var path: StackState<LedgerDetailPath.State> = .init()
     var header: HeaderViewFeature.State = .init(.init(type: .depth2NonIconType))
-    init () {
+    init() {
       _searchProperty = .init(.default)
       search = .init(helper: _searchProperty)
     }
@@ -56,7 +57,7 @@ struct ReceivedSearch {
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -65,22 +66,22 @@ struct ReceivedSearch {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, action in
     switch action {
-    case .search(_):
+    case .search:
       return .none
-    case .path :
+    case .path:
       return .none
-    case .header(_):
+    case .header:
       return .none
     }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { state, action in
+  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
@@ -96,14 +97,16 @@ struct ReceivedSearch {
         return innerAction(&state, currentAction)
       case let .async(currentAction):
         return asyncAction(&state, currentAction)
-      case let .scope(currentAction) :
+      case let .scope(currentAction):
         return scopeAction(&state, currentAction)
       }
     }
   }
 }
 
-extension Reducer where Self.State == ReceivedSearch.State, Self.Action == ReceivedSearch.Action { }
+extension Reducer where Self.State == ReceivedSearch.State, Self.Action == ReceivedSearch.Action {}
+
+// MARK: - ReceivedSearchProperty
 
 struct ReceivedSearchProperty: SSSearchPropertiable {
   typealias item = ReceivedSearchItem
@@ -155,6 +158,8 @@ extension ReceivedSearchProperty {
     )
   }
 }
+
+// MARK: - ReceivedSearchItem
 
 struct ReceivedSearchItem: SSSearchItemable {
   /// 장부의 아이디 입니다.

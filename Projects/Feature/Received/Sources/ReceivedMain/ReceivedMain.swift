@@ -12,6 +12,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 
+// MARK: - ReceivedMain
+
 @Reducer
 struct ReceivedMain {
   @ObservableState
@@ -62,7 +64,7 @@ struct ReceivedMain {
 
   enum DelegateAction: Equatable {}
 
-   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -83,25 +85,23 @@ struct ReceivedMain {
     case .didTapAddInventoryButton:
       return .none
     }
-   }
+  }
 
-   var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
-     switch action {
-     case .header(.tappedSearchButton):
-       state.search = .init()
-       return .none
-     case .header(_):
-       return .none
-     case .tabBar(_):
-       return .none
-     case .sortSheet(_):
-       return .none
-     case .search(_):
-       return .none
-     }
-   }
-
-  
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+    switch action {
+    case .header(.tappedSearchButton):
+      state.search = .init()
+      return .none
+    case .header:
+      return .none
+    case .tabBar:
+      return .none
+    case .sortSheet:
+      return .none
+    case .search:
+      return .none
+    }
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
