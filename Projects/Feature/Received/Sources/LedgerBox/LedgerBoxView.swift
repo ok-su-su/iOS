@@ -106,4 +106,33 @@ struct LedgerBoxProperty: Equatable, Hashable, Identifiable {
   let totalAmount: Int64
   /// 전체 받은 봉투의 갯수를 나타냅니다.
   let envelopesCount: Int64
+
+  init(
+    id: Int64,
+    categoryName: String,
+    style: String,
+    isMiscCategory: Bool?,
+    categoryDescription: String,
+    totalAmount: Int64,
+    envelopesCount: Int64
+  ) {
+    self.id = id
+    self.categoryName = categoryName
+    self.style = style
+    self.isMiscCategory = isMiscCategory
+    self.categoryDescription = categoryDescription
+    self.totalAmount = totalAmount
+    self.envelopesCount = envelopesCount
+  }
+
+  init(_ dto: SearchLedgerResponse) {
+    self.id = dto.ledger.id
+    self.categoryName = dto.category.category
+    self.style = dto.category.style
+    self.isMiscCategory = dto.category.customCategory != nil
+    self.categoryDescription = dto.ledger.title
+    self.totalAmount = dto.totalAmounts
+    self.envelopesCount = dto.totalCounts
+  }
 }
+

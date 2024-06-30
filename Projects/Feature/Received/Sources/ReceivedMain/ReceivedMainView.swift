@@ -42,9 +42,10 @@ struct ReceivedMainView: View {
   func makeLedgerView() -> some View {
     GeometryReader { geometry in
       if store.ledgersProperty.isEmpty {
+        // 장부가 없을 때 보여줄 뷰
         VStack {
           makeDotLineButton()
-        }.frame(width: geometry.size.width, height: ledgerBoxHeight, alignment: .topLeading)
+        }.frame(width: ledgerBoxHeight, height: ledgerBoxHeight, alignment: .topLeading)
 
         VStack {
           Spacer()
@@ -54,6 +55,7 @@ struct ReceivedMainView: View {
             .frame(width: geometry.size.width, height: 30, alignment: .center)
           Spacer()
         }
+        .padding(.horizontal, 16)
       } else {
         let gridColumns = [
           GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
@@ -176,9 +178,12 @@ struct ReceivedMainView: View {
 
         makeLedgerView()
       }
-//      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
-//        .padding(.trailing, 20)
-//        .padding(.bottom, 20)
+
+      FloatingButtonView {
+        store.sendViewAction(.tappedFloatingButton)
+      }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 16)
 
     }.safeAreaInset(edge: .bottom) {
       SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))

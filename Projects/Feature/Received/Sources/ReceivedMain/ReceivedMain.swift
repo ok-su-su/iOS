@@ -32,8 +32,8 @@ struct ReceivedMain {
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
 
     var ledgersProperty: [LedgerBoxProperty] = [
-      .init(id: 1, categoryName: "장례식", style: "orange60", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 50000, envelopesCount: 164),
-      .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
+      //      .init(id: 1, categoryName: "장례식", style: "orange60", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 50000, envelopesCount: 164),
+//      .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
     ]
 
     var isFilteredHeaderButtonItem: Bool {
@@ -64,6 +64,7 @@ struct ReceivedMain {
     case tappedFilteredPersonButton(id: Int64)
     case onAppear(Bool)
     case tappedSortButton
+    case tappedFloatingButton
   }
 
   enum InnerAction: Equatable {}
@@ -106,6 +107,9 @@ struct ReceivedMain {
 
     case .tappedSortButton:
       state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
+      return .none
+    case .tappedFloatingButton:
+      // create ledger 주입
       return .none
     }
   }
