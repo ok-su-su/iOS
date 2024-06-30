@@ -46,6 +46,7 @@ struct ReceivedMainView: View {
         VStack {
           makeDotLineButton()
         }.frame(width: ledgerBoxHeight, height: ledgerBoxHeight, alignment: .topLeading)
+          .padding(.horizontal, 16)
 
         VStack {
           Spacer()
@@ -55,7 +56,7 @@ struct ReceivedMainView: View {
             .frame(width: geometry.size.width, height: 30, alignment: .center)
           Spacer()
         }
-        .padding(.horizontal, 16)
+
       } else {
         let gridColumns = [
           GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
@@ -177,6 +178,7 @@ struct ReceivedMainView: View {
         makeFilterSection()
 
         makeLedgerView()
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
 
       FloatingButtonView {
@@ -193,6 +195,9 @@ struct ReceivedMainView: View {
         .ignoresSafeArea()
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
+    }
+    .onAppear {
+      store.sendViewAction(.onAppear(true))
     }
     .fullScreenCover(item: $store.scope(state: \.search, action: \.scope.search)) { store in
       ReceivedSearchView(store: store)

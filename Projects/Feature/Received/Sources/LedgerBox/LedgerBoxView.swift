@@ -43,26 +43,29 @@ public struct LedgerBoxView: View {
 
   @ViewBuilder
   public func makeContentView() -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      let smallBadgeColor: SmallBadgeProperty.BadgeColor = .init(rawValue: property.style) ?? .gray40
-      SmallBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
-        .padding(.bottom, 8)
+    HStack {
+      VStack(alignment: .leading, spacing: 0) {
+        let smallBadgeColor: SmallBadgeProperty.BadgeColor = .init(rawValue: property.style.lowercased()) ?? .gray40
+        SmallBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
+          .padding(.bottom, 8)
 
-      Text(property.categoryDescription)
-        .modifier(SSTypoModifier(.title_m))
-        .lineLimit(1)
-        .truncationMode(.tail) // ....으로 표시됨
-        .foregroundColor(SSColor.gray100)
-        .padding(.bottom, 20)
+        Text(property.categoryDescription)
+          .modifier(SSTypoModifier(.title_m))
+          .lineLimit(1)
+          .truncationMode(.tail) // ....으로 표시됨
+          .foregroundColor(SSColor.gray100)
+          .padding(.bottom, 20)
 
-      Text(totalAmountText)
-        .modifier(SSTypoModifier(.title_xxxs))
-        .foregroundColor(SSColor.gray70)
-        .padding(.bottom, 4)
+        Text(totalAmountText)
+          .modifier(SSTypoModifier(.title_xxxs))
+          .foregroundColor(SSColor.gray70)
+          .padding(.bottom, 4)
 
-      Text(totalAmountEnvelopeCountText)
-        .modifier(SSTypoModifier(.title_xxxs))
-        .foregroundColor(SSColor.gray50)
+        Text(totalAmountEnvelopeCountText)
+          .modifier(SSTypoModifier(.title_xxxs))
+          .foregroundColor(SSColor.gray50)
+      }
+      Spacer()
     }
     .padding(.all, 16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
