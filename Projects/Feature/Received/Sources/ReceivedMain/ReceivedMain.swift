@@ -126,6 +126,7 @@ struct ReceivedMain {
     case .tappedSortButton:
       state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
       return .none
+
     case .tappedFloatingButton:
       // create ledger 주입
       return .none
@@ -135,7 +136,9 @@ struct ReceivedMain {
         return .send(.async(.getLedgers))
       }
       return .none
+
     case let .tappedLedgerBox(property):
+      state.detail = .init(.init())
       return .none
     }
   }
@@ -255,6 +258,9 @@ extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Acti
     }
     .ifLet(\.$filter, action: \.scope.filter) {
       ReceivedFilter()
+    }
+    .ifLet(\.$detail, action: \.scope.detail) {
+      LedgerDetailRouter()
     }
   }
 }

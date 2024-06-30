@@ -29,6 +29,10 @@ public struct LedgerDetailMain {
     init(accountProperty: InventoryAccountDetailHelper) {
       self.accountProperty = accountProperty
     }
+
+    init() {
+      accountProperty = .init(price: "450", category: .Birthday, accountTitle: "이니셜 없이 들어오누", date: .now, accountList: [])
+    }
   }
 
   @CasePathable
