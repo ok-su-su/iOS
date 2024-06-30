@@ -66,8 +66,8 @@ struct ReceivedMain {
   enum ViewAction: Equatable {
     case tappedAddLedgerButton
     case tappedFilterButton
-    case tappedFilteredAmountButton
-    case tappedFilteredPersonButton(id: Int64)
+    case tappedFilteredDateButton
+    case tappedFilteredPersonButton(id: Int)
     case onAppear(Bool)
     case onAppearedLedger(LedgerBoxProperty)
     case tappedSortButton
@@ -82,7 +82,7 @@ struct ReceivedMain {
   enum AsyncAction: Equatable {
     case getLedgersInitialPage
     case getLedgers
-    case ledgersNetworkTask(SearchLedgersRequestParameter)
+    case ledgersNetworkTask
   }
 
   @CasePathable
@@ -108,7 +108,7 @@ struct ReceivedMain {
     case .tappedAddLedgerButton:
       return .none
 
-    case .tappedFilteredAmountButton:
+    case .tappedFilteredDateButton:
       state.filterProperty.resetDate()
       return .none
 
@@ -118,7 +118,7 @@ struct ReceivedMain {
 
     case let .tappedFilteredPersonButton(id: id):
       state.filterProperty.deleteSelectedItem(id: id)
-      return .none
+      return .send(.async(.getLedgersInitialPage))
 
     case .tappedSortButton:
       state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
@@ -154,7 +154,7 @@ struct ReceivedMain {
       return .none
 
     case .filter(.presented(.view(.tappedConfirmButton))):
-      return .none
+      return .send(.async(.getLedgersInitialPage))
 
     case .filter:
       return .none
@@ -186,43 +186,23 @@ struct ReceivedMain {
       state.page = 0
       state.isEndOfPage = false
 
-      let sortType = state.sortProperty.selectedFilterDial ?? .latest
-      // TODO: 각자 맞게 수정해야함 파라미터들
-      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: 0, sort: sortType)
-      return .run { send in
-        await send(.inner(.isLoading(true)))
-        let property = try await network.getLedgers(param)
-        await send(.inner(.updateLedgers(property)))
-        await send(.inner(.isLoading(false)))
-      }
+      return .send(.async(.ledgersNetworkTask))
 
     case .getLedgers:
       if state.isEndOfPage {
         return .none
       }
-      let currentPage = state.page
-      let sortType = state.sortProperty.selectedFilterDial ?? .latest
-      // TODO: 각자 맞게 수정해야함 파라미터들
-      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
-      return .run { send in
-        await send(.inner(.isLoading(true)))
-        let property = try await network.getLedgers(param)
-        await send(.inner(.updateLedgers(property)))
-        await send(.inner(.isLoading(false)))
-      }
-    case let .ledgersNetworkTask(param):
+      return .send(.async(.ledgersNetworkTask))
 
-      //TODO: SLack 답변을 통해서 내부 구조 변경
+    case .ledgersNetworkTask:
       let param = SearchLedgersRequestParameter(
-        title: nil, 
-        categoryIds: state.filterProperty.selectedLedgers.map{Int($0.id)},
-        fromStartAt: nil,
-        toStartAt: nil,
-        toEndAt: nil,
+        title: nil,
+        categoryIds: state.filterProperty.selectedLedgers.map(\.id),
+        fromStartAt: state.filterProperty.isInitialStateOfStartDate ? nil : state.filterProperty.startDate,
+        toStartAt: state.filterProperty.isInitialStateOfEndDate ? nil : state.filterProperty.endDate,
         page: state.page,
         sort: state.sortProperty.selectedFilterDial ?? .latest
       )
-//      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
       return .run { send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getLedgers(param)

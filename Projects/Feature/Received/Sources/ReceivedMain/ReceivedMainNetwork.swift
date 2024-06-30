@@ -57,7 +57,7 @@ extension ReceivedMainNetwork: DependencyKey {
     var task: Moya.Task {
       switch self {
       case let .searchLedgers(param):
-        .requestParameters(parameters: param.getParameter(), encoding: URLEncoding.queryString)
+        .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       }
     }
   }
@@ -68,14 +68,12 @@ extension ReceivedMainNetwork: DependencyKey {
 struct SearchLedgersRequestParameter: Encodable, Equatable {
   /// 검색하는 장부 이름
   var title: String?
-  /// 검색하는 카테고리 ID들 
+  /// 검색하는 카테고리 ID들
   var categoryIds: [Int]
   /// 시작일
   var fromStartAt: Date?
   /// 종료일
   var toStartAt: Date?
-  /// 종료일
-  var toEndAt: Date?
   /// 페이지
   var page: Int = 0
   /// 사이즈
@@ -92,15 +90,15 @@ extension SearchLedgersRequestParameter {
       res["title"] = title
     }
 
+    res["categoryIds"] = categoryIds
+
     if let fromStartAt {
       res["fromStartAt"] = CustomDateFormatter.getFullDateString(from: fromStartAt)
     }
     if let toStartAt {
       res["toStartAt"] = CustomDateFormatter.getFullDateString(from: toStartAt)
     }
-    if let toEndAt {
-      res["toEndAt"] = CustomDateFormatter.getFullDateString(from: toEndAt)
-    }
+
     if let sort {
       res["sort"] = sort.sortString
     }

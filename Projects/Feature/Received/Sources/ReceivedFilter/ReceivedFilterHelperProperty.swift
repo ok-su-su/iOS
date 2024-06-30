@@ -31,11 +31,11 @@ struct FilterHelperProperty: Equatable {
   var isInitialStateOfEndDate: Bool = true
   var endDate: Date = .now
 
-  func isSelectedItems(id: Int64) -> Bool {
+  func isSelectedItems(id: Int) -> Bool {
     return selectedLedgers.first(where: { $0.id == id }) != nil
   }
 
-  mutating func select(_ id: Int64) {
+  mutating func select(_ id: Int) {
     // 이미 선택되었다면 제거
     if let index = selectedLedgers.firstIndex(where: { $0.id == id }) {
       selectedLedgers.remove(at: index)
@@ -69,7 +69,7 @@ struct FilterHelperProperty: Equatable {
     selectedLedgers = []
   }
 
-  mutating func deleteSelectedItem(id: Int64) {
+  mutating func deleteSelectedItem(id: Int) {
     guard let index = selectedLedgers.firstIndex(where: { $0.id == id }) else {
       return
     }
@@ -81,7 +81,7 @@ struct FilterHelperProperty: Equatable {
 
 struct FilterSelectableItemProperty: Equatable, Identifiable {
   /// 카테고리 아이디
-  var id: Int64
+  var id: Int
   /// 카테고리 타이틀
   var title: String
 }

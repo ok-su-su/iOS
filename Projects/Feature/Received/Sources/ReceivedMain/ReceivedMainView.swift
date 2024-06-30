@@ -136,7 +136,7 @@ struct ReceivedMainView: View {
                 buttonText: amountRangeBadgeText
               )
             ) {
-              store.sendViewAction(.tappedFilteredAmountButton)
+              store.sendViewAction(.tappedFilteredDateButton)
             }
           }
 
