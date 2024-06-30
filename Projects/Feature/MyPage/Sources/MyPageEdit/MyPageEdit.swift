@@ -169,7 +169,6 @@ struct MyPageEdit {
         return .none
 
       case .inner(.updateInitialProperty):
-
         if let birth = state.userInfo.birth {
           state.selectedBottomSheetItem = .init(description: birth.description + "년", id: birth)
         }

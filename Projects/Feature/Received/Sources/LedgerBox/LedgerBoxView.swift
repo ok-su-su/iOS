@@ -43,33 +43,34 @@ public struct LedgerBoxView: View {
 
   @ViewBuilder
   public func makeContentView() -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      let smallBadgeColor: SmallBadgeProperty.BadgeColor = .init(rawValue: property.style) ?? .gray40
-      SmallBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
-        .padding(.bottom, 8)
+    HStack {
+      VStack(alignment: .leading, spacing: 0) {
+        let smallBadgeColor: SmallBadgeProperty.BadgeColor = .init(rawValue: property.style.lowercased()) ?? .gray40
+        SmallBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
+          .padding(.bottom, 8)
 
-      Text(property.categoryDescription)
-        .modifier(SSTypoModifier(.title_m))
-        .lineLimit(1)
-        .truncationMode(.tail) // ....으로 표시됨
-        .foregroundColor(SSColor.gray100)
-        .padding(.bottom, 20)
+        Text(property.categoryDescription)
+          .modifier(SSTypoModifier(.title_m))
+          .lineLimit(1)
+          .truncationMode(.tail) // ....으로 표시됨
+          .foregroundColor(SSColor.gray100)
+          .padding(.bottom, 20)
 
-      Text(totalAmountText)
-        .modifier(SSTypoModifier(.title_xxxs))
-        .foregroundColor(SSColor.gray70)
-        .padding(.top, 20)
-        .padding(.leading, 16)
+        Text(totalAmountText)
+          .modifier(SSTypoModifier(.title_xxxs))
+          .foregroundColor(SSColor.gray70)
+          .padding(.bottom, 4)
 
-      Text(totalAmountEnvelopeCountText)
-        .modifier(SSTypoModifier(.title_xxxs))
-        .foregroundColor(SSColor.gray50)
-        .padding(.top, 4)
-        .padding(.leading, 16)
+        Text(totalAmountEnvelopeCountText)
+          .modifier(SSTypoModifier(.title_xxxs))
+          .foregroundColor(SSColor.gray50)
+      }
+      Spacer()
     }
-    .cornerRadius(4)
+    .padding(.all, 16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(SSColor.gray10)
+    .cornerRadius(4)
   }
 
   public var body: some View {
@@ -94,18 +95,46 @@ public struct LedgerBoxView: View {
 // MARK: - LedgerBoxProperty
 
 struct LedgerBoxProperty: Equatable, Hashable, Identifiable {
-  /// 장부 아이디 입ㄴ디ㅏ.
+  /// 장부 아이디 입니다.
   let id: Int64
   /// 장부 카테고리 이름 입니다. ex) 결혼식 장례식
   let categoryName: String
   /// 장부 카테고리 색 입니다.
   let style: String
   /// 기타일 경우에 나타냅니다.
-  let isMiscCategory: Bool
+  let isMiscCategory: Bool?
   /// 카테고리의 부연 설명을 나타냅니다.
   let categoryDescription: String
   /// 전체 금액을 나타냅니다.
   let totalAmount: Int64
   /// 전체 받은 봉투의 갯수를 나타냅니다.
   let envelopesCount: Int64
+
+  init(
+    id: Int64,
+    categoryName: String,
+    style: String,
+    isMiscCategory: Bool?,
+    categoryDescription: String,
+    totalAmount: Int64,
+    envelopesCount: Int64
+  ) {
+    self.id = id
+    self.categoryName = categoryName
+    self.style = style
+    self.isMiscCategory = isMiscCategory
+    self.categoryDescription = categoryDescription
+    self.totalAmount = totalAmount
+    self.envelopesCount = envelopesCount
+  }
+
+  init(_ dto: SearchLedgerResponse) {
+    id = dto.ledger.id
+    categoryName = dto.category.category
+    style = dto.category.style
+    isMiscCategory = dto.category.customCategory != nil
+    categoryDescription = dto.ledger.title
+    totalAmount = dto.totalAmounts
+    envelopesCount = dto.totalCounts
+  }
 }

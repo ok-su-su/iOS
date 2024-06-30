@@ -8,13 +8,14 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
+import SSSearch
 import SwiftUI
 
 // MARK: - ReceivedMainView
 
 struct ReceivedMainView: View {
   @Bindable var store: StoreOf<ReceivedMain>
-  private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
   init(store: StoreOf<ReceivedMain>) {
     self.store = store
@@ -25,92 +26,142 @@ struct ReceivedMainView: View {
     Rectangle()
       .strokeBorder(style: StrokeStyle(lineWidth: 1, lineCap: .butt, dash: [4]))
       .foregroundColor(SSColor.gray40)
-      .frame(width: 160, height: 160)
       .overlay(
         SSImage.commonAdd
           .renderingMode(.template)
           .foregroundColor(SSColor.gray40)
           .frame(width: 18, height: 18)
       )
-      .fixedSize()
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .onTapGesture {
-        store.sendViewAction(.didTapInventoryView)
+        store.sendViewAction(.tappedAddLedgerButton)
       }
   }
 
   @ViewBuilder
-  func makeEmptyView() -> some View {
+  func makeLedgerView() -> some View {
     GeometryReader { geometry in
       if store.ledgersProperty.isEmpty {
+        // 장부가 없을 때 보여줄 뷰
         VStack {
           makeDotLineButton()
-            .padding(.horizontal, InventoryFilterConstants.commonSpacing)
-        }.frame(width: geometry.size.width, height: 160, alignment: .topLeading)
+        }.frame(width: ledgerBoxHeight, height: ledgerBoxHeight, alignment: .topLeading)
+          .padding(.horizontal, 16)
 
         VStack {
           Spacer()
-          Text(InventoryFilterConstants.emptyInventoryText)
+          Text(Constants.emptyInventoryText)
             .modifier(SSTypoModifier(.text_s))
             .foregroundColor(SSColor.gray50)
             .frame(width: geometry.size.width, height: 30, alignment: .center)
           Spacer()
         }
+
       } else {
+        let gridColumns = [
+          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
+          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
+        ]
         ScrollView {
-          LazyVGrid(columns: inventoryColumns) {
-            // TODO: LedgerBox View 연결
-//            ForEach(store.scope(state: \.inventorys, action: \.reloadInvetoryItems)) { boxStore in
-//              LedgerBoxView(store: boxStore)
-//                .padding(.trailing, InventoryFilterConstants.commonSpacing)
-//                .onTapGesture {
-//                  store.send(.didTapInventoryView)
-//                }
-//            }
+          LazyVGrid(
+            columns: gridColumns,
+            alignment: .center,
+            spacing: 8
+          ) {
+            ForEach(store.ledgersProperty) { property in
+              LedgerBoxView(property)
+                .frame(height: ledgerBoxHeight)
+                .onAppear {
+                  store.sendViewAction(.onAppearedLedger(property))
+                }
+            }
             VStack {
+              // add Ledger View
               makeDotLineButton()
-                .padding([.leading, .trailing], InventoryFilterConstants.commonSpacing)
+                .frame(height: ledgerBoxHeight)
             }
           }
+          .padding(.horizontal, 16)
         }
       }
     }
   }
 
   @ViewBuilder
-  func makeFilterView() -> some View {
-    GeometryReader { geometry in
-      VStack {
-//      HStack(spacing: InventoryFilterConstants.filterSpacing) {
-//        SSButton(.init(
-//          size: .sh32,
-//          status: .active,
-//          style: .ghost,
-//          color: .black,
-//          buttonText: store.selectedSortItem.rawValue
-//        )) {
-//          store.send(.didTapLatestButton)
-//        }
-//
-//        ZStack {
-//          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
-//            .init(
-//              startDate: Shared(.now),
-//              endDate: Shared(.now),
-//              selectedFilter: Shared([]),
-//              ssButtonProperties: Shared([:])
-//            )
-//          )
-//          ) {
-//            SSButton(InventoryFilterConstants.filterButtonProperty) {
-//              inventoryStore.send(.didTapFilterButton)
-//            }
-//            .allowsHitTesting(false)
-//          }
-//        }.frame(maxWidth: .infinity, alignment: .topLeading)
+  func makeFilterSection() -> some View {
+    // MARK: - 필터 버튼
+
+    ScrollView(.horizontal) {
+      HStack(spacing: 8) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          leftIcon: .icon(SSImage.commonFilter),
+          buttonText: store.sortProperty.selectedFilterDial?.description ?? ""
+        )) {
+          store.sendViewAction(.tappedSortButton)
+        }
+
+        // MARK: - 정렬 버튼
+
+        // 정렬된 사람이 없을 때
+        if !store.state.isFilteredHeaderButtonItem {
+          SSButton(Constants.notSelectedFilterButtonProperty) {
+            store.send(.view(.tappedFilterButton))
+          }
+        } else {
+          // 정렬된 사람이 있을 때
+          Button {
+            store.send(.view(.tappedFilterButton))
+          } label: {
+            SSImage.commonFilterWhite
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .frame(height: 32, alignment: .center)
+              .background(SSColor.gray100)
+              .cornerRadius(4)
+          }
+
+          // amount Range Button
+          if let amountRangeBadgeText = store.filterProperty.filteredDateTextString {
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: amountRangeBadgeText
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredAmountButton)
+            }
+          }
+
+          // 사람 버튼에 대한 표시
+          let filtered = store.filterProperty.selectedLedgers
+          ForEach(filtered) { property in
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: property.title
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredPersonButton(id: property.id))
+            }
+          }
+        }
       }
-      .frame(width: geometry.size.width, height: 32, alignment: .topLeading)
-      .padding(.horizontal, InventoryFilterConstants.commonSpacing)
     }
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .padding(.bottom, 16)
+    .padding(.horizontal, 16)
   }
 
   var body: some View {
@@ -124,13 +175,17 @@ struct ReceivedMainView: View {
         Spacer()
           .frame(height: 16)
 
-        makeFilterView()
-          .frame(height: 32)
-        makeEmptyView()
+        makeFilterSection()
+
+        makeLedgerView()
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
-//      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
-//        .padding(.trailing, 20)
-//        .padding(.bottom, 20)
+
+      FloatingButtonView {
+        store.sendViewAction(.tappedFloatingButton)
+      }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 16)
 
     }.safeAreaInset(edge: .bottom) {
       SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
@@ -141,18 +196,23 @@ struct ReceivedMainView: View {
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
     }
+    .onAppear {
+      store.sendViewAction(.onAppear(true))
+    }
+    .fullScreenCover(item: $store.scope(state: \.search, action: \.scope.search)) { store in
+      ReceivedSearchView(store: store)
+    }
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
+    .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
+      ReceivedFilterView(store: store)
+    }
     .navigationBarBackButtonHidden()
-//    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
-//      InventorySortSheetView(store: store)
-//        .presentationDetents([.height(240), .medium, .large])
-//        .presentationDragIndicator(.automatic)
-//    }
-//    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
-//      InventorySearchView(store: store)
-//    }
   }
 
-  private enum InventoryFilterConstants {
+  /// Box Size +  horizontal Spacing
+  var ledgerBoxHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
+
+  private enum Constants {
     // MARK: Property
 
     static let commonSpacing: CGFloat = 16
@@ -184,6 +244,15 @@ struct ReceivedMainView: View {
       color: .black,
       leftIcon: .icon(SSImage.commonAdd),
       buttonText: ""
+    )
+
+    static let notSelectedFilterButtonProperty: SSButtonProperty = .init(
+      size: .sh32,
+      status: .active,
+      style: .ghost,
+      color: .black,
+      leftIcon: .icon(SSImage.commonFilter),
+      buttonText: "필터"
     )
   }
 }

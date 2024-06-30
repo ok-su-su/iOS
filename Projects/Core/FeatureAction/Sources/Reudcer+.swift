@@ -1,38 +1,13 @@
 //
-//  FeatureAction.swift
+//  Reudcer+.swift
 //  FeatureAction
 //
-//  Created by MaraMincho on 6/20/24.
+//  Created by MaraMincho on 6/29/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import Foundation
-import SwiftUI
-
-// MARK: - FeatureAction
-
-public protocol FeatureAction {
-  associatedtype ViewAction
-  associatedtype InnerAction
-  associatedtype AsyncAction
-  associatedtype ScopeAction
-  associatedtype DelegateAction
-
-  /// NOTE: view 에서 사용되는 Action 을 정의합니다.
-  static func view(_: ViewAction) -> Self
-
-  /// NOTE: 그 외 Reducer 내부적으로 사용되는 Action 을 정의합니다.
-  static func inner(_: InnerAction) -> Self
-
-  /// NOTE: 비동기적으로 돌아가는 Action 을 정의합니다.
-  static func async(_: AsyncAction) -> Self
-
-  /// NOTE: 자식 Redcuer 에서 사용되는 Action 을 정의합니다.
-  static func scope(_: ScopeAction) -> Self
-
-  /// NOTE: 부모 Reducer 에서 사용되는 Action 을 정의합니다.
-  static func delegate(_: DelegateAction) -> Self
-}
 
 // MARK: - FeatureViewAction
 
@@ -74,3 +49,32 @@ public protocol FeatureAction {
 // var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in
 //  return .none
 // }
+
+public protocol FeatureViewAction: Reducer where Action: FeatureAction {
+  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> { get set }
+}
+
+// MARK: - FeatureScopeAction
+
+public protocol FeatureScopeAction: Reducer where Action: FeatureAction {
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> { get set }
+}
+
+// MARK: - FeatureAsyncAction
+
+public protocol FeatureAsyncAction: Reducer where Action: FeatureAction {
+  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> { get set
+  }
+}
+
+// MARK: - FeatureInnerAction
+
+public protocol FeatureInnerAction: Reducer where Action: FeatureAction {
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> { get }
+}
+
+// MARK: - FeatureDelegateAction
+
+public protocol FeatureDelegateAction: Reducer where Action: FeatureAction {
+  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> { get set }
+}
