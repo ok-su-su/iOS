@@ -29,17 +29,17 @@ struct LedgerDetailRouterView: View {
   }
 
   var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
+    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+      LedgerDetailMainView(store: store.scope(state: \.ledgerDetailMain, action: \.ledgerDetailMain))
+        .navigationBarBackButtonHidden()
+        .onAppear {
+          store.send(.onAppear(true))
+        }
+    } destination: { store in
+      switch store.case {
+      case let .main(store):
+        LedgerDetailMainView(store: store)
       }
-    }
-    .navigationBarBackButtonHidden()
-    .onAppear {
-      store.send(.view(.onAppear(true)))
     }
   }
 

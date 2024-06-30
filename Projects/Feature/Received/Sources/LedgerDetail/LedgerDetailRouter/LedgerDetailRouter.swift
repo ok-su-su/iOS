@@ -19,16 +19,26 @@ struct LedgerDetailRouter {
     var path: StackState<LedgerDetailPath.State> = .init()
     var ledgerDetailMain: LedgerDetailMain.State
     init(_ state: LedgerDetailMain.State) {
-      self.ledgerDetailMain = state
+      ledgerDetailMain = state
     }
   }
 
-  enum Action: Equatable  {
+  enum Action: Equatable {
     case onAppear(Bool)
+    case ledgerDetailMain(LedgerDetailMain.Action)
     case path(StackActionOf<LedgerDetailPath>)
+    case push(LedgerDetailPath.State)
+  }
+
+  enum CancelID {
+    case routePublisherID
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.ledgerDetailMain, action: \.ledgerDetailMain) {
+      LedgerDetailMain()
+    }
+
     Reduce { state, action in
       switch action {
       case let .onAppear(val):
@@ -36,12 +46,29 @@ struct LedgerDetailRouter {
           return .none
         }
         state.isOnAppear = val
-        return .none
+        return .publisher {
+          LedgerDetailRouterPublisher
+            .publisher()
+            .map { .push($0) }
+        }
+        .cancellable(id: CancelID.routePublisherID, cancelInFlight: true)
+
       case .path:
+        return .none
+
+      case .ledgerDetailMain:
+        return .none
+      case let .push(pathState):
+        state.path.append(pathState)
         return .none
       }
     }
+    .addFeatures()
   }
 }
 
-extension Reducer where Self.State == LedgerDetailRouter.State, Self.Action == LedgerDetailRouter.Action {}
+extension Reducer where Self.State == LedgerDetailRouter.State, Self.Action == LedgerDetailRouter.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    forEach(\.path, action: \.path)
+  }
+}

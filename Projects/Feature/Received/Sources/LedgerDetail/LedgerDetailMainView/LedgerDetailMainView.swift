@@ -100,13 +100,13 @@ struct LedgerDetailMainView: View {
   @ViewBuilder
   private func makeFilterContentView() -> some View {
     HStack(spacing: 8) {
-      ZStack {
-        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init(accountFilterHelper: Shared(.init(remittPerson: []))))) {
-          SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
-            store.send(.didTapFilterButton)
-          }.allowsHitTesting(false)
-        }
-      }
+//      ZStack {
+//        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init(accountFilterHelper: Shared(.init(remittPerson: []))))) {
+//          SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
+//            store.send(.didTapFilterButton)
+//          }.allowsHitTesting(false)
+//        }
+//      }
 
       SSButton(InventoryAccountDetailConstants.sortButtonProperty) {}
     }

@@ -33,6 +33,7 @@ struct ReceivedMain {
     @Presents var search: ReceivedSearch.State?
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
     @Presents var filter: ReceivedFilter.State?
+    @Presents var detail: LedgerDetailRouter.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
@@ -72,6 +73,7 @@ struct ReceivedMain {
     case onAppearedLedger(LedgerBoxProperty)
     case tappedSortButton
     case tappedFloatingButton
+    case tappedLedgerBox(LedgerBoxProperty)
   }
 
   enum InnerAction: Equatable {
@@ -92,6 +94,7 @@ struct ReceivedMain {
     case search(PresentationAction<ReceivedSearch.Action>)
     case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
     case filter(PresentationAction<ReceivedFilter.Action>)
+    case detail(PresentationAction<LedgerDetailRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -132,6 +135,8 @@ struct ReceivedMain {
         return .send(.async(.getLedgers))
       }
       return .none
+    case let .tappedLedgerBox(property):
+      return .none
     }
   }
 
@@ -157,6 +162,9 @@ struct ReceivedMain {
       return .send(.async(.getLedgersInitialPage))
 
     case .filter:
+      return .none
+
+    case .detail:
       return .none
     }
   }

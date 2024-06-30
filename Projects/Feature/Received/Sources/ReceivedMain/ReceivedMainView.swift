@@ -74,6 +74,9 @@ struct ReceivedMainView: View {
                 .onAppear {
                   store.sendViewAction(.onAppearedLedger(property))
                 }
+                .onTapGesture {
+                  store.sendViewAction(.tappedLedgerBox(property))
+                }
             }
             VStack {
               // add Ledger View
