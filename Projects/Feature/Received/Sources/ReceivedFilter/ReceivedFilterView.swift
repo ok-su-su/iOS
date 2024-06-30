@@ -105,8 +105,10 @@ struct ReceivedFilterView: View {
           .overlay {
             Text(store.startDateText ?? store.defaultDateText)
               .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(SSColor.gray40)
-//              .foregroundColor(store.startDate == .now ? SSColor.gray100 : SSColor.gray40)
+              .foregroundColor(store.startDateText == nil ? SSColor.gray40 : SSColor.gray100)
+          }
+          .onTapGesture {
+            store.sendViewAction(.tappedLeftDateButton)
           }
 
         Text("부터")
@@ -119,15 +121,15 @@ struct ReceivedFilterView: View {
           .overlay {
             Text(store.endDateText ?? store.defaultDateText)
               .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(SSColor.gray40)
+              .foregroundColor(store.endDateText == nil ? SSColor.gray40 : SSColor.gray100)
+          }
+          .onTapGesture {
+            store.sendViewAction(.tappedRightDateButton)
           }
 
         Text("까지")
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundColor(SSColor.gray100)
-      }
-      .onTapGesture {
-        store.sendViewAction(.tappedDateButton)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

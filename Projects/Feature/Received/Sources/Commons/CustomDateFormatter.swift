@@ -33,6 +33,15 @@ final class CustomDateFormatter {
     return formatter.string(from: date)
   }
 
+  /// yyyy.MM.dd 의 String으로 반환해줍니다.
+  static func getYearAndMonthDateString(from val: Date?) -> String? {
+    guard let val else {
+      return nil
+    }
+    formatter.dateFormat = "yyyy.MM.dd"
+    return formatter.string(from: val)
+  }
+
   /// Date을 yyyy-MM-dd'T'HH:mm:ss 포멧의 Date로 변경시켜 줍니다.
   static func getFullDateString(from val: Date) -> String {
     formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"

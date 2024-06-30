@@ -11,32 +11,25 @@ import Foundation
 // MARK: - FilterHelperProperty
 
 struct FilterHelperProperty: Equatable {
-  var selectableLedgers: [FilterSelectableItemProperty] = [
-    .init(id: 1, title: "결혼식"),
-    .init(id: 2, title: "영결식"),
-    .init(id: 3, title: "영춘권"),
-    .init(id: 4, title: "곰춘권"),
-    .init(id: 5, title: "곰춘권"),
-    .init(id: 6, title: "곰춘권"),
-    .init(id: 7, title: "곰춘권"),
-    .init(id: 8, title: "곰춘권"),
-  ]
+  var selectableLedgers: [FilterSelectableItemProperty] = []
   var selectedLedgers: [FilterSelectableItemProperty] = []
 
   var filteredDateTextString: String? {
-    guard let startDate else {
+    if isInitialStateOfStartDate {
       return nil
     }
     let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
-    guard let endDate else {
+    if isInitialStateOfEndDate {
       return startDateString
     }
     let endDateString = CustomDateFormatter.getString(from: endDate, dateFormat: "yyyy.MM.dd")
     return startDateString + "~" + endDateString
   }
 
-  var startDate: Date?
-  var endDate: Date?
+  var isInitialStateOfStartDate: Bool = true
+  var startDate: Date = .now
+  var isInitialStateOfEndDate: Bool = true
+  var endDate: Date = .now
 
   func isSelectedItems(id: Int64) -> Bool {
     return selectedLedgers.first(where: { $0.id == id }) != nil
@@ -64,8 +57,11 @@ struct FilterHelperProperty: Equatable {
   }
 
   mutating func resetDate() {
-    startDate = nil
-    endDate = nil
+    isInitialStateOfStartDate = true
+    startDate = .now
+
+    isInitialStateOfEndDate = true
+    endDate = .now
   }
 
   mutating func setInitialState() {

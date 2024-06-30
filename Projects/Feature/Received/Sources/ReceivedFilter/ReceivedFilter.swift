@@ -28,15 +28,21 @@ struct ReceivedFilter {
     }
 
     var startDateText: String? {
+      if !property.isInitialStateOfStartDate {
+        return CustomDateFormatter.getYearAndMonthDateString(from: property.startDate)
+      }
       return nil
     }
 
     var endDateText: String? {
+      if !property.isInitialStateOfEndDate {
+        return CustomDateFormatter.getYearAndMonthDateString(from: property.endDate)
+      }
       return nil
     }
 
     var defaultDateText: String {
-      ""
+      CustomDateFormatter.getYearAndMonthDateString(from: Date.now) ?? ""
     }
   }
 
@@ -53,9 +59,10 @@ struct ReceivedFilter {
     case onAppear(Bool)
     /// 아이템 클릭할 경우
     case tappedItem(FilterSelectableItemProperty)
-    case tappedDateButton
     case tappedConfirmButton
     case tappedResetButton
+    case tappedLeftDateButton
+    case tappedRightDateButton
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -77,7 +84,20 @@ struct ReceivedFilter {
       state.property.resetDate()
       return .none
 
-    case .tappedDateButton:
+    case .tappedLeftDateButton:
+      state.datePicker = .init(
+        selectedDate: state.$property.startDate,
+        isInitialStateOfDate: state.$property.isInitialStateOfStartDate
+      )
+      return .none
+    case .tappedRightDateButton:
+      // 만약 startDate를 골랐을 경우
+      let restrictInitialStartDate: Date? = state.property.isInitialStateOfStartDate ? state.property.startDate : nil
+      state.datePicker = .init(
+        selectedDate: state.$property.endDate,
+        isInitialStateOfDate: state.$property.isInitialStateOfEndDate,
+        restrictInitialStartDate: restrictInitialStartDate
+      )
       return .none
     }
   }
