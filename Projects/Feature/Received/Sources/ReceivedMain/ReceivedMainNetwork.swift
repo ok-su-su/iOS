@@ -67,19 +67,19 @@ extension ReceivedMainNetwork: DependencyKey {
 
 struct SearchLedgersRequestParameter: Encodable, Equatable {
   /// 검색하는 장부 이름
-  let title: String?
+  var title: String?
   /// 시작일
-  let fromStartAt: Date?
+  var fromStartAt: Date?
   /// 종료일
-  let toStartAt: Date?
+  var toStartAt: Date?
   /// 종료일
-  let toEndAt: Date?
+  var toEndAt: Date?
   /// 페이지
-  let page: Int = 0
+  var page: Int = 0
   /// 사이즈
-  let size: Int = 15
+  var size: Int = 15
   /// sort
-  let sort: SortDialItem?
+  var sort: SortDialItem?
 }
 
 extension SearchLedgersRequestParameter {

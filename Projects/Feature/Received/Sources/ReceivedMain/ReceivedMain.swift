@@ -22,6 +22,7 @@ struct ReceivedMain {
     var isLoading: Bool = true
     var isOnAppear: Bool = false
     var page = 0
+    var isEndOfPage = false
 
     /// ScopeState
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
@@ -74,6 +75,7 @@ struct ReceivedMain {
 
   enum AsyncAction: Equatable {
     case getLedgersInitialPage
+    case getLedgers
   }
 
   @CasePathable
@@ -128,6 +130,8 @@ struct ReceivedMain {
       return .none
     case .tabBar:
       return .none
+    case .sortSheet(.dismiss):
+      return .send(.async(.getLedgersInitialPage))
     case .sortSheet:
       return .none
     case .search:
@@ -142,8 +146,15 @@ struct ReceivedMain {
     case let .isLoading(val):
       state.isLoading = val
       return .none
+
     case let .updateLedgers(val):
-      state.ledgersProperty = (state.ledgersProperty + val).uniqued()
+      let prevCount = state.ledgersProperty.count
+      let currentProperty = (state.ledgersProperty + val).uniqued()
+      let currentCount = state.ledgersProperty.count
+      if prevCount == currentCount {
+        state.isEndOfPage = true
+      }
+      state.ledgersProperty = currentProperty
       return .none
     }
   }
@@ -154,7 +165,24 @@ struct ReceivedMain {
       state.page = 0
       state.ledgersProperty = []
       let sortType = state.sortProperty.selectedFilterDial ?? .latest
-      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, sort: sortType)
+      //TODO: 각자 맞게 수정해야함 파라미터들
+      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: 0, sort: sortType)
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let property = try await network.getLedgers(param)
+        await send(.inner(.updateLedgers(property)))
+        await send(.inner(.isLoading(false)))
+      }
+      
+    case .getLedgers:
+      if state.isEndOfPage {
+        return .none
+      }
+      let currentPage = state.page
+      state.page += 1
+      let sortType = state.sortProperty.selectedFilterDial ?? .latest
+      //TODO: 각자 맞게 수정해야함 파라미터들
+      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: currentPage, sort: sortType)
       return .run { send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getLedgers(param)
