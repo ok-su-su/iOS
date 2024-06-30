@@ -19,11 +19,18 @@ struct ReceivedMainNetwork {
 
   func getLedgers(_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty] {
     let dto: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgers(param))
-    return dto.data.map{.init($0)}
+    return dto.data.map { .init($0) }
   }
 }
 
-// MARK: DependencyKey
+extension DependencyValues {
+  var receivedMainNetwork: ReceivedMainNetwork {
+    get { self[ReceivedMainNetwork.self] }
+    set { self[ReceivedMainNetwork.self] = newValue }
+  }
+}
+
+// MARK: - ReceivedMainNetwork + DependencyKey
 
 extension ReceivedMainNetwork: DependencyKey {
   static var liveValue: ReceivedMainNetwork = .init()
@@ -58,7 +65,7 @@ extension ReceivedMainNetwork: DependencyKey {
 
 // MARK: - SearchLedgersRequestParameter
 
-struct SearchLedgersRequestParameter: Encodable {
+struct SearchLedgersRequestParameter: Encodable, Equatable {
   /// 검색하는 장부 이름
   let title: String?
   /// 시작일
@@ -72,22 +79,7 @@ struct SearchLedgersRequestParameter: Encodable {
   /// 사이즈
   let size: Int = 15
   /// sort
-  let sort: SearchLedgersRequestParameterSortType?
-}
-
-// MARK: - SearchLedgersRequestParameterSortType
-
-enum SearchLedgersRequestParameterSortType: String, Encodable {
-  /// (생성)
-  case createdAt
-  ///  (시작일)
-  case startAt
-  ///  (종료일)
-  case endAt
-  ///  (보낸 금액 총합)
-  case totalSentAmounts
-  ///  (받은 금액 총합)
-  case totalReceivedAmounts
+  let sort: SortDialItem?
 }
 
 extension SearchLedgersRequestParameter {
@@ -108,7 +100,7 @@ extension SearchLedgersRequestParameter {
       res["toEndAt"] = CustomDateFormatter.getFullDateString(from: toEndAt)
     }
     if let sort {
-      res["sort"] = sort.rawValue
+      res["sort"] = sort.sortString
     }
 
     res["page"] = page

@@ -126,13 +126,12 @@ struct LedgerBoxProperty: Equatable, Hashable, Identifiable {
   }
 
   init(_ dto: SearchLedgerResponse) {
-    self.id = dto.ledger.id
-    self.categoryName = dto.category.category
-    self.style = dto.category.style
-    self.isMiscCategory = dto.category.customCategory != nil
-    self.categoryDescription = dto.ledger.title
-    self.totalAmount = dto.totalAmounts
-    self.envelopesCount = dto.totalCounts
+    id = dto.ledger.id
+    categoryName = dto.category.category
+    style = dto.category.style
+    isMiscCategory = dto.category.customCategory != nil
+    categoryDescription = dto.ledger.title
+    totalAmount = dto.totalAmounts
+    envelopesCount = dto.totalCounts
   }
 }
-

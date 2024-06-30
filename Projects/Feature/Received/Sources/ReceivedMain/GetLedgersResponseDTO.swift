@@ -36,7 +36,7 @@ struct SearchLedgerResponse: Codable {
   /// 총 금액
   let totalAmounts: Int64
   /// 총 봉투 갯수
-let totalCounts: Int64
+  let totalCounts: Int64
   enum CodingKeys: CodingKey {
     case ledger
     case category

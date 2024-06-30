@@ -19,7 +19,7 @@ struct SortHelperProperty: Equatable {
 
 // MARK: - SortDialItem
 
-enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable {
+enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encodable {
   case latest = 0
   case oldest
   case highestAmount
@@ -43,13 +43,13 @@ enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable {
   var sortString: String {
     switch self {
     case .latest:
-      "createdAt,desc"
+      "startAt,desc"
     case .oldest:
-      "createdAt,asc"
+      "startAt,asc"
     case .highestAmount:
-      "amount,desc"
+      "totalSentAmounts,desc"
     case .lowestAmount:
-      "amount,asc"
+      "totalSentAmounts,asc"
     }
   }
 }

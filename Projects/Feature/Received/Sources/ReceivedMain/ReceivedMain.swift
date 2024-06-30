@@ -21,6 +21,7 @@ struct ReceivedMain {
   struct State: Equatable {
     var isLoading: Bool = false
     var isOnAppear: Bool = false
+    var page = 0
 
     /// ScopeState
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
@@ -33,7 +34,7 @@ struct ReceivedMain {
 
     var ledgersProperty: [LedgerBoxProperty] = [
       //      .init(id: 1, categoryName: "장례식", style: "orange60", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 50000, envelopesCount: 164),
-//      .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
+      //      .init(id: 2, categoryName: "결혼식", style: "gray30", isMiscCategory: false, categoryDescription: "나의 두번 쨰 장례식", totalAmount: 1_500_000, envelopesCount: 164),
     ]
 
     var isFilteredHeaderButtonItem: Bool {
@@ -47,6 +48,8 @@ struct ReceivedMain {
   }
 
   public init() {}
+
+  @Dependency(\.receivedMainNetwork) var network
 
   @CasePathable
   enum Action: FeatureAction, Equatable {
@@ -67,9 +70,14 @@ struct ReceivedMain {
     case tappedFloatingButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case isLoading(Bool)
+    case updateLedgers([LedgerBoxProperty])
+  }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case getLedgersInitialPage
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -89,7 +97,7 @@ struct ReceivedMain {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.async(.getLedgersInitialPage))
 
     case .tappedAddLedgerButton:
       return .none
@@ -132,6 +140,33 @@ struct ReceivedMain {
     }
   }
 
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+    switch action {
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+    case let .updateLedgers(val):
+      state.ledgersProperty = (state.ledgersProperty + val).uniqued()
+      return .none
+    }
+  }
+
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getLedgersInitialPage:
+      state.page = 0
+      state.ledgersProperty = []
+      let sortType = state.sortProperty.selectedFilterDial ?? .latest
+      let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, sort: sortType)
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let property = try await network.getLedgers(param)
+        await send(.inner(.updateLedgers(property)))
+        await send(.inner(.isLoading(false)))
+      }
+    }
+  }
+
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -147,6 +182,10 @@ struct ReceivedMain {
         return viewAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
     .addFeatures()
