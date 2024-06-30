@@ -18,13 +18,13 @@ import FeatureAction
 struct LedgerDetailMain {
   @ObservableState
   struct State: Equatable {
-    var headerType = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
-    var tabbarType = SSTabBarFeature.State(tabbarType: .received)
+    var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     var accountProperty: InventoryAccountDetailHelper
-    var accountItems: IdentifiedArrayOf<InventoryAccount.State> = [
-      .init(accountType: [.family, .unvisited, .visited], accountTitle: "김철수", accountPrice: "10000"),
-      .init(accountType: [.family, .visited], accountTitle: "박미영", accountPrice: "70000"),
-      .init(accountType: [.family, .unvisited], accountTitle: "서한누리", accountPrice: "100000"),
+    var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [
+      .init(id: 0, name: "다함", relationship: "친구", isVisited: true, amount: 6000),
+      .init(id: 1, name: "누구", relationship: "친구", isVisited: false, amount: 6000),
+      .init(id: 3, name: "다s함", relationship: "친구", isVisited: true, amount: 6000),
+      .init(id: 4, name: "누2구", relationship: "친구", isVisited: false, amount: 6000),
     ]
 
     init(accountProperty: InventoryAccountDetailHelper) {
@@ -61,7 +61,7 @@ struct LedgerDetailMain {
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.headerType, action: \.scope.header) {
+    Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
 

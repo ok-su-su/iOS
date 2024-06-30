@@ -89,12 +89,14 @@ struct LedgerDetailMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-//    ScrollView {
-//      ForEach(store.scope(state: \.accountItems, action: \.reloadAccountItems)) { store in
-//        InventoryAccountView(store: store)
-//          .frame(maxWidth: .infinity, maxHeight: .infinity)
-//      }
-//    }
+    ScrollView {
+      LazyVStack(spacing: 0) {
+        ForEach(store.envelopeItems) { property in
+          EnvelopeViewForLedgerMain(property: property)
+        }
+      }
+      .scrollTargetLayout()
+    }
   }
 
   var body: some View {
@@ -106,7 +108,7 @@ struct LedgerDetailMainView: View {
       VStack(spacing: 0) {
         // Top Section
         VStack(spacing: 0) {
-          HeaderView(store: store.scope(state: \.headerType, action: \.scope.header))
+          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
             .padding(.bottom, 24)
 
           makeTopContentView()
