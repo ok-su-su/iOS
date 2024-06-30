@@ -125,7 +125,7 @@ struct ReceivedMainView: View {
           }
 
           // amount Range Button
-          if let amountRangeBadgeText = store.filterProperty.filteredDateTextString {
+          if let amountRangeBadgeText = store.filterProperty.selectedFilterDateTextString {
             SSButton(
               .init(
                 size: .sh32,

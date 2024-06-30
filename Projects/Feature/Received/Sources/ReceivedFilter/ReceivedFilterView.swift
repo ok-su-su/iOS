@@ -73,6 +73,20 @@ struct ReceivedFilterView: View {
   @ViewBuilder
   private func makeSelectedFilterContentView() -> some View {
     WrappingHStack(horizontalSpacing: 8) {
+      if let selectedString = store.property.selectedFilterDateTextString {
+        SSButtonWithState(
+          .init(
+            size: .xsh28,
+            status: .active,
+            style: .filled,
+            color: .orange,
+            leftIcon: .none,
+            rightIcon: .icon(SSImage.commonDeleteWhite),
+            buttonText: selectedString
+          )) {
+            store.sendViewAction(.tappedSelectedFilterDateItem)
+          }
+      }
       ForEach(store.property.selectedLedgers) { property in
         SSButtonWithState(
           .init(
@@ -141,22 +155,25 @@ struct ReceivedFilterView: View {
         .gray10
         .ignoresSafeArea()
 
-      VStack {
+      VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           .padding(.bottom, 24)
 
-        makeFilterContentView()
-          .padding(.horizontal, 16)
-          .padding(.bottom, 48)
-
-        makeDateFilterContentView()
-          .padding(.horizontal, 16)
-        Spacer()
-        VStack(alignment: .leading, spacing: 8) {
-          makeSelectedFilterContentView()
+        VStack(spacing: 0) {
+          makeFilterContentView()
             .padding(.horizontal, 16)
-          makeFilterConfirmContentView()
+            .padding(.bottom, 48)
+
+          makeDateFilterContentView()
+            .padding(.horizontal, 16)
+          Spacer()
+          VStack(alignment: .leading, spacing: 8) {
+            makeSelectedFilterContentView()
+              .padding(.horizontal, 16)
+            makeFilterConfirmContentView()
+          }
         }
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
     .onAppear {

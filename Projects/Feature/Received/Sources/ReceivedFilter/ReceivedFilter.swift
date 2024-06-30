@@ -19,6 +19,7 @@ struct ReceivedFilter {
   @ObservableState
   struct State: Equatable {
     var isAppear = false
+    var isLoading: Bool = true
     @Shared var property: FilterHelperProperty
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
 
@@ -63,13 +64,14 @@ struct ReceivedFilter {
     case tappedResetButton
     case tappedLeftDateButton
     case tappedRightDateButton
+    case tappedSelectedFilterDateItem
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(bool):
       state.isAppear = bool
-      return .none
+      return .send(.async(.getSelectableItems))
 
     case let .tappedItem(filterSelectableItemProperty):
       state.property.select(filterSelectableItemProperty.id)
@@ -81,23 +83,30 @@ struct ReceivedFilter {
       }
 
     case .tappedResetButton:
-      state.property.resetDate()
+      state.property.setInitialState()
       return .none
 
     case .tappedLeftDateButton:
+      // 만약 endDate를 골랐을 경우
+      let restrictEndDate: Date? = state.property.isInitialStateOfEndDate ? nil : state.property.startDate
       state.datePicker = .init(
         selectedDate: state.$property.startDate,
-        isInitialStateOfDate: state.$property.isInitialStateOfStartDate
+        isInitialStateOfDate: state.$property.isInitialStateOfStartDate,
+        restrictEndDate: restrictEndDate
       )
       return .none
     case .tappedRightDateButton:
       // 만약 startDate를 골랐을 경우
-      let restrictInitialStartDate: Date? = state.property.isInitialStateOfStartDate ? state.property.startDate : nil
+      let restrictStartDate: Date? = state.property.isInitialStateOfStartDate ? nil : state.property.startDate
       state.datePicker = .init(
         selectedDate: state.$property.endDate,
         isInitialStateOfDate: state.$property.isInitialStateOfEndDate,
-        restrictInitialStartDate: restrictInitialStartDate
+        restrictStartDate: restrictStartDate
       )
+      return .none
+
+    case .tappedSelectedFilterDateItem:
+      state.property.resetDate()
       return .none
     }
   }
@@ -105,18 +114,25 @@ struct ReceivedFilter {
   enum InnerAction: Equatable {
     case updateSelectableItems([FilterSelectableItemProperty])
     case reset
+    case isLoading(Bool)
   }
 
-  func innerAction(_: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
-    case .updateSelectableItems:
+    case let .updateSelectableItems(items):
+      state.property.selectableLedgers = items
       return .none
 
     case .reset:
       return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
     }
   }
 
+  @Dependency(\.receivedFilterNetwork) var network
   enum AsyncAction: Equatable {
     case getSelectableItems
   }
@@ -124,7 +140,12 @@ struct ReceivedFilter {
   func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getSelectableItems:
-      return .none
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.requestFilterItems()
+        await send(.inner(.updateSelectableItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
     }
   }
 

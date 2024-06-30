@@ -14,7 +14,7 @@ struct FilterHelperProperty: Equatable {
   var selectableLedgers: [FilterSelectableItemProperty] = []
   var selectedLedgers: [FilterSelectableItemProperty] = []
 
-  var filteredDateTextString: String? {
+  var selectedFilterDateTextString: String? {
     if isInitialStateOfStartDate {
       return nil
     }
