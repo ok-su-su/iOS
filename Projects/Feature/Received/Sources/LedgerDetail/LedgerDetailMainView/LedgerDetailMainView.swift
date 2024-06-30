@@ -18,76 +18,49 @@ struct LedgerDetailMainView: View {
 
   @ViewBuilder
   private func makeTopContentView() -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text(store.accountProperty.priceText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundColor(SSColor.gray100)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.leading, 16)
+    VStack(spacing: 16) {
+      VStack(alignment: .leading, spacing: 8) {
+        Text(store.accountProperty.priceText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundColor(SSColor.gray100)
+          .frame(maxWidth: .infinity, alignment: .leading)
 
-      Rectangle()
-        .fill(SSColor.gray30)
-        .frame(width: 61, height: 24)
-        .cornerRadius(4)
-        .overlay {
-          Text("총 \(store.accountProperty.accountList.count)개")
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray70)
-        }
-        .padding(.horizontal, 16)
-
-      VStack {
-        HStack {
-          Text("경조사 카테고리")
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray60)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 16)
-
-          Text(store.accountProperty.category.type)
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray80)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing, 16)
-        }
-
-        Spacer()
-          .frame(height: 4)
-
-        HStack {
-          Text("경조사 명")
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray60)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 16)
-
-          Text(store.accountProperty.accountTitleText)
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray80)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing, 16)
-        }
-
-        Spacer()
-          .frame(height: 4)
-
-        HStack {
-          Text("경조사 기간")
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray60)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, 16)
-
-          Text(store.accountProperty.dateText)
-            .modifier(SSTypoModifier(.title_xxxs))
-            .foregroundColor(SSColor.gray80)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing, 16)
-            .padding(.bottom, 16)
-        }
+        Rectangle()
+          .fill(SSColor.gray30)
+          .frame(width: 61, height: 24)
+          .cornerRadius(4)
+          .overlay {
+            Text("총 \(store.accountProperty.accountList.count)개")
+              .modifier(SSTypoModifier(.title_xxxs))
+              .foregroundColor(SSColor.gray70)
+          }
       }
 
-    }.frame(maxWidth: .infinity)
+      VStack(spacing: 4) {
+        makeTopSectionDescriptionView(leadingTitle: "경조사 카테고리", trailingTitle: store.accountProperty.category.type)
+
+        makeTopSectionDescriptionView(leadingTitle: "경조사 명", trailingTitle: store.accountProperty.accountTitleText)
+
+        makeTopSectionDescriptionView(leadingTitle: "경조사 기간", trailingTitle: store.accountProperty.dateText)
+      }
+    }
+    .frame(maxWidth: .infinity)
+  }
+
+  @ViewBuilder
+  private func makeTopSectionDescriptionView(leadingTitle: String, trailingTitle: String) -> some View {
+    HStack {
+      Text(leadingTitle)
+        .modifier(SSTypoModifier(.title_xxxs))
+        .foregroundColor(SSColor.gray60)
+
+      Spacer()
+
+      Text(trailingTitle)
+        .modifier(SSTypoModifier(.title_xxxs))
+        .foregroundColor(SSColor.gray80)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+    }
   }
 
   @ViewBuilder
@@ -103,7 +76,7 @@ struct LedgerDetailMainView: View {
 //      ZStack {
 //        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init(accountFilterHelper: Shared(.init(remittPerson: []))))) {
 //          SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
-//            store.send(.didTapFilterButton)
+//            store.send(.tappedFilterButton)
 //          }.allowsHitTesting(false)
 //        }
 //      }
@@ -116,53 +89,40 @@ struct LedgerDetailMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    ScrollView {
-      ForEach(store.scope(state: \.accountItems, action: \.reloadAccountItems)) { store in
-        InventoryAccountView(store: store)
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-      }
-    }
+//    ScrollView {
+//      ForEach(store.scope(state: \.accountItems, action: \.reloadAccountItems)) { store in
+//        InventoryAccountView(store: store)
+//          .frame(maxWidth: .infinity, maxHeight: .infinity)
+//      }
+//    }
   }
 
   var body: some View {
-    ZStack(alignment: .bottomTrailing) {
+    ZStack(alignment: .top) {
       SSColor
-        .gray15
+        .gray25
         .ignoresSafeArea()
-      ZStack(alignment: .bottomTrailing) {
+
+      VStack(spacing: 0) {
+        // Top Section
         VStack(spacing: 0) {
-          HeaderView(store: store.scope(state: \.headerType, action: \.setHeaderView))
-            .padding(0)
+          HeaderView(store: store.scope(state: \.headerType, action: \.scope.header))
+            .padding(.bottom, 24)
 
           makeTopContentView()
-            .background {
-              Color.white
-            }
-            .padding(0)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
+        }
+        .background(SSColor.gray15)
 
-          makeLineView()
-            .padding(0)
-
-          Spacer()
-            .frame(height: 16)
-
+        // BottomSection
+        VStack(spacing: 0) {
           makeFilterContentView()
-
-          Spacer()
-            .frame(height: 16)
+            .background(SSColor.gray15)
 
           makeContentView()
         }
       }
-    }
-    .safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabbarType, action: \.setTabbarView))
-        .background {
-          Color.white
-        }
-        .ignoresSafeArea()
-        .frame(height: 56)
-        .toolbar(.hidden, for: .tabBar)
     }
     .navigationBarBackButtonHidden()
   }

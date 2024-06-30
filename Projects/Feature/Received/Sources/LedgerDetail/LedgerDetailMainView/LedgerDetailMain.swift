@@ -10,13 +10,14 @@ import Foundation
 
 import ComposableArchitecture
 import Designsystem
+import FeatureAction
 
 // MARK: - LedgerDetailMain
 
 @Reducer
-public struct LedgerDetailMain {
+struct LedgerDetailMain {
   @ObservableState
-  public struct State: Equatable {
+  struct State: Equatable {
     var headerType = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     var tabbarType = SSTabBarFeature.State(tabbarType: .received)
     var accountProperty: InventoryAccountDetailHelper
@@ -36,37 +37,60 @@ public struct LedgerDetailMain {
   }
 
   @CasePathable
-  public enum Action: Equatable {
-    case setHeaderView(HeaderViewFeature.Action)
-    case setTabbarView(SSTabBarFeature.Action)
-    case reloadAccountItems(IdentifiedActionOf<InventoryAccount>)
-    case didTapFilterButton
+  enum Action: Equatable, FeatureAction {
+    case view(ViewAction)
+    case inner(InnerAction)
+    case async(AsyncAction)
+    case scope(ScopeAction)
+    case delegate(DelegateAction)
   }
 
-  public enum Path {}
+  enum ViewAction: Equatable {
+    case tappedFilterButton
+  }
 
-  public var body: some Reducer<State, Action> {
-    Scope(state: \.headerType, action: \.setHeaderView) {
+  enum InnerAction: Equatable {}
+
+  enum AsyncAction: Equatable {}
+
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+  }
+
+  enum DelegateAction: Equatable {}
+
+  var body: some Reducer<State, Action> {
+    Scope(state: \.headerType, action: \.scope.header) {
       HeaderViewFeature()
     }
 
-    Scope(state: \.tabbarType, action: \.setTabbarView) {
-      SSTabBarFeature()
-    }
-
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
-      case .setHeaderView:
-        return .none
-      case .setTabbarView:
-        return .none
-      case .reloadAccountItems:
-        return .none
-      case .didTapFilterButton:
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
-    }.forEach(\.accountItems, action: \.reloadAccountItems) {
-      InventoryAccount()
+    }
+  }
+}
+
+// MARK: FeatureViewAction, FeatureScopeAction
+
+extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction {
+  func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .header:
+      return .none
+    }
+  }
+
+  func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
+    state
+    switch action {
+    case .tappedFilterButton:
+      return .none
     }
   }
 }
