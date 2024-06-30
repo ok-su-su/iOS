@@ -25,7 +25,7 @@ enum AccountType: String, CaseIterable {
 @Reducer
 public struct InventoryAccount {
   @ObservableState
-  public struct State: Identifiable {
+  public struct State: Identifiable, Equatable {
     public var id = UUID()
     var accountType: [AccountType]
     var accountTitle: String

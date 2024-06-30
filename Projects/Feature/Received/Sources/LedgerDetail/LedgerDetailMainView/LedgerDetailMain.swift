@@ -1,5 +1,5 @@
 //
-//  InventoryAccountDetail.swift
+//  LedgerDetailMain.swift
 //  Inventory
 //
 //  Created by Kim dohyun on 5/21/24.
@@ -11,12 +11,12 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 
-// MARK: - InventoryAccountDetail
+// MARK: - LedgerDetailMain
 
 @Reducer
-public struct InventoryAccountDetail {
+public struct LedgerDetailMain {
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var headerType = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     var tabbarType = SSTabBarFeature.State(tabbarType: .received)
     var accountProperty: InventoryAccountDetailHelper

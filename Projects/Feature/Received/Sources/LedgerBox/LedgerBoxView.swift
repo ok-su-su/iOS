@@ -13,7 +13,7 @@ import Designsystem
 
 // MARK: - InventoryType
 
-public enum InventoryType: Int, CaseIterable {
+public enum InventoryType: Int, CaseIterable, Equatable {
   case Wedding = 0
   case FirstBirthdayDay = 1
   case Funeral = 2

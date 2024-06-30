@@ -1,5 +1,5 @@
 //
-//  InventoryAccountDetailView.swift
+//  LedgerDetailMainView.swift
 //  Inventory
 //
 //  Created by Kim dohyun on 5/21/24.
@@ -11,10 +11,10 @@ import SwiftUI
 import ComposableArchitecture
 import Designsystem
 
-// MARK: - InventoryAccountDetailView
+// MARK: - LedgerDetailMainView
 
-struct InventoryAccountDetailView: View {
-  @Bindable var store: StoreOf<InventoryAccountDetail>
+struct LedgerDetailMainView: View {
+  @Bindable var store: StoreOf<LedgerDetailMain>
 
   @ViewBuilder
   private func makeTopContentView() -> some View {

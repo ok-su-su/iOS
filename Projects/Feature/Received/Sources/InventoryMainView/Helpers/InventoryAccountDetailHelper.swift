@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - InventoryAccountDetailHelper
 
-struct InventoryAccountDetailHelper {
+struct InventoryAccountDetailHelper: Equatable {
   let price: String
   let category: InventoryType
   let accountTitle: String
@@ -32,7 +32,7 @@ struct InventoryAccountDetailHelper {
 
 // MARK: - InventoryAccountList
 
-struct InventoryAccountList {
+struct InventoryAccountList: Equatable {
   let name: String
   let type: [String]
   let price: String
