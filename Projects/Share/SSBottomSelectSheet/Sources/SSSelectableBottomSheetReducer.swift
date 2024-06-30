@@ -27,6 +27,7 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
   public enum Action: Equatable {
     case onAppear(Bool)
     case tapped(item: Item)
+    case changedItem(Item)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -38,10 +39,16 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
         state.isOnAppear = isAppear
         return .none
       case let .tapped(item: item):
+        let isChanged = item != state.selectedItem
         state.selectedItem = item
-        return .run { _ in
+        return .run { send in
+          if isChanged {
+            await send(.changedItem(item))
+          }
           await dismiss()
         }
+      case .changedItem:
+        return .none
       }
     }
   }

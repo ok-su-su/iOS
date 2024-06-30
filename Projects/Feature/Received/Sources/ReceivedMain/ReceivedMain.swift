@@ -83,7 +83,6 @@ struct ReceivedMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-    case sortSheet(PresentationAction<InventorySortSheet.Action>)
     case search(PresentationAction<ReceivedSearch.Action>)
     case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
   }
@@ -137,12 +136,12 @@ struct ReceivedMain {
       return .none
     case .tabBar:
       return .none
-    case .sortSheet(.dismiss):
-      return .send(.async(.getLedgersInitialPage))
-    case .sortSheet:
-      return .none
     case .search:
       return .none
+
+    case .sort(.presented(.changedItem)):
+      return .send(.async(.getLedgersInitialPage))
+
     case .sort:
       return .none
     }
@@ -170,8 +169,10 @@ struct ReceivedMain {
     switch action {
     case .getLedgersInitialPage:
       state.ledgersProperty = []
-      let sortType = state.sortProperty.selectedFilterDial ?? .latest
       state.page = 0
+      state.isEndOfPage = false
+
+      let sortType = state.sortProperty.selectedFilterDial ?? .latest
       // TODO: 각자 맞게 수정해야함 파라미터들
       let param = SearchLedgersRequestParameter(title: nil, fromStartAt: nil, toStartAt: nil, toEndAt: nil, page: 0, sort: sortType)
       return .run { send in
