@@ -22,6 +22,7 @@ struct FilterHelperProperty: Equatable {
     let endDateString = CustomDateFormatter.getString(from: endDate, dateFormat: "yyyy.MM.dd")
     return startDateString + "~" + endDateString
   }
+
   var startDate: Date?
   var endDate: Date?
 
@@ -31,7 +32,7 @@ struct FilterHelperProperty: Equatable {
   }
 
   mutating func deleteSelectedItem(id: Int64) {
-    guard let index = selectedLedger.firstIndex(where: {$0.id == id}) else {
+    guard let index = selectedLedger.firstIndex(where: { $0.id == id }) else {
       return
     }
     selectedLedger.remove(at: index)

@@ -39,6 +39,7 @@ struct ReceivedMain {
     var isFilteredHeaderButtonItem: Bool {
       return true
     }
+
     init() {
       _sortProperty = .init(.init())
       _filterProperty = .init(.init())

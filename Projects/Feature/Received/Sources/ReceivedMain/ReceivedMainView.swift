@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SSSearch
 import SwiftUI
 
@@ -40,7 +41,7 @@ struct ReceivedMainView: View {
   }
 
   @ViewBuilder
-  func makeEmptyView() -> some View {
+  func makeLedgerView() -> some View {
     GeometryReader { geometry in
       if store.ledgersProperty.isEmpty {
         VStack {
@@ -157,44 +158,7 @@ struct ReceivedMainView: View {
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, 16)
-  }
-
-
-  @ViewBuilder
-  func makeFilterView() -> some View {
-    GeometryReader { geometry in
-      VStack {
-//      HStack(spacing: InventoryFilterConstants.filterSpacing) {
-//        SSButton(.init(
-//          size: .sh32,
-//          status: .active,
-//          style: .ghost,
-//          color: .black,
-//          buttonText: store.selectedSortItem.rawValue
-//        )) {
-//          store.send(.didTapLatestButton)
-//        }
-//
-//        ZStack {
-//          NavigationLink(state: InventoryRouter.Path.State.inventoryFilterItem(
-//            .init(
-//              startDate: Shared(.now),
-//              endDate: Shared(.now),
-//              selectedFilter: Shared([]),
-//              ssButtonProperties: Shared([:])
-//            )
-//          )
-//          ) {
-//            SSButton(InventoryFilterConstants.filterButtonProperty) {
-//              inventoryStore.send(.didTapFilterButton)
-//            }
-//            .allowsHitTesting(false)
-//          }
-//        }.frame(maxWidth: .infinity, alignment: .topLeading)
-      }
-      .frame(width: geometry.size.width, height: 32, alignment: .topLeading)
-      .padding(.horizontal, Constants.commonSpacing)
-    }
+    .padding(.horizontal, 16)
   }
 
   var body: some View {
@@ -208,9 +172,9 @@ struct ReceivedMainView: View {
         Spacer()
           .frame(height: 16)
 
-        makeFilterView()
-          .frame(height: 32)
-        makeEmptyView()
+        makeFilterSection()
+
+        makeLedgerView()
       }
 //      InventoryFloatingButton(floatingStore: store.scope(state: \.floatingState, action: \.setFloatingView))
 //        .padding(.trailing, 20)
@@ -228,6 +192,7 @@ struct ReceivedMainView: View {
     .fullScreenCover(item: $store.scope(state: \.search, action: \.scope.search)) { store in
       ReceivedSearchView(store: store)
     }
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
     .navigationBarBackButtonHidden()
 //    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
 //      InventorySortSheetView(store: store)

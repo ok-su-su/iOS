@@ -1,5 +1,5 @@
 //
-//  FilterHelper.swift
+//  SortHelperProperty.swift
 //  Received
 //
 //  Created by MaraMincho on 6/30/24.
@@ -9,13 +9,15 @@
 import Foundation
 import SSBottomSelectSheet
 
+// MARK: - SortHelperProperty
+
 struct SortHelperProperty: Equatable {
-  /// 선택된 다이얼 입니다. 
+  // 선택된 다이얼 입니다.
   var selectedFilterDial: SortDialItem? = .latest
   var defaultItems: [SortDialItem] = SortDialItem.allCases
 }
 
-
+// MARK: - SortDialItem
 
 enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable {
   case latest = 0
