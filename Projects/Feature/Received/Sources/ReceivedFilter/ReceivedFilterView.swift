@@ -1,5 +1,5 @@
 //
-//  InventoryFilterView.swift
+//  ReceivedFilterView.swift
 //  Inventory
 //
 //  Created by Kim dohyun on 5/8/24.
@@ -12,9 +12,9 @@ import SSBottomSelectSheet
 import SSLayout
 import SwiftUI
 
-// MARK: - InventoryFilterView
+// MARK: - ReceivedFilterView
 
-struct InventoryFilterView: View {
+struct ReceivedFilterView: View {
   @Bindable var store: StoreOf<ReceivedFilter>
 
   init(store: StoreOf<ReceivedFilter>) {

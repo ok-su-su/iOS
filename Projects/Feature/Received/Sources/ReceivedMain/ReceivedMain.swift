@@ -32,6 +32,7 @@ struct ReceivedMain {
     @Shared var filterProperty: FilterHelperProperty
     @Presents var search: ReceivedSearch.State?
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
+    @Presents var filter: ReceivedFilter.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
@@ -85,6 +86,7 @@ struct ReceivedMain {
     case tabBar(SSTabBarFeature.Action)
     case search(PresentationAction<ReceivedSearch.Action>)
     case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
+    case filter(PresentationAction<ReceivedFilter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -106,6 +108,7 @@ struct ReceivedMain {
       return .none
 
     case .tappedFilterButton:
+      state.filter = .init(state.$filterProperty)
       return .none
 
     case let .tappedFilteredPersonButton(id: id):
@@ -143,6 +146,12 @@ struct ReceivedMain {
       return .send(.async(.getLedgersInitialPage))
 
     case .sort:
+      return .none
+
+    case .filter(.presented(.view(.tappedConfirmButton))):
+      return .none
+
+    case .filter:
       return .none
     }
   }
@@ -231,6 +240,9 @@ extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Acti
     }
     .ifLet(\.$sort, action: \.scope.sort) {
       SSSelectableBottomSheetReducer()
+    }
+    .ifLet(\.$filter, action: \.scope.filter) {
+      ReceivedFilter()
     }
   }
 }

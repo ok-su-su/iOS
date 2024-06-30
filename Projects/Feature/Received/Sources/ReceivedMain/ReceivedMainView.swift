@@ -142,21 +142,18 @@ struct ReceivedMainView: View {
 
           // 사람 버튼에 대한 표시
           let filtered = store.filterProperty.selectedLedgers
-          ForEach(0 ..< filtered.count, id: \.self) { index in
-            if index < filtered.count {
-              let person = filtered[index]
-              SSButton(
-                .init(
-                  size: .sh32,
-                  status: .active,
-                  style: .filled,
-                  color: .black,
-                  rightIcon: .icon(SSImage.commonDeleteWhite),
-                  buttonText: person.categoryName
-                )
-              ) {
-                store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
-              }
+          ForEach(filtered) { property in
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: property.title
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredPersonButton(id: property.id))
             }
           }
         }
@@ -206,15 +203,10 @@ struct ReceivedMainView: View {
       ReceivedSearchView(store: store)
     }
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
+    .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
+      ReceivedFilterView(store: store)
+    }
     .navigationBarBackButtonHidden()
-//    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
-//      InventorySortSheetView(store: store)
-//        .presentationDetents([.height(240), .medium, .large])
-//        .presentationDragIndicator(.automatic)
-//    }
-//    .fullScreenCover(item: $store.scope(state: \.searchInvenotry, action: \.showSearchView)) { store in
-//      InventorySearchView(store: store)
-//    }
   }
 
   /// Box Size +  horizontal Spacing

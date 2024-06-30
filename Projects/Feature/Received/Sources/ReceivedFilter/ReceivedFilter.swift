@@ -17,10 +17,9 @@ import SSBottomSelectSheet
 @Reducer
 struct ReceivedFilter {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var isAppear = false
     @Shared var property: FilterHelperProperty
-    @Presents var sheet: InventoryDatePickerModalSheet.State?
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
 
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State?
@@ -69,7 +68,9 @@ struct ReceivedFilter {
       return .none
 
     case .tappedConfirmButton:
-      return .none
+      return .run { _ in
+        await dismiss()
+      }
 
     case .tappedResetButton:
       return .none
