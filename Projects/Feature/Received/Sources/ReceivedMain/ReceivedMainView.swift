@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
+import SSSearch
 
 // MARK: - ReceivedMainView
 

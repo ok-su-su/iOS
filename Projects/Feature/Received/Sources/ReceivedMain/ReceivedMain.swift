@@ -11,15 +11,20 @@ import Foundation
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
+import SSSearch
 
 @Reducer
 struct ReceivedMain {
   @ObservableState
   struct State: Equatable {
     var isLoading: Bool = false
+    var isOnAppear: Bool = false
+
+    /// ScopeState
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
     var floatingState = InventoryFloating.State()
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
+    @Presents var search = SSSearchReducer.State(helper: <#T##Shared<SSSearchPropertiable>#>)
 
     var ledgersProperty: [LedgerBoxProperty] = []
     init() {}
@@ -41,6 +46,7 @@ struct ReceivedMain {
     case didTapLatestButton
     case didTapFilterButton
     case didTapAddInventoryButton
+    case onAppear(Bool)
   }
 
   enum InnerAction: Equatable {}
@@ -56,6 +62,42 @@ struct ReceivedMain {
 
   enum DelegateAction: Equatable {}
 
+   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = isAppear
+      return .none
+
+    case .didTapInventoryView:
+      return .none
+
+    case .didTapLatestButton:
+      return .none
+
+    case .didTapFilterButton:
+      return .none
+
+    case .didTapAddInventoryButton:
+      return .none
+    }
+   }
+
+   var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+     switch action {
+     case .header(_):
+       return .none
+     case .tabBar(_):
+       return .none
+     case .sortSheet(_):
+       return .none
+     }
+   }
+
+  
+
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -65,11 +107,12 @@ struct ReceivedMain {
       SSTabBarFeature()
     }
 
-    Reduce { _, action in
-      return .none
+    Reduce { state, action in
       switch action {
-      default:
-        break
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
     }
   }

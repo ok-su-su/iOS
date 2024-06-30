@@ -94,7 +94,7 @@ public struct LedgerBoxView: View {
 // MARK: - LedgerBoxProperty
 
 struct LedgerBoxProperty: Equatable, Hashable, Identifiable {
-  /// 장부 아이디 입ㄴ디ㅏ.
+  /// 장부 아이디 입니다.
   let id: Int64
   /// 장부 카테고리 이름 입니다. ex) 결혼식 장례식
   let categoryName: String
