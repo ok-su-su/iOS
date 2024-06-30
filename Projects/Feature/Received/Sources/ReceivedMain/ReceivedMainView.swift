@@ -141,7 +141,7 @@ struct ReceivedMainView: View {
           }
 
           // 사람 버튼에 대한 표시
-          let filtered = store.filterProperty.selectedLedger
+          let filtered = store.filterProperty.selectedLedgers
           ForEach(0 ..< filtered.count, id: \.self) { index in
             if index < filtered.count {
               let person = filtered[index]
