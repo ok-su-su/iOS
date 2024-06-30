@@ -73,24 +73,20 @@ struct LedgerDetailMainView: View {
   @ViewBuilder
   private func makeFilterContentView() -> some View {
     HStack(spacing: 8) {
-//      ZStack {
-//        NavigationLink(state: InventoryAccountDetailRouter.Path.State.showInventoryAccountFilter(.init(accountFilterHelper: Shared(.init(remittPerson: []))))) {
-//          SSButton(InventoryAccountDetailConstants.filterButtonProperty) {
-//            store.send(.tappedFilterButton)
-//          }.allowsHitTesting(false)
-//        }
-//      }
-
-      SSButton(InventoryAccountDetailConstants.sortButtonProperty) {}
+      SSButton(Constants.filterButtonProperty) {
+        store.send(.view(.tappedFilterButton))
+      }
+      SSButton(Constants.sortButtonProperty) {
+        store.send(.view(.tappedSortButton))
+      }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
-    .padding(.horizontal, 16)
   }
 
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView {
-      LazyVStack(spacing: 0) {
+      LazyVStack(spacing: 8) {
         ForEach(store.envelopeItems) { property in
           EnvelopeViewForLedgerMain(property: property)
         }
@@ -117,19 +113,24 @@ struct LedgerDetailMainView: View {
         }
         .background(SSColor.gray15)
 
+        Spacer()
+          .frame(height: 8)
+
         // BottomSection
         VStack(spacing: 0) {
           makeFilterContentView()
-            .background(SSColor.gray15)
 
           makeContentView()
         }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .background(SSColor.gray15)
       }
     }
     .navigationBarBackButtonHidden()
   }
 
-  private enum InventoryAccountDetailConstants {
+  private enum Constants {
     static let filterButtonProperty: SSButtonProperty = .init(
       size: .sh32,
       status: .active,

@@ -25,7 +25,8 @@ struct EnvelopeViewForLedgerMain: View {
         SmallBadge(property: .init(size: .small, badgeString: property.isVisitedString, badgeColor: .blue60))
         // 선물
         if let gift = property.gift {
-          SmallBadge(property: .init(size: .small, badgeString: gift, badgeColor: .blue60))
+          let giftText = "선물"
+          SmallBadge(property: .init(size: .small, badgeString: giftText, badgeColor: .blue60))
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -52,7 +53,7 @@ struct EnvelopeViewForLedgerMain: View {
       }
     }
     .padding(.all, 16)
-    .backgroundStyle(SSColor.gray10)
+    .background(SSColor.gray10)
     .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
@@ -78,6 +79,6 @@ struct EnvelopeViewForLedgerMainProperty: Equatable, Hashable, Identifiable {
   var amount: Int64
 
   var isVisitedString: String {
-    return isVisited ? "예" : "아니오"
+    return isVisited ? "방문" : "미방문"
   }
 }

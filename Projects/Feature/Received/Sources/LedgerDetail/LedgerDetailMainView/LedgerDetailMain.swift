@@ -47,6 +47,7 @@ struct LedgerDetailMain {
 
   enum ViewAction: Equatable {
     case tappedFilterButton
+    case tappedSortButton
   }
 
   enum InnerAction: Equatable {}
@@ -90,6 +91,8 @@ extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction {
     state
     switch action {
     case .tappedFilterButton:
+      return .none
+    case .tappedSortButton:
       return .none
     }
   }
