@@ -1,5 +1,5 @@
 //
-//  GetLedgersResponseDTO.swift
+//  PageResponseDtoSearchLedgerResponse.swift
 //  Received
 //
 //  Created by MaraMincho on 6/30/24.
@@ -32,7 +32,7 @@ struct PageResponseDtoSearchLedgerResponse: Codable {
 
 struct SearchLedgerResponse: Codable {
   let ledger: LedgerModel
-  let category: Category
+  let category: CategoryWithCustomModel
   /// 총 금액
   let totalAmounts: Int64
   /// 총 봉투 갯수
@@ -45,9 +45,9 @@ struct SearchLedgerResponse: Codable {
   }
 }
 
-// MARK: - Category
+// MARK: - CategoryWithCustomModel
 
-struct Category: Codable {
+struct CategoryWithCustomModel: Codable {
   /// 카테고리 아이디
   let id: Int64
   /// 카테고리 순서

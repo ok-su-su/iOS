@@ -73,6 +73,20 @@ struct ReceivedFilterView: View {
   @ViewBuilder
   private func makeSelectedFilterContentView() -> some View {
     WrappingHStack(horizontalSpacing: 8) {
+      if let selectedString = store.property.selectedFilterDateTextString {
+        SSButtonWithState(
+          .init(
+            size: .xsh28,
+            status: .active,
+            style: .filled,
+            color: .orange,
+            leftIcon: .none,
+            rightIcon: .icon(SSImage.commonDeleteWhite),
+            buttonText: selectedString
+          )) {
+            store.sendViewAction(.tappedSelectedFilterDateItem)
+          }
+      }
       ForEach(store.property.selectedLedgers) { property in
         SSButtonWithState(
           .init(
@@ -105,8 +119,10 @@ struct ReceivedFilterView: View {
           .overlay {
             Text(store.startDateText ?? store.defaultDateText)
               .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(SSColor.gray40)
-//              .foregroundColor(store.startDate == .now ? SSColor.gray100 : SSColor.gray40)
+              .foregroundColor(store.startDateText == nil ? SSColor.gray40 : SSColor.gray100)
+          }
+          .onTapGesture {
+            store.sendViewAction(.tappedLeftDateButton)
           }
 
         Text("부터")
@@ -119,15 +135,15 @@ struct ReceivedFilterView: View {
           .overlay {
             Text(store.endDateText ?? store.defaultDateText)
               .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(SSColor.gray40)
+              .foregroundColor(store.endDateText == nil ? SSColor.gray40 : SSColor.gray100)
+          }
+          .onTapGesture {
+            store.sendViewAction(.tappedRightDateButton)
           }
 
         Text("까지")
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundColor(SSColor.gray100)
-      }
-      .onTapGesture {
-        store.sendViewAction(.tappedDateButton)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -139,22 +155,25 @@ struct ReceivedFilterView: View {
         .gray10
         .ignoresSafeArea()
 
-      VStack {
+      VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           .padding(.bottom, 24)
 
-        makeFilterContentView()
-          .padding(.horizontal, 16)
-          .padding(.bottom, 48)
-
-        makeDateFilterContentView()
-          .padding(.horizontal, 16)
-        Spacer()
-        VStack(alignment: .leading, spacing: 8) {
-          makeSelectedFilterContentView()
+        VStack(spacing: 0) {
+          makeFilterContentView()
             .padding(.horizontal, 16)
-          makeFilterConfirmContentView()
+            .padding(.bottom, 48)
+
+          makeDateFilterContentView()
+            .padding(.horizontal, 16)
+          Spacer()
+          VStack(alignment: .leading, spacing: 8) {
+            makeSelectedFilterContentView()
+              .padding(.horizontal, 16)
+            makeFilterConfirmContentView()
+          }
         }
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
     .onAppear {

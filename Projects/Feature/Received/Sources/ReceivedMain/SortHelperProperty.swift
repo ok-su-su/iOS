@@ -43,9 +43,9 @@ enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encod
   var sortString: String {
     switch self {
     case .latest:
-      "startAt,desc"
+      "startAt"
     case .oldest:
-      "startAt,asc"
+      "endAt"
     case .highestAmount:
       "totalSentAmounts,desc"
     case .lowestAmount:

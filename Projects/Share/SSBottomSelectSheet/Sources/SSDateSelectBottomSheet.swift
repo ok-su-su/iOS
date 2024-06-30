@@ -23,9 +23,20 @@ public struct SSDateSelectBottomSheetReducer {
     var initialEndDate = Date(timeIntervalSince1970: 1_924_905_600)
     var isOnAppear: Bool = false
 
-    public init(selectedDate: Shared<Date>, isInitialStateOfDate: Shared<Bool>) {
+    public init(
+      selectedDate: Shared<Date>,
+      isInitialStateOfDate: Shared<Bool>,
+      restrictStartDate: Date? = nil,
+      restrictEndDate: Date? = nil
+    ) {
       _selectedDate = selectedDate
       _isInitialStateOfDate = isInitialStateOfDate
+      if let restrictStartDate {
+        initialStartDate = restrictStartDate
+      }
+      if let restrictEndDate {
+        initialEndDate = restrictEndDate
+      }
     }
   }
 

@@ -11,38 +11,31 @@ import Foundation
 // MARK: - FilterHelperProperty
 
 struct FilterHelperProperty: Equatable {
-  var selectableLedgers: [FilterSelectableItemProperty] = [
-    .init(id: 1, title: "결혼식"),
-    .init(id: 2, title: "영결식"),
-    .init(id: 3, title: "영춘권"),
-    .init(id: 4, title: "곰춘권"),
-    .init(id: 5, title: "곰춘권"),
-    .init(id: 6, title: "곰춘권"),
-    .init(id: 7, title: "곰춘권"),
-    .init(id: 8, title: "곰춘권"),
-  ]
+  var selectableLedgers: [FilterSelectableItemProperty] = []
   var selectedLedgers: [FilterSelectableItemProperty] = []
 
-  var filteredDateTextString: String? {
-    guard let startDate else {
+  var selectedFilterDateTextString: String? {
+    if isInitialStateOfStartDate {
       return nil
     }
     let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
-    guard let endDate else {
+    if isInitialStateOfEndDate {
       return startDateString
     }
     let endDateString = CustomDateFormatter.getString(from: endDate, dateFormat: "yyyy.MM.dd")
     return startDateString + "~" + endDateString
   }
 
-  var startDate: Date?
-  var endDate: Date?
+  var isInitialStateOfStartDate: Bool = true
+  var startDate: Date = .now
+  var isInitialStateOfEndDate: Bool = true
+  var endDate: Date = .now
 
-  func isSelectedItems(id: Int64) -> Bool {
+  func isSelectedItems(id: Int) -> Bool {
     return selectedLedgers.first(where: { $0.id == id }) != nil
   }
 
-  mutating func select(_ id: Int64) {
+  mutating func select(_ id: Int) {
     // 이미 선택되었다면 제거
     if let index = selectedLedgers.firstIndex(where: { $0.id == id }) {
       selectedLedgers.remove(at: index)
@@ -64,8 +57,11 @@ struct FilterHelperProperty: Equatable {
   }
 
   mutating func resetDate() {
-    startDate = nil
-    endDate = nil
+    isInitialStateOfStartDate = true
+    startDate = .now
+
+    isInitialStateOfEndDate = true
+    endDate = .now
   }
 
   mutating func setInitialState() {
@@ -73,7 +69,7 @@ struct FilterHelperProperty: Equatable {
     selectedLedgers = []
   }
 
-  mutating func deleteSelectedItem(id: Int64) {
+  mutating func deleteSelectedItem(id: Int) {
     guard let index = selectedLedgers.firstIndex(where: { $0.id == id }) else {
       return
     }
@@ -85,7 +81,7 @@ struct FilterHelperProperty: Equatable {
 
 struct FilterSelectableItemProperty: Equatable, Identifiable {
   /// 카테고리 아이디
-  var id: Int64
+  var id: Int
   /// 카테고리 타이틀
   var title: String
 }

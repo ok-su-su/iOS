@@ -107,7 +107,7 @@ struct ReceivedMainView: View {
         // MARK: - 정렬 버튼
 
         // 정렬된 사람이 없을 때
-        if !store.state.isFilteredHeaderButtonItem {
+        if !store.state.isFilteredItem {
           SSButton(Constants.notSelectedFilterButtonProperty) {
             store.send(.view(.tappedFilterButton))
           }
@@ -125,7 +125,7 @@ struct ReceivedMainView: View {
           }
 
           // amount Range Button
-          if let amountRangeBadgeText = store.filterProperty.filteredDateTextString {
+          if let amountRangeBadgeText = store.filterProperty.selectedFilterDateTextString {
             SSButton(
               .init(
                 size: .sh32,
@@ -136,7 +136,7 @@ struct ReceivedMainView: View {
                 buttonText: amountRangeBadgeText
               )
             ) {
-              store.sendViewAction(.tappedFilteredAmountButton)
+              store.sendViewAction(.tappedFilteredDateButton)
             }
           }
 
