@@ -142,6 +142,9 @@ struct ReceivedMainView: View {
         .frame(height: 56)
         .toolbar(.hidden, for: .tabBar)
     }
+    .fullScreenCover(item: $store.scope(state: \.search, action: \.scope.search)) { store in
+      ReceivedSearchView(store: store)
+    }
     .navigationBarBackButtonHidden()
 //    .sheet(item: $store.scope(state: \.sortSheet, action: \.scope.sortSheet)) { store in
 //      InventorySortSheetView(store: store)
