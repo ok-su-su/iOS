@@ -16,7 +16,6 @@ import SwiftUI
 
 struct ReceivedMainView: View {
   @Bindable var store: StoreOf<ReceivedMain>
-  private let inventoryColumns = [GridItem(.flexible()), GridItem(.flexible())]
 
   init(store: StoreOf<ReceivedMain>) {
     self.store = store
@@ -27,14 +26,13 @@ struct ReceivedMainView: View {
     Rectangle()
       .strokeBorder(style: StrokeStyle(lineWidth: 1, lineCap: .butt, dash: [4]))
       .foregroundColor(SSColor.gray40)
-      .frame(width: 160, height: 160)
       .overlay(
         SSImage.commonAdd
           .renderingMode(.template)
           .foregroundColor(SSColor.gray40)
           .frame(width: 18, height: 18)
       )
-      .fixedSize()
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .onTapGesture {
         store.sendViewAction(.tappedAddLedgerButton)
       }
@@ -46,8 +44,7 @@ struct ReceivedMainView: View {
       if store.ledgersProperty.isEmpty {
         VStack {
           makeDotLineButton()
-            .padding(.horizontal, Constants.commonSpacing)
-        }.frame(width: geometry.size.width, height: 160, alignment: .topLeading)
+        }.frame(width: geometry.size.width, height: ledgerBoxHeight, alignment: .topLeading)
 
         VStack {
           Spacer()
@@ -58,21 +55,24 @@ struct ReceivedMainView: View {
           Spacer()
         }
       } else {
+        let gridColumns = [
+          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
+          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
+        ]
         ScrollView {
           LazyVGrid(
-            columns: inventoryColumns,
+            columns: gridColumns,
             alignment: .center,
             spacing: 8
           ) {
-            // TODO: LedgerBox View 연결
             ForEach(store.ledgersProperty) { property in
               LedgerBoxView(property)
-                .frame(height: ledgerBoxWithAndHeight)
+                .frame(height: ledgerBoxHeight)
             }
             VStack {
               // add Ledger View
               makeDotLineButton()
-                .padding([.leading, .trailing], Constants.commonSpacing)
+                .frame(height: ledgerBoxHeight)
             }
           }
           .padding(.horizontal, 16)
@@ -205,7 +205,7 @@ struct ReceivedMainView: View {
   }
 
   /// Box Size +  horizontal Spacing
-  var ledgerBoxWithAndHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
+  var ledgerBoxHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
 
   private enum Constants {
     // MARK: Property
