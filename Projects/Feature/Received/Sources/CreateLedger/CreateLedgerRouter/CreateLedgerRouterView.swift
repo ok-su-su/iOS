@@ -25,22 +25,26 @@ struct CreateLedgerRouterView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {}
+    VStack(spacing: 0) {
+      CreateLedgerCategoryView(store: store.scope(state: \.root, action: \.root))
+    } 
+    .navigationBarBackButtonHidden()
+      .onAppear {
+        store.send(.onAppear(true))
+      }
   }
 
   var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
+    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+      makeContentView()
+    } destination: { store in
+      switch store.case {
+      case let .category(store):
+        CreateLedgerCategoryView(store: store)
       }
     }
-    .navigationBarBackButtonHidden()
-    .onAppear {
-      store.send(.onAppear(true))
-    }
+
+
   }
 
   private enum Metrics {}

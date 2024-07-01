@@ -17,6 +17,7 @@ struct CreateLedgerRouter {
   struct State: Equatable {
     var isOnAppear = false
     var path: StackState<CreateLedgerRouterPath.State> = .init()
+    var root: CreateLedgerCategory.State = .init()
     init() {}
   }
 
@@ -24,9 +25,21 @@ struct CreateLedgerRouter {
     case onAppear(Bool)
     case path(StackActionOf<CreateLedgerRouterPath>)
     case push(CreateLedgerRouterPath.State)
+    case endedScreen(CreateLedgerRouterPath.State)
+    case root(CreateLedgerCategory.Action)
+  }
+
+  func endedScreen(_ state: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
+    switch endedScreenState {
+    default:
+      return .none
+    }
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.root, action: \.root) {
+      CreateLedgerCategory()
+    }
     Reduce { state, action in
       switch action {
       case let .onAppear(val):
@@ -34,11 +47,30 @@ struct CreateLedgerRouter {
           return .none
         }
         state.isOnAppear = val
-        return .none
+        return .merge(
+          .publisher {
+            CreateLedgerRouterPathPublisher
+              .publisher()
+              .map{ .push($0)}
+          },
+          .publisher{
+            CreateLedgerRouterPathPublisher
+              .endedScreenPublisher()
+              .map{ .endedScreen($0)}
+          }
+        )
+
       case .path:
         return .none
+
       case let .push(currentState):
         state.path.append(currentState)
+        return .none
+
+      case let .endedScreen(currentState):
+        return endedScreen(&state, currentState)
+
+      case .root:
         return .none
       }
     }
