@@ -29,7 +29,7 @@ struct CreateLedgerRouter {
     case root(CreateLedgerCategory.Action)
   }
 
-  func endedScreen(_ state: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
+  func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
     default:
       return .none
@@ -51,12 +51,12 @@ struct CreateLedgerRouter {
           .publisher {
             CreateLedgerRouterPathPublisher
               .publisher()
-              .map{ .push($0)}
+              .map { .push($0) }
           },
-          .publisher{
+          .publisher {
             CreateLedgerRouterPathPublisher
               .endedScreenPublisher()
-              .map{ .endedScreen($0)}
+              .map { .endedScreen($0) }
           }
         )
 

@@ -27,11 +27,11 @@ struct CreateLedgerRouterView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       CreateLedgerCategoryView(store: store.scope(state: \.root, action: \.root))
-    } 
+    }
     .navigationBarBackButtonHidden()
-      .onAppear {
-        store.send(.onAppear(true))
-      }
+    .onAppear {
+      store.send(.onAppear(true))
+    }
   }
 
   var body: some View {
@@ -43,8 +43,6 @@ struct CreateLedgerRouterView: View {
         CreateLedgerCategoryView(store: store)
       }
     }
-
-
   }
 
   private enum Metrics {}

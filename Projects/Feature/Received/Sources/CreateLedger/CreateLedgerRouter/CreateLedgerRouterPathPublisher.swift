@@ -17,6 +17,7 @@ final class CreateLedgerRouterPathPublisher {
   static func publisher() -> AnyPublisher<CreateLedgerRouterPath.State, Never> {
     shared._publisher.eraseToAnyPublisher()
   }
+
   static func endedScreenPublisher() -> AnyPublisher<CreateLedgerRouterPath.State, Never> {
     shared._endedScreenPublisher.eraseToAnyPublisher()
   }

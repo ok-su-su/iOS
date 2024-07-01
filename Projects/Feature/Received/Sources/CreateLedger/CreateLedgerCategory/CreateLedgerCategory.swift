@@ -1,19 +1,20 @@
-// 
+//
 //  CreateLedgerCategory.swift
 //  Received
 //
 //  Created by MaraMincho on 7/1/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
-import FeatureAction
-import SSSelectableItems
 import Designsystem
+import FeatureAction
+import Foundation
+import SSSelectableItems
+
+// MARK: - CreateLedgerCategory
 
 @Reducer
 struct CreateLedgerCategory {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -26,7 +27,8 @@ struct CreateLedgerCategory {
     var isPushable: Bool {
       !selectedItemsID.isEmpty
     }
-    init () {
+
+    init() {
       _selectableItems = .init([])
       _selectedItemsID = .init([])
       _customItems = .init(nil)
@@ -47,10 +49,11 @@ struct CreateLedgerCategory {
     case tappedNextButton
   }
 
-enum InnerAction: Equatable {
-  case pushNextScreen
-}
-  func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+  enum InnerAction: Equatable {
+    case pushNextScreen
+  }
+
+  func innerAction(_: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .pushNextScreen:
       return .none
@@ -61,15 +64,15 @@ enum InnerAction: Equatable {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case selection( SSSelectableItemsReducer<CreateLedgerCategoryItem>.Action)
+    case selection(SSSelectableItemsReducer<CreateLedgerCategoryItem>.Action)
     case header(HeaderViewFeature.Action)
   }
-  func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
-    switch action {
 
+  func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
     case .selection:
       return .none
-    case .header(_):
+    case .header:
       return .none
     }
   }
@@ -78,7 +81,7 @@ enum InnerAction: Equatable {
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -89,10 +92,9 @@ enum InnerAction: Equatable {
     }
   }
 
-
   var body: some Reducer<State, Action> {
     Scope(state: \.selection, action: \.scope.selection) {
-      SSSelectableItemsReducer()
+      SSSelectableItemsReducer<CreateLedgerCategoryItem>()
     }
     Reduce { state, action in
       switch action {
@@ -106,13 +108,14 @@ enum InnerAction: Equatable {
     }
   }
 }
-extension CreateLedgerCategory: FeatureScopeAction, FeatureInnerAction {
 
+// MARK: FeatureScopeAction, FeatureInnerAction
 
+extension CreateLedgerCategory: FeatureScopeAction, FeatureInnerAction {}
 
-}
+extension Reducer where Self.State == CreateLedgerCategory.State, Self.Action == CreateLedgerCategory.Action {}
 
-extension Reducer where Self.State == CreateLedgerCategory.State, Self.Action == CreateLedgerCategory.Action { }
+// MARK: - CreateLedgerCategoryItem
 
 struct CreateLedgerCategoryItem: SSSelectableItemable {
   /// 카테고리 이름 입니다.
@@ -121,6 +124,6 @@ struct CreateLedgerCategoryItem: SSSelectableItemable {
   var id: Int
 
   mutating func setTitle(_ val: String) {
-    self.title = val
+    title = val
   }
 }

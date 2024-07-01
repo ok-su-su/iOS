@@ -1,27 +1,29 @@
-// 
+//
 //  CreateLedgerCategoryView.swift
 //  Received
 //
 //  Created by MaraMincho on 7/1/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
 import SSSelectableItems
+import SwiftUI
 
 struct CreateLedgerCategoryView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<CreateLedgerCategory>
-  
-  //MARK: Init
+
+  // MARK: Init
+
   init(store: StoreOf<CreateLedgerCategory>) {
     self.store = store
   }
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
@@ -51,16 +53,16 @@ struct CreateLedgerCategoryView: View {
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
-    .safeAreaInset(edge: .bottom){
+    .safeAreaInset(edge: .bottom) {
       nextButton()
     }
     .navigationBarBackButtonHidden()
-    .onAppear{
+    .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics { }
+  private enum Metrics {}
 
-  private enum Constants { }
+  private enum Constants {}
 }
