@@ -138,7 +138,7 @@ struct ReceivedMain {
       return .none
 
     case let .tappedLedgerBox(property):
-      state.detail = .init(.init())
+      state.detail = .init(.init(ledgerID: property.id))
       return .none
     }
   }
