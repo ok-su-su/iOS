@@ -117,7 +117,7 @@ struct CreateLedgerCategory {
       }
       state.isOnAppear = isAppear
       return .send(.async(.getCreateLedgerCategoryItem))
-      
+
     case .tappedNextButton:
       return .none
     }
