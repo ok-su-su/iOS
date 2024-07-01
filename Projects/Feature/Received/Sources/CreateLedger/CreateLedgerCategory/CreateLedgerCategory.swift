@@ -22,7 +22,6 @@ struct CreateLedgerCategory {
     @Shared var selectedItemsID: [Int]
     @Shared var customItems: CreateLedgerCategoryItem?
     var selection: SSSelectableItemsReducer<CreateLedgerCategoryItem>.State
-    var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(0.33)))
     var isLoading = true
     var isPushable: Bool {
       !selectedItemsID.isEmpty
@@ -95,14 +94,11 @@ struct CreateLedgerCategory {
   @CasePathable
   enum ScopeAction: Equatable {
     case selection(SSSelectableItemsReducer<CreateLedgerCategoryItem>.Action)
-    case header(HeaderViewFeature.Action)
   }
 
   func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .selection:
-      return .none
-    case .header:
       return .none
     }
   }
