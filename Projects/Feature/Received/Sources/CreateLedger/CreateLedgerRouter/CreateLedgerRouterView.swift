@@ -35,12 +35,21 @@ struct CreateLedgerRouterView: View {
   }
 
   var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      makeContentView()
-    } destination: { store in
-      switch store.case {
-      case let .category(store):
-        CreateLedgerCategoryView(store: store)
+    ZStack {
+      SSColor
+        .gray15
+        .ignoresSafeArea()
+
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.header))
+        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+          makeContentView()
+        } destination: { store in
+          switch store.case {
+          case let .category(store):
+            CreateLedgerCategoryView(store: store)
+          }
+        }
       }
     }
   }

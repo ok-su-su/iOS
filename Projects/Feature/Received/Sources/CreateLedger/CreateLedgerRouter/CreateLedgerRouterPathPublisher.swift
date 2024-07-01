@@ -10,7 +10,7 @@ import Combine
 import Foundation
 
 final class CreateLedgerRouterPathPublisher {
-  static let shared = CreateLedgerRouterPathPublisher()
+  private static let shared = CreateLedgerRouterPathPublisher()
   private var _publisher: PassthroughSubject<CreateLedgerRouterPath.State, Never> = .init()
   private var _endedScreenPublisher: PassthroughSubject<CreateLedgerRouterPath.State, Never> = .init()
 

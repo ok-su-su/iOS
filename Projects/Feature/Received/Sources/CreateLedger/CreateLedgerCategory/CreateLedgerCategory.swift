@@ -115,6 +115,9 @@ struct CreateLedgerCategory {
       return .send(.async(.getCreateLedgerCategoryItem))
 
     case .tappedNextButton:
+      if let selectedCategoryID = state.selectedItemsID.first {
+        CreateLedgerSharedState.setCategoryID(selectedCategoryID)
+      }
       return .none
     }
   }

@@ -20,7 +20,7 @@ struct CreateLedgerRouter {
     var path: StackState<CreateLedgerRouterPath.State> = .init()
     var root: CreateLedgerCategory.State = .init()
     var header: HeaderViewFeature.State = .init(
-      .init(type: .depthProgressBar(Double(1 / 3))),
+      .init(type: .depthProgressBar(Double(1) / 3)),
       enableDismissAction: false
     )
     init() {}
