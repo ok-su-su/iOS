@@ -6,26 +6,27 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import SwiftUI
 import Designsystem
+import SwiftUI
 
 struct NextButtonView: View {
   var isPushable: Bool
-  var action: () -> ()
+  var action: () -> Void
 
   init(isPushable: Bool, action: @escaping () -> Void) {
     self.isPushable = isPushable
     self.action = action
   }
+
   var body: some View {
     Button {
       action()
     } label: {
       Text("다음")
         .foregroundStyle(SSColor.gray10)
+        .frame(maxWidth: .infinity, maxHeight: 60)
     }
     .allowsHitTesting(isPushable)
-    .frame(maxWidth: .infinity, maxHeight: 60)
     .background(isPushable ? SSColor.gray100 : SSColor.gray30)
   }
 }

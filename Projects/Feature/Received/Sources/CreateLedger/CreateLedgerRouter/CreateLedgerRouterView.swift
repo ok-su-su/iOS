@@ -42,6 +42,7 @@ struct CreateLedgerRouterView: View {
 
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
+          .padding(.bottom, 24)
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
           makeContentView()
         } destination: { store in

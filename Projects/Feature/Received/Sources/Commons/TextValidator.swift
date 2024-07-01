@@ -13,7 +13,8 @@ enum TextValidator {
     let regex = /^[가-힣a-zA-Z0-9 ]{1,10}$/
     return name.contains(regex)
   }
+
   static func checkCategoryNameWithToast(_ name: String) -> Bool {
-    return name.count >= 10 
+    return name.count >= 10
   }
 }

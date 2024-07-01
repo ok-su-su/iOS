@@ -1,4 +1,4 @@
-// 
+//
 //  CreateLedgerName.swift
 //  Received
 //
@@ -10,10 +10,10 @@ import FeatureAction
 import Foundation
 import SSToast
 
+// MARK: - CreateLedgerName
 
 @Reducer
 struct CreateLedgerName {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -21,7 +21,7 @@ struct CreateLedgerName {
     var isFocused = false
     var pushable = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
-    init () {}
+    init() {}
   }
 
   enum Action: Equatable, FeatureAction {
@@ -52,7 +52,7 @@ struct CreateLedgerName {
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -72,11 +72,11 @@ struct CreateLedgerName {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
@@ -91,11 +91,11 @@ struct CreateLedgerName {
         return viewAction(&state, currentAction)
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
-      case let .scope(currentAction) :
+      case let .scope(currentAction):
         return scopeAction(&state, currentAction)
       }
     }
   }
 }
 
-extension Reducer where Self.State == CreateLedgerName.State, Self.Action == CreateLedgerName.Action { }
+extension Reducer where Self.State == CreateLedgerName.State, Self.Action == CreateLedgerName.Action {}
