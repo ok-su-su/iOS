@@ -78,9 +78,6 @@ struct CreateLedgerName {
     return .none
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
-    return .none
-  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.toast, action: \.scope.toast) {
@@ -91,8 +88,6 @@ struct CreateLedgerName {
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
-      case let .inner(currentAction):
-        return innerAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
       }

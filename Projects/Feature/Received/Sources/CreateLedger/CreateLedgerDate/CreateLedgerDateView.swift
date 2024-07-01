@@ -1,28 +1,29 @@
-// 
+//
 //  CreateLedgerDateView.swift
 //  Received
 //
 //  Created by MaraMincho on 7/1/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
+import SwiftUI
 
 struct CreateLedgerDateView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<CreateLedgerDate>
 
+  // MARK: Init
 
-  //MARK: Init
   init(store: StoreOf<CreateLedgerDate>) {
     self.store = store
   }
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
@@ -41,8 +42,6 @@ struct CreateLedgerDateView: View {
 
       makeDateSectionView()
         .padding(.bottom, 32)
-
-
     }
   }
 
@@ -54,7 +53,7 @@ struct CreateLedgerDateView: View {
         .onTapGesture {
           store.sendViewAction(.tappedStartDatePicker)
         }
-    }else {
+    } else {
       VStack(alignment: .leading, spacing: 8) {
         HStack(spacing: 8) {
           makeDateTextView(date: store.startSelectedDate, isInitialState: store.isInitialStateOfStartDate)
@@ -78,7 +77,6 @@ struct CreateLedgerDateView: View {
           store.sendViewAction(.tappedEndDatePicker)
         }
       }
-
     }
   }
 
@@ -91,11 +89,11 @@ struct CreateLedgerDateView: View {
         status: .active,
         style: .ghost,
         color: .orange,
-        buttonText: buttonText)) {
-          store.sendViewAction(.tappedChangeDisplayTypeButton)
-        }
+        buttonText: buttonText
+      )) {
+        store.sendViewAction(.tappedChangeDisplayTypeButton)
+      }
   }
-
 
   @ViewBuilder
   private func makeDateTextView(date: Date, isInitialState: Bool) -> some View {
@@ -140,15 +138,18 @@ struct CreateLedgerDateView: View {
     }
     .navigationBarBackButtonHidden()
     .modifier(SSDateBottomSheetModifier(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)))
-    .onAppear{
+    .safeAreaInset(edge: .bottom) {
+      NextButtonView(isPushable: store.pushable) {
+        store.sendViewAction(.tappedNextButton)
+      }
+    }
+    .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
   private enum Constants {
     static let titleDescriptionText = "언제인가요"
   }
