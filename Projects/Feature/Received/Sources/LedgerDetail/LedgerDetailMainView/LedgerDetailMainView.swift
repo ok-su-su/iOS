@@ -127,6 +127,9 @@ struct LedgerDetailMainView: View {
         .background(SSColor.gray15)
       }
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
+      .onAppear {
+        store.sendViewAction(.isOnAppear(true))
+      }
     }
     .navigationBarBackButtonHidden()
   }
