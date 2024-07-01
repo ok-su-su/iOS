@@ -51,16 +51,46 @@ struct CreateLedgerCategory {
 
   enum InnerAction: Equatable {
     case pushNextScreen
+    case isLoading(Bool)
+    case updateItems([CreateLedgerCategoryItem])
   }
 
-  func innerAction(_: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+  func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .pushNextScreen:
+      return .none
+
+    case let .isLoading(isLoading):
+      state.isLoading = isLoading
+      return .none
+
+    // 마지막 기타 아이템을 제거하고 커스텀 아이템으로 만듭니다.
+    case let .updateItems(items):
+      var items = items
+      let lastItems = items.popLast()
+      state.selectableItems = items
+      state.customItems = lastItems
+
       return .none
     }
   }
 
-  enum AsyncAction: Equatable {}
+  @Dependency(\.createLedgerCategoryNetwork) var network
+  enum AsyncAction: Equatable {
+    case getCreateLedgerCategoryItem
+  }
+
+  func asyncAction(_: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .getCreateLedgerCategoryItem:
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.getCreateLedgerCategoryItem()
+        await send(.inner(.updateItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -86,7 +116,8 @@ struct CreateLedgerCategory {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.async(.getCreateLedgerCategoryItem))
+      
     case .tappedNextButton:
       return .none
     }
@@ -104,14 +135,16 @@ struct CreateLedgerCategory {
         return scopeAction(&state, currentAction)
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
   }
 }
 
-// MARK: FeatureScopeAction, FeatureInnerAction
+// MARK: FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction
 
-extension CreateLedgerCategory: FeatureScopeAction, FeatureInnerAction {}
+extension CreateLedgerCategory: FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {}
 
 extension Reducer where Self.State == CreateLedgerCategory.State, Self.Action == CreateLedgerCategory.Action {}
 
