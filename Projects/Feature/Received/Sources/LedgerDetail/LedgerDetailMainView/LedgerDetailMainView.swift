@@ -131,10 +131,10 @@ struct LedgerDetailMainView: View {
         .ignoresSafeArea()
 
       makeContentView()
-      .modifier(SSLoadingModifier(isLoading: store.isLoading))
-      .onAppear {
-        store.sendViewAction(.isOnAppear(true))
-      }
+        .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        .onAppear {
+          store.sendViewAction(.isOnAppear(true))
+        }
 
       FloatingButtonView {
         store.sendViewAction(.tappedFloatingButton)

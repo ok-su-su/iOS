@@ -6,10 +6,8 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
+import Foundation
 
 @Reducer(state: .equatable, action: .equatable)
-enum CreateLedgerRouterPath {
-  
-}
+enum CreateLedgerRouterPath {}

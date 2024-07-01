@@ -6,11 +6,10 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 final class CreateLedgerRouterPathPublisher {
-
   static let shared = CreateLedgerRouterPathPublisher()
   private var _publisher: PassthroughSubject<CreateLedgerRouterPath.State, Never> = .init()
 

@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - CreateLedgerSharedState
+
 final class CreateLedgerSharedState {
   private var body = CreateAndUpdateLedgerRequest()
 
@@ -16,6 +18,7 @@ final class CreateLedgerSharedState {
   static func setTitle(_ title: String?) {
     shared.body.title = title
   }
+
   static func setDescription(_ description: String) {
     shared.body.description = description
   }
@@ -23,23 +26,29 @@ final class CreateLedgerSharedState {
   static func setCategoryID(_ id: Int) {
     shared.body.categoryId = id
   }
+
   static func setCustomCategory(_ name: String) {
     shared.body.customCategory = name
   }
+
   static func setStartDate(_ date: Date) {
     shared.body.startAt = date
   }
+
   static func setEndAt(_ date: Date) {
     shared.body.endAt = date
   }
+
   static func getBody() -> CreateAndUpdateLedgerRequest {
     shared.body
   }
 }
 
-struct CreateAndUpdateLedgerRequest: Encodable{
+// MARK: - CreateAndUpdateLedgerRequest
+
+struct CreateAndUpdateLedgerRequest: Encodable {
   var title: String?
-  var description:String?
+  var description: String?
   var categoryId: Int?
   var customCategory: String?
   var startAt: Date?
