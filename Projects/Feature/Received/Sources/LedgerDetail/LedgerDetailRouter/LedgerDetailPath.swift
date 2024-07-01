@@ -10,4 +10,6 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer(state: .equatable, action: .equatable)
-enum LedgerDetailPath {}
+enum LedgerDetailPath {
+  case main(LedgerDetailMain)
+}

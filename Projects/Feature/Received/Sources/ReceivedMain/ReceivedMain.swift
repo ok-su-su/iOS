@@ -33,6 +33,7 @@ struct ReceivedMain {
     @Presents var search: ReceivedSearch.State?
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
     @Presents var filter: ReceivedFilter.State?
+    @Presents var detail: LedgerDetailRouter.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
@@ -72,6 +73,7 @@ struct ReceivedMain {
     case onAppearedLedger(LedgerBoxProperty)
     case tappedSortButton
     case tappedFloatingButton
+    case tappedLedgerBox(LedgerBoxProperty)
   }
 
   enum InnerAction: Equatable {
@@ -92,6 +94,7 @@ struct ReceivedMain {
     case search(PresentationAction<ReceivedSearch.Action>)
     case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
     case filter(PresentationAction<ReceivedFilter.Action>)
+    case detail(PresentationAction<LedgerDetailRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -123,6 +126,7 @@ struct ReceivedMain {
     case .tappedSortButton:
       state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
       return .none
+
     case .tappedFloatingButton:
       // create ledger 주입
       return .none
@@ -131,6 +135,10 @@ struct ReceivedMain {
       if state.ledgersProperty.last?.id == property.id {
         return .send(.async(.getLedgers))
       }
+      return .none
+
+    case let .tappedLedgerBox(property):
+      state.detail = .init(.init(ledgerID: property.id))
       return .none
     }
   }
@@ -157,6 +165,9 @@ struct ReceivedMain {
       return .send(.async(.getLedgersInitialPage))
 
     case .filter:
+      return .none
+
+    case .detail:
       return .none
     }
   }
@@ -247,6 +258,9 @@ extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Acti
     }
     .ifLet(\.$filter, action: \.scope.filter) {
       ReceivedFilter()
+    }
+    .ifLet(\.$detail, action: \.scope.detail) {
+      LedgerDetailRouter()
     }
   }
 }

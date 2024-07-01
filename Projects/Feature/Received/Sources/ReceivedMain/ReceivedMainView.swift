@@ -74,6 +74,9 @@ struct ReceivedMainView: View {
                 .onAppear {
                   store.sendViewAction(.onAppearedLedger(property))
                 }
+                .onTapGesture {
+                  store.sendViewAction(.tappedLedgerBox(property))
+                }
             }
             VStack {
               // add Ledger View
@@ -201,6 +204,9 @@ struct ReceivedMainView: View {
     }
     .fullScreenCover(item: $store.scope(state: \.search, action: \.scope.search)) { store in
       ReceivedSearchView(store: store)
+    }
+    .fullScreenCover(item: $store.scope(state: \.detail, action: \.scope.detail)) { store in
+      LedgerDetailRouterView(store: store)
     }
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
     .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in

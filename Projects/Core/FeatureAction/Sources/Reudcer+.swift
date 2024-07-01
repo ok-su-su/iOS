@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-// MARK: - FeatureViewAction
+// MARK: - FeatureViewActionWithClosure
 
 // var body: some Reducer<State, Action> {
 //  Reduce { state, action in
@@ -50,31 +50,61 @@ import Foundation
 //  return .none
 // }
 
-public protocol FeatureViewAction: Reducer where Action: FeatureAction {
+public protocol FeatureViewActionWithClosure: Reducer where Action: FeatureAction {
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> { get set }
+}
+
+// MARK: - FeatureViewAction
+
+public protocol FeatureViewAction: Reducer where Action: FeatureAction {
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>
+}
+
+// MARK: - FeatureScopeActionWithClosure
+
+public protocol FeatureScopeActionWithClosure: Reducer where Action: FeatureAction {
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> { get set }
 }
 
 // MARK: - FeatureScopeAction
 
 public protocol FeatureScopeAction: Reducer where Action: FeatureAction {
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> { get set }
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action>
+}
+
+// MARK: - FeatureAsyncActionWithClosure
+
+public protocol FeatureAsyncActionWithClosure: Reducer where Action: FeatureAction {
+  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> { get set
+  }
 }
 
 // MARK: - FeatureAsyncAction
 
 public protocol FeatureAsyncAction: Reducer where Action: FeatureAction {
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> { get set
-  }
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action>
+}
+
+// MARK: - FeatureInnerActionWithClosure
+
+public protocol FeatureInnerActionWithClosure: Reducer where Action: FeatureAction {
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> { get }
 }
 
 // MARK: - FeatureInnerAction
 
 public protocol FeatureInnerAction: Reducer where Action: FeatureAction {
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> { get }
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action>
+}
+
+// MARK: - FeatureDelegateActionWithClosure
+
+public protocol FeatureDelegateActionWithClosure: Reducer where Action: FeatureAction {
+  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> { get set }
 }
 
 // MARK: - FeatureDelegateAction
 
 public protocol FeatureDelegateAction: Reducer where Action: FeatureAction {
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> { get set }
+  func delegateAction(_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action>
 }
