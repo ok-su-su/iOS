@@ -1,21 +1,22 @@
-// 
+//
 //  LedgerDetailFilter.swift
 //  Received
 //
 //  Created by MaraMincho on 7/1/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
 import FeatureAction
+import Foundation
+
+// MARK: - LedgerDetailFilter
 
 @Reducer
 struct LedgerDetailFilter {
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    init () {}
+    init() {}
   }
 
   enum Action: Equatable, FeatureAction {
@@ -41,7 +42,7 @@ struct LedgerDetailFilter {
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -50,19 +51,19 @@ struct LedgerDetailFilter {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { state, action in
+  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { state, action in
+  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in
     return .none
   }
 
@@ -75,13 +76,13 @@ struct LedgerDetailFilter {
         return innerAction(&state, currentAction)
       case let .async(currentAction):
         return asyncAction(&state, currentAction)
-      case let .scope(currentAction) :
+      case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-      case let .delegate(currentAction) :
+      case let .delegate(currentAction):
         return delegateAction(&state, currentAction)
       }
     }
   }
 }
 
-extension Reducer where Self.State == LedgerDetailFilter.State, Self.Action == LedgerDetailFilter.Action { }
+extension Reducer where Self.State == LedgerDetailFilter.State, Self.Action == LedgerDetailFilter.Action {}

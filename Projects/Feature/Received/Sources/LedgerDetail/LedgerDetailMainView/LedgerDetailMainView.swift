@@ -126,6 +126,7 @@ struct LedgerDetailMainView: View {
         .padding(.top, 16)
         .background(SSColor.gray15)
       }
+      .modifier(SSLoadingModifier(isLoading: store.isLoading))
     }
     .navigationBarBackButtonHidden()
   }
