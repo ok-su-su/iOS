@@ -107,6 +107,7 @@ struct CreateLedgerDate {
 
     case .tappedNextButton:
       CreateLedgerSharedState.setStartDate(state.startSelectedDate)
+      CreateLedgerSharedState.setEndDate(state.endSelectedDate)
       if !state.isInitialStateOfEndDate {
         CreateLedgerSharedState.setEndDate(state.endSelectedDate)
       }
