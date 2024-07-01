@@ -35,7 +35,7 @@ final class CreateLedgerSharedState {
     shared.body.startAt = date
   }
 
-  static func setEndAt(_ date: Date) {
+  static func setEndDate(_ date: Date) {
     shared.body.endAt = date
   }
 

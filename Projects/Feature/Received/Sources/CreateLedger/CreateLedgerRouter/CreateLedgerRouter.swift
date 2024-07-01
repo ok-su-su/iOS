@@ -38,6 +38,11 @@ struct CreateLedgerRouter {
 
   func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
+    case .date:
+      dump(CreateLedgerSharedState.getBody())
+      return .run { _ in
+        await dismiss()
+      }
     default:
       return .none
     }

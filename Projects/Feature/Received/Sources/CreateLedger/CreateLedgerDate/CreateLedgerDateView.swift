@@ -138,6 +138,7 @@ struct CreateLedgerDateView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         makeContentView()
+          .padding(.horizontal, 16)
       }
     }
     .navigationBarBackButtonHidden()

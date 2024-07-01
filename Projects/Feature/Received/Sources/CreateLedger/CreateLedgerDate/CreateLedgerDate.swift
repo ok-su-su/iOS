@@ -36,6 +36,7 @@ struct CreateLedgerDate {
     init() {
       let body = CreateLedgerSharedState.getBody()
       titleText = body.title ?? "경조사는"
+      // 장례식일경우 displayType을 바꿉니다.
       displayType = body.categoryId == 3 ? .startAndEndDate : .startDate
 
       _startSelectedDate = .init(.now)
@@ -55,16 +56,13 @@ struct CreateLedgerDate {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedDeleteEndDate
     case tappedChangeDisplayTypeButton
     case tappedStartDatePicker
     case tappedEndDatePicker
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {
-    case checkIsPushable
-  }
+  enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
 
@@ -96,11 +94,8 @@ struct CreateLedgerDate {
       state.datePicker = .init(
         selectedDate: state.$endSelectedDate,
         isInitialStateOfDate: state.$isInitialStateOfEndDate,
-        restrictEndDate: state.isInitialStateOfStartDate ? nil : state.startSelectedDate
+        restrictStartDate: state.isInitialStateOfStartDate ? nil : state.startSelectedDate
       )
-      return .none
-
-    case .tappedDeleteEndDate:
       return .none
 
     case .tappedChangeDisplayTypeButton:
@@ -111,6 +106,11 @@ struct CreateLedgerDate {
       return .none
 
     case .tappedNextButton:
+      CreateLedgerSharedState.setStartDate(state.startSelectedDate)
+      if !state.isInitialStateOfEndDate {
+        CreateLedgerSharedState.setEndDate(state.endSelectedDate)
+      }
+      CreateLedgerRouterPathPublisher.endedScreen(.date(state))
       return .none
     }
   }
@@ -125,47 +125,21 @@ struct CreateLedgerDate {
     }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
-    switch action {
-    case .checkIsPushable:
-      if state.displayType == .startDate && state.isInitialStateOfStartDate == false {
-        state.pushable = true
-        return .none
-      } else if
-
-        state.pushable = false
-      return .none
-    }
-  }
-
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
-    return .none
-  }
-
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in
-    return .none
-  }
-
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
-      case let .inner(currentAction):
-        return innerAction(&state, currentAction)
-      case let .async(currentAction):
-        return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-      case let .delegate(currentAction):
-        return delegateAction(&state, currentAction)
       }
     }
+    .addFeatures()
   }
 }
 
 extension Reducer where Self.State == CreateLedgerDate.State, Self.Action == CreateLedgerDate.Action {
-  func addFeatures() {
+  func addFeatures() -> some Reducer<State, Action> {
     ifLet(\.$datePicker, action: \.scope.datePicker) {
       SSDateSelectBottomSheetReducer()
     }
