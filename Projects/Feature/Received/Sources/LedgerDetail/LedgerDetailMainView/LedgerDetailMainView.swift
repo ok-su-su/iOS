@@ -119,6 +119,7 @@ struct LedgerDetailMainView: View {
         // BottomSection
         VStack(spacing: 0) {
           makeFilterContentView()
+            .padding(.bottom, 16)
 
           makeContentView()
         }
