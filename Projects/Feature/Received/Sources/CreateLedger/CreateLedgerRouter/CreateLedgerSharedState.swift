@@ -42,6 +42,10 @@ final class CreateLedgerSharedState {
   static func getBody() -> CreateAndUpdateLedgerRequest {
     shared.body
   }
+
+  static func resetBody() {
+    shared.body = .init()
+  }
 }
 
 // MARK: - CreateAndUpdateLedgerRequest

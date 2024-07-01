@@ -73,7 +73,7 @@ struct CreateLedgerCategory {
     }
   }
 
-  @Dependency(\.createLedgerCategoryNetwork) var network
+  @Dependency(\.createLedgerNetwork) var network
   enum AsyncAction: Equatable {
     case getCreateLedgerCategoryItem
   }

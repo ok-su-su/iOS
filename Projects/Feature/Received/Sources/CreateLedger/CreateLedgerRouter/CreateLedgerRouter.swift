@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 
 // MARK: - CreateLedgerRouter
 
@@ -23,7 +24,9 @@ struct CreateLedgerRouter {
       .init(type: .depthProgressBar(Double(1) / 3)),
       enableDismissAction: false
     )
-    init() {}
+    init() {
+      CreateLedgerSharedState.resetBody()
+    }
   }
 
   enum Action: Equatable {
@@ -36,11 +39,18 @@ struct CreateLedgerRouter {
     case updateHeader
   }
 
+  @Dependency(\.createLedgerNetwork) var network
   func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
     case .date:
-      dump(CreateLedgerSharedState.getBody())
+      let body = CreateLedgerSharedState.getBody()
       return .run { _ in
+        let data = try JSONEncoder().encode(body)
+        os_log("장부를 생성합니다.")
+        if let currentString = String(data: data, encoding: .utf8) {
+          os_log("[json] \n \(currentString) ")
+        }
+        try await network.createLedgers(data)
         await dismiss()
       }
     default:
