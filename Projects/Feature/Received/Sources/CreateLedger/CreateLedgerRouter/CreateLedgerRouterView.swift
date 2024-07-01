@@ -48,6 +48,8 @@ struct CreateLedgerRouterView: View {
           switch store.case {
           case let .category(store):
             CreateLedgerCategoryView(store: store)
+          case let .name(store):
+            CreateLedgerNameView(store: store)
           }
         }
       }

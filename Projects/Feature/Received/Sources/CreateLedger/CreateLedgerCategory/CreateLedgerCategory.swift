@@ -6,7 +6,6 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
-import Designsystem
 import FeatureAction
 import Foundation
 import SSSelectableItems
@@ -117,6 +116,7 @@ struct CreateLedgerCategory {
     case .tappedNextButton:
       if let selectedCategoryID = state.selectedItemsID.first {
         CreateLedgerSharedState.setCategoryID(selectedCategoryID)
+        CreateLedgerRouterPathPublisher.push(.name(.init()))
       }
       return .none
     }

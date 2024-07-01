@@ -39,15 +39,9 @@ struct CreateLedgerCategoryView: View {
 
   @ViewBuilder
   private func nextButton() -> some View {
-    Button {
+    NextButtonView(isPushable: store.isPushable) {
       store.sendViewAction(.tappedNextButton)
-    } label: {
-      Text("다음")
-        .foregroundStyle(SSColor.gray10)
     }
-    .allowsHitTesting(store.isPushable)
-    .frame(maxWidth: .infinity, maxHeight: 60)
-    .background(store.isPushable ? SSColor.gray100 : SSColor.gray30)
   }
 
   var body: some View {

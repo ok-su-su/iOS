@@ -12,4 +12,5 @@ import Foundation
 @Reducer(state: .equatable, action: .equatable)
 enum CreateLedgerRouterPath {
   case category(CreateLedgerCategory)
+  case name(CreateLedgerName)
 }
