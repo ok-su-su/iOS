@@ -46,11 +46,8 @@ struct CreateLedgerRouter {
 
       return .run { _ in
         let requestData = try CreateLedgerSharedState.getRequestBodyData()
-        os_log("장부를 생성합니다.")
-        if let currentString = String(data: requestData, encoding: .utf8) {
-          os_log("[json] \n \(currentString) ")
-        }
         try await network.createLedgers(requestData)
+        ReceivedMainRefreshPublisher.refresh()
         await dismiss()
       }
     default:

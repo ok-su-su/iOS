@@ -28,7 +28,7 @@ struct CreateLedgerDateView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       HStack(spacing: 4) {
-        Text(store.titleText + "는/은")
+        Text(store.titleText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 

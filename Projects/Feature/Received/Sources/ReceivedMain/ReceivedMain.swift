@@ -108,7 +108,16 @@ struct ReceivedMain {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.getLedgersInitialPage))
+
+      return .merge(
+        .send(.async(.getLedgersInitialPage)),
+        .publisher {
+          ReceivedMainRefreshPublisher
+            .publisher()
+            .receive(on: RunLoop.main)
+            .map { _ in .async(.getLedgersInitialPage) }
+        }
+      )
 
     case .tappedAddLedgerButton:
       state.createLedger = .init()
@@ -151,10 +160,13 @@ struct ReceivedMain {
     case .header(.tappedSearchButton):
       state.search = .init()
       return .none
+
     case .header:
       return .none
+
     case .tabBar:
       return .none
+
     case .search:
       return .none
 
@@ -172,6 +184,7 @@ struct ReceivedMain {
 
     case .detail:
       return .none
+
     case .createLedger:
       return .none
     }
