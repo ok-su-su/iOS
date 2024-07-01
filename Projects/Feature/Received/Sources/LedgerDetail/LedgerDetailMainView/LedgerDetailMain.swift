@@ -55,6 +55,7 @@ struct LedgerDetailMain {
     case tappedFilterButton
     case tappedSortButton
     case isOnAppear(Bool)
+    case tappedFloatingButton
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
@@ -69,6 +70,9 @@ struct LedgerDetailMain {
       }
       state.isOnAppear = val
       return .send(.async(.getLedgerDetailProperty))
+    case .tappedFloatingButton:
+      // add move Create Envelope View
+      return .none
     }
   }
 

@@ -84,7 +84,7 @@ struct LedgerDetailMainView: View {
   }
 
   @ViewBuilder
-  private func makeContentView() -> some View {
+  private func makeEnvelopesView() -> some View {
     ScrollView {
       LazyVStack(spacing: 8) {
         ForEach(store.envelopeItems) { property in
@@ -95,42 +95,52 @@ struct LedgerDetailMainView: View {
     }
   }
 
+  private func makeContentView() -> some View {
+    VStack(spacing: 0) {
+      // Top Section
+      VStack(spacing: 0) {
+        HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .padding(.bottom, 24)
+
+        makeTopContentView()
+          .padding(.horizontal, 16)
+          .padding(.bottom, 8)
+      }
+      .background(SSColor.gray15)
+
+      Spacer()
+        .frame(height: 8)
+
+      // BottomSection
+      VStack(spacing: 0) {
+        makeFilterContentView()
+          .padding(.bottom, 16)
+
+        makeEnvelopesView()
+      }
+      .padding(.horizontal, 16)
+      .padding(.top, 16)
+      .background(SSColor.gray15)
+    }
+  }
+
   var body: some View {
     ZStack(alignment: .top) {
       SSColor
         .gray25
         .ignoresSafeArea()
 
-      VStack(spacing: 0) {
-        // Top Section
-        VStack(spacing: 0) {
-          HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-            .padding(.bottom, 24)
-
-          makeTopContentView()
-            .padding(.horizontal, 16)
-            .padding(.bottom, 8)
-        }
-        .background(SSColor.gray15)
-
-        Spacer()
-          .frame(height: 8)
-
-        // BottomSection
-        VStack(spacing: 0) {
-          makeFilterContentView()
-            .padding(.bottom, 16)
-
-          makeContentView()
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .background(SSColor.gray15)
-      }
+      makeContentView()
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
       .onAppear {
         store.sendViewAction(.isOnAppear(true))
       }
+
+      FloatingButtonView {
+        store.sendViewAction(.tappedFloatingButton)
+      }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 16)
     }
     .navigationBarBackButtonHidden()
   }
