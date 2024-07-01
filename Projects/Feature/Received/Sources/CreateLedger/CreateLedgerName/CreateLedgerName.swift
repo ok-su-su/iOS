@@ -78,7 +78,6 @@ struct CreateLedgerName {
     return .none
   }
 
-
   var body: some Reducer<State, Action> {
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()

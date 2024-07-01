@@ -19,7 +19,13 @@ struct CreateLedgerDate {
     var isOnAppear = false
     var titleText: String
     var displayType: CreateLedgerDateDisplayDateType
-    var pushable = false
+    var pushable: Bool {
+      if displayType == .startDate {
+        return !isInitialStateOfStartDate
+      } else {
+        return !isInitialStateOfEndDate && !isInitialStateOfStartDate
+      }
+    }
 
     @Shared var startSelectedDate: Date
     @Shared var isInitialStateOfStartDate: Bool
@@ -56,7 +62,9 @@ struct CreateLedgerDate {
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case checkIsPushable
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -77,15 +85,29 @@ struct CreateLedgerDate {
       return .none
 
     case .tappedStartDatePicker:
+      state.datePicker = .init(
+        selectedDate: state.$startSelectedDate,
+        isInitialStateOfDate: state.$isInitialStateOfStartDate,
+        restrictEndDate: state.isInitialStateOfEndDate ? nil : state.endSelectedDate
+      )
       return .none
 
     case .tappedEndDatePicker:
+      state.datePicker = .init(
+        selectedDate: state.$endSelectedDate,
+        isInitialStateOfDate: state.$isInitialStateOfEndDate,
+        restrictEndDate: state.isInitialStateOfStartDate ? nil : state.startSelectedDate
+      )
       return .none
 
     case .tappedDeleteEndDate:
       return .none
 
     case .tappedChangeDisplayTypeButton:
+      // toggle the state
+      state.displayType = state.displayType == .startAndEndDate ? .startDate : .startAndEndDate
+      state.isInitialStateOfEndDate = true
+      state.endSelectedDate = .now
       return .none
 
     case .tappedNextButton:
@@ -93,12 +115,27 @@ struct CreateLedgerDate {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, _ in
-    return .none
+  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, action in
+    switch action {
+    case .datePicker(.presented(.didTapConfirmButton)):
+      return .none
+
+    case .datePicker:
+      return .none
+    }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
-    return .none
+  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+    switch action {
+    case .checkIsPushable:
+      if state.displayType == .startDate && state.isInitialStateOfStartDate == false {
+        state.pushable = true
+        return .none
+      } else if
+
+        state.pushable = false
+      return .none
+    }
   }
 
   var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in

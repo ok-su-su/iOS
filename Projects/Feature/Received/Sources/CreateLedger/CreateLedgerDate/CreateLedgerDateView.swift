@@ -38,10 +38,14 @@ struct CreateLedgerDateView: View {
 
         Spacer()
       }
-      .padding(.bottom, 12)
+      .padding(.bottom, 16)
 
       makeDateSectionView()
         .padding(.bottom, 32)
+
+      makeDisplayTypeButton()
+
+      Spacer()
     }
   }
 
