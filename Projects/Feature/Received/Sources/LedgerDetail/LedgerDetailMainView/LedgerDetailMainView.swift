@@ -20,7 +20,7 @@ struct LedgerDetailMainView: View {
   private func makeTopContentView() -> some View {
     VStack(spacing: 16) {
       VStack(alignment: .leading, spacing: 8) {
-        Text(store.accountProperty.priceText)
+        Text("전체 \(store.ledgerProperty.totalAmountText)")
           .modifier(SSTypoModifier(.title_m))
           .foregroundColor(SSColor.gray100)
           .frame(maxWidth: .infinity, alignment: .leading)
@@ -30,18 +30,18 @@ struct LedgerDetailMainView: View {
           .frame(width: 61, height: 24)
           .cornerRadius(4)
           .overlay {
-            Text("총 \(store.accountProperty.accountList.count)개")
+            Text("총 \(store.envelopeItems.count)개")
               .modifier(SSTypoModifier(.title_xxxs))
               .foregroundColor(SSColor.gray70)
           }
       }
 
       VStack(spacing: 4) {
-        makeTopSectionDescriptionView(leadingTitle: "경조사 카테고리", trailingTitle: store.accountProperty.category.type)
+        makeTopSectionDescriptionView(leadingTitle: "경조사 카테고리", trailingTitle: store.ledgerProperty.category)
 
-        makeTopSectionDescriptionView(leadingTitle: "경조사 명", trailingTitle: store.accountProperty.accountTitleText)
+        makeTopSectionDescriptionView(leadingTitle: "경조사 명", trailingTitle: store.ledgerProperty.title)
 
-        makeTopSectionDescriptionView(leadingTitle: "경조사 기간", trailingTitle: store.accountProperty.dateText)
+        makeTopSectionDescriptionView(leadingTitle: "경조사 기간", trailingTitle: store.ledgerProperty.dateText)
       }
     }
     .frame(maxWidth: .infinity)

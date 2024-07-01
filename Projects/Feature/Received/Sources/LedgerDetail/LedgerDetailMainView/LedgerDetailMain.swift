@@ -7,10 +7,10 @@
 //
 
 import Foundation
-
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
+import SSBottomSelectSheet
 
 // MARK: - LedgerDetailMain
 
@@ -18,21 +18,25 @@ import FeatureAction
 struct LedgerDetailMain {
   @ObservableState
   struct State: Equatable {
-    var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
-    var accountProperty: InventoryAccountDetailHelper
+    // Detail Main 의 메인 장부 ID
+    private let ledgerID: Int64
+    var ledgerProperty: LedgerDetailProperty
+
     var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [
       .init(id: 0, name: "다함", relationship: "친구", isVisited: true, amount: 6000),
       .init(id: 1, name: "누구", relationship: "친구", isVisited: false, amount: 6000),
       .init(id: 3, name: "다s함", relationship: "친구", isVisited: true, amount: 6000),
       .init(id: 4, name: "누2구", relationship: "친구", isVisited: false, amount: 6000),
     ]
+    
+    var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
+    @Shared var sortProperty: SortHelperProperty
+    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
 
-    init(accountProperty: InventoryAccountDetailHelper) {
-      self.accountProperty = accountProperty
-    }
-
-    init() {
-      accountProperty = .init(price: "450", category: .Birthday, accountTitle: "이니셜 없이 들어오누", date: .now, accountList: [])
+    init(ledgerID: Int64) {
+      _sortProperty = .init(.init())
+      ledgerProperty = .initial
+      self.ledgerID = ledgerID
     }
   }
 
