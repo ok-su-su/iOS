@@ -68,6 +68,8 @@ struct CreateLedgerName {
         }
       }
     case .tappedNextButton:
+      CreateLedgerSharedState.setTitle(state.textFieldText)
+      CreateLedgerRouterPathPublisher.push(.date(.init()))
       return .none
     }
   }

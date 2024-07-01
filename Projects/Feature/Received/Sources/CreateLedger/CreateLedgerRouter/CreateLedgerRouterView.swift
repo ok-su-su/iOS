@@ -51,6 +51,8 @@ struct CreateLedgerRouterView: View {
             CreateLedgerCategoryView(store: store)
           case let .name(store):
             CreateLedgerNameView(store: store)
+          case let .date(store):
+            CreateLedgerDateView(store: store)
           }
         }
       }
