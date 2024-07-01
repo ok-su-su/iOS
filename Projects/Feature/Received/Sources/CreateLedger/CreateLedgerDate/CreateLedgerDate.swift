@@ -62,7 +62,9 @@ struct CreateLedgerDate {
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case pushNextScreen
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -72,6 +74,10 @@ struct CreateLedgerDate {
   }
 
   enum DelegateAction: Equatable {}
+
+  enum CancelID {
+    case throttleID
+  }
 
   var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
     switch action {
@@ -106,13 +112,9 @@ struct CreateLedgerDate {
       return .none
 
     case .tappedNextButton:
-      CreateLedgerSharedState.setStartDate(state.startSelectedDate)
-      CreateLedgerSharedState.setEndDate(state.startSelectedDate)
-      if !state.isInitialStateOfEndDate {
-        CreateLedgerSharedState.setEndDate(state.endSelectedDate)
-      }
-      CreateLedgerRouterPathPublisher.endedScreen(.date(state))
-      return .none
+
+      return .send(.inner(.pushNextScreen))
+        .throttle(id: CancelID.throttleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
     }
   }
 
@@ -133,6 +135,15 @@ struct CreateLedgerDate {
         return viewAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
+
+      case .inner(.pushNextScreen):
+        CreateLedgerSharedState.setStartDate(state.startSelectedDate)
+        CreateLedgerSharedState.setEndDate(state.startSelectedDate)
+        if !state.isInitialStateOfEndDate {
+          CreateLedgerSharedState.setEndDate(state.endSelectedDate)
+        }
+        CreateLedgerRouterPathPublisher.endedScreen(.date(state))
+        return .none
       }
     }
     .addFeatures()
