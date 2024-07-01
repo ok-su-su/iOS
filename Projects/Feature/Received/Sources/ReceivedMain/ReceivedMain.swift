@@ -34,6 +34,7 @@ struct ReceivedMain {
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
     @Presents var filter: ReceivedFilter.State?
     @Presents var detail: LedgerDetailRouter.State?
+    @Presents var createLedger: CreateLedgerRouter.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
@@ -95,6 +96,7 @@ struct ReceivedMain {
     case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
     case filter(PresentationAction<ReceivedFilter.Action>)
     case detail(PresentationAction<LedgerDetailRouter.Action>)
+    case createLedger(PresentationAction<CreateLedgerRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -106,9 +108,19 @@ struct ReceivedMain {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.getLedgersInitialPage))
+
+      return .merge(
+        .send(.async(.getLedgersInitialPage)),
+        .publisher {
+          ReceivedMainRefreshPublisher
+            .publisher()
+            .receive(on: RunLoop.main)
+            .map { _ in .async(.getLedgersInitialPage) }
+        }
+      )
 
     case .tappedAddLedgerButton:
+      state.createLedger = .init()
       return .none
 
     case .tappedFilteredDateButton:
@@ -128,7 +140,7 @@ struct ReceivedMain {
       return .none
 
     case .tappedFloatingButton:
-      // create ledger 주입
+      state.createLedger = .init()
       return .none
 
     case let .onAppearedLedger(property):
@@ -148,10 +160,13 @@ struct ReceivedMain {
     case .header(.tappedSearchButton):
       state.search = .init()
       return .none
+
     case .header:
       return .none
+
     case .tabBar:
       return .none
+
     case .search:
       return .none
 
@@ -168,6 +183,9 @@ struct ReceivedMain {
       return .none
 
     case .detail:
+      return .none
+
+    case .createLedger:
       return .none
     }
   }
@@ -261,6 +279,13 @@ extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Acti
     }
     .ifLet(\.$detail, action: \.scope.detail) {
       LedgerDetailRouter()
+    }
+    .addFeatures2()
+  }
+
+  private func addFeatures2() -> some ReducerOf<Self> {
+    ifLet(\.$createLedger, action: \.scope.createLedger) {
+      CreateLedgerRouter()
     }
   }
 }

@@ -66,7 +66,9 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
           showDeleteButton: true,
           prompt: Constants.addNewRelationTextFieldPrompt
         )) {
-          store.send(.view(.tappedItem(id: item.id)))
+          if store.customItemSaved {
+            store.send(.view(.tappedItem(id: item.id)))
+          }
         } onTapCloseButton: {
           store.send(.view(.tappedTextFieldCloseButton))
         } onTapSaveButton: {
