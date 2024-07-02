@@ -10,6 +10,8 @@ import Designsystem
 import SwiftUI
 
 struct CreateEnvelopeRouterView: View {
+  @Environment(\.dismiss) var dismiss
+
   // MARK: Reducer
 
   @Bindable
@@ -21,6 +23,9 @@ struct CreateEnvelopeRouterView: View {
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
+        .onChange(of: store.dismiss) { _, _ in
+          dismiss()
+        }
     } destination: { store in
       switch store.case {
       case let .createEnvelopePrice(store):

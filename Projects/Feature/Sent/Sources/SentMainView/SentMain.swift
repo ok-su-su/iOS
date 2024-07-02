@@ -30,6 +30,7 @@ struct SentMain {
     var isOnAppear = false
     var page: Int = 0
     var isEndOfPage: Bool = false
+    var presentCreateEnvelope = false
 
     @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
@@ -69,6 +70,7 @@ struct SentMain {
     case onAppear(Bool)
     case tappedFilteredPersonButton(id: Int64)
     case tappedFilteredAmountButton
+    case presentCreateEnvelope(Bool)
   }
 
   @CasePathable
@@ -123,6 +125,9 @@ struct SentMain {
 
     Reduce { state, action in
       switch action {
+      case let .view(.presentCreateEnvelope(present)):
+        state.presentCreateEnvelope = present
+        return .none
       case .view(.tappedEmptyEnvelopeButton):
         return .send(.inner(.showCreateEnvelopRouter))
 
@@ -142,7 +147,8 @@ struct SentMain {
         return .none
 
       case .inner(.showCreateEnvelopRouter):
-        state.createEnvelopeRouter = CreateEnvelopeRouter.State()
+//        state.createEnvelopeRouter = CreateEnvelopeRouter.State()
+        state.presentCreateEnvelope = true
         return .none
 
       case .delegate(.pushFilter):

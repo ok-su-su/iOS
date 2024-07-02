@@ -14,16 +14,16 @@ import OSLog
 
 @Reducer
 struct CreateEnvelopeRouter {
-  @Dependency(\.dismiss) var dismiss
   @Dependency(\.createEnvelopeNetwork) var network
   @Dependency(\.mainQueue) var queue
 
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var type: CreateType
     var isOnAppear = false
     var path = StackState<PathDestination.State>()
     var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
+    var dismiss = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
     var createPrice: CreateEnvelopePrice.State
@@ -50,6 +50,7 @@ struct CreateEnvelopeRouter {
     case changeProgress
     case createPrice(CreateEnvelopePrice.Action)
     case screenEnded(PathDestination.State)
+    case dismiss(Bool)
   }
 
   private enum CancelID {
@@ -87,9 +88,15 @@ struct CreateEnvelopeRouter {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
     }
+    Scope(state: \.createPrice, action: \.createPrice) {
+      CreateEnvelopePrice()
+    }
 
     Reduce { state, action in
       switch action {
+      case let .dismiss(val):
+        state.dismiss = val
+        return .none
       case let .onAppear(val):
         if state.isOnAppear {
           return .none
@@ -122,6 +129,9 @@ struct CreateEnvelopeRouter {
         )
 
       case .header(.tappedDismissButton):
+        if state.path.isEmpty {
+          return .send(.dismiss(true))
+        }
         _ = state.path.popLast()
         return .send(.changeProgress)
           .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
@@ -152,7 +162,7 @@ struct CreateEnvelopeRouter {
       case .pushCreateEnvelopeAdditional:
         // API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          return .run { _ in
+          return .run { send in
             let friendProperty = CreateFriendRequestShared.getBody()
             let friendID = try await network.getFriendID(friendProperty)
             CreateEnvelopeRequestShared.setFriendID(id: friendID)
@@ -161,7 +171,7 @@ struct CreateEnvelopeRouter {
 
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
-            await dismiss()
+            await send(.dismiss(true))
           }.throttle(id: CancelID.finishEnvelope, for: 4, scheduler: queue, latest: false)
         }
 
