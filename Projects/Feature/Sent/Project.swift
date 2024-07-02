@@ -13,6 +13,7 @@ let project = Project.makeModule(
       .share(.sSLayout),
       .feature(.sSSearch),
       .feature(.sSSelectableItems),
+      .feature(.sSCreateEnvelope),
     ],
     testDependencies: []
   )
