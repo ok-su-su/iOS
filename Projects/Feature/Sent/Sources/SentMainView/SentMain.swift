@@ -30,9 +30,8 @@ struct SentMain {
     var isOnAppear = false
     var page: Int = 0
     var isEndOfPage: Bool = false
-    var presentCreateEnvelope = false
 
-    @Presents var createEnvelopeRouter: CreateEnvelopeRouter.State?
+    var presentCreateEnvelope = false
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
     @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
     @Presents var searchEnvelope: SentSearch.State?
@@ -93,7 +92,6 @@ struct SentMain {
 
     case floatingButton(FloatingButton.Action)
     case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
-    case createEnvelopeRouter(PresentationAction<CreateEnvelopeRouter.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
     case searchEnvelope(PresentationAction<SentSearch.Action>)
 
@@ -147,7 +145,6 @@ struct SentMain {
         return .none
 
       case .inner(.showCreateEnvelopRouter):
-//        state.createEnvelopeRouter = CreateEnvelopeRouter.State()
         state.presentCreateEnvelope = true
         return .none
 
@@ -167,11 +164,6 @@ struct SentMain {
 
       // FilterView에서 confirmButton을 누른다면, Server에 FilterData를 요청합니다.
       case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
-
-      // specificEnvelopeHistoryRouter가 사라지면 서버로부터 요청을 보냅니다.
-      case .scope(.createEnvelopeRouter(.dismiss)),
-           .scope(.specificEnvelopeHistoryRouter(.dismiss)):
         return .send(.async(.updateEnvelopesByFilterInitialPage))
 
       // 만약 envelope Reducer onAppear방출시 맨 마지막 일 경우이면서, endOfPage가 아닐 경우 서버로 요청합니다.
@@ -269,9 +261,6 @@ private extension Reducer where State == SentMain.State, Action == SentMain.Acti
     }
     .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
       SentEnvelopeFilter()
-    }
-    .ifLet(\.$createEnvelopeRouter, action: \.scope.createEnvelopeRouter) {
-      CreateEnvelopeRouter()
     }
   }
 

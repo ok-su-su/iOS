@@ -170,9 +170,6 @@ struct SentMainView: View {
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(currentType: .sent)
     }
-//    .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
-//      CreateEnvelopeRouterView(store: store)
-//    }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

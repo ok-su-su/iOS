@@ -245,18 +245,3 @@ struct SearchEnvelopeResponseRelationshipDTO: Codable, Equatable {
     case description
   }
 }
-
-// MARK: - SortResponseDTO
-
-struct SortResponseDTO: Codable, Equatable {
-  ///
-  let empty: Bool?
-  let sorted: Bool?
-  let unsorted: Bool?
-
-  enum CodingKeys: String, CodingKey {
-    case empty
-    case sorted
-    case unsorted
-  }
-}
