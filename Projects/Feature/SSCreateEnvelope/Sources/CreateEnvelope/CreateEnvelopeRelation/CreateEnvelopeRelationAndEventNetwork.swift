@@ -31,12 +31,12 @@ struct CreateEnvelopeRelationAndEventNetwork: DependencyKey, Equatable {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
-    let dto: CreateEnvelopeGetRelationItemsResponseDTO = try await provider.request(.getItems)
+    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
     return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
   }
 
   func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
-    let dto: CreateEnvelopeGetRelationItemsResponseDTO = try await provider.request(.getItems)
+    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
     return dto.categories.map { .init(id: $0.id, title: $0.name) }
   }
 }
@@ -51,35 +51,5 @@ extension CreateEnvelopeRelationAndEventNetwork {
     var path: String { "envelopes/configs/create-envelopes" }
     var method: Moya.Method { .get }
     var task: Moya.Task { .requestPlain }
-  }
-}
-
-// MARK: - CreateEnvelopeGetRelationItemsResponseDTO
-
-struct CreateEnvelopeGetRelationItemsResponseDTO: Codable, Equatable {
-  let categories: [CreateEnvelopeEventTypesResponseDTO]
-  let relationships: [SearchEnvelopeResponseRelationshipDTO]
-
-  enum CodingKeys: String, CodingKey {
-    case categories
-    case relationships
-  }
-}
-
-// MARK: - CreateEnvelopeEventTypesResponseDTO
-
-struct CreateEnvelopeEventTypesResponseDTO: Codable, Equatable {
-  let id: Int
-  let seq: Int
-  let name: String
-  let style: String
-  let isMiscCategory: Bool
-
-  enum CodingKeys: String, CodingKey {
-    case id
-    case seq
-    case name
-    case style
-    case isMiscCategory
   }
 }

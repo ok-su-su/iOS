@@ -20,7 +20,7 @@ struct CreateEnvelopeRouterView: View {
   @ViewBuilder
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-      EmptyView()
+      CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
     } destination: { store in
       switch store.case {
       case let .createEnvelopePrice(store):

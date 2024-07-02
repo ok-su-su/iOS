@@ -20,7 +20,7 @@ struct CreateEnvelopeNetwork: Equatable {
 
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   func findIDIfExistPrev(name: String, relationID: Int) async throws -> Int64? {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.findFriend(name))
+    let data: PageResponseDtoSearchFriendResponse = try await provider.request(.findFriend(name))
     // 검색후에 relationID가 똑같은 경우가 있다면 ID를 리턴합니다.
     return data.data.filter { $0.relationship.id == relationID }.first?.friend.id
   }

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - CreateEnvelopeEventProperty
 
-struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable, SingleSelectButtonItemable {
+struct CreateEnvelopeEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
   var id: Int
   var title: String
 

@@ -17,7 +17,7 @@ struct CreateEnvelopeAdditionalContact {
     var isOnAppear = false
     @Shared var contactHelper: CreateEnvelopeAdditionalContactHelper
     var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     init(contactHelper: Shared<CreateEnvelopeAdditionalContactHelper>) {
       _contactHelper = contactHelper

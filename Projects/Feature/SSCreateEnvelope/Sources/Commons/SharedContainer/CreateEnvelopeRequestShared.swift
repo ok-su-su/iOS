@@ -66,8 +66,12 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func reset() {
-    setBody(.init(type: "SENT"))
+  static func reset(type: CreateType? = nil) {
+    guard let type else {
+      SharedContainer.deleteValue(CreateEnvelopeRequestBody.self)
+      return
+    }
+    setBody(.init(type: type.key))
   }
 
   static func resetAdditional() {
@@ -83,7 +87,11 @@ enum CreateEnvelopeRequestShared {
   }
 
   static func getBody() -> CreateEnvelopeRequestBody {
-    SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "SENT")
+    guard let cur = SharedContainer.getValue(CreateEnvelopeRequestBody.self) else {
+      os_log(.error, "CreateEnvelope Type이 지정되어지지 않았습니다. 심각한 에러입니다.")
+      return .init(type: "SENT")
+    }
+    return cur
   }
 
   private static func setBody(_ val: CreateEnvelopeRequestBody) {

@@ -20,13 +20,18 @@ struct CreateEnvelopeRouter {
 
   @ObservableState
   struct State {
+    var type: CreateType
     var isOnAppear = false
     var path = StackState<PathDestination.State>()
     var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
-    init() {
+    var createPrice: CreateEnvelopePrice.State
+
+    init(type: CreateType) {
+      self.type = type
       _createEnvelopeProperty = Shared(.init())
+      createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
     }
   }
 
@@ -39,6 +44,8 @@ struct CreateEnvelopeRouter {
     case pushCreateEnvelopeAdditional
     case dismissScreen
     case changeProgress
+    case createPrice(CreateEnvelopePrice.Action)
+    case screenEnded(PathDestination.State)
   }
 
   private enum CancelID {
@@ -51,6 +58,16 @@ struct CreateEnvelopeRouter {
 
   init() {
     // TODO...
+  }
+
+  func endedScreenHandler(_ state: PathDestination.State) -> Effect<Action> {
+    switch state {
+    // SENT or RECEIVED에 따라서 접근하는 화면 분기가 달라야 함.
+    case .createEnvelopeRelation:
+      return .none
+    default:
+      return .none
+    }
   }
 
   var body: some Reducer<State, Action> {
@@ -74,12 +91,20 @@ struct CreateEnvelopeRouter {
               .receive(on: RunLoop.main)
               .map { val in .push(val) }
           },
+
           .publisher {
             CreateAdditionalRouterPublisher
               .shared
               .publisher()
               .receive(on: RunLoop.main)
               .map { val in .pushAdditionalScreen(val) }
+          },
+          .publisher {
+            CreateEnvelopeRouterPublisher
+              .shared
+              .publisher()
+              .receive(on: RunLoop.main)
+              .map { val in .screenEnded(val) }
           }
         )
 
@@ -161,6 +186,10 @@ struct CreateEnvelopeRouter {
       case .changeProgress:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
+      case .createPrice:
+        return .none
+      case let .screenEnded(currentState):
+        return endedScreenHandler(currentState)
       }
     }
     .addFeatures()

@@ -7,7 +7,7 @@
 //
 
 import Designsystem
-import Sent
+import SSCreateEnvelope
 import SSPersistancy
 import SwiftUI
 
@@ -20,7 +20,7 @@ struct SSCreateEnvelopeScreenPreview: App {
 
   var body: some Scene {
     WindowGroup {
-      EmptyView()
+      CreateEnvelopeRouterBuilder(currentType: .received)
     }
   }
 }

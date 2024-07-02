@@ -11,6 +11,7 @@ import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
+import SSSearch
 
 extension DependencyValues {
   var createEnvelopeNameNetwork: CreateEnvelopeNameNetwork {
@@ -53,7 +54,7 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func searchInitialEnvelope() async throws -> [PrevEnvelope] {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: nil))
+    let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: nil))
     return data.data.compactMap { dto -> PrevEnvelope? in
       guard let recentEnvelope = dto.recentEnvelope,
             let targetDate = CustomDateFormatter.getDate(from: recentEnvelope.handedOverAt)
@@ -70,7 +71,7 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   }
 
   func searchPrevName(_ val: String) async throws -> [PrevEnvelope] {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: val))
+    let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: val))
     return data.data.compactMap { dto -> PrevEnvelope? in
       guard let recentEnvelope = dto.recentEnvelope,
             let targetDate = CustomDateFormatter.getDate(from: recentEnvelope.handedOverAt)
@@ -87,7 +88,7 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   }
 
   func searchFriendBy(name: String) async throws -> [SentSearchItem] {
-    let data: SearchFriendsByNameResponseDTO = try await provider.request(.searchFriend(name: name))
+    let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: name))
     return data.data.compactMap { dto -> SentSearchItem? in
       guard let recentEnvelope = dto.recentEnvelope,
             let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
@@ -104,48 +105,15 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   }
 }
 
-// MARK: - SearchFriendsByNameResponseDTO
+// MARK: - SentSearchItem
 
-struct SearchFriendsByNameResponseDTO: Codable, Equatable {
-  let data: [SearchFriendsByNameDataResponseDTO]
-  let page: Int?
-  let size: Int?
-  let totalPage: Int
-  let totalCount: Int
-  let sort: SortResponseDTO
-
-  enum CodingKeys: String, CodingKey {
-    case data
-    case page
-    case size
-    case totalPage
-    case totalCount
-    case sort
-  }
-}
-
-// MARK: - SearchFriendsByNameDataResponseDTO
-
-struct SearchFriendsByNameDataResponseDTO: Codable, Equatable {
-  var friend: SearchFriendsFriendResponseDTO
-  var relationship: SearchEnvelopeResponseRelationshipDTO
-  var recentEnvelope: SearchFriendsRecentEnvelopeResponseDTO?
-
-  enum CodingKeys: String, CodingKey {
-    case friend
-    case relationship
-    case recentEnvelope
-  }
-}
-
-// MARK: - SearchFriendsRecentEnvelopeResponseDTO
-
-struct SearchFriendsRecentEnvelopeResponseDTO: Codable, Equatable {
-  let category: String
-  let handedOverAt: String
-
-  enum CodingKeys: String, CodingKey {
-    case category
-    case handedOverAt
-  }
+struct SentSearchItem: SSSearchItemable, Hashable, Codable {
+  /// 친구의 아이디 입니다.
+  var id: Int64
+  /// 친구의 이름 입니다.
+  var title: String
+  /// 경조사 이름 입니다.
+  var firstContentDescription: String?
+  /// 날짜 이름 입니다.
+  var secondContentDescription: String?
 }

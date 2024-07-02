@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSSelectableItems
 
 // MARK: - CreateEnvelopeRelationItemPropertyHelper
 
@@ -42,7 +43,7 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
 // MARK: - CreateEnvelopeRelationItemProperty
 
-struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable, SingleSelectButtonItemable {
+struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
   var id: Int
   var title: String
 
