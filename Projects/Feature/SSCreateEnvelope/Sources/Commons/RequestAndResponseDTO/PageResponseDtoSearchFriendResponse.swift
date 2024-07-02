@@ -45,7 +45,8 @@ struct SearchFriendResponse: Codable {
 
 struct FriendModel: Codable {
   let id: Int64
-  let name, phoneNumber: String
+  let name: String
+  let phoneNumber: String?
   enum CodingKeys: CodingKey {
     case id
     case name

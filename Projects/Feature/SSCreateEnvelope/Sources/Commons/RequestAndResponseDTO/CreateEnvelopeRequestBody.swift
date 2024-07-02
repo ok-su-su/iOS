@@ -29,7 +29,7 @@ struct CreateEnvelopeRequestBody: Codable, Equatable {
   /// 건넨 날짜를 입력받습니다.
   var handedOverAt: String? = nil
   /// 경조사에 대해서 나타냅니다.
-  var category: CategoryRequestBody = .init()
+  var category: CategoryRequestBody?
 
   enum CodingKeys: String, CodingKey {
     case type

@@ -47,7 +47,6 @@ struct CreateEnvelopeRouter {
     case push(PathDestination.State)
     case pushAdditionalScreen(AdditionalScreen)
     case pushCreateEnvelopeAdditional
-    case dismissScreen
     case changeProgress
     case createPrice(CreateEnvelopePrice.Action)
     case screenEnded(PathDestination.State)
@@ -74,7 +73,7 @@ struct CreateEnvelopeRouter {
         // SentItem
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
         return .none
-      case let .received:
+      case .received:
         // CustomItem
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
         return .none
@@ -96,7 +95,6 @@ struct CreateEnvelopeRouter {
           return .none
         }
         state.isOnAppear = val
-        state.path.append(.createEnvelopePrice(.init(createEnvelopeProperty: state.$createEnvelopeProperty)))
         return .merge(
           .publisher {
             CreateEnvelopeRouterPublisher
@@ -113,28 +111,23 @@ struct CreateEnvelopeRouter {
               .receive(on: RunLoop.main)
               .map { val in .pushAdditionalScreen(val) }
           },
+
           .publisher {
             CreateEnvelopeRouterPublisher
               .shared
-              .publisher()
+              .endedPublisher()
               .receive(on: RunLoop.main)
               .map { val in .screenEnded(val) }
           }
         )
 
       case .header(.tappedDismissButton):
-        if state.path.count == 1 {
-          return .run { _ in await dismiss() }
-        }
-        return .send(.dismissScreen)
+        _ = state.path.popLast()
+        return .send(.changeProgress)
           .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
 
       case .header:
         return .none
-
-      case .dismissScreen:
-        _ = state.path.popLast()
-        return .send(.changeProgress)
 
       case let .pushAdditionalScreen(screenType):
         switch screenType {
@@ -200,6 +193,7 @@ struct CreateEnvelopeRouter {
       case .changeProgress:
         state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
         return .none
+
       case .createPrice:
         return .none
       case let .screenEnded(currentState):

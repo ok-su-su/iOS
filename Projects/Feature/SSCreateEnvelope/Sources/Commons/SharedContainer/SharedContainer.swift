@@ -25,9 +25,17 @@ final class SharedContainer {
     shared.cache.removeValue(forKey: String(describing: T.self))
   }
 
+  static func setValue(key: String, _ value: Any) {
+    shared.cache[key] = value
+  }
+
   /// Get value from memory cache
   /// - Parameter value: class Type Object
   static func getValue<T>(_: T.Type) -> T? {
     shared.cache[String(describing: T.self)] as? T
+  }
+
+  static func getValue<T>(key: String) -> T? {
+    shared.cache[key] as? T
   }
 }

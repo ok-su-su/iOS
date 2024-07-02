@@ -44,6 +44,8 @@ struct CreateEnvelopeNetwork: Equatable {
   }
 
   func createEnvelope(_ bodyProperty: CreateEnvelopeRequestBody) async throws {
+    dump(bodyProperty)
+    print(String(data: bodyProperty.getData(), encoding: .utf8))
     try await provider.request(.createEnvelope(bodyProperty))
     os_log("봉투 생성에 성공하였습니다. \(#function)")
   }
