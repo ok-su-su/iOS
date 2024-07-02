@@ -6,10 +6,10 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import SwiftUI
-
 import ComposableArchitecture
 import Designsystem
+import SSCreateEnvelope
+import SwiftUI
 
 // MARK: - LedgerDetailMainView
 
@@ -125,7 +125,7 @@ struct LedgerDetailMainView: View {
   }
 
   var body: some View {
-    ZStack(alignment: .top) {
+    ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray25
         .ignoresSafeArea()
@@ -141,6 +141,9 @@ struct LedgerDetailMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 16)
+    }
+    .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.scope.presentCreateEnvelope)) {
+      CreateEnvelopeRouterBuilder(currentType: .received(ledgerId: store.ledgerID))
     }
     .navigationBarBackButtonHidden()
   }

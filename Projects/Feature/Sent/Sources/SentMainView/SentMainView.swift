@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
+import SSCreateEnvelope
 import SwiftUI
 
 // MARK: - SentMainView
@@ -166,8 +167,8 @@ struct SentMainView: View {
     }
     .navigationBarBackButtonHidden()
     .safeAreaInset(edge: .bottom) { makeTabBar() }
-    .fullScreenCover(item: $store.scope(state: \.createEnvelopeRouter, action: \.scope.createEnvelopeRouter)) { store in
-      CreateEnvelopeRouterView(store: store)
+    .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
+      CreateEnvelopeRouterBuilder(currentType: .sent)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))

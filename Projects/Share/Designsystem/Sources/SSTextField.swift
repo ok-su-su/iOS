@@ -140,7 +140,7 @@ public struct SSTextFieldModifier: ViewModifier {
     content
       .background(.clear)
       .foregroundColor(.gray100)
-      .modifier(SSTextModifier(.title_xl, isBold: true))
+      .modifier(SSTypoModifier(.title_xl))
   }
 }
 
@@ -170,7 +170,7 @@ public struct UnderLineModifier: ViewModifier {
             .onTapGesture { textFieldText = "" }
           Text("\(textFieldText.count)/10")
             .foregroundStyle(isShow ? .gray30 : .red60)
-            .modifier(SSTextModifier(.title_m, isBold: true))
+            .modifier(SSTypoModifier(.title_m))
             .padding(.trailing, 8)
         }
       }.background {

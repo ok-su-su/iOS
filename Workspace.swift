@@ -12,5 +12,6 @@ let workspace = Workspace(
     "Projects/Feature/SSLaunchScreenPreview",
     "Projects/Feature/SentPreview",
     "Projects/Feature/MyPagePreview",
+    "Projects/Feature/SSCreateEnvelopePreview",
   ]
 )
