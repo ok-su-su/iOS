@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSBottomSelectSheet
+import SSCreateEnvelope
 
 // MARK: - LedgerDetailMain
 
@@ -23,6 +24,7 @@ struct LedgerDetailMain {
     var ledgerProperty: LedgerDetailProperty
     var isLoading = true
     var isOnAppear = false
+    var presentCreateEnvelope = false
 
     var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [
       .init(id: 0, name: "다함", relationship: "친구", isVisited: true, amount: 6000),
@@ -71,7 +73,7 @@ struct LedgerDetailMain {
       state.isOnAppear = val
       return .send(.async(.getLedgerDetailProperty))
     case .tappedFloatingButton:
-      // add move Create Envelope View
+      state.presentCreateEnvelope = true
       return .none
     }
   }
@@ -119,11 +121,15 @@ struct LedgerDetailMain {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case presentCreateEnvelope(Bool)
   }
 
-  func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .header:
+      return .none
+    case let .presentCreateEnvelope(present):
+      state.presentCreateEnvelope = present
       return .none
     }
   }
