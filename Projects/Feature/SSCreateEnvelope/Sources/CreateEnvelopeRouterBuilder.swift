@@ -25,9 +25,9 @@ public struct CreateEnvelopeRouterBuilder: View {
 
 // MARK: - CreateType
 
-public enum CreateType {
+public enum CreateType: Equatable {
   case sent
-  case received
+  case received(ledgerId: Int64)
 
   var key: String {
     switch self {

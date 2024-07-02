@@ -91,8 +91,8 @@ struct CreateEnvelopeRelation {
         if let customRelationName = state.createEnvelopeProperty.relationHelper.getSelectedCustomItemName() {
           CreateFriendRequestShared.setCustomRelation(name: customRelationName)
         }
-
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
+        // 화면전환을 Router객체로 전환
+        CreateEnvelopeRouterPublisher.shared.ended(.createEnvelopeRelation(state))
         return .none
 
       case .scope(.nextButton(.view(.tappedNextButton))):

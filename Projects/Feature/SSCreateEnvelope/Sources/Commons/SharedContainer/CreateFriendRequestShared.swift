@@ -41,10 +41,6 @@ enum CreateFriendRequestShared {
     setBody(.init())
   }
 
-  static func printBody() {
-    print(getBody())
-  }
-
   static func getBody() -> CreateFriendRequestBody {
     return SharedContainer.getValue(CreateFriendRequestBody.self) ?? .init()
   }

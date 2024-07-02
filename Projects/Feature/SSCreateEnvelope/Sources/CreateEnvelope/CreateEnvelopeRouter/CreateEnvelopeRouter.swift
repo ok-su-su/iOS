@@ -32,6 +32,11 @@ struct CreateEnvelopeRouter {
       self.type = type
       _createEnvelopeProperty = Shared(.init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
+
+      CreateEnvelopeRequestShared.reset(type: type)
+      if case let CreateType.received(ledgerId: ledgerId) = type {
+        CreateEnvelopeRequestShared.setLedger(id: ledgerId)
+      }
     }
   }
 
@@ -60,11 +65,20 @@ struct CreateEnvelopeRouter {
     // TODO...
   }
 
-  func endedScreenHandler(_ state: PathDestination.State) -> Effect<Action> {
-    switch state {
+  func endedScreenHandler(_ pathState: PathDestination.State, state: State) -> Effect<Action> {
+    switch pathState {
     // SENT or RECEIVED에 따라서 접근하는 화면 분기가 달라야 함.
     case .createEnvelopeRelation:
-      return .none
+      switch state.type {
+      case .sent:
+        // SentItem
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
+        return .none
+      case let .received(ledgerId):
+        // CustomItem
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
+        return .none
+      }
     default:
       return .none
     }
@@ -189,7 +203,7 @@ struct CreateEnvelopeRouter {
       case .createPrice:
         return .none
       case let .screenEnded(currentState):
-        return endedScreenHandler(currentState)
+        return endedScreenHandler(currentState, state: state)
       }
     }
     .addFeatures()
