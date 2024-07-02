@@ -86,9 +86,9 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
     }
   }
 
-  func searchFriendBy(name: String) async throws -> [searchItem] {
+  func searchFriendBy(name: String) async throws -> [SearchItem] {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: name))
-    return data.data.compactMap { dto -> searchItem? in
+    return data.data.compactMap { dto -> SearchItem? in
       guard let recentEnvelope = dto.recentEnvelope,
             let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
       else {
@@ -104,9 +104,9 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   }
 }
 
-// MARK: - searchItem
+// MARK: - SearchItem
 
-struct searchItem: Hashable, Codable {
+struct SearchItem: Hashable, Codable {
   /// 친구의 아이디 입니다.
   var id: Int64
   /// 친구의 이름 입니다.
