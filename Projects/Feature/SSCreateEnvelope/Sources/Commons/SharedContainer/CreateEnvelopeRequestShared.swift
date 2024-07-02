@@ -82,7 +82,7 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func setLedger(id: Int64){
+  static func setLedger(id: Int64) {
     var body = getBody()
     body.ledgerID = id
     setBody(body)

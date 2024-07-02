@@ -11,7 +11,6 @@ import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
-import SSSearch
 
 extension DependencyValues {
   var createEnvelopeNameNetwork: CreateEnvelopeNameNetwork {
@@ -107,7 +106,7 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
 
 // MARK: - SentSearchItem
 
-struct SentSearchItem: SSSearchItemable, Hashable, Codable {
+struct SentSearchItem: Hashable, Codable {
   /// 친구의 아이디 입니다.
   var id: Int64
   /// 친구의 이름 입니다.

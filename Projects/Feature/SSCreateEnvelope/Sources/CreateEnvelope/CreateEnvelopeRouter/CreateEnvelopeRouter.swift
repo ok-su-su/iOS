@@ -74,7 +74,7 @@ struct CreateEnvelopeRouter {
         // SentItem
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
         return .none
-      case let .received(ledgerId):
+      case let .received:
         // CustomItem
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
         return .none
