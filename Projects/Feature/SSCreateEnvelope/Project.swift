@@ -7,7 +7,12 @@ let project = Project.makeModule(
   targets: .feature(
     .sSCreateEnvelope,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .core(.coreLayers),
+      .share(.shareLayer),
+      .share(.sSLayout),
+      .feature(.sSSelectableItems),
+    ],
     testDependencies: []
   )
 )
