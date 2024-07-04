@@ -114,15 +114,11 @@ public struct SSTokenInterceptor: RequestInterceptor {
 }
 
 public extension SSTokenInterceptor {
-  func refreshTokenWithNetwork() async {
-    do {
-      let body: Data = try helper.getTokenData()
-      let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
-      let response: SSToken = try await refreshProvider.request(.init(bodyData: body))
-      try SSTokenManager.shared.saveToken(response)
-    } catch {
-      os_log("토큰 갱신에 실패했습니다.\n\(error)")
-    }
+  func refreshTokenWithNetwork() async throws {
+    let body: Data = try helper.getTokenData()
+    let refreshProvider = MoyaProvider<RefreshTokenTargetType>()
+    let response: SSToken = try await refreshProvider.request(.init(bodyData: body))
+    try SSTokenManager.shared.saveToken(response)
   }
 
   func healthCheck() async {

@@ -23,11 +23,20 @@ struct LaunchScreenHelper {
 
     // refreshToken이 만료되었는지 검사합니다.
     if SSTokenManager.shared.isRefreshTokenExpired() {
-      SSTokenManager.shared.removeToken()
-      return .newUser
+      return newUserRoutine()
     }
 
-    await SSTokenInterceptor.shared.refreshTokenWithNetwork()
+    do {
+      try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
+      return .prevUser
+    }catch {
+      os_log("\(error.localizedDescription)")
+      return newUserRoutine()
+    }
+  }
+
+  private func newUserRoutine() -> EndedLaunchScreenStatus {
+    SSTokenManager.shared.removeToken()
     return .prevUser
   }
 }

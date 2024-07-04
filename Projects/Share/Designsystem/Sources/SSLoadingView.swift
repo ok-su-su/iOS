@@ -56,15 +56,21 @@ public struct SSLoadingModifierWithOverlay: ViewModifier {
 
   public func body(content: Content) -> some View {
     content
+      .allowsHitTesting(!isLoading)
       .overlay {
         if isLoading {
           let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
-          LottieView(animation: .filepath(filePath))
-            .looping()
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 72, height: 72)
-            .clipped()
+          ZStack {
+            Color
+              .gray100
+              .opacity(0.3)
+            LottieView(animation: .filepath(filePath))
+              .looping()
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+              .frame(width: 72, height: 72)
+              .clipped()
+          }
         }
       }
   }

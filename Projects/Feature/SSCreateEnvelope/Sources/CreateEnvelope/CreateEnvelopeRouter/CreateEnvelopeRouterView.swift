@@ -29,9 +29,6 @@ struct CreateEnvelopeRouterView: View {
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
-        .onChange(of: store.dismiss) { _, _ in
-          dismiss()
-        }
     } destination: { store in
       switch store.case {
       case let .createEnvelopePrice(store):
@@ -56,7 +53,6 @@ struct CreateEnvelopeRouterView: View {
         CreateEnvelopeAdditionalIsVisitedEventView(store: store)
       }
     }
-    .modifier(SSLoadingModifierWithOverlay(isLoading: store.isLoading))
     .onDisappear {
       completion(store.currentCreateEnvelopeData)
     }
@@ -71,8 +67,14 @@ struct CreateEnvelopeRouterView: View {
         HeaderView(store: store.scope(state: \.header, action: \.header))
         makeNavigationView()
       }
+      .modifier(SSLoadingModifierWithOverlay(isLoading: store.isLoading))
       .onAppear {
         store.send(.onAppear(true))
+      }
+      .onChange(of: store.dismiss) { _, newValue in
+        if newValue {
+          dismiss()
+        }
       }
     }
   }

@@ -102,6 +102,7 @@ struct CreateEnvelopeRouter {
       case let .dismiss(val):
         state.dismiss = val
         return .none
+
       case let .onAppear(val):
         if state.isOnAppear {
           return .none
@@ -175,13 +176,12 @@ struct CreateEnvelopeRouter {
             let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
             let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
             await send(.updateDismissData(envelopeData))
-
             await send(.isLoading(false))
+
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
-
             await send(.dismiss(true))
-          }.throttle(id: CancelID.finishEnvelope, for: 4, scheduler: queue, latest: false)
+          }
         }
 
         switch currentSection {
