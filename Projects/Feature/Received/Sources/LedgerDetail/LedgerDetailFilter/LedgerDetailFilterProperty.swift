@@ -17,6 +17,17 @@ struct LedgerDetailFilterProperty: Equatable {
   var highestAmount: Int64? = nil
   var lowestAmount: Int64? = nil
 
+  var amountFilterBadgeText: String? {
+    guard let highestAmount,
+          let lowestAmount,
+          let lowVal = CustomNumberFormatter.formattedByThreeZero(lowestAmount, subFixString: nil),
+          let highVal = CustomNumberFormatter.formattedByThreeZero(highestAmount, subFixString: nil)
+    else {
+      return nil
+    }
+    return "\(lowVal)~\(highVal)"
+  }
+
   func isSelectedItems(id: Int64) -> Bool {
     return selectedItems.first(where: { $0.id == id }) != nil
   }
@@ -43,6 +54,11 @@ struct LedgerDetailFilterProperty: Equatable {
 
   mutating func reset() {
     selectedItems = []
+    highestAmount = nil
+    lowestAmount = nil
+  }
+
+  mutating func resetAmountFilter() {
     highestAmount = nil
     lowestAmount = nil
   }

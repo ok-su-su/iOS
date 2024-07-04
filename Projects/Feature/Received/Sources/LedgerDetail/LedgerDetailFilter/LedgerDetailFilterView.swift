@@ -21,7 +21,7 @@ struct LedgerDetailFilterView: View {
   var showSelectedSliderButton: Bool = false
 
   @ObservedObject
-  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
+  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 32)
 
   // MARK: Init
 
@@ -33,7 +33,7 @@ struct LedgerDetailFilterView: View {
 
   @ViewBuilder
   private func makeTopSection() -> some View {
-    VStack(spacing: 16) {
+    VStack(alignment: .leading, spacing: 16) {
       Text(Constants.topSectionTitle)
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(SSColor.gray100)
@@ -54,7 +54,7 @@ struct LedgerDetailFilterView: View {
       Spacer()
         .frame(width: 8)
 
-      TextField("", text: $store.textFieldText.sending(\.view.changeTextField), prompt: Constants.prompt)
+      TextField("", text: $store.textFieldText.sending(\.view.changeTextField), prompt: Constants.prompt.foregroundStyle(SSColor.gray60))
         .modifier(SSTypoModifier(.text_xxs))
         .frame(maxWidth: .infinity)
         .foregroundStyle(SSColor.gray100)
@@ -70,13 +70,15 @@ struct LedgerDetailFilterView: View {
           }
       }
     }
+    .padding(.horizontal, 12)
+    .padding(.vertical, 6)
     .frame(maxWidth: .infinity, maxHeight: 44)
+    .background(SSColor.gray20)
     .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
   @ViewBuilder
   private func makeTopButtonSection() -> some View {
-    let selectableItems = store.property.selectableItems
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
       ForEach(store.property.selectedItems) { item in
         let isSelected = store.property.isSelectedItems(id: item.id)
@@ -133,8 +135,7 @@ struct LedgerDetailFilterView: View {
         }
       }
     }
-    .frame(maxWidth: .infinity)
-    .padding(.horizontal, 16)
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   @ViewBuilder
@@ -176,6 +177,7 @@ struct LedgerDetailFilterView: View {
       makeResetButton()
       makeConfirmButton()
     }
+    .padding(.horizontal, 16)
     .padding(.vertical, 8)
   }
 
@@ -199,6 +201,7 @@ struct LedgerDetailFilterView: View {
           store.sendViewAction(.tappedItem(item))
         }
       }
+      .padding(.horizontal, 16)
       .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
@@ -232,6 +235,7 @@ struct LedgerDetailFilterView: View {
         .frame(height: 48)
 
       makeProgressView()
+        .padding(.horizontal, 16)
 
       Spacer()
 
@@ -243,7 +247,7 @@ struct LedgerDetailFilterView: View {
   var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))

@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSAlert
+import SSBottomSelectSheet
 import SSCreateEnvelope
 import SwiftUI
 
@@ -72,19 +73,6 @@ struct LedgerDetailMainView: View {
   }
 
   @ViewBuilder
-  private func makeFilterContentView() -> some View {
-    HStack(spacing: 8) {
-      SSButton(Constants.filterButtonProperty) {
-        store.send(.view(.tappedFilterButton))
-      }
-      SSButton(Constants.sortButtonProperty) {
-        store.send(.view(.tappedSortButton))
-      }
-    }
-    .frame(maxWidth: .infinity, alignment: .topLeading)
-  }
-
-  @ViewBuilder
   private func makeEnvelopesView() -> some View {
     ScrollView {
       LazyVStack(spacing: 8) {
@@ -134,7 +122,7 @@ struct LedgerDetailMainView: View {
           }
 
           // amount Range Button
-          if let amountRangeBadgeText = store.filterProperty.selectedFilterDateTextString {
+          if let amountRangeBadgeText = store.filterProperty.amountFilterBadgeText {
             SSButton(
               .init(
                 size: .sh32,
@@ -145,12 +133,12 @@ struct LedgerDetailMainView: View {
                 buttonText: amountRangeBadgeText
               )
             ) {
-              store.sendViewAction(.tappedFilteredDateButton)
+              store.sendViewAction(.tappedFilteredAmountButton)
             }
           }
 
           // 사람 버튼에 대한 표시
-          let filtered = store.filterProperty.selectedLedgers
+          let filtered = store.filterProperty.selectedItems
           ForEach(filtered) { property in
             SSButton(
               .init(
@@ -169,8 +157,6 @@ struct LedgerDetailMainView: View {
       }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
-    .padding(.bottom, 16)
-    .padding(.horizontal, 16)
   }
 
   private func makeContentView() -> some View {
@@ -191,7 +177,7 @@ struct LedgerDetailMainView: View {
 
       // BottomSection
       VStack(spacing: 0) {
-        makeFilterContentView()
+        makeFilterSection()
           .padding(.bottom, 16)
 
         makeEnvelopesView()
@@ -237,6 +223,10 @@ struct LedgerDetailMainView: View {
         store.sendViewAction(.dismissCreateEnvelope(data))
       }
     }
+    .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
+      LedgerDetailFilterView(store: store)
+    }
+    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
     .navigationBarBackButtonHidden()
   }
 

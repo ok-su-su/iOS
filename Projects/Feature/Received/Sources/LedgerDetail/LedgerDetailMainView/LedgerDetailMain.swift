@@ -42,7 +42,8 @@ struct LedgerDetailMain {
     @Presents var filter: LedgerDetailFilter.State?
 
     var isFilteredItem: Bool {
-      return false
+      !filterProperty.selectedItems.isEmpty ||
+      !(filterProperty.amountFilterBadgeText == nil)
     }
 
     init(ledgerID: Int64) {
@@ -71,17 +72,24 @@ struct LedgerDetailMain {
     case dismissCreateEnvelope(Data)
     case showAlert(Bool)
     case tappedDeleteLedgerButton
-    case tappedFilteredDateButton
-    case tappedFilteredPersonButton(id: Int)
+    case tappedFilteredAmountButton
+    case tappedFilteredPersonButton(id: Int64)
   }
 
   @Dependency(\.dismiss) var dismiss
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .tappedFilterButton:
+      state.filter = .init(state.$filterProperty)
       return .none
+
     case .tappedSortButton:
+      state.sort = .init(
+        items: state.sortProperty.defaultItems,
+        selectedItem: state.$sortProperty.selectedFilterDial
+      )
       return .none
+
     case let .isOnAppear(val):
       if state.isOnAppear {
         return .none
@@ -124,11 +132,12 @@ struct LedgerDetailMain {
         await dismiss()
       }
 
-    case .tappedFilteredDateButton:
-      state.filter = .init(state.$filterProperty)
+    case .tappedFilteredAmountButton:
+      state.filterProperty.resetAmountFilter()
       return .none
 
     case let .tappedFilteredPersonButton(id: id):
+      state.filterProperty.select(id)
       return .none
     }
   }
@@ -208,6 +217,7 @@ struct LedgerDetailMain {
     case header(HeaderViewFeature.Action)
     case presentCreateEnvelope(Bool)
     case filter(PresentationAction<LedgerDetailFilter.Action>)
+    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
@@ -228,6 +238,9 @@ struct LedgerDetailMain {
       return .none
 
     case .filter:
+      return .none
+
+    case .sort:
       return .none
     }
   }
@@ -257,10 +270,15 @@ struct LedgerDetailMain {
 
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction
 
-extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {
+extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {}
+
+extension Reducer where State == LedgerDetailMain.State, Action == LedgerDetailMain.Action {
   func addFeatures() -> some ReducerOf<Self> {
     ifLet(\.$filter, action: \.scope.filter) {
       LedgerDetailFilter()
+    }
+    .ifLet(\.$sort, action: \.scope.sort) {
+      SSSelectableBottomSheetReducer()
     }
   }
 }

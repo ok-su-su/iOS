@@ -81,7 +81,9 @@ struct LedgerDetailFilter {
     case let .tappedConfirmButton(lowest, highest):
       state.property.highestAmount = highest
       state.property.lowestAmount = lowest
-      return .none
+      return .run { _ in
+        await dismiss()
+      }
 
     case .reset:
       state.property.reset()
