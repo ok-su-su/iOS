@@ -26,12 +26,11 @@ struct LedgerDetailMain {
     var isOnAppear = false
     var presentCreateEnvelope = false
 
-    var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [
-      .init(id: 0, name: "다함", relationship: "친구", isVisited: true, amount: 6000),
-      .init(id: 1, name: "누구", relationship: "친구", isVisited: false, amount: 6000),
-      .init(id: 3, name: "다s함", relationship: "친구", isVisited: true, amount: 6000),
-      .init(id: 4, name: "누2구", relationship: "친구", isVisited: false, amount: 6000),
-    ]
+    /// 무한 스크롤을 위해 사용되는 Property
+    var page = 0
+    var isEndOfPage = false
+
+    var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [ ]
 
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     @Shared var sortProperty: SortHelperProperty
@@ -71,7 +70,11 @@ struct LedgerDetailMain {
         return .none
       }
       state.isOnAppear = val
-      return .send(.async(.getLedgerDetailProperty))
+      return .concatenate(
+        .send(.async(.getLedgerDetailProperty)),
+        .send(.inner(.getEnvelopesNextPage))
+      )
+
     case .tappedFloatingButton:
       state.presentCreateEnvelope = true
       return .none
@@ -82,6 +85,8 @@ struct LedgerDetailMain {
     case updateLedgerDetailProperty(LedgerDetailProperty)
     case updateEnvelopes([EnvelopeViewForLedgerMainProperty])
     case isLoading(Bool)
+    case getEnvelopesInitialPage
+    case getEnvelopesNextPage
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -89,12 +94,29 @@ struct LedgerDetailMain {
     case let .updateLedgerDetailProperty(property):
       state.ledgerProperty = property
       return .none
+      
     case let .updateEnvelopes(envelopes):
-      state.envelopeItems += envelopes
+      let currentItemCount = state.envelopeItems.count
+      let willUpdateItem = (state.envelopeItems + envelopes).uniqued()
+      if willUpdateItem.count == currentItemCount ||
+          envelopes.count != GetEnvelopesRequestParameter.defaultSize {
+        state.isEndOfPage = true
+      }
+      state.envelopeItems = willUpdateItem
       return .none
+
     case let .isLoading(val):
       state.isLoading = val
       return .none
+
+    case .getEnvelopesInitialPage:
+      state.page = 0
+      state.envelopeItems.removeAll()
+      state.isEndOfPage = false
+      return .none
+
+    case .getEnvelopesNextPage:
+      return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
     }
   }
 
@@ -114,7 +136,14 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(false)))
       }
     case .getEnvelopes:
-      return .none
+      //TODO: Filter에 맞게 수정 필요
+      let parameter = GetEnvelopesRequestParameter(ledgerId: state.ledgerID)
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let envelopes = try await network.getEnvelopes(parameter)
+        await send(.inner(.updateEnvelopes(envelopes)))
+        await send(.inner(.isLoading(false)))
+      }
     }
   }
 

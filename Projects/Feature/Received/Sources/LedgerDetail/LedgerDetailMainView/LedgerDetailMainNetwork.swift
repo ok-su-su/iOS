@@ -28,8 +28,8 @@ struct LedgerDetailMainNetwork {
     return .init(ledgerDetailResponse: data)
   }
 
-  func getEnvelopes(ledgerID _: Int64) async throws -> [EnvelopeViewForLedgerMainProperty] {
-//    let data:
+  func getEnvelopes(_ parameter: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
+
     return []
   }
 }
@@ -79,4 +79,21 @@ struct LedgerDetailResponse: Decodable {
   let category: CategoryWithCustomModel
   let totalAmounts: Int64
   let totalCounts: Int64
+}
+
+struct GetEnvelopesRequestParameter {
+  var friendIds: [Int64] = []
+  var ledgerId: Int64
+  let types: String = "RECEIVED"
+  var include: [String] = []
+  var fromAmount: Int64?
+  var toAmount: Int64?
+  var page = 0
+  let size = GetEnvelopesRequestParameter.defaultSize
+  var sort: String? = nil
+}
+
+
+extension GetEnvelopesRequestParameter {
+  static let defaultSize = 20
 }
