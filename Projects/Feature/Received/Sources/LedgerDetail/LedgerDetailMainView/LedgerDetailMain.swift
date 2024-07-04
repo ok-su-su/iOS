@@ -10,9 +10,9 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSAlert
 import SSBottomSelectSheet
 import SSCreateEnvelope
-import SSAlert
 
 // MARK: - LedgerDetailMain
 
@@ -104,7 +104,7 @@ struct LedgerDetailMain {
     case let .showAlert(val):
       state.showMessageAlert = val
       return .none
-      // 장부 삭제 플로우
+    // 장부 삭제 플로우
     case .tappedDeleteLedgerButton:
       let id = state.ledgerID
       return .run { send in
@@ -194,12 +194,12 @@ struct LedgerDetailMain {
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
-      // 편집 버튼
+    // 편집 버튼
     case .header(.tappedDoubleTextButton(.leading)):
       return .none
 
     case .header(.tappedDoubleTextButton(.trailing)):
-
+      state.showMessageAlert = true
       return .none
 
     case .header:

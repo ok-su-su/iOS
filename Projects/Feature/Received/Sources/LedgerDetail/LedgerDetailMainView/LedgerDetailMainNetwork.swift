@@ -29,9 +29,8 @@ struct LedgerDetailMainNetwork {
     return .init(ledgerDetailResponse: data)
   }
 
-
   func deleteLedger(id: Int64) async throws {
-    try await provider.request(.searchLedgerDetail(ledgerID: id))
+    try await provider.request(.deletedLedger(ID: id))
   }
 
   func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
@@ -71,7 +70,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
         "envelopes"
       case let .searchLedgerDetail(ledgerID):
         "ledgers/\(ledgerID)"
-      case let .deletedLedger(ID: id):
+      case .deletedLedger:
         "ledgers"
       }
     }
@@ -83,7 +82,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
       case .searchLedgerDetail:
         .get
       case .deletedLedger:
-          .delete
+        .delete
       }
     }
 
@@ -94,7 +93,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
       case let .searchLedgerDetail(ledgerID):
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       case let .deletedLedger(ID: ledgerID):
-          .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["ids": ledgerID], encoding: URLEncoding.queryString)
       }
     }
   }
