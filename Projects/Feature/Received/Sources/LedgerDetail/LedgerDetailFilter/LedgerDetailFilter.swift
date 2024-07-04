@@ -112,8 +112,8 @@ struct LedgerDetailFilter {
       return .none
 
     case let .updateItems(items):
-      let uniqueItem = (state.property.selectedItems + items).uniqued()
-      state.property.selectedItems = uniqueItem
+      let uniqueItem = (state.property.selectableItems + items).uniqued()
+      state.property.selectableItems = uniqueItem
       return .none
     }
   }
