@@ -74,6 +74,7 @@ struct LedgerDetailMain {
     case tappedDeleteLedgerButton
     case tappedFilteredAmountButton
     case tappedFilteredPersonButton(id: Int64)
+    case appearedEnvelope(EnvelopeViewForLedgerMainProperty)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -97,7 +98,8 @@ struct LedgerDetailMain {
       state.isOnAppear = val
       return .concatenate(
         .send(.async(.getLedgerDetailProperty)),
-        .send(.inner(.getEnvelopesNextPage))
+        .send(.inner(.getEnvelopesInitialPage)),
+        .send(.inner(.setCurrentLedgerDetailFromSharedContainer))
       )
 
     case .tappedFloatingButton:
@@ -134,10 +136,15 @@ struct LedgerDetailMain {
 
     case .tappedFilteredAmountButton:
       state.filterProperty.resetAmountFilter()
-      return .none
+      return .send(.inner(.getEnvelopesInitialPage))
 
     case let .tappedFilteredPersonButton(id: id):
       state.filterProperty.select(id)
+      return .none
+    case let .appearedEnvelope(envelope):
+      if envelope.id == state.envelopeItems.last?.id {
+        return .send(.inner(.getEnvelopesNextPage))
+      }
       return .none
     }
   }
@@ -149,6 +156,7 @@ struct LedgerDetailMain {
     case isLoading(Bool)
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
+    case setCurrentLedgerDetailFromSharedContainer
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -178,10 +186,14 @@ struct LedgerDetailMain {
       state.page = 0
       state.envelopeItems.removeAll()
       state.isEndOfPage = false
-      return .none
+      return .send(.async(.getEnvelopes))
 
     case .getEnvelopesNextPage:
       return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
+
+    case .setCurrentLedgerDetailFromSharedContainer:
+      SharedContainer.setValue(state.ledgerProperty)
+      return .none
     }
   }
 
@@ -200,9 +212,18 @@ struct LedgerDetailMain {
         await send(.inner(.updateLedgerDetailProperty(ledgerProperty)))
         await send(.inner(.isLoading(false)))
       }
+
     case .getEnvelopes:
-      // TODO: Filter에 맞게 param 수정 필요
-      let parameter = GetEnvelopesRequestParameter(ledgerId: state.ledgerID)
+      let parameter = GetEnvelopesRequestParameter(
+        friendIds: state.filterProperty.selectedItems.map(\.id),
+        ledgerId: state.ledgerID,
+        fromAmount: state.filterProperty.lowestAmount,
+        toAmount: state.filterProperty.highestAmount,
+        page: state.page,
+        sort: state.sortProperty.selectedFilterDial?.sortString ?? ""
+      )
+      state.page += 1
+
       return .run { send in
         await send(.inner(.isLoading(true)))
         let envelopes = try await network.getEnvelopes(parameter)
@@ -237,8 +258,14 @@ struct LedgerDetailMain {
       state.presentCreateEnvelope = present
       return .none
 
+    case .filter(.presented(.view(.tappedConfirmButton))):
+      return .send(.inner(.getEnvelopesInitialPage))
+
     case .filter:
       return .none
+
+    case .sort(.presented(.tapped)):
+      return .send(.inner(.getEnvelopesInitialPage))
 
     case .sort:
       return .none

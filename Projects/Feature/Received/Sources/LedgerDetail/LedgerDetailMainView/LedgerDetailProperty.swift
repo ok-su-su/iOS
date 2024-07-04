@@ -11,6 +11,8 @@ import Foundation
 // MARK: - LedgerDetailProperty
 
 struct LedgerDetailProperty: Equatable {
+  /// 장부 아이디
+  let id: Int64
   /// 장부 카테고리
   let category: String
   /// 경조사 장부 이름
@@ -48,6 +50,7 @@ struct LedgerDetailProperty: Equatable {
   }
 
   init(
+    id id: Int64,
     category: String,
     title: String,
     description: String,
@@ -55,6 +58,7 @@ struct LedgerDetailProperty: Equatable {
     startDate: Date,
     endDate: Date
   ) {
+    self.id = id
     self.category = category
     self.title = title
     self.description = description
@@ -66,10 +70,11 @@ struct LedgerDetailProperty: Equatable {
 
 extension LedgerDetailProperty {
   static var initial: Self {
-    .init(category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now)
+    .init(id: -1, category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now)
   }
 
   init(ledgerDetailResponse dto: LedgerDetailResponse) {
+    id = dto.ledger.id
     category = dto.category.category
     title = dto.ledger.title
     description = dto.ledger.description

@@ -78,6 +78,9 @@ struct LedgerDetailMainView: View {
       LazyVStack(spacing: 8) {
         ForEach(store.envelopeItems) { property in
           EnvelopeViewForLedgerMain(property: property)
+            .onAppear {
+              store.sendViewAction(.appearedEnvelope(property))
+            }
         }
       }
       .scrollTargetLayout()

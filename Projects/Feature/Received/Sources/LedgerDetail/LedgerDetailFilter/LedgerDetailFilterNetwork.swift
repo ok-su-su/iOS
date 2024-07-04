@@ -18,14 +18,32 @@ import SSNetwork
 struct LedgerDetailFilterNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func getInitialData() async throws -> [LedgerFilterItemProperty] {
-    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getInitialName)
-    return data.data.map { .init(id: $0.friend.id, title: $0.friend.name) }
+  func getInitialData(ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
+    let param = GetEnvelopesRequestParameter(ledgerId: ledgerID, page: 150)
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
+
+    return data.data.compactMap { data -> LedgerFilterItemProperty? in
+      guard let id = data.friend?.id,
+            let name = data.friend?.name
+      else {
+        return nil
+      }
+      return .init(id: id, title: name)
+    }
   }
 
-  func findFriendsBy(name: String) async throws -> [LedgerFilterItemProperty] {
-    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.findByName(name))
-    return data.data.map { .init(id: $0.friend.id, title: $0.friend.name) }
+  func findFriendsBy(name _: String, ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
+    let param = GetEnvelopesRequestParameter(ledgerId: ledgerID)
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
+
+    return data.data.compactMap { data -> LedgerFilterItemProperty? in
+      guard let id = data.friend?.id,
+            let name = data.friend?.name
+      else {
+        return nil
+      }
+      return .init(id: id, title: name)
+    }
   }
 }
 
@@ -42,18 +60,15 @@ extension LedgerDetailFilterNetwork: DependencyKey {
   static var liveValue: LedgerDetailFilterNetwork = .init()
 
   enum Network: SSNetworkTargetType {
-    case getInitialName
-    case findByName(String)
+    case getEnvelopeFriends(GetEnvelopesRequestParameter)
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes/friend-statistics" }
+    var path: String { "envelopes" }
     var method: Moya.Method { .get }
     var task: Moya.Task {
       switch self {
-      case .getInitialName:
-        .requestPlain
-      case let .findByName(name):
-        .requestParameters(parameters: ["name": name], encoding: URLEncoding.default)
+      case let .getEnvelopeFriends(param):
+        .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       }
     }
   }

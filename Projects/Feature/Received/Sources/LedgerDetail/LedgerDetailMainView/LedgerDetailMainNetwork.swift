@@ -144,7 +144,8 @@ extension GetEnvelopesRequestParameter {
     res["friendIds"] = friendIds
     res["ledgerId"] = ledgerId
     res["types"] = types
-    res["include"] = ["RELATIONSHIP", "FRIEND"]
+
+    res["include"] = include.isEmpty ? ["RELATIONSHIP", "FRIEND"] : include
     if let fromAmount {
       res["fromAmount"] = fromAmount
     }
@@ -157,25 +158,4 @@ extension GetEnvelopesRequestParameter {
 
     return res
   }
-}
-
-// MARK: - PageResponseDtoSearchEnvelopeResponse
-
-struct PageResponseDtoSearchEnvelopeResponse: Decodable {
-  let data: [SearchLatestOfThreeEnvelopeDataResponseDTO]
-  let page: Int?
-  let size: Int?
-  let totalPage: Int
-  let totalCount: Int
-  let sort: SortObject
-}
-
-// MARK: - SearchLatestOfThreeEnvelopeDataResponseDTO
-
-struct SearchLatestOfThreeEnvelopeDataResponseDTO: Decodable {
-  let envelope: EnvelopeModel
-  let category: CategoryWithCustomModel?
-  let relationship: RelationshipModel?
-  let friend: FriendModel?
-  let friendRelationship: FriendRelationshipModel
 }
