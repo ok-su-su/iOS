@@ -42,6 +42,6 @@ struct CreateEnvelopeProperty: Equatable {
 struct PrevEnvelope: Equatable, Hashable {
   let name: String
   let relationShip: String
-  let eventName: String
-  let eventDate: Date
+  let eventName: String?
+  let eventDate: Date?
 }

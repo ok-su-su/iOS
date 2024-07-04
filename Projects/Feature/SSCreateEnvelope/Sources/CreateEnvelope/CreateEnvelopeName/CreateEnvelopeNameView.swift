@@ -35,13 +35,17 @@ struct CreateEnvelopeNameView: View {
             .modifier(SSTypoModifier(.title_xs))
             .foregroundStyle(SSColor.gray60)
 
-          Text(current.eventName)
-            .modifier(SSTypoModifier(.text_xs))
-            .foregroundStyle(SSColor.gray40)
+          if let eventName = current.eventName {
+            Text(eventName)
+              .modifier(SSTypoModifier(.text_xs))
+              .foregroundStyle(SSColor.gray40)
+          }
 
-          Text(CustomDateFormatter.getString(from: current.eventDate, dateFormat: "yyyy.MM.dd"))
-            .modifier(SSTypoModifier(.text_xs))
-            .foregroundStyle(SSColor.gray40)
+          if let eventDate = current.eventDate {
+            Text(CustomDateFormatter.getString(from: eventDate, dateFormat: "yyyy.MM.dd"))
+              .modifier(SSTypoModifier(.text_xs))
+              .foregroundStyle(SSColor.gray40)
+          }
 
           Spacer()
         }
