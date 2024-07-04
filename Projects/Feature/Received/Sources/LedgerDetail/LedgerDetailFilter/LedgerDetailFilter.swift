@@ -20,6 +20,7 @@ struct LedgerDetailFilter {
     var textFieldText: String = ""
     @Shared var property: LedgerDetailFilterProperty
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
+    var isLoading = true
     init(_ property: Shared<LedgerDetailFilterProperty>) {
       _property = property
     }
@@ -43,9 +44,15 @@ struct LedgerDetailFilter {
     case reset
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case isLoading(Bool)
+    case updateItems([LedgerFilterItemProperty])
+  }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case searchInitialFriends
+    case searchFriendsBy(name: String)
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -63,7 +70,7 @@ struct LedgerDetailFilter {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.async(.searchInitialFriends))
 
     case let .tappedItem(item):
       state.property.select(item.id)
@@ -98,12 +105,38 @@ struct LedgerDetailFilter {
     }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
-    return .none
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+
+    case let .updateItems(items):
+      let uniqueItem = (state.property.selectedItems + items).uniqued()
+      state.property.selectedItems = uniqueItem
+      return .none
+    }
   }
 
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
-    return .none
+  @Dependency(\.ledgerDetailFilterNetwork) var network
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .searchInitialFriends:
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.getInitialData()
+        await send(.inner(.updateItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case let .searchFriendsBy(name):
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.findFriendsBy(name: name)
+        await send(.inner(.updateItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
+    }
   }
 
   var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in

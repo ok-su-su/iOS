@@ -44,8 +44,6 @@ extension LedgerDetailFilterNetwork: DependencyKey {
   enum Network: SSNetworkTargetType {
     case getInitialName
     case findByName(String)
-    case findByRange(lowest: Int, highest: Int)
-    case find(name: String, lowest: Int, highest: Int)
 
     var additionalHeader: [String: String]? { nil }
     var path: String { "envelopes/friend-statistics" }
@@ -56,17 +54,6 @@ extension LedgerDetailFilterNetwork: DependencyKey {
         .requestPlain
       case let .findByName(name):
         .requestParameters(parameters: ["name": name], encoding: URLEncoding.default)
-      case let .findByRange(lowest, highest):
-        .requestParameters(parameters: ["fromTotalAmounts": lowest, "toTotalAmounts": highest], encoding: URLEncoding.default)
-      case let .find(name, lowest, highest):
-        .requestParameters(
-          parameters: [
-            "name": name,
-            "fromTotalAmounts": lowest,
-            "toTotalAmounts": highest,
-          ],
-          encoding: URLEncoding.default
-        )
       }
     }
   }

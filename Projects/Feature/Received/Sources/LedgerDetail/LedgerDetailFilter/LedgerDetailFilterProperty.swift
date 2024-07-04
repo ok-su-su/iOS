@@ -66,7 +66,7 @@ struct LedgerDetailFilterProperty: Equatable {
 
 // MARK: - LedgerFilterItemProperty
 
-struct LedgerFilterItemProperty: Equatable, Identifiable {
+struct LedgerFilterItemProperty: Equatable, Identifiable, Hashable {
   /// 친구 아이디
   var id: Int64
   /// 친구 이름

@@ -80,7 +80,7 @@ struct LedgerDetailFilterView: View {
   @ViewBuilder
   private func makeTopButtonSection() -> some View {
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-      ForEach(store.property.selectedItems) { item in
+      ForEach(store.property.selectedItems.prefix(20)) { item in
         let isSelected = store.property.isSelectedItems(id: item.id)
         SSButton(
           .init(
