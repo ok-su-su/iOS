@@ -137,7 +137,6 @@ struct LedgerDetailMain {
 
     case .getEnvelopesNextPage:
       return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
-
     }
   }
 

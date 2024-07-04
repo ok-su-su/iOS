@@ -18,4 +18,3 @@ struct CreateEnvelopesConfigResponse: Decodable {
     case relationships
   }
 }
-

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 // MARK: - RelationshipModel
 
 struct RelationshipModel: Codable, Equatable {

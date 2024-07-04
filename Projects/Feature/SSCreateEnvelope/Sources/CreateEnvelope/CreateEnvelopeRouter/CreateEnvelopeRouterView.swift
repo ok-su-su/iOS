@@ -56,6 +56,7 @@ struct CreateEnvelopeRouterView: View {
         CreateEnvelopeAdditionalIsVisitedEventView(store: store)
       }
     }
+    .modifier(SSLoadingModifierWithOverlay(isLoading: store.isLoading))
     .onDisappear {
       completion(store.currentCreateEnvelopeData)
     }

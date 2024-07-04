@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  FriendRelationshipModel.swift
 //  Received
 //
 //  Created by MaraMincho on 7/4/24.

@@ -44,3 +44,28 @@ public struct SSLoadingModifier: ViewModifier {
     }
   }
 }
+
+// MARK: - SSLoadingModifierWithOverlay
+
+public struct SSLoadingModifierWithOverlay: ViewModifier {
+  var isLoading: Bool
+
+  public init(isLoading: Bool) {
+    self.isLoading = isLoading
+  }
+
+  public func body(content: Content) -> some View {
+    content
+      .overlay {
+        if isLoading {
+          let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
+          LottieView(animation: .filepath(filePath))
+            .looping()
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 72, height: 72)
+            .clipped()
+        }
+      }
+  }
+}
