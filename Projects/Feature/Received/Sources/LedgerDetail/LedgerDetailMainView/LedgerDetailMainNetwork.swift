@@ -52,6 +52,13 @@ struct LedgerDetailMainNetwork {
       )
     }
   }
+
+  func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
+    let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
+    var res: [FilterSelectableItemProperty] = data.categories.map { .init(id: $0.id, title: $0.name) }
+    _ = res.popLast()
+    return res
+  }
 }
 
 // MARK: DependencyKey
@@ -62,6 +69,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
     case searchEnvelope(GetEnvelopesRequestParameter)
     case searchLedgerDetail(ledgerID: Int64)
     case deletedLedger(ID: Int64)
+    case getFilterItems
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -72,6 +80,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         "ledgers/\(ledgerID)"
       case .deletedLedger:
         "ledgers"
+      case .getFilterItems:
+        "envelopes/configs/create-envelopes"
       }
     }
 
@@ -83,6 +93,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .get
       case .deletedLedger:
         .delete
+      case .getFilterItems:
+        .get
       }
     }
 
@@ -94,6 +106,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       case let .deletedLedger(ID: ledgerID):
         .requestParameters(parameters: ["ids": ledgerID], encoding: URLEncoding.queryString)
+      case .getFilterItems:
+        .requestPlain
       }
     }
   }

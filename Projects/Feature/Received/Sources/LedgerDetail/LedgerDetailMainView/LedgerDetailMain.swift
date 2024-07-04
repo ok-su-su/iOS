@@ -38,10 +38,18 @@ struct LedgerDetailMain {
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
     var showMessageAlert = false
 
+    @Shared var filterProperty: LedgerDetailFilterProperty
+    @Presents var filter: LedgerDetailFilter.State?
+
+    var isFilteredItem: Bool {
+      return false
+    }
+
     init(ledgerID: Int64) {
       _sortProperty = .init(.init())
       ledgerProperty = .initial
       self.ledgerID = ledgerID
+      _filterProperty = .init(.init())
     }
   }
 
@@ -63,6 +71,8 @@ struct LedgerDetailMain {
     case dismissCreateEnvelope(Data)
     case showAlert(Bool)
     case tappedDeleteLedgerButton
+    case tappedFilteredDateButton
+    case tappedFilteredPersonButton(id: Int)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -113,6 +123,13 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(false)))
         await dismiss()
       }
+
+    case .tappedFilteredDateButton:
+      state.filter = .init(state.$filterProperty)
+      return .none
+
+    case let .tappedFilteredPersonButton(id: id):
+      return .none
     }
   }
 
@@ -190,6 +207,7 @@ struct LedgerDetailMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case presentCreateEnvelope(Bool)
+    case filter(PresentationAction<LedgerDetailFilter.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
@@ -207,6 +225,9 @@ struct LedgerDetailMain {
 
     case let .presentCreateEnvelope(present):
       state.presentCreateEnvelope = present
+      return .none
+
+    case .filter:
       return .none
     }
   }
@@ -230,9 +251,16 @@ struct LedgerDetailMain {
         return asyncAction(&state, currentAction)
       }
     }
+    .addFeatures()
   }
 }
 
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction
 
-extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {}
+extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {
+  func addFeatures() -> some ReducerOf<Self> {
+    ifLet(\.$filter, action: \.scope.filter) {
+      LedgerDetailFilter()
+    }
+  }
+}

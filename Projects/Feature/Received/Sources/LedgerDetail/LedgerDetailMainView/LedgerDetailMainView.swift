@@ -96,6 +96,83 @@ struct LedgerDetailMainView: View {
     }
   }
 
+  @ViewBuilder
+  func makeFilterSection() -> some View {
+    // MARK: - 필터 버튼
+
+    ScrollView(.horizontal) {
+      HStack(spacing: 8) {
+        SSButton(.init(
+          size: .sh32,
+          status: .active,
+          style: .ghost,
+          color: .black,
+          leftIcon: .icon(SSImage.commonFilter),
+          buttonText: store.sortProperty.selectedFilterDial?.description ?? ""
+        )) {
+          store.sendViewAction(.tappedSortButton)
+        }
+
+        // MARK: - 정렬 버튼
+
+        // 정렬된 사람이 없을 때
+        if !store.isFilteredItem {
+          SSButton(Constants.filterButtonProperty) {
+            store.send(.view(.tappedFilterButton))
+          }
+        } else {
+          // 정렬된 사람이 있을 때
+          Button {
+            store.send(.view(.tappedFilterButton))
+          } label: {
+            SSImage.commonFilterWhite
+              .padding(.horizontal, 8)
+              .padding(.vertical, 4)
+              .frame(height: 32, alignment: .center)
+              .background(SSColor.gray100)
+              .cornerRadius(4)
+          }
+
+          // amount Range Button
+          if let amountRangeBadgeText = store.filterProperty.selectedFilterDateTextString {
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: amountRangeBadgeText
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredDateButton)
+            }
+          }
+
+          // 사람 버튼에 대한 표시
+          let filtered = store.filterProperty.selectedLedgers
+          ForEach(filtered) { property in
+            SSButton(
+              .init(
+                size: .sh32,
+                status: .active,
+                style: .filled,
+                color: .black,
+                rightIcon: .icon(SSImage.commonDeleteWhite),
+                buttonText: property.title
+              )
+            ) {
+              store.sendViewAction(.tappedFilteredPersonButton(id: property.id))
+            }
+          }
+        }
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .padding(.bottom, 16)
+    .padding(.horizontal, 16)
+  }
+
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       // Top Section
