@@ -28,9 +28,9 @@ struct EnvelopeViewForLedgerMain: View {
         }
 
         // 선물
-        if let gift = property.gift {
+        if property.gift != nil {
           let giftText = "선물"
-          SmallBadge(property: .init(size: .small, badgeString: giftText, badgeColor: .blue60))
+          SmallBadge(property: .init(size: .small, badgeString: giftText, badgeColor: .gray90))
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
