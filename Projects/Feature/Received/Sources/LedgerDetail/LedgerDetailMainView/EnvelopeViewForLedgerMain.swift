@@ -20,9 +20,13 @@ struct EnvelopeViewForLedgerMain: View {
     VStack(spacing: 12) {
       HStack(spacing: 8) {
         // 관계
-        SmallBadge(property: .init(size: .small, badgeString: property.name, badgeColor: .orange60))
+        SmallBadge(property: .init(size: .small, badgeString: property.relationship, badgeColor: .orange60))
+
         // 방문 여부
-        SmallBadge(property: .init(size: .small, badgeString: property.isVisitedString, badgeColor: .blue60))
+        if property.isVisited != nil {
+          SmallBadge(property: .init(size: .small, badgeString: property.isVisitedString, badgeColor: .blue60))
+        }
+
         // 선물
         if let gift = property.gift {
           let giftText = "선물"

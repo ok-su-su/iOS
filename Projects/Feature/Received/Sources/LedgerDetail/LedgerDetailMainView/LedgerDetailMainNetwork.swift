@@ -30,7 +30,7 @@ struct LedgerDetailMainNetwork {
 
   func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(param))
-    return data.data.compactMap{ cur ->  EnvelopeViewForLedgerMainProperty? in
+    return data.data.compactMap { cur -> EnvelopeViewForLedgerMainProperty? in
       let envelope = cur.envelope
       guard let friend = cur.friend,
             let relationship = cur.relationship
@@ -72,7 +72,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
     var task: Moya.Task {
       switch self {
       case let .searchEnvelope(param):
-          .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
+        .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       case let .searchLedgerDetail(ledgerID):
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       }
@@ -89,6 +89,8 @@ struct LedgerDetailResponse: Decodable {
   let totalCounts: Int64
 }
 
+// MARK: - GetEnvelopesRequestParameter
+
 struct GetEnvelopesRequestParameter {
   var friendIds: [Int64] = []
   var ledgerId: Int64
@@ -98,9 +100,8 @@ struct GetEnvelopesRequestParameter {
   var toAmount: Int64?
   var page = 0
   let size = GetEnvelopesRequestParameter.defaultSize
-  var sort: String? = nil
+  var sort: String?
 }
-
 
 extension GetEnvelopesRequestParameter {
   static let defaultSize = 20
@@ -117,13 +118,15 @@ extension GetEnvelopesRequestParameter {
     if let toAmount {
       res["toAmount"] = toAmount
     }
-    res ["size"] = size
+    res["size"] = size
     res["page"] = page
     res["sort"] = sort
 
     return res
   }
 }
+
+// MARK: - PageResponseDtoSearchEnvelopeResponse
 
 struct PageResponseDtoSearchEnvelopeResponse: Decodable {
   let data: [SearchLatestOfThreeEnvelopeDataResponseDTO]
@@ -134,6 +137,7 @@ struct PageResponseDtoSearchEnvelopeResponse: Decodable {
   let sort: SortObject
 }
 
+// MARK: - SearchLatestOfThreeEnvelopeDataResponseDTO
 
 struct SearchLatestOfThreeEnvelopeDataResponseDTO: Decodable {
   let envelope: EnvelopeModel

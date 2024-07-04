@@ -30,7 +30,7 @@ struct LedgerDetailMain {
     var page = 0
     var isEndOfPage = false
 
-    var envelopeItems: [EnvelopeViewForLedgerMainProperty] = [ ]
+    var envelopeItems: [EnvelopeViewForLedgerMainProperty] = []
 
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     @Shared var sortProperty: SortHelperProperty
@@ -94,12 +94,12 @@ struct LedgerDetailMain {
     case let .updateLedgerDetailProperty(property):
       state.ledgerProperty = property
       return .none
-      
+
     case let .updateEnvelopes(envelopes):
       let currentItemCount = state.envelopeItems.count
       let willUpdateItem = (state.envelopeItems + envelopes).uniqued()
       if willUpdateItem.count == currentItemCount ||
-          envelopes.count != GetEnvelopesRequestParameter.defaultSize {
+        envelopes.count != GetEnvelopesRequestParameter.defaultSize {
         state.isEndOfPage = true
       }
       state.envelopeItems = willUpdateItem
@@ -136,7 +136,7 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(false)))
       }
     case .getEnvelopes:
-      //TODO: Filter에 맞게 수정 필요
+      // TODO: Filter에 맞게 param 수정 필요
       let parameter = GetEnvelopesRequestParameter(ledgerId: state.ledgerID)
       return .run { send in
         await send(.inner(.isLoading(true)))

@@ -8,8 +8,9 @@
 
 import Foundation
 
+// MARK: - EnvelopeModel
 
-struct   EnvelopeModel: Codable, Equatable {
+struct EnvelopeModel: Codable, Equatable {
   ///  봉투 id
   let id: Int64
   /// user id, 소유자
@@ -39,8 +40,7 @@ struct   EnvelopeModel: Codable, Equatable {
   }
 }
 
-
-// MARK: - SearchFriendsFriendResponseDTO
+// MARK: - FriendModel
 
 struct FriendModel: Codable, Equatable {
   let id: Int64
@@ -54,8 +54,7 @@ struct FriendModel: Codable, Equatable {
   }
 }
 
-
-// MARK: - SearchEnvelopeResponseFriendRelationshipDTO
+// MARK: - FriendRelationshipModel
 
 struct FriendRelationshipModel: Codable, Equatable {
   /// 지인 ID
