@@ -19,10 +19,14 @@ struct LedgerDetailFilter {
     var isOnAppear = false
     var textFieldText: String = ""
     @Shared var property: LedgerDetailFilterProperty
+    var prevProperty: LedgerDetailFilterProperty
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var isLoading = true
+    var sliderStartValue: Double = 0
+    var sliderEndValue: Double = 100_000
     init(_ property: Shared<LedgerDetailFilterProperty>) {
       _property = property
+      prevProperty = property.wrappedValue
     }
   }
 
@@ -81,13 +85,16 @@ struct LedgerDetailFilter {
       return .none
 
     case .closeButtonTapped:
+      state.property = state.prevProperty
       return .run { _ in
         await dismiss()
       }
 
     case let .tappedConfirmButton(lowest, highest):
-      state.property.highestAmount = highest
-      state.property.lowestAmount = lowest
+      if !(lowest == Int64(state.sliderStartValue) && highest == Int64(state.sliderEndValue)) {
+        state.property.lowestAmount = lowest
+        state.property.highestAmount = highest
+      }
       return .run { _ in
         await dismiss()
       }
