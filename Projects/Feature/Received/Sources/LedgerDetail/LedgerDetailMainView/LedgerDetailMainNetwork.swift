@@ -28,9 +28,17 @@ struct LedgerDetailMainNetwork {
     return .init(ledgerDetailResponse: data)
   }
 
-  func getEnvelopes(_ parameter: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
-
-    return []
+  func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(param))
+    return data.data.compactMap{ cur ->  EnvelopeViewForLedgerMainProperty? in
+      let envelope = cur.envelope
+      guard let friend = cur.friend,
+            let relationship = cur.relationship
+      else {
+        return nil
+      }
+      return .init(id: envelope.id, name: friend.name, relationship: relationship.relation, isVisited: envelope.hasVisited, gift: envelope.gift, amount: envelope.amount)
+    }
   }
 }
 
@@ -39,7 +47,7 @@ struct LedgerDetailMainNetwork {
 extension LedgerDetailMainNetwork: DependencyKey {
   static var liveValue: LedgerDetailMainNetwork = .init()
   private enum Network: SSNetworkTargetType {
-    case searchEnvelope(ledgerID: Int64)
+    case searchEnvelope(GetEnvelopesRequestParameter)
     case searchLedgerDetail(ledgerID: Int64)
 
     var additionalHeader: [String: String]? { nil }
@@ -63,8 +71,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
 
     var task: Moya.Task {
       switch self {
-      case let .searchEnvelope(ledgerID):
-        .requestParameters(parameters: ["ledgerId": ledgerID], encoding: URLEncoding.queryString)
+      case let .searchEnvelope(param):
+          .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       case let .searchLedgerDetail(ledgerID):
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       }
@@ -96,4 +104,41 @@ struct GetEnvelopesRequestParameter {
 
 extension GetEnvelopesRequestParameter {
   static let defaultSize = 20
+
+  func getParameter() -> [String: Any] {
+    var res: [String: Any] = [:]
+    res["friendIds"] = friendIds
+    res["ledgerId"] = ledgerId
+    res["types"] = types
+    res["include"] = ["RELATIONSHIP", "FRIEND"]
+    if let fromAmount {
+      res["fromAmount"] = fromAmount
+    }
+    if let toAmount {
+      res["toAmount"] = toAmount
+    }
+    res ["size"] = size
+    res["page"] = page
+    res["sort"] = sort
+
+    return res
+  }
+}
+
+struct PageResponseDtoSearchEnvelopeResponse: Decodable {
+  let data: [SearchLatestOfThreeEnvelopeDataResponseDTO]
+  let page: Int?
+  let size: Int?
+  let totalPage: Int
+  let totalCount: Int
+  let sort: SortObject
+}
+
+
+struct SearchLatestOfThreeEnvelopeDataResponseDTO: Decodable {
+  let envelope: EnvelopeModel
+  let category: CategoryWithCustomModel?
+  let relationship: RelationshipModel?
+  let friend: FriendModel?
+  let friendRelationship: FriendRelationshipModel
 }
