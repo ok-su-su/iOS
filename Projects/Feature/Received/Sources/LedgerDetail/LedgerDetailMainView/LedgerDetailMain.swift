@@ -43,7 +43,7 @@ struct LedgerDetailMain {
 
     var isFilteredItem: Bool {
       !filterProperty.selectedItems.isEmpty ||
-      !(filterProperty.amountFilterBadgeText == nil)
+        !(filterProperty.amountFilterBadgeText == nil)
     }
 
     init(ledgerID: Int64) {

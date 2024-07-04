@@ -93,6 +93,6 @@ struct LedgerModel: Codable {
 
 // MARK: - SortObject
 
-struct SortObject: Codable {
+struct SortObject: Equatable, Codable {
   let empty, unsorted, sorted: Bool?
 }
