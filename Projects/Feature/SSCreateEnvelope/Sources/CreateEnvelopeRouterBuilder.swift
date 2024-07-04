@@ -12,14 +12,17 @@ import SwiftUI
 
 public struct CreateEnvelopeRouterBuilder: View {
   private var currentType: CreateType
-  public init(currentType: CreateType) {
+
+  private var completion: (Data) -> Void
+  public init(currentType: CreateType, completion: @escaping (Data) -> Void) {
     self.currentType = currentType
+    self.completion = completion
   }
 
   public var body: some View {
     CreateEnvelopeRouterView(store: .init(initialState: .init(type: currentType), reducer: {
       CreateEnvelopeRouter()
-    }))
+    }), completion: completion)
   }
 }
 

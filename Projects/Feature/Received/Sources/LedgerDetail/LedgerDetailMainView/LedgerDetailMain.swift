@@ -57,6 +57,7 @@ struct LedgerDetailMain {
     case tappedSortButton
     case isOnAppear(Bool)
     case tappedFloatingButton
+    case dismissCreateEnvelope(Data)
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
@@ -78,12 +79,28 @@ struct LedgerDetailMain {
     case .tappedFloatingButton:
       state.presentCreateEnvelope = true
       return .none
+
+    case let .dismissCreateEnvelope(data):
+      let dto = try? JSONDecoder().decode(CreateAndUpdateEnvelopeResponse.self, from: data)
+      if let dto {
+        let property = EnvelopeViewForLedgerMainProperty(
+          id: dto.envelope.id,
+          name: dto.friend.name,
+          relationship: dto.relationship.relation,
+          isVisited: dto.envelope.hasVisited,
+          gift: dto.envelope.gift,
+          amount: dto.envelope.amount
+        )
+        return .send(.inner(.appendEnvelope(property)))
+      }
+      return .none
     }
   }
 
   enum InnerAction: Equatable {
     case updateLedgerDetailProperty(LedgerDetailProperty)
     case updateEnvelopes([EnvelopeViewForLedgerMainProperty])
+    case appendEnvelope(EnvelopeViewForLedgerMainProperty)
     case isLoading(Bool)
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
@@ -91,6 +108,9 @@ struct LedgerDetailMain {
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
+    case let .appendEnvelope(envelope):
+      state.envelopeItems.insert(envelope, at: 0)
+      return .none
     case let .updateLedgerDetailProperty(property):
       state.ledgerProperty = property
       return .none
@@ -117,6 +137,7 @@ struct LedgerDetailMain {
 
     case .getEnvelopesNextPage:
       return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
+
     }
   }
 

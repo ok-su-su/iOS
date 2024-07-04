@@ -26,6 +26,8 @@ struct CreateEnvelopeRouter {
     var dismiss = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
+    var currentCreateEnvelopeData: Data = .init()
+
     var createPrice: CreateEnvelopePrice.State
 
     init(type: CreateType) {
@@ -51,6 +53,7 @@ struct CreateEnvelopeRouter {
     case createPrice(CreateEnvelopePrice.Action)
     case screenEnded(PathDestination.State)
     case dismiss(Bool)
+    case updateDismissData(Data)
   }
 
   private enum CancelID {
@@ -167,7 +170,8 @@ struct CreateEnvelopeRouter {
             let friendID = try await network.getFriendID(friendProperty)
             CreateEnvelopeRequestShared.setFriendID(id: friendID)
             let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
-            try await network.createEnvelope(createEnvelopeProperty)
+            let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
+            await send(.updateDismissData(envelopeData))
 
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
@@ -206,8 +210,12 @@ struct CreateEnvelopeRouter {
 
       case .createPrice:
         return .none
+
       case let .screenEnded(currentState):
         return endedScreenHandler(currentState, state: state)
+      case let .updateDismissData(data):
+        state.currentCreateEnvelopeData = data
+        return .none
       }
     }
     .addFeatures()

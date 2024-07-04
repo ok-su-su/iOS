@@ -10,12 +10,18 @@ import Designsystem
 import SwiftUI
 
 struct CreateEnvelopeRouterView: View {
+  private var completion: (Data) -> Void
   @Environment(\.dismiss) var dismiss
 
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeRouter>
+
+  init(store: StoreOf<CreateEnvelopeRouter>, completion: @escaping (Data) -> Void) {
+    self.completion = completion
+    self.store = store
+  }
 
   // MARK: Content
 
@@ -49,6 +55,9 @@ struct CreateEnvelopeRouterView: View {
       case let .createEnvelopeAdditionalIsVisitedEvent(store):
         CreateEnvelopeAdditionalIsVisitedEventView(store: store)
       }
+    }
+    .onDisappear {
+      completion(store.currentCreateEnvelopeData)
     }
   }
 
