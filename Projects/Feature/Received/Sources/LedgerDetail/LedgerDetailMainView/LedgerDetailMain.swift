@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import SSBottomSelectSheet
 import SSCreateEnvelope
+import SSAlert
 
 // MARK: - LedgerDetailMain
 
@@ -35,6 +36,7 @@ struct LedgerDetailMain {
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     @Shared var sortProperty: SortHelperProperty
     @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
+    var showMessageAlert = false
 
     init(ledgerID: Int64) {
       _sortProperty = .init(.init())
@@ -52,14 +54,18 @@ struct LedgerDetailMain {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case tappedFilterButton
     case tappedSortButton
     case isOnAppear(Bool)
     case tappedFloatingButton
     case dismissCreateEnvelope(Data)
+    case showAlert(Bool)
+    case tappedDeleteLedgerButton
   }
 
+  @Dependency(\.dismiss) var dismiss
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .tappedFilterButton:
@@ -94,6 +100,19 @@ struct LedgerDetailMain {
         return .send(.inner(.appendEnvelope(property)))
       }
       return .none
+
+    case let .showAlert(val):
+      state.showMessageAlert = val
+      return .none
+      // 장부 삭제 플로우
+    case .tappedDeleteLedgerButton:
+      let id = state.ledgerID
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        try await network.deleteLedger(id: id)
+        await send(.inner(.isLoading(false)))
+        await dismiss()
+      }
     }
   }
 
@@ -175,8 +194,17 @@ struct LedgerDetailMain {
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
+      // 편집 버튼
+    case .header(.tappedDoubleTextButton(.leading)):
+      return .none
+
+    case .header(.tappedDoubleTextButton(.trailing)):
+
+      return .none
+
     case .header:
       return .none
+
     case let .presentCreateEnvelope(present):
       state.presentCreateEnvelope = present
       return .none

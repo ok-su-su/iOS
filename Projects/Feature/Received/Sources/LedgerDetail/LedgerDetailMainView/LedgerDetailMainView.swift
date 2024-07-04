@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import SSCreateEnvelope
 import SwiftUI
+import SSAlert
 
 // MARK: - LedgerDetailMainView
 
@@ -142,6 +143,18 @@ struct LedgerDetailMainView: View {
       .padding(.horizontal, 16)
       .padding(.vertical, 16)
     }
+    .sSAlert(
+      isPresented: $store.showMessageAlert.sending(\.view.showAlert),
+      messageAlertProperty: .init(
+        titleText: " 장부를 삭제할까요?",
+        contentText: "삭제한 장부와 봉투는 다시 복구할 수 없어요",
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(left: "취소", right: "삭제"),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedDeleteLedgerButton)
+        }
+      )
+    )
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.scope.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(currentType: .received(ledgerId: store.ledgerID)) { data in
         store.sendViewAction(.dismissCreateEnvelope(data))

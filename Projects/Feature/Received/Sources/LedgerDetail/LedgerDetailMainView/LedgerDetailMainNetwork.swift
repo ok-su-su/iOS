@@ -23,9 +23,15 @@ extension DependencyValues {
 
 struct LedgerDetailMainNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+
   func getLedgerDetail(ledgerID: Int64) async throws -> LedgerDetailProperty {
     let data: LedgerDetailResponse = try await provider.request(.searchLedgerDetail(ledgerID: ledgerID))
     return .init(ledgerDetailResponse: data)
+  }
+
+
+  func deleteLedger(id: Int64) async throws {
+    try await provider.request(.searchLedgerDetail(ledgerID: id))
   }
 
   func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
@@ -37,7 +43,14 @@ struct LedgerDetailMainNetwork {
       else {
         return nil
       }
-      return .init(id: envelope.id, name: friend.name, relationship: relationship.relation, isVisited: envelope.hasVisited, gift: envelope.gift, amount: envelope.amount)
+      return .init(
+        id: envelope.id,
+        name: friend.name,
+        relationship: relationship.relation,
+        isVisited: envelope.hasVisited,
+        gift: envelope.gift,
+        amount: envelope.amount
+      )
     }
   }
 }
@@ -49,6 +62,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
   private enum Network: SSNetworkTargetType {
     case searchEnvelope(GetEnvelopesRequestParameter)
     case searchLedgerDetail(ledgerID: Int64)
+    case deletedLedger(ID: Int64)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -57,6 +71,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         "envelopes"
       case let .searchLedgerDetail(ledgerID):
         "ledgers/\(ledgerID)"
+      case let .deletedLedger(ID: id):
+        "ledgers"
       }
     }
 
@@ -66,6 +82,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .get
       case .searchLedgerDetail:
         .get
+      case .deletedLedger:
+          .delete
       }
     }
 
@@ -75,6 +93,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       case let .searchLedgerDetail(ledgerID):
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
+      case let .deletedLedger(ID: ledgerID):
+          .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       }
     }
   }
