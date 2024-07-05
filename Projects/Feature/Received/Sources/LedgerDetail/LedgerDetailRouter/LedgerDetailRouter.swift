@@ -85,6 +85,7 @@ struct LedgerDetailRouter {
 
       case .ledgerDetailMain:
         return .none
+
       case let .push(pathState):
         state.path.append(pathState)
         return .none
