@@ -84,8 +84,8 @@ struct SpecificEnvelopeHistoryDetail {
 
         return .run { [id = state.envelopeDetailProperty.id] _ in
           let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: id)
-          SpecificEnvelopeHistoryRouterPublisher
-            .push(.specificEnvelopeHistoryEdit(.init(editHelper: helper)))
+//          SpecificEnvelopeHistoryRouterPublisher
+//            .push(.specificEnvelopeHistoryEdit(.init(editHelper: helper)))
         }
 
       case .inner(.delete):

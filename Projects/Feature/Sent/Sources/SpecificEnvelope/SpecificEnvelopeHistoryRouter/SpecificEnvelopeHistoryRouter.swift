@@ -48,11 +48,14 @@ struct SpecificEnvelopeHistoryRouter {
     }
   }
 
+  @Dependency(\.envelopeNetwork) var network
   func handleEnvelopeDetailDelegateAction(state: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
     switch action {
     case let .tappedEnvelopeEditButton(property):
-      //TODO: Routing 필요
-      return .none
+      return .run { [id = property.id] _ in
+        let editState = try await SpecificEventEditReducer.State(envelopeID: id)
+          SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
+      }
     case let .tappedDeleteConfirmButton(id):
       state.envelopeHistory.envelopeContents.removeAll(where: {$0.id == id})
       return .none
@@ -102,5 +105,5 @@ struct SpecificEnvelopeHistoryRouter {
 enum SpecificEnvelopeHistoryRouterPath {
   case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
   case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
-  case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
+  case specificEnvelopeHistoryEdit(SpecificEventEditReducer)
 }

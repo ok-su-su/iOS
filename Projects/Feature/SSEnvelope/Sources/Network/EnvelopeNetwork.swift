@@ -37,6 +37,31 @@ struct EnvelopeNetwork {
   func deleteEnvelope(id: Int64) async throws {
     try await provider.request(.deleteEnvelope(envelopeID: id))
   }
+
+  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
+    // 맨 뒤 기타는 제거 합니다.
+    var events = try await getEventItems()
+    _ = events.popLast()
+    // 맨 뒤 기타는 제거 합니다.
+    var relations = try await getRelationItems()
+    _ = relations.popLast()
+
+    return try await .init(
+      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelopeID(envelopeID),
+      eventItems: events,
+      relationItems: relations
+    )
+  }
+
+  private func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
+    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
+    return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
+  }
+
+  private func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
+    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
+    return dto.categories.map { .init(id: $0.id, title: $0.name) }
+  }
 }
 
 extension DependencyValues {
@@ -54,6 +79,7 @@ extension EnvelopeNetwork: DependencyKey {
   enum Network: SSNetworkTargetType {
     case deleteEnvelope(envelopeID: Int64)
     case searchEnvelopeByID(Int64)
+    case getEditItems
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -62,6 +88,8 @@ extension EnvelopeNetwork: DependencyKey {
         "envelopes/\(id)"
       case let .deleteEnvelope(envelopeID: id):
         "envelopes/\(id)"
+      case .getEditItems:
+        "envelopes/configs/create-envelopes"
       }
     }
 
@@ -80,6 +108,9 @@ extension EnvelopeNetwork: DependencyKey {
         return .requestPlain
 
       case .deleteEnvelope:
+        return .requestPlain
+
+      case .getEditItems:
         return .requestPlain
       }
     }

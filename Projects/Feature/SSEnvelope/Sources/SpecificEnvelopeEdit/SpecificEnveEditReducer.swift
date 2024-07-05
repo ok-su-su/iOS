@@ -24,11 +24,17 @@ public struct SpecificEventEditReducer {
     var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeEditHelper
 
-    public init(editHelper: SpecificEnvelopeEditHelper) {
+    init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
       visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
+    }
+
+    public init(envelopeID: Int64) async throws {
+      let network = EnvelopeNetwork()
+      let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: envelopeID)
+      self.init(editHelper: helper)
     }
   }
 

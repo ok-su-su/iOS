@@ -154,8 +154,8 @@ struct SpecificEnvelopeHistoryList {
         }
 
       case let .inner(.pushEnvelopeDetail(property)):
-        SpecificEnvelopeHistoryRouterPublisher
-          .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
+//        SpecificEnvelopeHistoryRouterPublisher
+//          .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
         return .none
 
       case let .view(.onAppearDetail(property)):
