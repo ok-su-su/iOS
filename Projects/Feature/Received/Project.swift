@@ -14,6 +14,7 @@ let project = Project.makeModule(
       .feature(.sSSelectableItems),
       .feature(.sSSearch),
       .feature(.sSCreateEnvelope),
+      .feature(.sSEnvelope),
     ],
     testDependencies: []
   )
