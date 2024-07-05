@@ -78,6 +78,7 @@ struct LedgerDetailRouter {
         return .publisher {
           LedgerDetailRouterPublisher
             .publisher()
+            .receive(on: RunLoop.main)
             .map { .push($0) }
         }
         .cancellable(id: CancelID.routePublisherID, cancelInFlight: true)
