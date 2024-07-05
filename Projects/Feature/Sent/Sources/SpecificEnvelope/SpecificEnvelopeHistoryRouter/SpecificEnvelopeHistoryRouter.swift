@@ -52,7 +52,7 @@ struct SpecificEnvelopeHistoryRouter {
     switch action {
     case let .tappedEnvelopeEditButton(property):
       return .run { [id = property.id] _ in
-        let editState = try await SpecificEventEditReducer.State(envelopeID: id)
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
         SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
       }
     case let .tappedDeleteConfirmButton(id):
@@ -104,5 +104,5 @@ struct SpecificEnvelopeHistoryRouter {
 enum SpecificEnvelopeHistoryRouterPath {
   case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
   case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
-  case specificEnvelopeHistoryEdit(SpecificEventEditReducer)
+  case specificEnvelopeHistoryEdit(SpecificEnvelopeEditReducer)
 }

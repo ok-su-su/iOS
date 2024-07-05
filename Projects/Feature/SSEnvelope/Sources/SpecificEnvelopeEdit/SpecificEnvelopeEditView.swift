@@ -14,9 +14,9 @@ public struct SpecificEnvelopeEditView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<SpecificEventEditReducer>
+  var store: StoreOf<SpecificEnvelopeEditReducer>
 
-  public init(store: StoreOf<SpecificEventEditReducer>) {
+  public init(store: StoreOf<SpecificEnvelopeEditReducer>) {
     self.store = store
   }
 

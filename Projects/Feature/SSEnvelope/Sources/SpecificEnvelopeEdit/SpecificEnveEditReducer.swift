@@ -14,7 +14,7 @@ import FeatureAction
 import Foundation
 
 @Reducer
-public struct SpecificEventEditReducer {
+public struct SpecificEnvelopeEditReducer {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
