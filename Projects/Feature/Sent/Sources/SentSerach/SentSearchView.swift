@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSEnvelope
 import SSSearch
 import SwiftUI
 
@@ -46,11 +47,11 @@ struct SentSearchView: View {
     } destination: { store in
       switch store.case {
       case let .specificEnvelopeHistoryDetail(store):
-        SpecificEnvelopeHistoryDetailView(store: store)
+        SpecificEnvelopeDetailView(store: store)
       case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
       case let .specificEnvelopeHistoryEdit(store):
-        SpecificEnvelopeHistoryEditView(store: store)
+        SpecificEnvelopeEditView(store: store)
       }
     }
   }

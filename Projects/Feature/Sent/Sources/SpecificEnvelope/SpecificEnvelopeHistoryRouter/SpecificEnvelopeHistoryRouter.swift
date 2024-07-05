@@ -38,11 +38,11 @@ struct SpecificEnvelopeHistoryRouter {
     switch action {
     case let .element(id: _, action: .specificEnvelopeHistoryDetail(.delegate(currentAction))):
       return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
-    case let .element(id: id, action: action):
+    case .element(id: _, action: _):
       return .none
-    case let .popFrom(id: id):
+    case .popFrom(id: _):
       return .none
-    case let .push(id: id, state: state):
+    case .push(id: _, state: _):
       return .none
     }
   }

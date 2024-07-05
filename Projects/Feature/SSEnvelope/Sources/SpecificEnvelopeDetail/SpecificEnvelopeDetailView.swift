@@ -11,7 +11,7 @@ import Designsystem
 import SSAlert
 import SwiftUI
 
-struct SpecificEnvelopeHistoryDetailView: View {
+public struct SpecificEnvelopeDetailView: View {
   // MARK: Reducer
 
   @Bindable
@@ -66,7 +66,7 @@ struct SpecificEnvelopeHistoryDetailView: View {
     .padding(.vertical, Metrics.listContentVerticalSpacing)
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray10

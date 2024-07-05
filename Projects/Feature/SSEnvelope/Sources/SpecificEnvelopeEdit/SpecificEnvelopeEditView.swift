@@ -1,5 +1,5 @@
 //
-//  SpeificEnvelopeEidtView.swift
+//  SpecificEnvelopeEditView.swift
 //  SSEnvelope
 //
 //  Created by MaraMincho on 7/5/24.
@@ -10,7 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-public struct SpecificEnvelopeHistoryEditView: View {
+public struct SpecificEnvelopeEditView: View {
   // MARK: Reducer
 
   @Bindable

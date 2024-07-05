@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSEnvelope
 import SwiftUI
 
 struct SpecificEnvelopeHistoryRouterView: View {
@@ -32,10 +33,12 @@ struct SpecificEnvelopeHistoryRouterView: View {
       makeContentView()
     } destination: { store in
       switch store.case {
-      case let .specificEnvelopeHistoryDetail(store):
-        SpecificEnvelopeHistoryDetailView(store: store)
       case let .specificEnvelopeHistoryEdit(store):
-        SpecificEnvelopeHistoryEditView(store: store)
+        SpecificEnvelopeEditView(store: store)
+
+      case let .specificEnvelopeHistoryDetail(store):
+        SpecificEnvelopeDetailView(store: store)
+
       case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
       }

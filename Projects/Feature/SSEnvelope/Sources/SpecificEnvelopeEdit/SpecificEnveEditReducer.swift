@@ -131,4 +131,6 @@ public struct SpecificEventEditReducer {
       }
     }
   }
+
+  public init() {}
 }

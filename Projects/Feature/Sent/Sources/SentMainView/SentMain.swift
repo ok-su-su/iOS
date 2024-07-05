@@ -70,6 +70,7 @@ struct SentMain {
     case tappedFilteredPersonButton(id: Int64)
     case tappedFilteredAmountButton
     case presentCreateEnvelope(Bool)
+    case finishedCreateEnvelopes(Data)
   }
 
   @CasePathable
@@ -247,6 +248,8 @@ struct SentMain {
           await send(.inner(.updateEnvelopes(envelopeProperties)))
           await send(.inner(.isLoading(false)))
         }
+      case .view(.finishedCreateEnvelopes):
+        return .send(.async(.updateEnvelopesByFilterInitialPage))
       }
     }
     .subFeatures1()
