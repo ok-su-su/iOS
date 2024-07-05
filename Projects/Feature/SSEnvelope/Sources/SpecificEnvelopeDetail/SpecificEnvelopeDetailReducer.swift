@@ -19,6 +19,7 @@ public struct SpecificEnvelopeDetailReducer {
   public struct State: Equatable {
     var isOnAppear = false
     var isDeleteAlertPresent = false
+    var isLoading = false
     var header: HeaderViewFeature.State = .init(.init(type: .depth2DoubleText("편집", "삭제")))
     var envelopeDetailProperty: EnvelopeDetailProperty
     var envelopeID: Int64
@@ -46,8 +47,12 @@ public struct SpecificEnvelopeDetailReducer {
   public func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
+
+      if state.isOnAppear {
+        return .none
+      }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.async(.getEnvelopeDetailProperty))
 
     // 삭제 버튼 눌렀을 경우
     case .tappedAlertConfirmButton:
@@ -57,6 +62,8 @@ public struct SpecificEnvelopeDetailReducer {
 
   public enum InnerAction: Equatable {
     case delete
+    case updateEnvelopeDetailProperty(EnvelopeDetailProperty)
+    case isLoading(Bool)
   }
 
   public func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -64,25 +71,42 @@ public struct SpecificEnvelopeDetailReducer {
     case .delete:
       state.isDeleteAlertPresent = true
       return .none
+
+    case let .updateEnvelopeDetailProperty(property):
+      state.envelopeDetailProperty = property
+      return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
     }
   }
 
   public enum AsyncAction: Equatable {
     case pushEditing
     case deleteEnvelope
+    case getEnvelopeDetailProperty
   }
 
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .deleteEnvelope:
       return .run { [id = state.envelopeDetailProperty.id] send in
-        try await network.deleteEnvelope(id: id)
         await send(.delegate(.tappedDeleteConfirmButton(id: id)))
+        try await network.deleteEnvelope(id: id)
         await dismiss()
       }
     case .pushEditing:
       let property = state.envelopeDetailProperty
       return .send(.delegate(.tappedEnvelopeEditButton(property)))
+
+    case .getEnvelopeDetailProperty:
+      return .run { [id = state.envelopeID] send in
+        await send(.inner(.isLoading(true)))
+        let property = try await network.getEnvelopeDetailPropertyByEnvelopeID(id)
+        await send(.inner(.updateEnvelopeDetailProperty(property)))
+        await send(.inner(.isLoading(false)))
+      }
     }
   }
 

@@ -90,6 +90,7 @@ public struct SpecificEnvelopeDetailView: View {
         }
       )
     )
+    .modifier(SSLoadingModifier(isLoading: store.isLoading))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

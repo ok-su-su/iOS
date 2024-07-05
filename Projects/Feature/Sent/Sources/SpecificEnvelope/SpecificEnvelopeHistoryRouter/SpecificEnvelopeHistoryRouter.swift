@@ -48,7 +48,7 @@ struct SpecificEnvelopeHistoryRouter {
   }
 
   @Dependency(\.envelopeNetwork) var network
-  func handleEnvelopeDetailDelegateAction(state: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+  func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
     switch action {
     case let .tappedEnvelopeEditButton(property):
       return .run { [id = property.id] _ in
@@ -56,8 +56,8 @@ struct SpecificEnvelopeHistoryRouter {
         SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
       }
     case let .tappedDeleteConfirmButton(id):
-      state.envelopeHistory.envelopeContents.removeAll(where: { $0.id == id })
-      return .none
+      SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
+      return .send(.envelopeHistory(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope)))
     }
   }
 
@@ -71,8 +71,8 @@ struct SpecificEnvelopeHistoryRouter {
       case .path(.push(id: _, state: _)):
         return .none
 
-      case .path:
-        return .none
+      case let .path(currentAction):
+        return handlePath(state: &state, action: currentAction)
 
       case .envelopeHistory:
         return .none
