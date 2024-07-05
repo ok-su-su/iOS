@@ -98,8 +98,7 @@ struct LedgerDetailMain {
       state.isOnAppear = val
       return .concatenate(
         .send(.async(.getLedgerDetailProperty)),
-        .send(.inner(.getEnvelopesInitialPage)),
-        .send(.inner(.setCurrentLedgerDetailFromSharedContainer))
+        .send(.inner(.getEnvelopesInitialPage))
       )
 
     case .tappedFloatingButton:
@@ -156,7 +155,6 @@ struct LedgerDetailMain {
     case isLoading(Bool)
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
-    case setCurrentLedgerDetailFromSharedContainer
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -166,6 +164,7 @@ struct LedgerDetailMain {
       return .none
     case let .updateLedgerDetailProperty(property):
       state.ledgerProperty = property
+      SharedContainer.setValue(state.ledgerProperty)
       return .none
 
     case let .updateEnvelopes(envelopes):
@@ -190,10 +189,6 @@ struct LedgerDetailMain {
 
     case .getEnvelopesNextPage:
       return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
-
-    case .setCurrentLedgerDetailFromSharedContainer:
-      SharedContainer.setValue(state.ledgerProperty)
-      return .none
     }
   }
 

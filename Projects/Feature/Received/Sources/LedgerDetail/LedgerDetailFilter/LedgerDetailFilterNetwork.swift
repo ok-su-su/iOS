@@ -19,7 +19,7 @@ struct LedgerDetailFilterNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func getInitialData(ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
-    let param = GetEnvelopesRequestParameter(ledgerId: ledgerID, page: 150)
+    let param = GetEnvelopesRequestParameter(ledgerId: ledgerID, size: 150)
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
 
     return data.data.compactMap { data -> LedgerFilterItemProperty? in

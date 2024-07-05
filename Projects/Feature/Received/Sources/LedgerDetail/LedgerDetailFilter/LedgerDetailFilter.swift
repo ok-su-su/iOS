@@ -133,24 +133,24 @@ struct LedgerDetailFilter {
       guard let id = state.ledgerProperty?.id else {
         return .none
       }
-      return .none
-//      return .run { send in
-//        await send(.inner(.isLoading(true)))
-//        let items = try await network.getInitialData(ledgerID: id)
-//        await send(.inner(.updateItems(items)))
-//        await send(.inner(.isLoading(false)))
-//      }
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.getInitialData(ledgerID: id)
+        await send(.inner(.updateItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
 
     case let .searchFriendsBy(name):
       guard let id = state.ledgerProperty?.id else {
         return .none
       }
-      return .run { send in
-        await send(.inner(.isLoading(true)))
-        let items = try await network.findFriendsBy(name: name, ledgerID: id)
-        await send(.inner(.updateItems(items)))
-        await send(.inner(.isLoading(false)))
-      }
+      return .none
+//      return .run { send in
+//        await send(.inner(.isLoading(true)))
+//        let items = try await network.findFriendsBy(name: name, ledgerID: id)
+//        await send(.inner(.updateItems(items)))
+//        await send(.inner(.isLoading(false)))
+//      }
     }
   }
 

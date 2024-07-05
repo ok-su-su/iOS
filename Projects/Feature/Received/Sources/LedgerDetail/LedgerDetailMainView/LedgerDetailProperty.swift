@@ -50,7 +50,7 @@ struct LedgerDetailProperty: Equatable {
   }
 
   init(
-    id id: Int64,
+    id: Int64,
     category: String,
     title: String,
     description: String,

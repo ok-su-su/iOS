@@ -132,7 +132,7 @@ struct GetEnvelopesRequestParameter {
   var fromAmount: Int64?
   var toAmount: Int64?
   var page = 0
-  let size = GetEnvelopesRequestParameter.defaultSize
+  var size = GetEnvelopesRequestParameter.defaultSize
   var sort: String?
 }
 
