@@ -26,7 +26,6 @@ struct ReceivedMain {
 
     /// ScopeState
     var header = HeaderViewFeature.State(.init(title: "받아요", type: .defaultType))
-    var floatingState = InventoryFloating.State()
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
     @Shared var sortProperty: SortHelperProperty
     @Shared var filterProperty: FilterHelperProperty
