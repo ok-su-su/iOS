@@ -168,7 +168,9 @@ struct SentMainView: View {
     .navigationBarBackButtonHidden()
     .safeAreaInset(edge: .bottom) { makeTabBar() }
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
-      CreateEnvelopeRouterBuilder(currentType: .sent)
+      CreateEnvelopeRouterBuilder(currentType: .sent) { data in
+        store.sendViewAction(.finishedCreateEnvelopes(data))
+      }
     }
     .onAppear {
       store.send(.view(.onAppear(true)))

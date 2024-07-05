@@ -1,19 +1,24 @@
 //
-//  SpecificEnvelopeHistoryEditView.swift
-//  Sent
+//  SpecificEnvelopeEditView.swift
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-struct SpecificEnvelopeHistoryEditView: View {
+public struct SpecificEnvelopeEditView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<SpecificEnvelopeHistoryEdit>
+  var store: StoreOf<SpecificEnvelopeEditReducer>
+
+  public init(store: StoreOf<SpecificEnvelopeEditReducer>) {
+    self.store = store
+  }
 
   // MARK: Content
 
@@ -168,7 +173,7 @@ struct SpecificEnvelopeHistoryEditView: View {
     .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

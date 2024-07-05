@@ -83,6 +83,7 @@ struct CreateLedgerRouter {
           .publisher {
             CreateLedgerRouterPathPublisher
               .publisher()
+              .receive(on: RunLoop.main)
               .map { .push($0) }
           },
           .publisher {

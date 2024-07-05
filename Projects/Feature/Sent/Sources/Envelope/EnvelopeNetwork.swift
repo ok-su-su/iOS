@@ -114,38 +114,6 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   func deleteEnvelope(id: Int64) async throws {
     try await provider.request(.deleteEnvelope(envelopeID: id))
   }
-
-  func getEnvelopeDetailPropertyByEnvelope(id: Int64) async throws -> EnvelopeDetailProperty {
-    let data: SearchEnvelopeResponseDataDTO = try await provider.request(.searchEnvelopeByID(id))
-    return .init(
-      id: data.envelope.id,
-      price: data.envelope.amount,
-      eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
-      name: data.friend.name,
-      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
-      date: CustomDateFormatter.getDate(from: data.envelope.handedOverAt) ?? .now,
-      isVisited: data.envelope.hasVisited,
-      gift: data.envelope.gift,
-      contacts: data.friend.phoneNumber,
-      memo: data.envelope.memo
-    )
-  }
-
-  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeHistoryEditHelper {
-    let relationAndEventNetwork = CreateEnvelopeRelationAndEventNetwork()
-    // 맨 뒤 기타는 제거 합니다.
-    var events = try await relationAndEventNetwork.getEventItems()
-    _ = events.popLast()
-    // 맨 뒤 기타는 제거 합니다.
-    var relations = try await relationAndEventNetwork.getRelationItems()
-    _ = relations.popLast()
-
-    return try await .init(
-      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelope(id: envelopeID),
-      eventItems: events,
-      relationItems: relations
-    )
-  }
 }
 
 // MARK: - SearchLatestOfThreeEnvelopeResponseDTO

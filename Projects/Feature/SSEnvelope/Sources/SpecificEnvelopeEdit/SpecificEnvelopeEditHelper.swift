@@ -1,16 +1,16 @@
 //
-//  SpecificEnvelopeHistoryEditHelper.swift
-//  Sent
+//  SpecificEnvelopeEditHelper.swift
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation
 
-// MARK: - SpecificEnvelopeHistoryEditHelper
+// MARK: - SpecificEnvelopeEditHelper
 
-struct SpecificEnvelopeHistoryEditHelper: Equatable {
+public struct SpecificEnvelopeEditHelper: Equatable {
   var envelopeDetailProperty: EnvelopeDetailProperty
 
   var eventSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeEventProperty>
@@ -32,7 +32,7 @@ struct SpecificEnvelopeHistoryEditHelper: Equatable {
 
   var memoEditProperty: MemoEditProperty
 
-  init(
+  public init(
     envelopeDetailProperty: EnvelopeDetailProperty,
     eventItems: [CreateEnvelopeEventProperty],
     relationItems: [CreateEnvelopeRelationItemProperty]
@@ -143,9 +143,9 @@ struct VisitedEditProperty: Equatable {
 
 // MARK: - VisitedSelectButtonItem
 
-struct VisitedSelectButtonItem: SingleSelectButtonItemable {
-  var id: Int
-  var title: String = ""
+public struct VisitedSelectButtonItem: SingleSelectButtonItemable {
+  public var id: Int
+  public var title: String = ""
   var isVisited: Bool
   init(id: Int, title: String = "", isVisited: Bool) {
     self.id = id
@@ -186,4 +186,36 @@ struct DateEditProperty: Equatable {
 /// EditName을 하기 위해 사용됩니다.
 struct NameEditProperty: Equatable {
   var textFieldText: String
+}
+
+// MARK: - CreateEnvelopeEventProperty
+
+public struct CreateEnvelopeEventProperty: Equatable, Identifiable, SingleSelectButtonItemable {
+  public var id: Int
+  public var title: String
+
+  mutating func setTitle(_ val: String) {
+    title = val
+  }
+
+  init(id: Int, title: String) {
+    self.id = id
+    self.title = title
+  }
+}
+
+// MARK: - CreateEnvelopeRelationItemProperty
+
+public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, SingleSelectButtonItemable {
+  public var id: Int
+  public var title: String
+
+  init(id: Int, title: String) {
+    self.id = id
+    self.title = title
+  }
+
+  mutating func setTitle(_ val: String) {
+    title = val
+  }
 }

@@ -1,16 +1,16 @@
 //
 //  EnvelopeDetailProperty.swift
-//  Sent
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation
 
-struct EnvelopeDetailProperty: Equatable, Identifiable {
+public struct EnvelopeDetailProperty: Equatable, Identifiable {
   /// 봉투의 아이디 입니다.
-  let id: Int64
+  public let id: Int64
   /// 현재 봉투의 가격을 나타냅니다.
   let price: Int64
   /// 현재 봉투의 경조사 이름을 나타냅니다.
@@ -87,7 +87,18 @@ struct EnvelopeDetailProperty: Equatable, Identifiable {
   ///   - relation: 현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
   ///   - date: 현재 봉투를 주고받은 날짜를 나타냅니다.
   ///   - isVisited: 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
-  init(id: Int64, price: Int64, eventName: String, name: String, relation: String, date: Date, isVisited: Bool?, gift: String? = nil, contacts: String? = nil, memo: String? = nil) {
+  init(
+    id: Int64,
+    price: Int64,
+    eventName: String,
+    name: String,
+    relation: String,
+    date: Date,
+    isVisited: Bool?,
+    gift: String? = nil,
+    contacts: String? = nil,
+    memo: String? = nil
+  ) {
     self.id = id
     self.price = price
     self.eventName = eventName

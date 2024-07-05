@@ -1,8 +1,8 @@
 //
 //  SingleSelectButtonItemable.swift
-//  Sent
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SingleSelectButtonItemable
 
-protocol SingleSelectButtonItemable: Identifiable, Equatable {
+public protocol SingleSelectButtonItemable: Identifiable, Equatable {
   var id: Int { get set }
   var title: String { get set }
 }

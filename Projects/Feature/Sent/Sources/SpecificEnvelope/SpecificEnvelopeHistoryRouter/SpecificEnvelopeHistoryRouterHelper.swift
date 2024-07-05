@@ -10,13 +10,10 @@ import Foundation
 
 struct SpecificEnvelopeHistoryRouterHelper: Equatable {
   var specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty
-  var envelopeHistoryEditHelper: SpecificEnvelopeHistoryEditHelper
 
   init(
-    specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty,
-    envelopeHistoryEditHelper: SpecificEnvelopeHistoryEditHelper
+    specificEnvelopeHistoryListProperty: SpecificEnvelopeHistoryListProperty
   ) {
     self.specificEnvelopeHistoryListProperty = specificEnvelopeHistoryListProperty
-    self.envelopeHistoryEditHelper = envelopeHistoryEditHelper
   }
 }

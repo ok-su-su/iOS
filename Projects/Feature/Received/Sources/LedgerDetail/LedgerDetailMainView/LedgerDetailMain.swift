@@ -75,6 +75,7 @@ struct LedgerDetailMain {
     case tappedFilteredAmountButton
     case tappedFilteredPersonButton(id: Int64)
     case appearedEnvelope(EnvelopeViewForLedgerMainProperty)
+    case tappedEnvelope(id: Int64)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -146,6 +147,9 @@ struct LedgerDetailMain {
         return .send(.inner(.getEnvelopesNextPage))
       }
       return .none
+    case let .tappedEnvelope(id):
+      LedgerDetailRouterPublisher.send(.envelopeDetail(.init(envelopeID: id)))
+      return .none
     }
   }
 
@@ -156,6 +160,7 @@ struct LedgerDetailMain {
     case isLoading(Bool)
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
+    case deleteEnvelope(id: Int64)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -190,6 +195,10 @@ struct LedgerDetailMain {
 
     case .getEnvelopesNextPage:
       return state.isEndOfPage ? .none : .send(.async(.getEnvelopes))
+
+    case let .deleteEnvelope(id):
+      state.envelopeItems.removeAll(where: { $0.id == id })
+      return .none
     }
   }
 

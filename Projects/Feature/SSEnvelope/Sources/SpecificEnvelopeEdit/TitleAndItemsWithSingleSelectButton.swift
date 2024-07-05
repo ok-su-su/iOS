@@ -1,17 +1,18 @@
 //
-//  TitleAndItemsWithSingleSellectButton.swift
-//  Sent
+//  TitleAndItemsWithSingleSelectButton.swift
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+
 import ComposableArchitecture
 import Foundation
 
 @Reducer
-struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
+public struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     @Shared var singleSelectButtonHelper: SingleSelectButtonHelper<Item>
     var customTextFieldText: String
@@ -21,7 +22,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
     }
   }
 
-  enum Action: Equatable {
+  public enum Action: Equatable {
     case onAppear(Bool)
     case tappedID(Int)
     case tappedAddCustomButton
@@ -32,7 +33,7 @@ struct TitleAndItemsWithSingleSelectButton<Item: SingleSelectButtonItemable> {
     case initialValue(String)
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):

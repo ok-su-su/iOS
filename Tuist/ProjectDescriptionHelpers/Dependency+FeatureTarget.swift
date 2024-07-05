@@ -22,6 +22,7 @@ public enum Feature: String {
   case appleLogin
   case sSSelectableItems
   case sSCreateEnvelope
+  case sSEnvelope
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import SSEnvelope
 
 // MARK: - SpecificEnvelopeHistoryRouter
 
@@ -33,6 +34,33 @@ struct SpecificEnvelopeHistoryRouter {
     case pushPublisher
   }
 
+  func handlePath(state: inout State, action: StackActionOf<SpecificEnvelopeHistoryRouterPath>) -> Effect<Action> {
+    switch action {
+    case let .element(id: _, action: .specificEnvelopeHistoryDetail(.delegate(currentAction))):
+      return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
+    case .element(id: _, action: _):
+      return .none
+    case .popFrom(id: _):
+      return .none
+    case .push(id: _, state: _):
+      return .none
+    }
+  }
+
+  @Dependency(\.envelopeNetwork) var network
+  func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+    switch action {
+    case let .tappedEnvelopeEditButton(property):
+      return .run { [id = property.id] _ in
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
+        SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
+      }
+    case let .tappedDeleteConfirmButton(id):
+      SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
+      return .send(.envelopeHistory(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope)))
+    }
+  }
+
   @Dependency(\.dismiss) var dismiss
   var body: some Reducer<State, Action> {
     Scope(state: \.envelopeHistory, action: \.envelopeHistory) {
@@ -43,8 +71,8 @@ struct SpecificEnvelopeHistoryRouter {
       case .path(.push(id: _, state: _)):
         return .none
 
-      case .path:
-        return .none
+      case let .path(currentAction):
+        return handlePath(state: &state, action: currentAction)
 
       case .envelopeHistory:
         return .none
@@ -75,6 +103,6 @@ struct SpecificEnvelopeHistoryRouter {
 @Reducer(state: .equatable, action: .equatable)
 enum SpecificEnvelopeHistoryRouterPath {
   case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
-  case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
-  case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
+  case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
+  case specificEnvelopeHistoryEdit(SpecificEnvelopeEditReducer)
 }

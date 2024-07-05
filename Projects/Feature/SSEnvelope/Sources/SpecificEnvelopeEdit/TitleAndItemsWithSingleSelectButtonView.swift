@@ -1,10 +1,11 @@
 //
-//  TitleAndItemsWithSingleSellectButtonView.swift
-//  Sent
+//   TitleAndItemsWithSingleSelectButtonView.swift
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+
 import ComposableArchitecture
 import Designsystem
 import SSLayout

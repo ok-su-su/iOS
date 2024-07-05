@@ -58,14 +58,13 @@ struct SpecificEnvelopeHistoryList {
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
-    case pushEnvelopeDetail(EnvelopeDetailProperty)
+    case pushEnvelopeDetail(id: Int64)
     case updateEnvelopeDetailIfUserDeleteEnvelope
   }
 
   enum AsyncAction: Equatable {
     case getEnvelopeDetail
     case deleteFriend
-    case getEnvelopeDetailByID(Int64)
   }
 
   @CasePathable
@@ -107,7 +106,7 @@ struct SpecificEnvelopeHistoryList {
       // envelope Detail 화면으로 이동
       case let .view(.tappedSpecificEnvelope(property)):
         let id = property.id
-        return .send(.async(.getEnvelopeDetailByID(id)))
+        return .send(.inner(.pushEnvelopeDetail(id: id)))
 
       case .scope(.envelopePriceProgress):
         return .none
@@ -147,15 +146,9 @@ struct SpecificEnvelopeHistoryList {
         state.isDeleteAlertPresent = present
         return .none
 
-      case let .async(.getEnvelopeDetailByID(id)):
-        return .run { send in
-          let envelopeDetailProperty = try await network.getEnvelopeDetailPropertyByEnvelope(id: id)
-          await send(.inner(.pushEnvelopeDetail(envelopeDetailProperty)))
-        }
-
-      case let .inner(.pushEnvelopeDetail(property)):
+      case let .inner(.pushEnvelopeDetail(id)):
         SpecificEnvelopeHistoryRouterPublisher
-          .push(.specificEnvelopeHistoryDetail(.init(envelopeDetailProperty: property)))
+          .push(.specificEnvelopeHistoryDetail(.init(envelopeID: id)))
         return .none
 
       case let .view(.onAppearDetail(property)):

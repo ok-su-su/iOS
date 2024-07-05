@@ -1,35 +1,44 @@
 //
-//  SpecificEnvelopeHistoryEdit.swift
-//  Sent
+//  SpecificEnveEditReducer.swift
+//  SSEnvelope
 //
-//  Created by MaraMincho on 5/11/24.
+//  Created by MaraMincho on 7/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+
+import Foundation
+
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
 
 @Reducer
-struct SpecificEnvelopeHistoryEdit {
+public struct SpecificEnvelopeEditReducer {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
     var eventSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.State
     var relationSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.State
     var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
-    @Shared var editHelper: SpecificEnvelopeHistoryEditHelper
+    @Shared var editHelper: SpecificEnvelopeEditHelper
 
-    init(editHelper: SpecificEnvelopeHistoryEditHelper) {
+    init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
       visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
     }
+
+    public init(envelopeID: Int64) async throws {
+      let network = EnvelopeNetwork()
+      let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: envelopeID)
+      self.init(editHelper: helper)
+    }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -38,7 +47,7 @@ struct SpecificEnvelopeHistoryEdit {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case changeNameTextField(String)
     case changeGiftTextField(String)
@@ -46,23 +55,23 @@ struct SpecificEnvelopeHistoryEdit {
     case changeMemoTextField(String)
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case setInitialValue
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case eventSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.Action)
     case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
     case visitedSection(TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
@@ -122,4 +131,6 @@ struct SpecificEnvelopeHistoryEdit {
       }
     }
   }
+
+  public init() {}
 }

@@ -3,18 +3,13 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Received",
+  name: "SSEnvelope",
   targets: .feature(
-    .received,
+    .sSEnvelope,
     testingOptions: [.unitTest],
     dependencies: [
-      .core(.coreLayers),
       .share(.shareLayer),
-      .share(.sSLayout),
-      .feature(.sSSelectableItems),
-      .feature(.sSSearch),
-      .feature(.sSCreateEnvelope),
-      .feature(.sSEnvelope),
+      .core(.coreLayers),
     ],
     testDependencies: []
   )

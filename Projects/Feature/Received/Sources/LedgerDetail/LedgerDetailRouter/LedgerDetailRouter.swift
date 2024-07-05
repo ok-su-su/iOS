@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSEnvelope
 
 // MARK: - LedgerDetailRouter
 
@@ -34,6 +35,31 @@ struct LedgerDetailRouter {
     case routePublisherID
   }
 
+  func handlePath(state: inout State, action: StackActionOf<LedgerDetailPath>) -> Effect<Action> {
+    switch action {
+    case let .element(id: _, action: .envelopeDetail(.delegate(currentAction))):
+      return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
+    case .element(id: _, action: _):
+      return .none
+    case .popFrom(id: _):
+      return .none
+    case .push(id: _, state: _):
+      return .none
+    }
+  }
+
+  func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+    switch action {
+    case let .tappedEnvelopeEditButton(property):
+      return .run { [id = property.id] _ in
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
+        LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
+      }
+    case let .tappedDeleteConfirmButton(id):
+      return .send(.ledgerDetailMain(.inner(.deleteEnvelope(id: id))))
+    }
+  }
+
   var body: some Reducer<State, Action> {
     Scope(state: \.ledgerDetailMain, action: \.ledgerDetailMain) {
       LedgerDetailMain()
@@ -41,6 +67,9 @@ struct LedgerDetailRouter {
 
     Reduce { state, action in
       switch action {
+      case let .path(currentAction):
+        return handlePath(state: &state, action: currentAction)
+
       case let .onAppear(val):
         if state.isOnAppear {
           return .none
@@ -49,15 +78,14 @@ struct LedgerDetailRouter {
         return .publisher {
           LedgerDetailRouterPublisher
             .publisher()
+            .receive(on: RunLoop.main)
             .map { .push($0) }
         }
         .cancellable(id: CancelID.routePublisherID, cancelInFlight: true)
 
-      case .path:
-        return .none
-
       case .ledgerDetailMain:
         return .none
+
       case let .push(pathState):
         state.path.append(pathState)
         return .none
