@@ -29,6 +29,10 @@ final class MyPageMainNetwork {
   func logout() async throws {
     try await provider.request(.logout)
   }
+
+  func resign() async throws {
+    try await provider.request(.withdraw)
+  }
 }
 
 extension DependencyValues {
@@ -46,6 +50,7 @@ extension MyPageMainNetwork: DependencyKey {
     case myPageInformation
     case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)
     case logout
+    case withdraw
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -56,6 +61,8 @@ extension MyPageMainNetwork: DependencyKey {
         "users/\(userID.description)"
       case .logout:
         "auth/logout"
+      case .withdraw:
+        "auth/withdraw"
       }
     }
 
@@ -67,6 +74,8 @@ extension MyPageMainNetwork: DependencyKey {
         .patch
       case .logout:
         .post
+      case .withdraw:
+        .post
       }
     }
 
@@ -77,6 +86,8 @@ extension MyPageMainNetwork: DependencyKey {
         .requestPlain
       case let .updateMyProfile(_, body: body):
         .requestData(body.getBody())
+      case .withdraw:
+        .requestPlain
       }
     }
   }

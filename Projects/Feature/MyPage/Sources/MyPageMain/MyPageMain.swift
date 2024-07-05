@@ -35,6 +35,7 @@ struct MyPageMain {
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
     var showMessageAlert = false
+    var showResignAlert = false
 
     init() {}
   }
@@ -55,6 +56,7 @@ struct MyPageMain {
     case tappedMyPageInformationSection
     case showAlert(Bool)
     case tappedLogOut
+    case tappedResignButton
   }
 
   enum InnerAction: Equatable {
@@ -63,11 +65,13 @@ struct MyPageMain {
     case bottomSection(BottomPageSection)
     case updateMyInformation(UserInfoResponseDTO)
     case isLoading(Bool)
+    case pushOnboarding
   }
 
   enum AsyncAction: Equatable {
     case getMyInformation
     case logout
+    case resign
   }
 
   @CasePathable
@@ -169,7 +173,7 @@ struct MyPageMain {
           return .none
 
         case .resign:
-          routingPublisher.send(.resign)
+          state.showResignAlert = true
           return .none
         }
 
@@ -207,15 +211,29 @@ struct MyPageMain {
       case let .view(.showAlert(bool)):
         state.showMessageAlert = bool
         return .none
+
       case .view(.tappedLogOut):
-        return .send(.async(.logout))
+        return .send(.async(.resign))
 
       case .async(.logout):
-        return .run { _ in
+        return .run { send in
           try await network.logout()
-          NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
-          SSTokenManager.shared.removeToken()
+          await send(.inner(.pushOnboarding))
         }
+
+      case .async(.resign):
+        return .run { send in
+          try await network.resign()
+          await send(.inner(.pushOnboarding))
+        }
+
+      case .inner(.pushOnboarding):
+        NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
+        SSTokenManager.shared.removeToken()
+        return .none
+
+      case .view(.tappedResignButton):
+        return .send(.async(.resign))
       }
     }
     .subFeatures0()

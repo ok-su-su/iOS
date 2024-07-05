@@ -167,6 +167,18 @@ struct MyPageMainView: View {
         }
       )
     )
+    .sSAlert(
+      isPresented: $store.showResignAlert.sending(\.view.showAlert),
+      messageAlertProperty: .init(
+        titleText: "정말 탈퇴하시겠어요?",
+        contentText: "계정 정보와 모든 기록이 삭제되며 다시 복구할 수 없어요",
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(left: "취소", right: "탈퇴"),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedResignButton)
+        }
+      )
+    )
   }
 
   private enum Metrics {

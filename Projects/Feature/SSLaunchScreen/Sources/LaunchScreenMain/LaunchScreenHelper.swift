@@ -29,7 +29,7 @@ struct LaunchScreenHelper {
     do {
       try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
       return .prevUser
-    }catch {
+    } catch {
       os_log("\(error.localizedDescription)")
       return newUserRoutine()
     }
