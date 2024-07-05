@@ -56,9 +56,7 @@ struct LedgerDetailRouter {
         LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
       }
     case let .tappedDeleteConfirmButton(id):
-      return .none
-//      SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
-//      return .send(.envelopeHistory(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope)))
+      return .send(.ledgerDetailMain(.inner(.deleteEnvelope(id: id))))
     }
   }
 
@@ -69,6 +67,9 @@ struct LedgerDetailRouter {
 
     Reduce { state, action in
       switch action {
+      case let .path(currentAction):
+        return handlePath(state: &state, action: currentAction)
+
       case let .onAppear(val):
         if state.isOnAppear {
           return .none
@@ -80,9 +81,6 @@ struct LedgerDetailRouter {
             .map { .push($0) }
         }
         .cancellable(id: CancelID.routePublisherID, cancelInFlight: true)
-
-      case .path:
-        return .none
 
       case .ledgerDetailMain:
         return .none
