@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import SSEnvelope
 
 // MARK: - SpecificEnvelopeHistoryRouter
 
@@ -31,6 +32,31 @@ struct SpecificEnvelopeHistoryRouter {
 
   enum CancelID {
     case pushPublisher
+  }
+
+  func handlePath(state: inout State, action: StackActionOf<SpecificEnvelopeHistoryRouterPath>) -> Effect<Action> {
+    switch action {
+
+    case let .element(id: _, action: .specificEnvelopeHistoryDetail(.delegate(currentAction))):
+      return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
+    case .element(id: let id, action: let action):
+      return .none
+    case .popFrom(id: let id):
+      return .none
+    case .push(id: let id, state: let state):
+      return .none
+    }
+  }
+
+  func handleEnvelopeDetailDelegateAction(state: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+    switch action {
+    case let .tappedEnvelopeEditButton(property):
+      //TODO: Routing 필요
+      return .none
+    case let .tappedDeleteConfirmButton(id):
+      state.envelopeHistory.envelopeContents.removeAll(where: {$0.id == id})
+      return .none
+    }
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -75,6 +101,6 @@ struct SpecificEnvelopeHistoryRouter {
 @Reducer(state: .equatable, action: .equatable)
 enum SpecificEnvelopeHistoryRouterPath {
   case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
-  case specificEnvelopeHistoryDetail(SpecificEnvelopeHistoryDetail)
+  case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
   case specificEnvelopeHistoryEdit(SpecificEnvelopeHistoryEdit)
 }

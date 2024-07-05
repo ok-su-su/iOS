@@ -17,6 +17,10 @@ struct SpecificEnvelopeHistoryDetailView: View {
   @Bindable
   var store: StoreOf<SpecificEnvelopeDetailReducer>
 
+  public init(store: StoreOf<SpecificEnvelopeDetailReducer>) {
+    self.store = store
+  }
+
   // MARK: Content
 
   @ViewBuilder

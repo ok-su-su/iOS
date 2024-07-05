@@ -142,6 +142,8 @@ public struct SpecificEnvelopeDetailReducer {
       }
     }
   }
+
+  public init() {}
 }
 
 // MARK: FeatureViewAction, FeatureInnerAction, FeatureDelegateAction, FeatureScopeAction, FeatureAsyncAction
