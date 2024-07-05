@@ -36,14 +36,13 @@ struct SpecificEnvelopeHistoryRouter {
 
   func handlePath(state: inout State, action: StackActionOf<SpecificEnvelopeHistoryRouterPath>) -> Effect<Action> {
     switch action {
-
     case let .element(id: _, action: .specificEnvelopeHistoryDetail(.delegate(currentAction))):
       return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
-    case .element(id: let id, action: let action):
+    case let .element(id: id, action: action):
       return .none
-    case .popFrom(id: let id):
+    case let .popFrom(id: id):
       return .none
-    case .push(id: let id, state: let state):
+    case let .push(id: id, state: state):
       return .none
     }
   }
@@ -54,10 +53,10 @@ struct SpecificEnvelopeHistoryRouter {
     case let .tappedEnvelopeEditButton(property):
       return .run { [id = property.id] _ in
         let editState = try await SpecificEventEditReducer.State(envelopeID: id)
-          SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
+        SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
       }
     case let .tappedDeleteConfirmButton(id):
-      state.envelopeHistory.envelopeContents.removeAll(where: {$0.id == id})
+      state.envelopeHistory.envelopeContents.removeAll(where: { $0.id == id })
       return .none
     }
   }
