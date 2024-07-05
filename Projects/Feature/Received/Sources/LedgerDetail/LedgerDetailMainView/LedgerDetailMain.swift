@@ -139,7 +139,8 @@ struct LedgerDetailMain {
 
     case let .tappedFilteredPersonButton(id: id):
       state.filterProperty.select(id)
-      return .none
+      return .send(.inner(.getEnvelopesInitialPage))
+
     case let .appearedEnvelope(envelope):
       if envelope.id == state.envelopeItems.last?.id {
         return .send(.inner(.getEnvelopesNextPage))
