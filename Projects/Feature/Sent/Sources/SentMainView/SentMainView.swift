@@ -154,7 +154,6 @@ struct SentMainView: View {
         VStack(spacing: 16) {
           makeFilterSection()
           makeEnvelope()
-            .disabled(store.isLoading)
             .modifier(SSLoadingModifier(isLoading: store.isLoading))
         }
 
