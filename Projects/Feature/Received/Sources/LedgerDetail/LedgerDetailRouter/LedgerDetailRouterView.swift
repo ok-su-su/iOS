@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSEnvelope
 import SwiftUI
 
 struct LedgerDetailRouterView: View {
@@ -39,6 +40,10 @@ struct LedgerDetailRouterView: View {
       switch store.case {
       case let .main(store):
         LedgerDetailMainView(store: store)
+      case let .envelopeDetail(store):
+        SpecificEnvelopeDetailView(store: store)
+      case let .envelopeEdit(store):
+        SpecificEnvelopeEditView(store: store)
       }
     }
   }

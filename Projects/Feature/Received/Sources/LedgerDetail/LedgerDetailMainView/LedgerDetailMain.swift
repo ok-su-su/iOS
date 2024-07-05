@@ -75,6 +75,7 @@ struct LedgerDetailMain {
     case tappedFilteredAmountButton
     case tappedFilteredPersonButton(id: Int64)
     case appearedEnvelope(EnvelopeViewForLedgerMainProperty)
+    case tappedEnvelope(id: Int64)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -145,6 +146,9 @@ struct LedgerDetailMain {
       if envelope.id == state.envelopeItems.last?.id {
         return .send(.inner(.getEnvelopesNextPage))
       }
+      return .none
+    case let .tappedEnvelope(id):
+      LedgerDetailRouterPublisher.send(.envelopeDetail(.init(envelopeID: id)))
       return .none
     }
   }

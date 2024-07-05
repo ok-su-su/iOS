@@ -8,8 +8,11 @@
 
 import ComposableArchitecture
 import Foundation
+import SSEnvelope
 
 @Reducer(state: .equatable, action: .equatable)
 enum LedgerDetailPath {
   case main(LedgerDetailMain)
+  case envelopeDetail(SpecificEnvelopeDetailReducer)
+  case envelopeEdit(SpecificEnvelopeEditReducer)
 }

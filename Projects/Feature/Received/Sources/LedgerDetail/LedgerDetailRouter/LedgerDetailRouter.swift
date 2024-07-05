@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSEnvelope
 
 // MARK: - LedgerDetailRouter
 
@@ -32,6 +33,33 @@ struct LedgerDetailRouter {
 
   enum CancelID {
     case routePublisherID
+  }
+
+  func handlePath(state: inout State, action: StackActionOf<LedgerDetailPath>) -> Effect<Action> {
+    switch action {
+    case let .element(id: _, action: .envelopeDetail(.delegate(currentAction))):
+      return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
+    case .element(id: _, action: _):
+      return .none
+    case .popFrom(id: _):
+      return .none
+    case .push(id: _, state: _):
+      return .none
+    }
+  }
+
+  func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+    switch action {
+    case let .tappedEnvelopeEditButton(property):
+      return .run { [id = property.id] _ in
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
+        LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
+      }
+    case let .tappedDeleteConfirmButton(id):
+      return .none
+//      SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
+//      return .send(.envelopeHistory(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope)))
+    }
   }
 
   var body: some Reducer<State, Action> {

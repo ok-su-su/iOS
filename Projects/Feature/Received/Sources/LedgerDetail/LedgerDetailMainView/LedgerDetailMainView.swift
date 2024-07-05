@@ -78,6 +78,9 @@ struct LedgerDetailMainView: View {
       LazyVStack(spacing: 8) {
         ForEach(store.envelopeItems) { property in
           EnvelopeViewForLedgerMain(property: property)
+            .onTapGesture {
+              store.sendViewAction(.tappedEnvelope(id: property.id))
+            }
             .onAppear {
               store.sendViewAction(.appearedEnvelope(property))
             }
