@@ -110,7 +110,7 @@ struct ReceivedMainView: View {
         // MARK: - 정렬 버튼
 
         // 정렬된 사람이 없을 때
-        if !store.state.isFilteredItem {
+        if !store.isFilteredItem {
           SSButton(Constants.notSelectedFilterButtonProperty) {
             store.send(.view(.tappedFilterButton))
           }
@@ -227,33 +227,6 @@ struct ReceivedMainView: View {
     static let commonSpacing: CGFloat = 16
     static let filterSpacing: CGFloat = 8
     static let emptyInventoryText: String = "아직 받은 장부가 없어요"
-
-    static let latestButtonProperty: SSButtonProperty = .init(
-      size: .sh32,
-      status: .active,
-      style: .ghost,
-      color: .black,
-      leftIcon: .icon(SSImage.commonOrder),
-      buttonText: "최신순"
-    )
-
-    static let filterButtonProperty: SSButtonProperty = .init(
-      size: .sh32,
-      status: .active,
-      style: .ghost,
-      color: .black,
-      leftIcon: .icon(SSImage.commonFilter),
-      buttonText: "필터"
-    )
-
-    static let inventoryAddButtonProperty: SSButtonProperty = .init(
-      size: .sh40,
-      status: .active,
-      style: .ghost,
-      color: .black,
-      leftIcon: .icon(SSImage.commonAdd),
-      buttonText: ""
-    )
 
     static let notSelectedFilterButtonProperty: SSButtonProperty = .init(
       size: .sh32,

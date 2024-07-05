@@ -20,13 +20,17 @@ struct EnvelopeViewForLedgerMain: View {
     VStack(spacing: 12) {
       HStack(spacing: 8) {
         // 관계
-        SmallBadge(property: .init(size: .small, badgeString: property.name, badgeColor: .orange60))
+        SmallBadge(property: .init(size: .small, badgeString: property.relationship, badgeColor: .orange60))
+
         // 방문 여부
-        SmallBadge(property: .init(size: .small, badgeString: property.isVisitedString, badgeColor: .blue60))
+        if property.isVisited != nil {
+          SmallBadge(property: .init(size: .small, badgeString: property.isVisitedString, badgeColor: .blue60))
+        }
+
         // 선물
-        if let gift = property.gift {
+        if property.gift != nil {
           let giftText = "선물"
-          SmallBadge(property: .init(size: .small, badgeString: giftText, badgeColor: .blue60))
+          SmallBadge(property: .init(size: .small, badgeString: giftText, badgeColor: .gray90))
         }
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,13 +76,16 @@ struct EnvelopeViewForLedgerMainProperty: Equatable, Hashable, Identifiable {
   /// 관계
   var relationship: String
   /// 방문 여부 입니다.
-  var isVisited: Bool
+  var isVisited: Bool?
   /// 선물 여부 입니다.
   var gift: String?
   /// 봉투 가격 입니다.
   var amount: Int64
 
   var isVisitedString: String {
+    guard let isVisited else {
+      return ""
+    }
     return isVisited ? "방문" : "미방문"
   }
 }

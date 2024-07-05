@@ -10,6 +10,7 @@ import Designsystem
 import SwiftUI
 
 struct CreateEnvelopeRouterView: View {
+  private var completion: (Data) -> Void
   @Environment(\.dismiss) var dismiss
 
   // MARK: Reducer
@@ -17,15 +18,17 @@ struct CreateEnvelopeRouterView: View {
   @Bindable
   var store: StoreOf<CreateEnvelopeRouter>
 
+  init(store: StoreOf<CreateEnvelopeRouter>, completion: @escaping (Data) -> Void) {
+    self.completion = completion
+    self.store = store
+  }
+
   // MARK: Content
 
   @ViewBuilder
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
-        .onChange(of: store.dismiss) { _, _ in
-          dismiss()
-        }
     } destination: { store in
       switch store.case {
       case let .createEnvelopePrice(store):
@@ -50,6 +53,9 @@ struct CreateEnvelopeRouterView: View {
         CreateEnvelopeAdditionalIsVisitedEventView(store: store)
       }
     }
+    .onDisappear {
+      completion(store.currentCreateEnvelopeData)
+    }
   }
 
   var body: some View {
@@ -61,8 +67,14 @@ struct CreateEnvelopeRouterView: View {
         HeaderView(store: store.scope(state: \.header, action: \.header))
         makeNavigationView()
       }
+      .modifier(SSLoadingModifierWithOverlay(isLoading: store.isLoading))
       .onAppear {
         store.send(.onAppear(true))
+      }
+      .onChange(of: store.dismiss) { _, newValue in
+        if newValue {
+          dismiss()
+        }
       }
     }
   }

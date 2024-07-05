@@ -23,16 +23,6 @@ struct SentEnvelopeFilterView: View {
   @ObservedObject
   var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
 
-  var filterProperty: FilterProperty? {
-    if store.state.filterHelper.selectedPerson == [] || sliderProperty.isInitialState() {
-      return nil
-    }
-    return .init(
-      filteredPeople: store.state.filterHelper.selectedPerson,
-      filterEnvelopePrice: .init(maximum: sliderProperty.highHandle.currentValueBy1000, minimum: sliderProperty.lowHandle.currentValueBy1000)
-    )
-  }
-
   // MARK: Content
 
   @ViewBuilder

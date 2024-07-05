@@ -43,7 +43,7 @@ struct SearchFriendResponse: Codable {
 
 // MARK: - FriendModel
 
-struct FriendModel: Codable {
+public struct FriendModel: Codable {
   let id: Int64
   let name: String
   let phoneNumber: String?

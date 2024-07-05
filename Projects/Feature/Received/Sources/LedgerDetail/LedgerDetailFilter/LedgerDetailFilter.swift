@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import FeatureAction
 import Foundation
 
@@ -16,7 +17,18 @@ struct LedgerDetailFilter {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    init() {}
+    var textFieldText: String = ""
+    @Shared var property: LedgerDetailFilterProperty
+    var prevProperty: LedgerDetailFilterProperty
+    var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
+    var isLoading = true
+    var sliderStartValue: Double = 0
+    var sliderEndValue: Double = 100_000
+    var ledgerProperty = SharedContainer.getValue(LedgerDetailProperty.self)
+    init(_ property: Shared<LedgerDetailFilterProperty>) {
+      _property = property
+      prevProperty = property.wrappedValue
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -27,40 +39,119 @@ struct LedgerDetailFilter {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedItem(LedgerFilterItemProperty)
+    case changeTextField(String)
+    case closeButtonTapped
+    case tappedConfirmButton(lowest: Int64, highest: Int64)
+    case reset
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case isLoading(Bool)
+    case updateItems([LedgerFilterItemProperty])
+  }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case searchInitialFriends
+    case searchFriendsBy(name: String)
+  }
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+  }
 
   enum DelegateAction: Equatable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  @Dependency(\.dismiss) var dismiss
+
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
       state.isOnAppear = isAppear
+      return .send(.async(.searchInitialFriends))
+
+    case let .tappedItem(item):
+      state.property.select(item.id)
+      return .none
+
+    case let .changeTextField(text):
+      state.textFieldText = text
+      return .send(.async(.searchFriendsBy(name: text)))
+
+    case .closeButtonTapped:
+      state.property = state.prevProperty
+      return .run { _ in
+        await dismiss()
+      }
+
+    case let .tappedConfirmButton(lowest, highest):
+      if !(lowest == Int64(state.sliderStartValue) && highest == Int64(state.sliderEndValue)) {
+        state.property.lowestAmount = lowest
+        state.property.highestAmount = highest
+      }
+      return .run { _ in
+        await dismiss()
+      }
+
+    case .reset:
+      state.property.reset()
       return .none
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, _ in
-    return .none
+  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header:
+      return .none
+    }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
-    return .none
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+
+    case let .updateItems(items):
+      let uniqueItem = (state.property.selectableItems + items).uniqued()
+      state.property.selectableItems = uniqueItem
+      return .none
+    }
   }
 
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
-    return .none
+  @Dependency(\.ledgerDetailFilterNetwork) var network
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .searchInitialFriends:
+      guard let id = state.ledgerProperty?.id else {
+        return .none
+      }
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let items = try await network.getInitialData(ledgerID: id)
+        await send(.inner(.updateItems(items)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case let .searchFriendsBy(name):
+      guard let id = state.ledgerProperty?.id else {
+        return .none
+      }
+      return .none
+//      return .run { send in
+//        await send(.inner(.isLoading(true)))
+//        let items = try await network.findFriendsBy(name: name, ledgerID: id)
+//        await send(.inner(.updateItems(items)))
+//        await send(.inner(.isLoading(false)))
+//      }
+    }
   }
 
   var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in
@@ -68,6 +159,10 @@ struct LedgerDetailFilter {
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.header, action: \.scope.header) {
+      HeaderViewFeature()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(currentAction):

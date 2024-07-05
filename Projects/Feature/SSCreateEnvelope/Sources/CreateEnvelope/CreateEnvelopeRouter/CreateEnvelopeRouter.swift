@@ -25,6 +25,9 @@ struct CreateEnvelopeRouter {
     var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
     var dismiss = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+    var isLoading = false
+
+    var currentCreateEnvelopeData: Data = .init()
 
     var createPrice: CreateEnvelopePrice.State
 
@@ -51,6 +54,8 @@ struct CreateEnvelopeRouter {
     case createPrice(CreateEnvelopePrice.Action)
     case screenEnded(PathDestination.State)
     case dismiss(Bool)
+    case updateDismissData(Data)
+    case isLoading(Bool)
   }
 
   private enum CancelID {
@@ -97,6 +102,7 @@ struct CreateEnvelopeRouter {
       case let .dismiss(val):
         state.dismiss = val
         return .none
+
       case let .onAppear(val):
         if state.isOnAppear {
           return .none
@@ -164,15 +170,18 @@ struct CreateEnvelopeRouter {
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
           return .run { send in
             let friendProperty = CreateFriendRequestShared.getBody()
+            await send(.isLoading(true))
             let friendID = try await network.getFriendID(friendProperty)
             CreateEnvelopeRequestShared.setFriendID(id: friendID)
             let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
-            try await network.createEnvelope(createEnvelopeProperty)
+            let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
+            await send(.updateDismissData(envelopeData))
+            await send(.isLoading(false))
 
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
             await send(.dismiss(true))
-          }.throttle(id: CancelID.finishEnvelope, for: 4, scheduler: queue, latest: false)
+          }
         }
 
         switch currentSection {
@@ -206,8 +215,15 @@ struct CreateEnvelopeRouter {
 
       case .createPrice:
         return .none
+
       case let .screenEnded(currentState):
         return endedScreenHandler(currentState, state: state)
+      case let .updateDismissData(data):
+        state.currentCreateEnvelopeData = data
+        return .none
+      case let .isLoading(val):
+        state.isLoading = val
+        return .none
       }
     }
     .addFeatures()
