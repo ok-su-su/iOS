@@ -19,6 +19,7 @@ public enum Core: String {
   case coreLayers
   case sSInterceptor
   case featureAction
+  case sSRegexManager
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

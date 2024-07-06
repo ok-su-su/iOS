@@ -77,7 +77,8 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       titleText: envelopeDetailProperty.visitedTitle,
       items: VisitedSelectButtonItem.defaultItems(),
       isCustomItem: nil,
-      customTextFieldPrompt: nil
+      customTextFieldPrompt: nil,
+      isEssentialProperty: false
     )
 
     visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited ?? true)

@@ -13,6 +13,7 @@ let project = Project.makeModule(
       .thirdParty(.ComposableArchitecture),
       .core(.sSInterceptor),
       .core(.featureAction),
+      .core(.sSRegexManager)
     ]
   )
 )
