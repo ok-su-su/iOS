@@ -55,6 +55,7 @@ struct MyPageMain {
     case tappedFeedbackButton
     case tappedMyPageInformationSection
     case showAlert(Bool)
+    case showResignAlert(Bool)
     case tappedLogOut
     case tappedResignButton
   }
@@ -234,6 +235,10 @@ struct MyPageMain {
 
       case .view(.tappedResignButton):
         return .send(.async(.resign))
+
+      case let .view(.showResignAlert(val)):
+        state.showResignAlert = val
+        return .none
       }
     }
     .subFeatures0()

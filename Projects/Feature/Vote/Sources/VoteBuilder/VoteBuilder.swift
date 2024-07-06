@@ -10,10 +10,12 @@ import ComposableArchitecture
 import SwiftUI
 
 public struct VoteBuilder: View {
+  @State var store: StoreOf<VoteMain> = .init(initialState: .init()) {
+    VoteMain()
+  }
+
   public var body: some View {
-    VoteMainView(store:
-      .init(initialState: .init(), reducer: { VoteMain() })
-    )
+    VoteMainView(store: store)
   }
 
   public init() {}

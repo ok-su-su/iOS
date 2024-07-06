@@ -28,7 +28,7 @@ final class ContentViewObject: ObservableObject {
       self.type = .received
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
-        self.type = .statistics
+      self.type = .statistics
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedVote, object: nil, queue: .main) { _ in
       self.type = .vote
