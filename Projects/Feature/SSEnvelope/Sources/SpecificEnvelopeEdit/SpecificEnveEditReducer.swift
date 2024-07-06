@@ -49,6 +49,7 @@ public struct SpecificEnvelopeEditReducer {
   @CasePathable
   public enum ViewAction: Equatable {
     case onAppear(Bool)
+    case changePriceTextField(String)
     case changeNameTextField(String)
     case changeGiftTextField(String)
     case changeContactTextField(String)
@@ -87,50 +88,83 @@ public struct SpecificEnvelopeEditReducer {
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .send(.inner(.setInitialValue))
-
-      case .scope(.header):
-        return .none
-
-      case .scope(.eventSection):
-        return .none
-
-      case .scope(.relationSection):
-        return .none
-
-      case let .view(.changeNameTextField(text)):
-        state.editHelper.changeName(text)
-        return .none
-
-      case .scope(.visitedSection):
-        return .none
-
-      case let .view(.changeGiftTextField(text)):
-        state.editHelper.changeGift(text)
-        return .none
-
-      case let .view(.changeContactTextField(text)):
-        state.editHelper.changeContact(text)
-        return .none
-
-      case let .view(.changeMemoTextField(text)):
-        state.editHelper.changeMemo(text)
-        return .none
-
-      case .inner(.setInitialValue):
-        let initialEvent = state.editHelper.envelopeDetailProperty.eventName
-        let initialRelation = state.editHelper.envelopeDetailProperty.relation
-        let initialVisited = state.editHelper.envelopeDetailProperty.isVisitedText
-        return .run { send in
-          await send(.scope(.eventSection(.initialValue(initialEvent))))
-          await send(.scope(.relationSection(.initialValue(initialRelation))))
-          await send(.scope(.visitedSection(.initialValue(initialVisited ?? ""))))
-        }
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
   }
 
   public init() {}
+}
+
+extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction {
+  public func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .header:
+      return .none
+
+    case .eventSection:
+      return .none
+
+    case .relationSection:
+      return .none
+
+    case .visitedSection:
+      return .none
+    }
+  }
+
+  public func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .send(.inner(.setInitialValue))
+
+    case let .changeNameTextField(text):
+      state.editHelper.changeName(text)
+      return .none
+
+    case let .changeGiftTextField(text):
+      state.editHelper.changeGift(text)
+      return .none
+
+    case let .changeContactTextField(text):
+      state.editHelper.changeContact(text)
+      return .none
+
+    case let .changeMemoTextField(text):
+      state.editHelper.changeMemo(text)
+      return .none
+
+    case let .changePriceTextField(text):
+      state.editHelper.priceProperty.setPriceTextFieldText(text)
+      return .none
+    }
+  }
+
+  public func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .setInitialValue:
+      let initialEvent = state.editHelper.envelopeDetailProperty.eventName
+      let initialRelation = state.editHelper.envelopeDetailProperty.relation
+      let initialVisited = state.editHelper.envelopeDetailProperty.isVisitedText
+      return .run { send in
+        await send(.scope(.eventSection(.initialValue(initialEvent))))
+        await send(.scope(.relationSection(.initialValue(initialRelation))))
+        await send(.scope(.visitedSection(.initialValue(initialVisited ?? ""))))
+      }
+    }
+  }
+
+  public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
+    return .none
+  }
+
+
 }

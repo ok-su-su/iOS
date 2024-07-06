@@ -25,19 +25,45 @@ public struct SpecificEnvelopeEditView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading, spacing: 16) {
-      // Title
-      Text(store.editHelper.envelopeDetailProperty.priceText)
-        .modifier(SSTypoModifier(.title_xxl))
-        .foregroundStyle(SSColor.gray100)
+      // Price
+      makePriceTextFieldView()
 
       makeSubContents()
     }
   }
 
   @ViewBuilder
+  private func makePriceTextFieldView() -> some View {
+    ZStack {
+      // invisiableTextField
+      TextField(
+        "",
+        text: $store.editHelper.priceProperty.priceTextFieldText.sending(\.view.changePriceTextField),
+        prompt: nil
+      )
+      .foregroundStyle(Color.clear)
+      .keyboardType(.numberPad)
+      .modifier(SSTypoModifier(.title_xl))
+
+      // Visiable TextField
+      HStack(spacing: 0) {
+        Text(store.editHelper.priceProperty.priceText.isEmpty ? "금액을 입력해 주세요" : store.editHelper.priceProperty.priceTextFieldText)
+          .modifier(SSTypoModifier(.title_xl))
+          .foregroundStyle(store.editHelper.priceProperty.priceText.isEmpty ? SSColor.gray30 : SSColor.gray100)
+
+        Spacer()
+      }
+      .frame(maxWidth: .infinity, maxHeight: 46)
+      .background(SSColor.gray15)
+    }
+    .frame(height: 44)
+  }
+
+  @ViewBuilder
   private func makeSubContents() -> some View {
     ScrollView {
       VStack(spacing: 0) {
+
         // Section
         makeEventEditableSection()
 

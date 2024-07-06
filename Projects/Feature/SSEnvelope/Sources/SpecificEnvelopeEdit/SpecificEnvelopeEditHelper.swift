@@ -13,6 +13,8 @@ import Foundation
 public struct SpecificEnvelopeEditHelper: Equatable {
   var envelopeDetailProperty: EnvelopeDetailProperty
 
+  var priceProperty: PriceEditProperty
+
   var eventSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeEventProperty>
   var eventSectionButtonCustomItem: CreateEnvelopeEventProperty
 
@@ -38,6 +40,8 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     relationItems: [CreateEnvelopeRelationItemProperty]
   ) {
     self.envelopeDetailProperty = envelopeDetailProperty
+
+    priceProperty = .init(price: envelopeDetailProperty.price)
 
     // 만약 현재 이벤트가 default 이벤트에 존재 하지 않는다면
     eventSectionButtonCustomItem = .init(
@@ -99,6 +103,26 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
   mutating func changeMemo(_ name: String) {
     memoEditProperty.memo = name
+  }
+}
+
+struct PriceEditProperty: Equatable {
+  var price: Int64
+  var priceTextFieldText: String
+  var priceText: String
+
+  init(price: Int64) {
+    self.price = price
+    self.priceTextFieldText = price.description
+    self.priceText = CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? ""
+  }
+
+  mutating func setPriceTextFieldText(_ text: String) {
+    priceTextFieldText = text
+    guard let currentValue = Int64(text) else {
+      return
+    }
+    priceText = CustomNumberFormatter.formattedByThreeZero(currentValue, subFixString: "원") ?? ""
   }
 }
 
