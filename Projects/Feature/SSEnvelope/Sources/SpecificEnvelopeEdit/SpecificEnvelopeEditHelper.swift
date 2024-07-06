@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSRegexManager
 
 // MARK: - SpecificEnvelopeEditHelper
 
@@ -94,16 +95,48 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     nameEditProperty.textFieldText = name
   }
 
+  func isValidName() -> Bool {
+    nameEditProperty.isValid
+  }
+
   mutating func changeGift(_ name: String) {
     giftEditProperty.gift = name
+  }
+
+  func isValidGift() -> Bool {
+    giftEditProperty.isValid
   }
 
   mutating func changeContact(_ name: String) {
     contactEditProperty.contact = name
   }
 
+  func isValidContact() -> Bool {
+    contactEditProperty.isValid
+  }
+
   mutating func changeMemo(_ name: String) {
     memoEditProperty.memo = name
+  }
+
+  func isValidMemo() -> Bool {
+    memoEditProperty.isValid
+  }
+
+  mutating func changePrice(_ value: String) {
+    priceProperty.setPriceTextFieldText(value)
+  }
+
+  func isValidPrice() -> Bool {
+    priceProperty.isValid
+  }
+
+  func isValidToSave() -> Bool {
+    (priceProperty.isValid) &&
+    (eventSectionButtonHelper.isValid()) &&
+    (nameEditProperty.isValid) &&
+    (relationSectionButtonHelper.isValid())
+    //데이트는 항상 참이니까 제외
   }
 }
 
@@ -123,7 +156,12 @@ struct PriceEditProperty: Equatable {
     guard let currentValue = Int64(text) else {
       return
     }
+    price = currentValue
     priceText = CustomNumberFormatter.formattedByThreeZero(currentValue, subFixString: "원") ?? ""
+  }
+
+  var isValid: Bool {
+    RegexManager.isValidPrice(priceTextFieldText)
   }
 }
 
@@ -135,6 +173,9 @@ struct GiftEditProperty: Equatable {
   init(gift: String) {
     self.gift = gift
   }
+  var isValid: Bool {
+    RegexManager.isValidGift(gift)
+  }
 }
 
 // MARK: - ContactEditProperty
@@ -145,6 +186,9 @@ struct ContactEditProperty: Equatable {
   init(contact: String) {
     self.contact = contact
   }
+  var isValid: Bool {
+    RegexManager.isValidContacts(contact)
+  }
 }
 
 // MARK: - MemoEditProperty
@@ -153,6 +197,9 @@ struct MemoEditProperty: Equatable {
   var memo: String
   init(memo: String) {
     self.memo = memo
+  }
+  var isValid: Bool {
+    RegexManager.isValidMemo(memo)
   }
 }
 
@@ -211,6 +258,10 @@ struct DateEditProperty: Equatable {
 /// EditName을 하기 위해 사용됩니다.
 struct NameEditProperty: Equatable {
   var textFieldText: String
+
+  var isValid: Bool {
+    RegexManager.isValidName(textFieldText)
+  }
 }
 
 // MARK: - CreateEnvelopeEventProperty

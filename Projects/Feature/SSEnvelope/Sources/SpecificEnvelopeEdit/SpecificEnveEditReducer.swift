@@ -7,11 +7,12 @@
 //
 
 import Foundation
-
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSRegexManager
+import SSToast
 
 @Reducer
 public struct SpecificEnvelopeEditReducer {
@@ -23,6 +24,7 @@ public struct SpecificEnvelopeEditReducer {
     var relationSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.State
     var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeEditHelper
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
@@ -35,6 +37,10 @@ public struct SpecificEnvelopeEditReducer {
       let network = EnvelopeNetwork()
       let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: envelopeID)
       self.init(editHelper: helper)
+    }
+
+    var isValidToSave: Bool {
+      return editHelper.isValidToSave()
     }
   }
 
@@ -68,6 +74,7 @@ public struct SpecificEnvelopeEditReducer {
     case eventSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.Action)
     case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
     case visitedSection(TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.Action)
+    case toast(SSToastReducer.Action)
   }
 
   public enum DelegateAction: Equatable {}
@@ -84,6 +91,10 @@ public struct SpecificEnvelopeEditReducer {
     }
     Scope(state: \.visitedSection, action: \.scope.visitedSection) {
       TitleAndItemsWithSingleSelectButton()
+    }
+
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
     }
 
     Reduce { state, action in
@@ -117,6 +128,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
     case .visitedSection:
       return .none
+
+    case .toast:
+      return .none
     }
   }
 
@@ -128,23 +142,28 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
     case let .changeNameTextField(text):
       state.editHelper.changeName(text)
-      return .none
+      return state.editHelper.isValidName() ? .none :
+        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요"))))
 
     case let .changeGiftTextField(text):
       state.editHelper.changeGift(text)
-      return .none
+      return state.editHelper.isValidGift() ? .none:
+        .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요"))))
 
     case let .changeContactTextField(text):
       state.editHelper.changeContact(text)
-      return .none
+      return state.editHelper.isValidContact() ? .none :
+        .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요"))))
 
     case let .changeMemoTextField(text):
       state.editHelper.changeMemo(text)
-      return .none
+      return state.editHelper.isValidMemo() ? .none :
+        .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요"))))
 
     case let .changePriceTextField(text):
-      state.editHelper.priceProperty.setPriceTextFieldText(text)
-      return .none
+      state.editHelper.changePrice(text)
+      return state.editHelper.isValidPrice() ? .none :
+        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능해요"))))
     }
   }
 
