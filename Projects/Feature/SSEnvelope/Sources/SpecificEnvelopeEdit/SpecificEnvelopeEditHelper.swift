@@ -99,12 +99,20 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     nameEditProperty.isValid
   }
 
+  func isShowToastByName() -> Bool {
+    nameEditProperty.isShowToast
+  }
+
   mutating func changeGift(_ name: String) {
     giftEditProperty.gift = name
   }
 
   func isValidGift() -> Bool {
     giftEditProperty.isValid
+  }
+
+  func isShowToastByGift() -> Bool {
+    giftEditProperty.isShowToast
   }
 
   mutating func changeContact(_ name: String) {
@@ -115,8 +123,16 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     contactEditProperty.isValid
   }
 
+  func isShowToastByContact() -> Bool {
+    contactEditProperty.isShowToast
+  }
+
   mutating func changeMemo(_ name: String) {
     memoEditProperty.memo = name
+  }
+
+  func isShowToastByMemo() -> Bool {
+    memoEditProperty.isShowToast
   }
 
   func isValidMemo() -> Bool {
@@ -129,6 +145,10 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
   func isValidPrice() -> Bool {
     priceProperty.isValid
+  }
+
+  func isShowToastByPrice() -> Bool {
+    priceProperty.isShowToast
   }
 
   func isValidToSave() -> Bool {
@@ -165,6 +185,10 @@ struct PriceEditProperty: Equatable {
   var isValid: Bool {
     RegexManager.isValidPrice(priceTextFieldText)
   }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByPrice(priceTextFieldText)
+  }
 }
 
 // MARK: - GiftEditProperty
@@ -178,6 +202,10 @@ struct GiftEditProperty: Equatable {
 
   var isValid: Bool {
     RegexManager.isValidGift(gift)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByGift(gift)
   }
 }
 
@@ -193,6 +221,10 @@ struct ContactEditProperty: Equatable {
   var isValid: Bool {
     RegexManager.isValidContacts(contact)
   }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByContacts(contact)
+  }
 }
 
 // MARK: - MemoEditProperty
@@ -205,6 +237,10 @@ struct MemoEditProperty: Equatable {
 
   var isValid: Bool {
     RegexManager.isValidMemo(memo)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByMemo(memo)
   }
 }
 
@@ -266,6 +302,10 @@ struct NameEditProperty: Equatable {
 
   var isValid: Bool {
     RegexManager.isValidName(textFieldText)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByName(textFieldText)
   }
 }
 

@@ -1,5 +1,5 @@
 //
-//  SpecificEnveEditReducer.swift
+//  SpecificEnvelopeEditReducer.swift
 //  SSEnvelope
 //
 //  Created by MaraMincho on 7/5/24.
@@ -26,6 +26,7 @@ public struct SpecificEnvelopeEditReducer {
     var visitedSection: TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.State
     @Shared var editHelper: SpecificEnvelopeEditHelper
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var isLoading = false
 
     init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
@@ -66,13 +67,16 @@ public struct SpecificEnvelopeEditReducer {
 
   public enum InnerAction: Equatable {
     case setInitialValue
+    case isLoading(Bool)
   }
 
   public enum AsyncAction: Equatable {
     case editFriendsAndEnvelope
+    case updateEnvelopes(friendID: Int64)
   }
 
   @Dependency(\.envelopeNetwork) var network
+  @Dependency(\.dismiss) var dismiss
   @CasePathable
   public enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
@@ -149,31 +153,31 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
     case let .changeNameTextField(text):
       state.editHelper.changeName(text)
-      return state.editHelper.isValidName() ? .none :
-        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요"))))
+      return state.editHelper.isShowToastByName() ?
+        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none
 
     case let .changeGiftTextField(text):
       state.editHelper.changeGift(text)
-      return state.editHelper.isValidGift() ? .none :
-        .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요"))))
+      return state.editHelper.isShowToastByGift() ?
+        .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요")))) : .none
 
     case let .changeContactTextField(text):
       state.editHelper.changeContact(text)
-      return state.editHelper.isValidContact() ? .none :
-        .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요"))))
+      return state.editHelper.isShowToastByContact() ?
+        .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요")))) : .none
 
     case let .changeMemoTextField(text):
       state.editHelper.changeMemo(text)
-      return state.editHelper.isValidMemo() ? .none :
-        .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요"))))
+      return state.editHelper.isShowToastByContact() ?
+        .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요")))) : .none
 
     case let .changePriceTextField(text):
       state.editHelper.changePrice(text)
-      return state.editHelper.isValidPrice() ? .none :
-        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능해요"))))
+      return state.editHelper.isShowToastByPrice() ?
+        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능해요")))) : .none
 
     case .tappedSaveButton:
-      return .none
+      return .send(.async(.editFriendsAndEnvelope))
     }
   }
 
@@ -188,6 +192,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         await send(.scope(.relationSection(.initialValue(initialRelation))))
         await send(.scope(.visitedSection(.initialValue(initialVisited ?? ""))))
       }
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
     }
   }
 
@@ -195,28 +202,43 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
     switch action {
     case .editFriendsAndEnvelope:
       guard let selectedRelationItem = state.editHelper.relationSectionButtonHelper.selectedItem,
-            let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem
+            let customItem = state.editHelper.relationSectionButtonHelper.isCustomItem,
+            let selectedItemID = state.editHelper.relationSectionButtonHelper.selectedItem?.id
       else {
         return .none
       }
 
       // 만약 선택된 아이템이 customItem일 경우
-      let customRelation = selectedRelationItem.id == state.editHelper.relationSectionButtonHelper.isCustomItem?.id ?
-        state.editHelper.relationSectionButtonHelper.isCustomItem?.title : nil
+      let customRelation = selectedItemID == customItem.id ? customItem.title : nil
+      let phoneNumber = state.editHelper.contactEditProperty.contact
+
+      let friendID = state.editHelper.envelopeDetailProperty.friendID
+      let friendRequestBody = CreateAndUpdateFriendRequest(
+        name: state.editHelper.nameEditProperty.textFieldText,
+        phoneNumber:  phoneNumber.isEmpty ? nil : phoneNumber,
+        relationshipId: selectedRelationItem.id,
+        customRelation: customRelation
+      )
+
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let updatedFriendID = try await network.editFriends(id: friendID, body: friendRequestBody)
+        await send(.async(.updateEnvelopes(friendID: updatedFriendID)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case let .updateEnvelopes(friendID):
+      guard let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem
+      else {
+        return .none
+      }
 
       let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
         state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
 
-      let friendID = state.editHelper.envelopeDetailProperty
-      let friendRequestBody = CreateAndUpdateFriendRequest(
-        name: state.editHelper.nameEditProperty.textFieldText,
-        phoneNumber: state.editHelper.contactEditProperty.contact,
-        relationshipId: selectedRelationItem.id,
-        customRelation: customRelation
-      )
       let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
         type: state.editHelper.envelopeDetailProperty.type,
-        friendId: -1,
+        friendId: friendID,
         ledgerId: state.editHelper.envelopeDetailProperty.ledgerID,
         amount: state.editHelper.priceProperty.price,
         gift: state.editHelper.giftEditProperty.gift,
@@ -225,8 +247,14 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
         category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
       )
-      return .run { _ in
-//        network.editFriends(id: <#T##Int64#>, body: <#T##CreateAndUpdateFriendRequest#>)
+
+      let envelopesID = state.editHelper.envelopeDetailProperty.id
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let envelopeProperty = try await network.editEnvelopes(id: envelopesID, body: envelopeRequestBody)
+        UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
+        await send(.inner(.isLoading(false)))
+        await dismiss()
       }
     }
   }

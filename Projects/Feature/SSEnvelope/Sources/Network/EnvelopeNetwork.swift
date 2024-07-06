@@ -72,9 +72,21 @@ struct EnvelopeNetwork {
     return dto.id
   }
 
-  func editEnvelopes(id: Int64, body: CreateAndUpdateEnvelopeRequest) async throws {
+  func editEnvelopes(id: Int64, body: CreateAndUpdateEnvelopeRequest) async throws -> EnvelopeDetailProperty {
     // TODO: 작업하기
     let dto: CreateAndUpdateEnvelopeResponse = try await provider.request(.editEnvelopes(id: id, body))
+    return .init(
+      id: dto.envelope.id,
+      type: dto.envelope.type,
+      ledgerID: nil,
+      price: dto.envelope.amount,
+      eventName: "이벤트 네임", // TODO: Category 수정
+      friendID: dto.friend.id,
+      name: dto.friend.name,
+      relation: dto.relationship.relation,
+      date: CustomDateFormatter.getDate(from: dto.envelope.handedOverAt) ?? .now,
+      isVisited: dto.envelope.hasVisited
+    )
   }
 }
 

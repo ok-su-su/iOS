@@ -52,7 +52,16 @@ public struct SpecificEnvelopeDetailReducer {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.getEnvelopeDetailProperty))
+      return .merge(
+        .publisher {
+          UpdateEnvelopeDetailPropertyPublisher
+            .publisher()
+            .receive(on: RunLoop.main)
+            .map { .inner(.updateEnvelopeDetailProperty($0)) }
+        },
+
+        .send(.async(.getEnvelopeDetailProperty))
+      )
 
     // 삭제 버튼 눌렀을 경우
     case .tappedAlertConfirmButton:

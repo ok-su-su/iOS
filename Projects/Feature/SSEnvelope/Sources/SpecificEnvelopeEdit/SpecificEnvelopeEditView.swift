@@ -209,9 +209,9 @@ public struct SpecificEnvelopeEditView: View {
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(SSColor.gray10)
         .frame(maxWidth: .infinity, maxHeight: 60)
-        .background(store.isValidToSave ? SSColor.gray30 : SSColor.gray100)
+        .background(store.isValidToSave ? SSColor.gray100 : SSColor.gray30)
     }
-    .disabled(store.isValidToSave)
+    .disabled(!store.isValidToSave)
   }
 
   public var body: some View {
