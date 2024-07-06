@@ -22,41 +22,25 @@ final class ContentViewObject: ObservableObject {
 
   func setup() {
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
-
-      DispatchQueue.main.async {
-        self.type = .envelope
-      }
-
+      self.type = .envelope
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedInventory, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
-        self.type = .received
-      }
+      self.type = .received
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
         self.type = .statistics
-      }
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedVote, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
-        self.type = .vote
-      }
+      self.type = .vote
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedMyPage, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
-        self.type = .mypage
-      }
+      self.type = .mypage
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
-        self.nowScreenType = .main
-      }
+      self.nowScreenType = .main
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.logout, object: nil, queue: .main) { _ in
-      DispatchQueue.main.async {
-        self.nowScreenType = .loginAndRegister
-      }
+      self.nowScreenType = .loginAndRegister
     }
   }
 
