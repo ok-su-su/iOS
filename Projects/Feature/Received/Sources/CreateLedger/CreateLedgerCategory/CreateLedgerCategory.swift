@@ -116,6 +116,10 @@ struct CreateLedgerCategory {
     case .tappedNextButton:
       if let selectedCategoryID = state.selectedItemsID.first {
         CreateLedgerSharedState.setCategoryID(selectedCategoryID)
+        if state.customItems?.id == selectedCategoryID,
+           let customItem = state.customItems?.title {
+          CreateLedgerSharedState.setCustomCategory(customItem)
+        }
         CreateLedgerRouterPathPublisher.push(.name(.init()))
       }
       return .none

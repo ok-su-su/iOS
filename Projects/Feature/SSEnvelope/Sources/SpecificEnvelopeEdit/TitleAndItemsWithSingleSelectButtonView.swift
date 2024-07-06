@@ -30,6 +30,7 @@ struct TitleAndItemsWithSingleSelectButtonView<Item: SingleSelectButtonItemable>
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
         .foregroundStyle(SSColor.gray70)
+        .allowsHitTesting(false)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         // MARK: - Defaults Item

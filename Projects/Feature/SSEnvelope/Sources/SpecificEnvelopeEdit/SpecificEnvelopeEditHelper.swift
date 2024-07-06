@@ -7,11 +7,14 @@
 //
 
 import Foundation
+import SSRegexManager
 
 // MARK: - SpecificEnvelopeEditHelper
 
 public struct SpecificEnvelopeEditHelper: Equatable {
   var envelopeDetailProperty: EnvelopeDetailProperty
+
+  var priceProperty: PriceEditProperty
 
   var eventSectionButtonHelper: SingleSelectButtonHelper<CreateEnvelopeEventProperty>
   var eventSectionButtonCustomItem: CreateEnvelopeEventProperty
@@ -39,9 +42,11 @@ public struct SpecificEnvelopeEditHelper: Equatable {
   ) {
     self.envelopeDetailProperty = envelopeDetailProperty
 
+    priceProperty = .init(price: envelopeDetailProperty.price)
+
     // 만약 현재 이벤트가 default 이벤트에 존재 하지 않는다면
     eventSectionButtonCustomItem = .init(
-      id: eventItems.count,
+      id: eventItems.count + 1,
       title: !eventItems.contains { $0.title == envelopeDetailProperty.eventName } ? envelopeDetailProperty.eventName : ""
     )
 
@@ -54,7 +59,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = .init(
-      id: relationItems.count,
+      id: relationItems.count + 1,
       title: !relationItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
     )
 
@@ -73,7 +78,8 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       titleText: envelopeDetailProperty.visitedTitle,
       items: VisitedSelectButtonItem.defaultItems(),
       isCustomItem: nil,
-      customTextFieldPrompt: nil
+      customTextFieldPrompt: nil,
+      isEssentialProperty: false
     )
 
     visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited ?? true)
@@ -89,16 +95,99 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     nameEditProperty.textFieldText = name
   }
 
+  func isValidName() -> Bool {
+    nameEditProperty.isValid
+  }
+
+  func isShowToastByName() -> Bool {
+    nameEditProperty.isShowToast
+  }
+
   mutating func changeGift(_ name: String) {
     giftEditProperty.gift = name
+  }
+
+  func isValidGift() -> Bool {
+    giftEditProperty.isValid
+  }
+
+  func isShowToastByGift() -> Bool {
+    giftEditProperty.isShowToast
   }
 
   mutating func changeContact(_ name: String) {
     contactEditProperty.contact = name
   }
 
+  func isValidContact() -> Bool {
+    contactEditProperty.isValid
+  }
+
+  func isShowToastByContact() -> Bool {
+    contactEditProperty.isShowToast
+  }
+
   mutating func changeMemo(_ name: String) {
     memoEditProperty.memo = name
+  }
+
+  func isShowToastByMemo() -> Bool {
+    memoEditProperty.isShowToast
+  }
+
+  func isValidMemo() -> Bool {
+    memoEditProperty.isValid
+  }
+
+  mutating func changePrice(_ value: String) {
+    priceProperty.setPriceTextFieldText(value)
+  }
+
+  func isValidPrice() -> Bool {
+    priceProperty.isValid
+  }
+
+  func isShowToastByPrice() -> Bool {
+    priceProperty.isShowToast
+  }
+
+  func isValidToSave() -> Bool {
+    (priceProperty.isValid) &&
+      (eventSectionButtonHelper.isValid()) &&
+      (nameEditProperty.isValid) &&
+      (relationSectionButtonHelper.isValid())
+    // 데이트는 항상 참이니까 제외
+  }
+}
+
+// MARK: - PriceEditProperty
+
+struct PriceEditProperty: Equatable {
+  var price: Int64
+  var priceTextFieldText: String
+  var priceText: String
+
+  init(price: Int64) {
+    self.price = price
+    priceTextFieldText = price.description
+    priceText = CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? ""
+  }
+
+  mutating func setPriceTextFieldText(_ text: String) {
+    priceTextFieldText = text.isEmpty ? "0" : text
+    guard let currentValue = Int64(priceTextFieldText) else {
+      return
+    }
+    price = currentValue
+    priceText = CustomNumberFormatter.formattedByThreeZero(currentValue, subFixString: "원") ?? ""
+  }
+
+  var isValid: Bool {
+    RegexManager.isValidPrice(priceTextFieldText)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByPrice(priceTextFieldText)
   }
 }
 
@@ -110,6 +199,14 @@ struct GiftEditProperty: Equatable {
   init(gift: String) {
     self.gift = gift
   }
+
+  var isValid: Bool {
+    RegexManager.isValidGift(gift)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByGift(gift)
+  }
 }
 
 // MARK: - ContactEditProperty
@@ -120,6 +217,14 @@ struct ContactEditProperty: Equatable {
   init(contact: String) {
     self.contact = contact
   }
+
+  var isValid: Bool {
+    RegexManager.isValidContacts(contact)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByContacts(contact)
+  }
 }
 
 // MARK: - MemoEditProperty
@@ -128,6 +233,14 @@ struct MemoEditProperty: Equatable {
   var memo: String
   init(memo: String) {
     self.memo = memo
+  }
+
+  var isValid: Bool {
+    RegexManager.isValidMemo(memo)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByMemo(memo)
   }
 }
 
@@ -186,6 +299,14 @@ struct DateEditProperty: Equatable {
 /// EditName을 하기 위해 사용됩니다.
 struct NameEditProperty: Equatable {
   var textFieldText: String
+
+  var isValid: Bool {
+    RegexManager.isValidName(textFieldText)
+  }
+
+  var isShowToast: Bool {
+    ToastRegexManager.isShowToastByName(textFieldText)
+  }
 }
 
 // MARK: - CreateEnvelopeEventProperty

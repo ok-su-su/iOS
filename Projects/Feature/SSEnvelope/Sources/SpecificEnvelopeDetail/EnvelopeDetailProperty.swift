@@ -11,10 +11,16 @@ import Foundation
 public struct EnvelopeDetailProperty: Equatable, Identifiable {
   /// 봉투의 아이디 입니다.
   public let id: Int64
+  /// Send OR RECEIVED
+  var type: String
+  /// 장부 아이디 입니다.
+  var ledgerID: Int64?
   /// 현재 봉투의 가격을 나타냅니다.
   let price: Int64
   /// 현재 봉투의 경조사 이름을 나타냅니다.
   let eventName: String
+  /// 봉투를 받은 사람의 ID입니다.
+  let friendID: Int64
   /// 봉투를 받은 사람의 이름을 나타냅니다.
   let name: String
   ///  현재 봉투를 주고받은 사람과의 관계를 나타냅니다.
@@ -80,7 +86,8 @@ public struct EnvelopeDetailProperty: Equatable, Identifiable {
 
   /// 봉투의 상세 내용을 표시하기 위해 사용됩니다.
   /// - Parameters:
-  ///   - id: 봉투의 아이디 입니다.
+  ///   - id: 봉투의 아이디 입니다
+  ///   - type: Envelope Type
   ///   - price: 현재 봉투의 가격을 나타냅니다.
   ///   - eventName: 현재 봉투의 경조사 이름을 나타냅니다.
   ///   - name: 현재 봉투를 주고받은 대상의 이름을 나타냅니다.
@@ -89,8 +96,11 @@ public struct EnvelopeDetailProperty: Equatable, Identifiable {
   ///   - isVisited: 현재 봉투의 대상이되는 경조사에 참석 여부를 나타냅니다.
   init(
     id: Int64,
+    type: String,
+    ledgerID: Int64?,
     price: Int64,
     eventName: String,
+    friendID: Int64,
     name: String,
     relation: String,
     date: Date,
@@ -100,8 +110,11 @@ public struct EnvelopeDetailProperty: Equatable, Identifiable {
     memo: String? = nil
   ) {
     self.id = id
+    self.type = type
+    self.ledgerID = ledgerID
     self.price = price
     self.eventName = eventName
+    self.friendID = friendID
     self.name = name
     self.relation = relation
     self.date = date

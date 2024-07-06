@@ -134,7 +134,6 @@ struct CreateEnvelopePrice {
 
       case .inner(.push):
         if let amount = Int64(state.textFieldText) {
-          CreateEnvelopeRequestShared.reset()
           CreateEnvelopeRequestShared.setAmount(amount)
         }
 

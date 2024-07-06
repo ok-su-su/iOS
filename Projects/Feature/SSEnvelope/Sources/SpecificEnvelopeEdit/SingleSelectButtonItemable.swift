@@ -25,20 +25,25 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
   var isStartedAddingNewCustomItem = false
   var customTextFieldPrompt: String?
   var isSaved: Bool = false
+  var isEssentialProperty = true
 
   var allItems: [Item] {
     return (items + [isCustomItem]).compactMap { $0 }
   }
 
-  init(titleText: String, items: [Item], isCustomItem: Item?, customTextFieldPrompt: String?) {
+  init(titleText: String, items: [Item], isCustomItem: Item?, customTextFieldPrompt: String?, isEssentialProperty: Bool = true) {
     self.titleText = titleText
     self.items = items
     self.isCustomItem = isCustomItem
     self.customTextFieldPrompt = customTextFieldPrompt
+    self.isEssentialProperty = isEssentialProperty
   }
 
   mutating func selectItem(by id: Int) {
     if let firstItemIndex = items.firstIndex(where: { $0.id == id }) {
+      if isEssentialProperty == false && selectedItem == items[firstItemIndex] {
+        selectedItem = nil
+      }
       selectedItem = items[firstItemIndex]
     }
   }
@@ -76,5 +81,13 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
     isStartedAddingNewCustomItem = false
     isCustomItem?.title = title
     isSaved = true
+  }
+
+  func isValid() -> Bool {
+    if isEssentialProperty == false {
+      return true
+    } else {
+      return selectedItem != nil
+    }
   }
 }
