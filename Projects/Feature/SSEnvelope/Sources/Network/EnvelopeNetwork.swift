@@ -12,6 +12,7 @@ import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
+import OSLog
 
 // MARK: - EnvelopeNetwork
 
@@ -22,8 +23,11 @@ struct EnvelopeNetwork {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(id))
     return .init(
       id: data.envelope.id,
+      type: data.envelope.type, 
+      ledgerID: nil,
       price: data.envelope.amount,
       eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
+      friendID: data.friend.id,
       name: data.friend.name,
       relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
       date: .getDate(from: data.envelope.handedOverAt) ?? .now,
@@ -62,6 +66,16 @@ struct EnvelopeNetwork {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
     return dto.categories.map { .init(id: $0.id, title: $0.name) }
   }
+
+  func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64{
+    let dto: CreateAndUpdateFriendResponse = try await provider.request(.editFriends(id: id, body))
+    return dto.id
+  }
+
+  func editEnvelopes(id: Int64, body: CreateAndUpdateEnvelopeRequest) async throws {
+    // TODO: 작업하기
+    let dto: CreateAndUpdateEnvelopeResponse = try await provider.request(.editEnvelopes(id: id, body))
+  }
 }
 
 extension DependencyValues {
@@ -80,6 +94,8 @@ extension EnvelopeNetwork: DependencyKey {
     case deleteEnvelope(envelopeID: Int64)
     case searchEnvelopeByID(Int64)
     case getEditItems
+    case editFriends(id: Int64, CreateAndUpdateFriendRequest)
+    case editEnvelopes(id: Int64, CreateAndUpdateEnvelopeRequest)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -90,6 +106,10 @@ extension EnvelopeNetwork: DependencyKey {
         "envelopes/\(id)"
       case .getEditItems:
         "envelopes/configs/create-envelopes"
+      case let .editFriends(id, _):
+        "friends/\(id)"
+      case let .editEnvelopes(id, _):
+        "envelopes/\(id)"
       }
     }
 
@@ -97,6 +117,13 @@ extension EnvelopeNetwork: DependencyKey {
       switch self {
       case .deleteEnvelope:
         return .delete
+
+      case .editFriends:
+        return .put
+
+      case .editEnvelopes:
+        return .patch
+
       default:
         return .get
       }
@@ -112,8 +139,23 @@ extension EnvelopeNetwork: DependencyKey {
 
       case .getEditItems:
         return .requestPlain
+      case let .editFriends(_, property):
+        return .requestData(encode(property))
+
+      case let .editEnvelopes(_, property):
+        return .requestData(encode(property))
       }
     }
+
+    func encode(_ value: Encodable) -> Data {
+      do {
+        return try EnvelopeNetwork.Network.encoder.encode(value)
+      }catch {
+        os_log("\(error.localizedDescription)")
+        return Data()
+      }
+    }
+    private static let encoder = JSONEncoder()
   }
 }
 

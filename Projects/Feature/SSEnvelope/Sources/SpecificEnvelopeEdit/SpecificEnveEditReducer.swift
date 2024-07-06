@@ -66,8 +66,11 @@ public struct SpecificEnvelopeEditReducer {
     case setInitialValue
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {
+    case editFriendsAndEnvelope
+  }
 
+  @Dependency(\.envelopeNetwork) var network
   @CasePathable
   public enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
@@ -182,7 +185,44 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
   }
 
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
-    return .none
+    switch action {
+    case .editFriendsAndEnvelope:
+      guard let selectedRelationItem = state.editHelper.relationSectionButtonHelper.selectedItem,
+            let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem
+      else {
+        return .none
+      }
+
+      /// 만약 선택된 아이템이 customItem일 경우
+      let customRelation = selectedRelationItem.id == state.editHelper.relationSectionButtonHelper.isCustomItem?.id ?
+      state.editHelper.relationSectionButtonHelper.isCustomItem?.title : nil
+
+      let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
+      state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
+
+
+      let friendID = state.editHelper.envelopeDetailProperty
+      let friendRequestBody = CreateAndUpdateFriendRequest(
+        name: state.editHelper.nameEditProperty.textFieldText,
+        phoneNumber: state.editHelper.contactEditProperty.contact,
+        relationshipId: selectedRelationItem.id ,
+        customRelation: customRelation)
+      let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
+        type: state.editHelper.envelopeDetailProperty.type,
+        friendId: -1,
+        ledgerId: state.editHelper.envelopeDetailProperty.ledgerID,
+        amount: state.editHelper.priceProperty.price,
+        gift: state.editHelper.giftEditProperty.gift,
+        memo: state.editHelper.memoEditProperty.memo,
+        hasVisited: state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited,
+        handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
+        category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
+      )
+      return .run { send in
+        network.editFriends(id: <#T##Int64#>, body: <#T##CreateAndUpdateFriendRequest#>)
+      }
+    }
+
   }
 
 
