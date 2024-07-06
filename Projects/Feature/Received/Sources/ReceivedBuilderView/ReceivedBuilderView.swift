@@ -6,13 +6,17 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 public struct ReceivedBuilderView: View {
   public init() {}
+
+  @State private var store: StoreOf<ReceivedMain> = .init(initialState: .init()) {
+    ReceivedMain()
+  }
+
   public var body: some View {
-    ReceivedMainView(store: .init(initialState: .init(), reducer: {
-      ReceivedMain()
-    }))
+    ReceivedMainView(store: store)
   }
 }

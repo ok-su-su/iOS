@@ -6,13 +6,17 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 public struct StatisticsBuilderView: View {
+  @State private var store: StoreOf<StatisticsMain> = .init(initialState: .init()) {
+    StatisticsMain()
+  }
+
   public init() {}
+
   public var body: some View {
-    StatisticsMainView(store: .init(initialState: StatisticsMain.State(), reducer: {
-      StatisticsMain()
-    }))
+    StatisticsMainView(store: store)
   }
 }

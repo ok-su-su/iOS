@@ -16,8 +16,9 @@ public final class MyPageNavigationController: UINavigationController {
 
 public struct ProfileNavigationView: UIViewControllerRepresentable {
   public init() {}
+  private var vc = MyPageNavigationController()
   public func makeUIViewController(context _: Context) -> MyPageNavigationController {
-    return MyPageNavigationController()
+    return vc
   }
 
   public func updateUIViewController(_: MyPageNavigationController, context _: Context) {}
