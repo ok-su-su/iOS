@@ -63,7 +63,6 @@ public struct SpecificEnvelopeEditView: View {
   private func makeSubContents() -> some View {
     ScrollView {
       VStack(spacing: 0) {
-
         // Section
         makeEventEditableSection()
 

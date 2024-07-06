@@ -25,7 +25,7 @@ public struct SpecificEnvelopeDetailReducer {
     var envelopeID: Int64
     public init(envelopeID: Int64) {
       self.envelopeID = envelopeID
-      envelopeDetailProperty = .init(id: envelopeID, price: 0, eventName: "", name: "", relation: "", date: .now, isVisited: nil)
+      envelopeDetailProperty = .init(id: 0, type: "", ledgerID: 0, price: 0, eventName: "", friendID: 0, name: "", relation: "", date: .now, isVisited: nil)
 //      self.envelopeDetailProperty = .default
     }
   }

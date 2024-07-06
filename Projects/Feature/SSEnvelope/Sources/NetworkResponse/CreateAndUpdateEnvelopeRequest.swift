@@ -8,10 +8,11 @@
 
 import Foundation
 
+// MARK: - CreateAndUpdateEnvelopeResponse
 
 struct CreateAndUpdateEnvelopeResponse: Decodable {
   var envelope: EnvelopeModel
-  var friend:  FriendModel
+  var friend: FriendModel
   var friendRelationship: FriendRelationshipModel
   var relationship: RelationshipModel
 
@@ -23,7 +24,9 @@ struct CreateAndUpdateEnvelopeResponse: Decodable {
   }
 }
 
-struct CreateAndUpdateEnvelopeRequest: Encodable{
+// MARK: - CreateAndUpdateEnvelopeRequest
+
+struct CreateAndUpdateEnvelopeRequest: Encodable {
   let type: String
   let friendId: Int64
   let ledgerId: Int64?
@@ -32,7 +35,7 @@ struct CreateAndUpdateEnvelopeRequest: Encodable{
   let memo: String?
   let hasVisited: Bool?
   let handedOverAt: String
-  let category:  CreateCategoryAssignmentRequest
+  let category: CreateCategoryAssignmentRequest
 
   enum CodingKeys: CodingKey {
     case type
@@ -47,8 +50,10 @@ struct CreateAndUpdateEnvelopeRequest: Encodable{
   }
 }
 
+// MARK: - CreateCategoryAssignmentRequest
+
 struct CreateCategoryAssignmentRequest: Encodable {
-let id: Int
+  let id: Int
   let customCategory: String?
   enum CodingKeys: CodingKey {
     case id

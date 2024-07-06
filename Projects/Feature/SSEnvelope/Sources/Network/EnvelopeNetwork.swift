@@ -10,9 +10,9 @@ import ComposableArchitecture
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
-import OSLog
 
 // MARK: - EnvelopeNetwork
 
@@ -23,7 +23,7 @@ struct EnvelopeNetwork {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(id))
     return .init(
       id: data.envelope.id,
-      type: data.envelope.type, 
+      type: data.envelope.type,
       ledgerID: nil,
       price: data.envelope.amount,
       eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
@@ -67,7 +67,7 @@ struct EnvelopeNetwork {
     return dto.categories.map { .init(id: $0.id, title: $0.name) }
   }
 
-  func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64{
+  func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64 {
     let dto: CreateAndUpdateFriendResponse = try await provider.request(.editFriends(id: id, body))
     return dto.id
   }
@@ -150,11 +150,12 @@ extension EnvelopeNetwork: DependencyKey {
     func encode(_ value: Encodable) -> Data {
       do {
         return try EnvelopeNetwork.Network.encoder.encode(value)
-      }catch {
+      } catch {
         os_log("\(error.localizedDescription)")
         return Data()
       }
     }
+
     private static let encoder = JSONEncoder()
   }
 }

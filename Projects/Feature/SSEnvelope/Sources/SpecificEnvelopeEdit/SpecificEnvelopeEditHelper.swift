@@ -133,12 +133,14 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
   func isValidToSave() -> Bool {
     (priceProperty.isValid) &&
-    (eventSectionButtonHelper.isValid()) &&
-    (nameEditProperty.isValid) &&
-    (relationSectionButtonHelper.isValid())
-    //데이트는 항상 참이니까 제외
+      (eventSectionButtonHelper.isValid()) &&
+      (nameEditProperty.isValid) &&
+      (relationSectionButtonHelper.isValid())
+    // 데이트는 항상 참이니까 제외
   }
 }
+
+// MARK: - PriceEditProperty
 
 struct PriceEditProperty: Equatable {
   var price: Int64
@@ -147,8 +149,8 @@ struct PriceEditProperty: Equatable {
 
   init(price: Int64) {
     self.price = price
-    self.priceTextFieldText = price.description
-    self.priceText = CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? ""
+    priceTextFieldText = price.description
+    priceText = CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? ""
   }
 
   mutating func setPriceTextFieldText(_ text: String) {
@@ -173,6 +175,7 @@ struct GiftEditProperty: Equatable {
   init(gift: String) {
     self.gift = gift
   }
+
   var isValid: Bool {
     RegexManager.isValidGift(gift)
   }
@@ -186,6 +189,7 @@ struct ContactEditProperty: Equatable {
   init(contact: String) {
     self.contact = contact
   }
+
   var isValid: Bool {
     RegexManager.isValidContacts(contact)
   }
@@ -198,6 +202,7 @@ struct MemoEditProperty: Equatable {
   init(memo: String) {
     self.memo = memo
   }
+
   var isValid: Bool {
     RegexManager.isValidMemo(memo)
   }

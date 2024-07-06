@@ -86,7 +86,7 @@ struct SingleSelectButtonHelper<Item: SingleSelectButtonItemable>: Equatable {
   func isValid() -> Bool {
     if isEssentialProperty == false {
       return true
-    }else {
+    } else {
       return selectedItem != nil
     }
   }

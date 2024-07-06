@@ -8,20 +8,23 @@
 
 import Foundation
 
+// MARK: - CreateAndUpdateFriendResponse
+
 struct CreateAndUpdateFriendResponse: Decodable {
-  let id : Int64
+  let id: Int64
 
   enum CodingKeys: CodingKey {
     case id
   }
 }
 
+// MARK: - CreateAndUpdateFriendRequest
 
 struct CreateAndUpdateFriendRequest: Encodable {
   let name: String
   let phoneNumber: String?
   let relationshipId: Int
-  let customRelation:String?
+  let customRelation: String?
 
   enum CodingKeys: CodingKey {
     case name

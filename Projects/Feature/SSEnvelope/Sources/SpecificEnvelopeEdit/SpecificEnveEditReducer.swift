@@ -6,13 +6,14 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
 import SSRegexManager
 import SSToast
+
+// MARK: - SpecificEnvelopeEditReducer
 
 @Reducer
 public struct SpecificEnvelopeEditReducer {
@@ -117,8 +118,10 @@ public struct SpecificEnvelopeEditReducer {
   public init() {}
 }
 
+// MARK: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction
+
 extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction {
-  public func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
+  public func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .header:
       return .none
@@ -150,7 +153,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
     case let .changeGiftTextField(text):
       state.editHelper.changeGift(text)
-      return state.editHelper.isValidGift() ? .none:
+      return state.editHelper.isValidGift() ? .none :
         .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요"))))
 
     case let .changeContactTextField(text):
@@ -193,20 +196,20 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         return .none
       }
 
-      /// 만약 선택된 아이템이 customItem일 경우
+      // 만약 선택된 아이템이 customItem일 경우
       let customRelation = selectedRelationItem.id == state.editHelper.relationSectionButtonHelper.isCustomItem?.id ?
-      state.editHelper.relationSectionButtonHelper.isCustomItem?.title : nil
+        state.editHelper.relationSectionButtonHelper.isCustomItem?.title : nil
 
       let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
-      state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
-
+        state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
 
       let friendID = state.editHelper.envelopeDetailProperty
       let friendRequestBody = CreateAndUpdateFriendRequest(
         name: state.editHelper.nameEditProperty.textFieldText,
         phoneNumber: state.editHelper.contactEditProperty.contact,
-        relationshipId: selectedRelationItem.id ,
-        customRelation: customRelation)
+        relationshipId: selectedRelationItem.id,
+        customRelation: customRelation
+      )
       let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
         type: state.editHelper.envelopeDetailProperty.type,
         friendId: -1,
@@ -218,12 +221,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
         category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
       )
-      return .run { send in
-        network.editFriends(id: <#T##Int64#>, body: <#T##CreateAndUpdateFriendRequest#>)
+      return .run { _ in
+//        network.editFriends(id: <#T##Int64#>, body: <#T##CreateAndUpdateFriendRequest#>)
       }
     }
-
   }
-
-
 }
