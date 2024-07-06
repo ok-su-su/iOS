@@ -35,7 +35,7 @@ struct CreateAndUpdateEnvelopeRequest: Encodable {
   let memo: String?
   let hasVisited: Bool?
   let handedOverAt: String
-  let category: CreateCategoryAssignmentRequest
+  let category: CreateCategoryAssignmentRequest?
 
   enum CodingKeys: CodingKey {
     case type

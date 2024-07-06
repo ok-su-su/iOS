@@ -65,6 +65,7 @@ struct CreateEnvelopeAdditionalSection {
     Reduce { _, action in
       switch action {
       case .view(.onAppear):
+        CreateEnvelopeRequestShared.resetAdditional()
         return .send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
 
       case .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: _)))):

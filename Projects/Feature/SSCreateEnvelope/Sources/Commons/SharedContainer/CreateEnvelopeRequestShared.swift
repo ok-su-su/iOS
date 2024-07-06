@@ -9,7 +9,7 @@
 import Foundation
 import OSLog
 
-enum CreateEnvelopeRequestShared {
+public enum CreateEnvelopeRequestShared {
   static func setFriendID(id: Int64) {
     os_log("CreateEnvelopeRequest의 FriendID을 저장합니다.\nid = \(id)")
     var body = getBody()
@@ -17,7 +17,7 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func setEvent(id: Int) {
+  public static func setEvent(id: Int) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
     body.category = .init(id: id)
@@ -31,7 +31,7 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func setCustomEvent(_ name: String) {
+  public static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
     body.category?.customCategory = name
@@ -82,8 +82,11 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func setCreateType(_ type: CreateType) {
+  public static func setCreateType(_ type: CreateType) {
     SharedContainer.setValue(key: String(describing: CreateType.self), type.key)
+    var body = getBody()
+    body.type = type.key
+    setBody(body)
   }
 
   static func getCreateType() -> String {
@@ -91,7 +94,7 @@ enum CreateEnvelopeRequestShared {
     return typeString ?? ""
   }
 
-  static func setLedger(id: Int64) {
+  public static func setLedger(id: Int64) {
     var body = getBody()
     body.ledgerID = id
     setBody(body)
@@ -102,14 +105,10 @@ enum CreateEnvelopeRequestShared {
   }
 
   static func getBody() -> CreateEnvelopeRequestBody {
-    guard let cur = SharedContainer.getValue(CreateEnvelopeRequestBody.self) else {
-      os_log(.error, "CreateEnvelope Type이 지정되어지지 않았습니다. 심각한 에러입니다.")
-      return .init(type: "NONE")
-    }
-    return cur
+    return SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "NONE")
   }
 
-  private static func setBody(_ val: CreateEnvelopeRequestBody) {
+  static func setBody(_ val: CreateEnvelopeRequestBody) {
     SharedContainer.setValue(val)
   }
 }

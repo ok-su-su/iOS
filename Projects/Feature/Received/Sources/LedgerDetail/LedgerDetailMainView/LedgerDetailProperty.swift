@@ -13,6 +13,8 @@ import Foundation
 struct LedgerDetailProperty: Equatable {
   /// 장부 아이디
   let id: Int64
+  /// 카테고리 아이디
+  let categoryID: Int
   /// 장부 카테고리
   let category: String
   /// 경조사 장부 이름
@@ -25,6 +27,8 @@ struct LedgerDetailProperty: Equatable {
   let startDate: Date
   /// 장부 종료 날짜
   let endDate: Date
+  /// CustomCategory
+  var customCategory: String? = nil
 
   var totalAmountText: String {
     CustomNumberFormatter.formattedByThreeZero(totalAmounts, subFixString: "원") ?? ""
@@ -51,6 +55,7 @@ struct LedgerDetailProperty: Equatable {
 
   init(
     id: Int64,
+    categoryID: Int,
     category: String,
     title: String,
     description: String,
@@ -59,6 +64,7 @@ struct LedgerDetailProperty: Equatable {
     endDate: Date
   ) {
     self.id = id
+    self.categoryID = categoryID
     self.category = category
     self.title = title
     self.description = description
@@ -70,12 +76,15 @@ struct LedgerDetailProperty: Equatable {
 
 extension LedgerDetailProperty {
   static var initial: Self {
-    .init(id: -1, category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now)
+    .init(id: -1, categoryID: -1, category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now)
   }
 
   init(ledgerDetailResponse dto: LedgerDetailResponse) {
+    dump(dto)
     id = dto.ledger.id
+    categoryID = dto.category.id
     category = dto.category.category
+    customCategory = dto.category.customCategory
     title = dto.ledger.title
     description = dto.ledger.description
     totalAmounts = dto.totalAmounts

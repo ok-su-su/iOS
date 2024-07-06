@@ -103,6 +103,12 @@ struct LedgerDetailMain {
       )
 
     case .tappedFloatingButton:
+      CreateEnvelopeRequestShared.setCreateType(.received(ledgerId: state.ledgerID))
+      CreateEnvelopeRequestShared.setLedger(id: state.ledgerID)
+      CreateEnvelopeRequestShared.setEvent(id: state.ledgerProperty.categoryID)
+      if let customCategory = state.ledgerProperty.customCategory {
+        CreateEnvelopeRequestShared.setCustomEvent(customCategory)
+      }
       state.presentCreateEnvelope = true
       return .none
 

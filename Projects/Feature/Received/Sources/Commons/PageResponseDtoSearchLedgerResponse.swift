@@ -49,7 +49,7 @@ struct SearchLedgerResponse: Codable {
 
 struct CategoryWithCustomModel: Codable {
   /// 카테고리 아이디
-  let id: Int64
+  let id: Int
   /// 카테고리 순서
   let seq: Int
   /// 카테고리 이름
