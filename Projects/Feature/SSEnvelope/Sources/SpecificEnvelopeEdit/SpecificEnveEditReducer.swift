@@ -61,6 +61,7 @@ public struct SpecificEnvelopeEditReducer {
     case changeGiftTextField(String)
     case changeContactTextField(String)
     case changeMemoTextField(String)
+    case tappedSaveButton
   }
 
   public enum InnerAction: Equatable {
@@ -170,6 +171,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       state.editHelper.changePrice(text)
       return state.editHelper.isValidPrice() ? .none :
         .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능해요"))))
+
+    case .tappedSaveButton:
+      return .none
     }
   }
 

@@ -8,7 +8,10 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
+
+// MARK: - SpecificEnvelopeEditView
 
 public struct SpecificEnvelopeEditView: View {
   // MARK: Reducer
@@ -24,11 +27,13 @@ public struct SpecificEnvelopeEditView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading, spacing: 16) {
-      // Price
-      makePriceTextFieldView()
+    ScrollView {
+      VStack(alignment: .leading, spacing: 16) {
+        // Price
+        makePriceTextFieldView()
 
-      makeSubContents()
+        makeSubContents()
+      }
     }
   }
 
@@ -41,52 +46,49 @@ public struct SpecificEnvelopeEditView: View {
         text: $store.editHelper.priceProperty.priceTextFieldText.sending(\.view.changePriceTextField),
         prompt: nil
       )
-      .foregroundStyle(Color.clear)
       .keyboardType(.numberPad)
       .modifier(SSTypoModifier(.title_xl))
 
       // Visiable TextField
       HStack(spacing: 0) {
-        Text(store.editHelper.priceProperty.priceText.isEmpty ? "금액을 입력해 주세요" : store.editHelper.priceProperty.priceTextFieldText)
+        Text(store.editHelper.priceProperty.priceText.isEmpty ? "금액을 입력해 주세요" : store.editHelper.priceProperty.priceText)
           .modifier(SSTypoModifier(.title_xl))
           .foregroundStyle(store.editHelper.priceProperty.priceText.isEmpty ? SSColor.gray30 : SSColor.gray100)
-
         Spacer()
       }
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray15)
+      .allowsHitTesting(false)
     }
     .frame(height: 44)
   }
 
   @ViewBuilder
   private func makeSubContents() -> some View {
-    ScrollView {
-      VStack(spacing: 0) {
-        // Section
-        makeEventEditableSection()
+    VStack(spacing: 0) {
+      // Section
+      makeEventEditableSection()
 
-        // name
-        makeNameEditableSection()
+      // name
+      makeNameEditableSection()
 
-        // Relation
-        makeEditableRelationSection()
+      // Relation
+      makeEditableRelationSection()
 
-        // Date
-        makeDateEditableSection()
+      // Date
+      makeDateEditableSection()
 
-        // Visited
-        makeEditableVisitedSection()
+      // Visited
+      makeEditableVisitedSection()
 
-        // Gift
-        makeEditableGiftSection()
+      // Gift
+      makeEditableGiftSection()
 
-        // contact
-        makeEditableContactSection()
+      // contact
+      makeEditableContactSection()
 
-        // memo
-        makeEditableMemoSection()
-      }
+      // memo
+      makeEditableMemoSection()
     }
   }
 
@@ -198,11 +200,27 @@ public struct SpecificEnvelopeEditView: View {
     .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
+  @ViewBuilder
+  private func makeSaveButton() -> some View {
+    Button {
+      store.sendViewAction(.tappedSaveButton)
+    } label: {
+      Text("저장")
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray10)
+        .frame(maxWidth: .infinity, maxHeight: 60)
+        .background(store.isValidToSave ? SSColor.gray30 : SSColor.gray100)
+    }
+    .disabled(store.isValidToSave)
+  }
+
   public var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           .padding(.bottom, 16)
@@ -210,6 +228,10 @@ public struct SpecificEnvelopeEditView: View {
           .padding(.horizontal, Metrics.horizontalSpacing)
       }
     }
+    .safeAreaInset(edge: .bottom) {
+      makeSaveButton()
+    }
+    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -223,3 +245,4 @@ public struct SpecificEnvelopeEditView: View {
 
   private enum Constants {}
 }
+

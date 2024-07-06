@@ -154,8 +154,8 @@ struct PriceEditProperty: Equatable {
   }
 
   mutating func setPriceTextFieldText(_ text: String) {
-    priceTextFieldText = text
-    guard let currentValue = Int64(text) else {
+    priceTextFieldText = text.isEmpty ? "0" : text
+    guard let currentValue = Int64(priceTextFieldText) else {
       return
     }
     price = currentValue
