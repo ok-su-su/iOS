@@ -46,7 +46,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
     // 만약 현재 이벤트가 default 이벤트에 존재 하지 않는다면
     eventSectionButtonCustomItem = .init(
-      id: eventItems.count,
+      id: eventItems.count + 1,
       title: !eventItems.contains { $0.title == envelopeDetailProperty.eventName } ? envelopeDetailProperty.eventName : ""
     )
 
@@ -59,7 +59,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = .init(
-      id: relationItems.count,
+      id: relationItems.count + 1,
       title: !relationItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
     )
 

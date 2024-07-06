@@ -83,9 +83,12 @@ struct EnvelopeNetwork {
       eventName: "이벤트 네임", // TODO: Category 수정
       friendID: dto.friend.id,
       name: dto.friend.name,
-      relation: dto.relationship.relation,
+      relation: dto.friendRelationship.customRelation ?? dto.relationship.relation,
       date: CustomDateFormatter.getDate(from: dto.envelope.handedOverAt) ?? .now,
-      isVisited: dto.envelope.hasVisited
+      isVisited: dto.envelope.hasVisited,
+      gift: dto.envelope.gift,
+      contacts: dto.friend.phoneNumber,
+      memo: dto.envelope.memo
     )
   }
 }

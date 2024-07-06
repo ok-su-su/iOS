@@ -215,7 +215,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       let friendID = state.editHelper.envelopeDetailProperty.friendID
       let friendRequestBody = CreateAndUpdateFriendRequest(
         name: state.editHelper.nameEditProperty.textFieldText,
-        phoneNumber:  phoneNumber.isEmpty ? nil : phoneNumber,
+        phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber,
         relationshipId: selectedRelationItem.id,
         customRelation: customRelation
       )
