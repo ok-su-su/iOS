@@ -245,4 +245,3 @@ public struct SpecificEnvelopeEditView: View {
 
   private enum Constants {}
 }
-

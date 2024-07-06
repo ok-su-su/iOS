@@ -6,7 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
+import SwiftUI
 
 private extension UIApplication {
   func endEditing() {
@@ -14,7 +14,7 @@ private extension UIApplication {
   }
 }
 
-extension View {
+public extension View {
   func whenTapDismissKeyboard() -> some View {
     modifier(TapOutsideDismissKeyBoardModifier())
   }
