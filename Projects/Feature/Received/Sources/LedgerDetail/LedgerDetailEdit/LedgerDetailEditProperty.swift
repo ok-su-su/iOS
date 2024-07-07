@@ -18,10 +18,15 @@ struct LedgerDetailEditProperty: Equatable {
   var categoryEditProperty: SingleSelectButtonProperty<CategoryEditProperty>
   var categoryEditCustomItem: CategoryEditProperty
 
+  var isValid: Bool {
+    nameEditProperty.isValid &&
+      categoryEditProperty.isValid()
+  }
+
   init(ledgerDetailProperty: LedgerDetailProperty, category: [CategoryEditProperty]) {
     var category = category
     nameEditProperty = .init(textFieldText: ledgerDetailProperty.title)
-    dateEditProperty = .init(date: ledgerDetailProperty.startDate, endDate: ledgerDetailProperty.endDate)
+    dateEditProperty = .init(startDate: ledgerDetailProperty.startDate, endDate: ledgerDetailProperty.endDate)
     var customItem: CategoryEditProperty? = nil
     if let customItemID = category.popLast()?.id {
       if let customCategory = ledgerDetailProperty.customCategory {
@@ -63,7 +68,10 @@ struct NameEditProperty: Equatable {
 // MARK: - DateEditProperty
 
 struct DateEditProperty: Equatable {
+  var isStartDateInitialState = true
   var startDate: Date
+  var isShowEndDate = false
+  var isEndDateInitialState = true
   var endDate: Date
 
   var dateText: String {
@@ -71,9 +79,40 @@ struct DateEditProperty: Equatable {
     ""
   }
 
-  init(date: Date, endDate: Date) {
-    startDate = date
+  var startDateText: (year: String, month: String, day: String) {
+    return (
+      CustomDateFormatter.getYear(from: startDate),
+      CustomDateFormatter.getMonth(from: startDate),
+      CustomDateFormatter.getDay(from: startDate)
+    )
+  }
+
+  var endDateText: (year: String, month: String, day: String)? {
+    if !isShowEndDate {
+      return nil
+    }
+    return (
+      CustomDateFormatter.getYear(from: startDate),
+      CustomDateFormatter.getMonth(from: startDate),
+      CustomDateFormatter.getDay(from: startDate)
+    )
+  }
+
+  mutating func toggleShowEndDate() {
+    if !isShowEndDate {
+      isShowEndDate.toggle()
+    } else {
+      // 만약 시작 날짜보다 종료 날짜가 작다면 이를 반영합니다.
+      endDate = startDate < endDate ? endDate : .now
+    }
+  }
+
+  init(startDate: Date, endDate: Date) {
+    self.startDate = startDate
     self.endDate = endDate
+    if startDate == endDate {
+      isShowEndDate = false
+    }
   }
 }
 

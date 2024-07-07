@@ -9,6 +9,8 @@
 import ComposableArchitecture
 import SwiftUI
 
+// MARK: - SSDateBottomSheetModifier
+
 public struct SSDateBottomSheetModifier: ViewModifier {
   public init(store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>) {
     _store = store
@@ -24,5 +26,11 @@ public struct SSDateBottomSheetModifier: ViewModifier {
           .presentationContentInteraction(.scrolls)
           .presentationDragIndicator(.automatic)
       }
+  }
+}
+
+public extension View {
+  func showDatePicker(store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>) -> some View {
+    modifier(SSDateBottomSheetModifier(store: store))
   }
 }

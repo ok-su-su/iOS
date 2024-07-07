@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSBottomSelectSheet
 import SSEditSingleSelectButton
 
 // MARK: - LedgerDetailEdit
@@ -22,6 +23,18 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     var ledgerProperty: LedgerDetailProperty
     @Shared var editProperty: LedgerDetailEditProperty
     var categorySection: SingleSelectButtonReducer<CategoryEditProperty>.State
+    @Presents var datePicker: SSDateSelectBottomSheetReducer.State?
+
+    var startDateText: (year: String, month: String, day: String) {
+      editProperty.dateEditProperty.startDateText
+    }
+
+    var endDateText: (year: String, month: String, day: String)? {
+      editProperty.dateEditProperty.endDateText
+    }
+
+    var isValid: Bool { editProperty.isValid }
+
     init(ledgerProperty: LedgerDetailProperty, ledgerDetailEditProperty: LedgerDetailEditProperty) {
       self.ledgerProperty = ledgerProperty
       _editProperty = .init(ledgerDetailEditProperty)
@@ -42,6 +55,10 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case changeNameTextField(String)
+    case tappedStartDatePickerButton
+    case tappedEndDatePickerButton
+    case tappedDateToggleButton
+    case tappedSaveButton
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -56,6 +73,28 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case let .changeNameTextField(name):
       state.editProperty.changeNameTextField(name)
       return .none
+    case .tappedStartDatePickerButton:
+      let restrictEndDate = state.editProperty.dateEditProperty.isShowEndDate ?
+        state.editProperty.dateEditProperty.endDate : nil
+      state.datePicker = .init(
+        selectedDate: state.$editProperty.dateEditProperty.startDate,
+        isInitialStateOfDate: state.$editProperty.dateEditProperty.isEndDateInitialState, restrictStartDate: nil,
+        restrictEndDate: restrictEndDate
+      )
+      return .none
+    case .tappedEndDatePickerButton:
+      state.datePicker = .init(
+        selectedDate: state.$editProperty.dateEditProperty.startDate,
+        isInitialStateOfDate: state.$editProperty.dateEditProperty.isEndDateInitialState, restrictStartDate: nil,
+        restrictEndDate: state.editProperty.dateEditProperty.startDate
+      )
+      return .none
+    case .tappedDateToggleButton:
+      state.editProperty.dateEditProperty.toggleShowEndDate()
+      return .none
+
+    case .tappedSaveButton:
+      return .none
     }
   }
 
@@ -69,6 +108,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case categorySection(SingleSelectButtonReducer<CategoryEditProperty>.Action)
+    case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -89,6 +129,8 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case .header:
       return .none
     case .categorySection:
+      return .none
+    case .datePicker:
       return .none
     }
   }
@@ -115,7 +157,14 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
         return scopeAction(&state, currentAction)
       }
     }
+    .addFeatures()
   }
 }
 
-extension Reducer where Self.State == LedgerDetailEdit.State, Self.Action == LedgerDetailEdit.Action {}
+extension Reducer where Self.State == LedgerDetailEdit.State, Self.Action == LedgerDetailEdit.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    ifLet(\.$datePicker, action: \.scope.datePicker) {
+      SSDateSelectBottomSheetReducer()
+    }
+  }
+}
