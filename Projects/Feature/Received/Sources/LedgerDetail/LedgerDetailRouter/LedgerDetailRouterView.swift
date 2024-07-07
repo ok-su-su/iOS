@@ -44,6 +44,8 @@ struct LedgerDetailRouterView: View {
         SpecificEnvelopeDetailView(store: store)
       case let .envelopeEdit(store):
         SpecificEnvelopeEditView(store: store)
+      case let .edit(store):
+        LedgerDetailEditView(store: store)
       }
     }
   }

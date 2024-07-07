@@ -15,4 +15,5 @@ enum LedgerDetailPath {
   case main(LedgerDetailMain)
   case envelopeDetail(SpecificEnvelopeDetailReducer)
   case envelopeEdit(SpecificEnvelopeEditReducer)
+  case edit(LedgerDetailEdit)
 }

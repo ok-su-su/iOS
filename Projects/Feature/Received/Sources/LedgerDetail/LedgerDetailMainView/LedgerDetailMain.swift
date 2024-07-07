@@ -256,6 +256,8 @@ struct LedgerDetailMain {
     switch action {
     // 편집 버튼
     case .header(.tappedDoubleTextButton(.leading)):
+      let editState = LedgerDetailEdit.State(ledgerProperty: state.ledgerProperty)
+      LedgerDetailRouterPublisher.send(.edit(editState))
       return .none
 
     case .header(.tappedDoubleTextButton(.trailing)):

@@ -18,7 +18,10 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   struct State: Equatable {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(type: .defaultNonIconType))
-    init() {}
+    var ledgerProperty: LedgerDetailProperty
+    init(ledgerProperty: LedgerDetailProperty) {
+      self.ledgerProperty = ledgerProperty
+    }
   }
 
   enum Action: Equatable, FeatureAction {
