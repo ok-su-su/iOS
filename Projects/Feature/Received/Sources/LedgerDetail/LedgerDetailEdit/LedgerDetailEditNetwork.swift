@@ -18,7 +18,7 @@ struct LedgerDetailEditNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   func getLedgerProperty() async throws {}
 
-  func saveLedger(id: Int64, body: CreateAndUpdateLedgerRequest) async throws -> CreateAndUpdateLedgerResponse {
+  func saveLedger(id: Int64, body: CreateAndUpdateLedgerRequestDTO) async throws -> CreateAndUpdateLedgerResponse {
     let data = try JSONEncoder.default.encode(body)
     return try await provider.request(.saveLedger(id: id, body: data))
   }

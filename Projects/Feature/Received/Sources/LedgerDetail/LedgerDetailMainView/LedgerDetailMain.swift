@@ -105,6 +105,7 @@ struct LedgerDetailMain {
         .publisher {
           updateLedgerPublisher
             .publisher()
+            .receive(on: RunLoop.main)
             .map { .inner(.updateLedgerDetailPropertyByLedgerID($0)) }
         }
       )

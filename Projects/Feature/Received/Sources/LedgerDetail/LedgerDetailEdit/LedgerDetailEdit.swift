@@ -128,18 +128,18 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       let endDate = state.editProperty.dateEditProperty.isShowEndDate ?
         state.editProperty.dateEditProperty.endDate : startDate
 
-      let body = CreateAndUpdateLedgerRequest(
+      let body = CreateAndUpdateLedgerRequestDTO(
         title: state.editProperty.nameEditProperty.textFieldText,
         description: nil,
-        categoryId: state.editProperty.categoryEditProperty.selectedItem?.id,
+        categoryId: state.editProperty.categoryEditProperty.selectedItem?.id ?? 1,
         customCategory: customCategory,
-        startAt: startDate,
-        endAt: endDate
+        startAt: CustomDateFormatter.getFullDateString(from: startDate),
+        endAt: CustomDateFormatter.getFullDateString(from: endDate)
       )
       return .run { _ in
         let response = try await network.saveLedger(id: id, body: body)
         let updatedLedgerID = response.ledger.id
-        updateLedgerDetailPropertyPublisher.send(ledgerID: updatedLedgerID)
+        updateLedgerDetailPublisher.send(ledgerID: updatedLedgerID)
         await dismiss()
       }
     }
@@ -170,7 +170,6 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
 
     Scope(state: \.categorySection, action: \.scope.categorySection) {
       SingleSelectButtonReducer()
-        ._printChanges()
     }
 
     Reduce { state, action in
