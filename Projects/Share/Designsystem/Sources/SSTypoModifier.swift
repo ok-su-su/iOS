@@ -65,3 +65,9 @@ public struct SSTypoModifier: ViewModifier {
       .lineSpacing(designSystemFont.lineHeight)
   }
 }
+
+public extension View {
+  func applySSFont(_ designSystemFont: SSFont) -> some View {
+    modifier(SSTypoModifier(designSystemFont))
+  }
+}

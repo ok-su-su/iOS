@@ -231,7 +231,7 @@ public struct SpecificEnvelopeEditView: View {
     .safeAreaInset(edge: .bottom) {
       makeSaveButton()
     }
-    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

@@ -116,7 +116,7 @@ public struct SSTextFieldButton: View {
         minWidth: property.frame.minWidth,
         idealWidth: property.frame.idealWidth,
         maxWidth: property.frame.maxWidth,
-        minHeight: property.frame.minHeight ?? property.minimumHeight,
+        minHeight: property.minimumHeight,
         idealHeight: property.frame.idealHeight,
         maxHeight: property.frame.maxHeight,
         alignment: property.frame.alignment

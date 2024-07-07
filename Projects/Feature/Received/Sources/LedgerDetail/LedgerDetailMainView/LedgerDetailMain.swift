@@ -21,7 +21,7 @@ struct LedgerDetailMain {
   @ObservableState
   struct State: Equatable {
     // Detail Main 의 메인 장부 ID
-    let ledgerID: Int64
+    var ledgerID: Int64
     var ledgerProperty: LedgerDetailProperty
     var isLoading = true
     var isOnAppear = false
@@ -54,6 +54,9 @@ struct LedgerDetailMain {
     }
   }
 
+  @Dependency(\.dismiss) var dismiss
+  @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerPublisher
+
   @CasePathable
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
@@ -78,7 +81,6 @@ struct LedgerDetailMain {
     case tappedEnvelope(id: Int64)
   }
 
-  @Dependency(\.dismiss) var dismiss
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .tappedFilterButton:
@@ -99,7 +101,13 @@ struct LedgerDetailMain {
       state.isOnAppear = val
       return .concatenate(
         .send(.async(.getLedgerDetailProperty)),
-        .send(.inner(.getEnvelopesInitialPage))
+        .send(.inner(.getEnvelopesInitialPage)),
+        .publisher {
+          updateLedgerPublisher
+            .publisher()
+            .receive(on: RunLoop.main)
+            .map { .inner(.updateLedgerDetailPropertyByLedgerID($0)) }
+        }
       )
 
     case .tappedFloatingButton:
@@ -160,6 +168,7 @@ struct LedgerDetailMain {
   }
 
   enum InnerAction: Equatable {
+    case updateLedgerDetailPropertyByLedgerID(Int64)
     case updateLedgerDetailProperty(LedgerDetailProperty)
     case updateEnvelopes([EnvelopeViewForLedgerMainProperty])
     case appendEnvelope(EnvelopeViewForLedgerMainProperty)
@@ -205,6 +214,10 @@ struct LedgerDetailMain {
     case let .deleteEnvelope(id):
       state.envelopeItems.removeAll(where: { $0.id == id })
       return .none
+
+    case let .updateLedgerDetailPropertyByLedgerID(ledgerID):
+      state.ledgerID = ledgerID
+      return .send(.async(.getLedgerDetailProperty))
     }
   }
 
@@ -256,7 +269,17 @@ struct LedgerDetailMain {
     switch action {
     // 편집 버튼
     case .header(.tappedDoubleTextButton(.leading)):
-      return .none
+      let ledgerProperty = state.ledgerProperty
+      return .run { _ in
+        var category = try await network.getCategories()
+        let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name) }
+        let editState = LedgerDetailEdit.State(
+          ledgerProperty: ledgerProperty,
+          ledgerDetailEditProperty: .init(ledgerDetailProperty: ledgerProperty, category: categoryEditProperty)
+        )
+
+        LedgerDetailRouterPublisher.send(.edit(editState))
+      }
 
     case .header(.tappedDoubleTextButton(.trailing)):
       state.showMessageAlert = true

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSEditSingleSelectButton
 import SSRegexManager
 
 // MARK: - SpecificEnvelopeEditHelper

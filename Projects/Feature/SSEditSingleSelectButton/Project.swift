@@ -3,14 +3,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "SSEnvelope",
+  name: "SSEditSingleSelectButton",
   targets: .feature(
-    .sSEnvelope,
+    .sSEditSingleSelectButton,
     testingOptions: [.unitTest],
     dependencies: [
-      .share(.shareLayer),
-      .core(.coreLayers),
-      .feature(.sSEditSingleSelectButton),
+      .share(.designsystem),
+      .share(.sSLayout),
+      .thirdParty(.ComposableArchitecture),
     ],
     testDependencies: []
   )
