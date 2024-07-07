@@ -143,9 +143,9 @@ struct LedgerDetailEditView: View {
       Text("저장")
         .applySSFont(.title_xs)
         .foregroundStyle(SSColor.blue10)
+        .frame(maxWidth: .infinity, maxHeight: 60)
+        .background(store.isValid ? SSColor.gray100 : SSColor.gray30)
     }
-    .frame(maxWidth: .infinity, maxHeight: 60)
-    .background(store.isValid ? SSColor.gray100 : SSColor.gray30)
     .disabled(!store.isValid)
   }
 
@@ -160,15 +160,10 @@ struct LedgerDetailEditView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
           .padding(.horizontal, 16)
-        Spacer()
-        makeSaveButton()
       }
     }
-//    .safeAreaInset(edge: .bottom) {
-//      makeSaveButton()
-//    }
     .safeAreaInset(edge: .bottom) {
-      SSColor.red100
+      makeSaveButton()
     }
     .showDatePicker(store: $store.scope(state: \.datePicker, action: \.scope.datePicker))
     .navigationBarBackButtonHidden()

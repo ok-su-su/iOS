@@ -78,15 +78,15 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
         state.editProperty.dateEditProperty.endDate : nil
       state.datePicker = .init(
         selectedDate: state.$editProperty.dateEditProperty.startDate,
-        isInitialStateOfDate: state.$editProperty.dateEditProperty.isEndDateInitialState, restrictStartDate: nil,
+        isInitialStateOfDate: state.$editProperty.dateEditProperty.isStartDateInitialState,
         restrictEndDate: restrictEndDate
       )
       return .none
     case .tappedEndDatePickerButton:
       state.datePicker = .init(
-        selectedDate: state.$editProperty.dateEditProperty.startDate,
-        isInitialStateOfDate: state.$editProperty.dateEditProperty.isEndDateInitialState, restrictStartDate: nil,
-        restrictEndDate: state.editProperty.dateEditProperty.startDate
+        selectedDate: state.$editProperty.dateEditProperty.endDate,
+        isInitialStateOfDate: state.$editProperty.dateEditProperty.isEndDateInitialState,
+        restrictStartDate: state.editProperty.dateEditProperty.startDate
       )
       return .none
     case .tappedDateToggleButton:

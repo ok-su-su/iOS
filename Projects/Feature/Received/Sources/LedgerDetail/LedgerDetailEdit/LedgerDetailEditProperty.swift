@@ -92,9 +92,9 @@ struct DateEditProperty: Equatable {
       return nil
     }
     return (
-      CustomDateFormatter.getYear(from: startDate),
-      CustomDateFormatter.getMonth(from: startDate),
-      CustomDateFormatter.getDay(from: startDate)
+      CustomDateFormatter.getYear(from: endDate),
+      CustomDateFormatter.getMonth(from: endDate),
+      CustomDateFormatter.getDay(from: endDate)
     )
   }
 
