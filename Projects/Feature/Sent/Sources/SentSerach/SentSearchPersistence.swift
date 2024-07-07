@@ -20,10 +20,7 @@ struct SentSearchPersistence {
   func setSearchItems(_ item: SentSearchItem?) {
     guard let item else { return }
     var prevItems: [SentSearchItem] = SSUserDefaultsManager.shared.getValue(key: key) ?? []
-    while prevItems.count > 5 {
-      _ = prevItems.popLast()
-    }
-    let uniqueSetItems = (prevItems + [item]).uniqued()
+    let uniqueSetItems = Array((prevItems + [item]).uniqued().prefix(5))
     setItems(uniqueSetItems)
   }
 

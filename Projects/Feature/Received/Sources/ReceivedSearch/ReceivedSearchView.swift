@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSEnvelope
 import SSSearch
 import SwiftUI
 
@@ -37,6 +38,7 @@ struct ReceivedSearchView: View {
         SSColor
           .gray15
           .ignoresSafeArea()
+
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
           makeContentView()
@@ -46,7 +48,17 @@ struct ReceivedSearchView: View {
       .onAppear {
         store.send(.view(.onAppear(true)))
       }
-    } destination: { _ in
+    } destination: { store in
+      switch store.case {
+      case let .main(store):
+        LedgerDetailMainView(store: store)
+
+      case let .envelopeDetail(store):
+        SpecificEnvelopeDetailView(store: store)
+
+      case let .envelopeEdit(store):
+        SpecificEnvelopeEditView(store: store)
+      }
     }
   }
 
