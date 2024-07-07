@@ -10,6 +10,7 @@ let project = Project.makeModule(
     dependencies: [
       .share(.shareLayer),
       .core(.coreLayers),
+      .feature(.sSEditSingleSelectButton),
     ],
     testDependencies: []
   )

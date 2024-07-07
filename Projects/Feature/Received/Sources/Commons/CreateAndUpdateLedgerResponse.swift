@@ -8,9 +8,9 @@
 
 import Foundation
 
-struct CreateAndUpdateLedgerResponse: Decodable{
+struct CreateAndUpdateLedgerResponse: Decodable {
   let ledger: LedgerModel
-  let category:  CategoryWithCustomModel
+  let category: CategoryWithCustomModel
 
   enum CodingKeys: CodingKey {
     case ledger

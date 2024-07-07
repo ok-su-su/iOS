@@ -6,31 +6,33 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import Moya
-import Dependencies
-import SSNetwork
 import SSInterceptor
+import SSNetwork
+
+// MARK: - LedgerDetailNetwork
 
 struct LedgerDetailNetwork {
-
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func getLedgerProperty() async throws {
-    
-  }
+  func getLedgerProperty() async throws {}
+
   func saveLedger(id: Int64, body: CreateAndUpdateLedgerRequest) async throws -> CreateAndUpdateLedgerResponse {
     let data = try JSONEncoder.default.encode(body)
     return try await provider.request(.saveLedger(id: id, body: data))
   }
 }
 
+// MARK: LedgerDetailNetwork.Network
+
 extension LedgerDetailNetwork {
   private enum Network: SSNetworkTargetType {
     case getLedgerDetailProperty(id: Int64)
     case saveLedger(id: Int64, body: Data)
 
-    // SSNetworkTargetType
-    var additionalHeader: [String : String]? { nil}
+    /// SSNetworkTargetType
+    var additionalHeader: [String: String]? { nil }
 
     var path: String {
       switch self {
@@ -44,20 +46,19 @@ extension LedgerDetailNetwork {
     var method: Moya.Method {
       switch self {
       case .getLedgerDetailProperty:
-          .get
+        .get
       case .saveLedger:
-          .patch
+        .patch
       }
     }
 
     var task: Moya.Task {
       switch self {
       case .getLedgerDetailProperty:
-          .requestPlain
+        .requestPlain
       case let .saveLedger(_, body):
-          .requestData(body)
+        .requestData(body)
       }
     }
-
   }
 }
