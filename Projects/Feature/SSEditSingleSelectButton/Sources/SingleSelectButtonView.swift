@@ -30,7 +30,6 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
         .foregroundStyle(SSColor.gray70)
-        .allowsHitTesting(false)
 
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         // MARK: - Defaults Item
@@ -73,15 +72,14 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
               }
 
           } else { // + add Button
-            Button {
-              store.send(.tappedAddCustomButton)
-            } label: {
-              SSImage
-                .commonAdd
-            }
-            .padding(.all, 4)
-            .background(SSColor.gray70)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
+            SSImage
+              .commonAdd
+              .padding(.all, 4)
+              .background(SSColor.gray70)
+              .clipShape(RoundedRectangle(cornerRadius: 4))
+              .onTapGesture {
+                store.send(.tappedAddCustomButton)
+              }
           }
         }
       }
@@ -92,6 +90,7 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
   public var body: some View {
     makeContentView()
+      .background(Color.clear)
       .onAppear {
         store.send(.onAppear(true))
       }

@@ -68,7 +68,7 @@ struct ReceivedSearchView: View {
         SpecificEnvelopeEditView(store: store)
 
       case let .edit(store):
-        SpecificEnvelopeEditView(store: store)
+        LedgerDetailEditView(store: store)
       }
     }
   }

@@ -88,6 +88,8 @@ struct LedgerDetailEditView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+          .padding(.horizontal, 16)
+        Spacer()
       }
     }
     .navigationBarBackButtonHidden()

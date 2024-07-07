@@ -18,14 +18,15 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(type: .defaultNonIconType))
+    var header: HeaderViewFeature.State = .init(.init(type: .depth2NonIconType))
     var ledgerProperty: LedgerDetailProperty
     @Shared var editProperty: LedgerDetailEditProperty
     var categorySection: SingleSelectButtonReducer<CategoryEditProperty>.State
     init(ledgerProperty: LedgerDetailProperty, ledgerDetailEditProperty: LedgerDetailEditProperty) {
       self.ledgerProperty = ledgerProperty
       _editProperty = .init(ledgerDetailEditProperty)
-      categorySection = .init(singleSelectButtonHelper: _editProperty.categoryEditProperty)
+      let initialCategoryName = ledgerProperty.customCategory ?? ledgerProperty.category
+      categorySection = .init(singleSelectButtonHelper: _editProperty.categoryEditProperty, initialValue: initialCategoryName)
     }
   }
 
@@ -51,13 +52,16 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       }
       state.isOnAppear = isAppear
       return .none
+
     case let .changeNameTextField(name):
       state.editProperty.changeNameTextField(name)
       return .none
     }
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case setInitialItem
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -73,8 +77,11 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     return .none
   }
 
-  func innerAction(_: inout State, _: InnerAction) -> ComposableArchitecture.Effect<Action> {
-    return .none
+  func innerAction(_: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .setInitialItem:
+      return .none
+    }
   }
 
   func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
@@ -93,6 +100,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
 
     Scope(state: \.categorySection, action: \.scope.categorySection) {
       SingleSelectButtonReducer()
+        ._printChanges()
     }
 
     Reduce { state, action in

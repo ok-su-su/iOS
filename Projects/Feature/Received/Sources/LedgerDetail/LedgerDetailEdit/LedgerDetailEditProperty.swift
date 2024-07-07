@@ -19,10 +19,11 @@ struct LedgerDetailEditProperty: Equatable {
   var categoryEditCustomItem: CategoryEditProperty
 
   init(ledgerDetailProperty: LedgerDetailProperty, category: [CategoryEditProperty]) {
+    var category = category
     nameEditProperty = .init(textFieldText: ledgerDetailProperty.title)
     dateEditProperty = .init(date: ledgerDetailProperty.startDate, endDate: ledgerDetailProperty.endDate)
     var customItem: CategoryEditProperty? = nil
-    if let customItemID = category.last?.id {
+    if let customItemID = category.popLast()?.id {
       if let customCategory = ledgerDetailProperty.customCategory {
         customItem = .init(id: customItemID, title: customCategory)
       } else {
@@ -30,7 +31,6 @@ struct LedgerDetailEditProperty: Equatable {
       }
     }
     categoryEditCustomItem = customItem ?? .init(id: -1, title: "")
-
     categoryEditProperty = .init(
       titleText: "카테고리",
       items: category,

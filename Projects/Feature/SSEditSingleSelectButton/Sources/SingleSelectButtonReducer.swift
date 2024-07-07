@@ -16,11 +16,20 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
+    var initialValue: String = ""
     @Shared var singleSelectButtonHelper: SingleSelectButtonProperty<Item>
     var customTextFieldText: String
+
+    @available(*, deprecated, renamed: "init(SingleSelectButtonProperty:String:)", message: "use Anohter InitialValue")
     public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>) {
       _singleSelectButtonHelper = singleSelectButtonHelper
       customTextFieldText = singleSelectButtonHelper.isCustomItem?.title.wrappedValue ?? ""
+    }
+
+    public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>, initialValue: String) {
+      _singleSelectButtonHelper = singleSelectButtonHelper
+      customTextFieldText = singleSelectButtonHelper.isCustomItem?.title.wrappedValue ?? ""
+      self.initialValue = initialValue
     }
   }
 
@@ -47,7 +56,7 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
            let customItemName = state.singleSelectButtonHelper.isCustomItem?.title {
           state.singleSelectButtonHelper.saveCustomTextField(title: customItemName)
         }
-        return .none
+        return .send(.initialValue(state.initialValue))
       case let .tappedID(id):
         state.singleSelectButtonHelper.selectItem(by: id)
         return .none
