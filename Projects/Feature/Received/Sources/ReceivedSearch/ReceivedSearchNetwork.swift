@@ -25,9 +25,9 @@ struct ReceivedSearchNetwork {
       let dateDescription: String?
 
       if val.ledger.startAt == val.ledger.endAt {
-        let currentDateString =  val.ledger.startAt
+        let currentDateString = val.ledger.startAt
         dateDescription = CustomDateFormatter.getYearAndMonthDateString(from: currentDateString)
-      }else {
+      } else {
         let startDateString = val.ledger.startAt
         let endDateString = val.ledger.endAt
         let end = CustomDateFormatter.getYearAndMonthDateString(from: endDateString) ?? ""

@@ -105,7 +105,7 @@ struct ReceivedSearch {
       let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
       persistence.setSearchItems(state.searchProperty.nowSearchedItem.first(where: { $0.id == id }))
       state.path.append(.main(ledgerMainState))
-      return .none
+      return .send(.inner(.prevSearchItems)) // UpdatePrevSearch
 
     case let .search(.tappedDeletePrevItem(id)):
       persistence.deleteItem(id: id)

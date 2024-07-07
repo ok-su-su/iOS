@@ -9,6 +9,8 @@
 import ComposableArchitecture
 import SwiftUI
 
+// MARK: - SSToastModifier
+
 @available(*, deprecated, renamed: "showToast(StoreOf:)", message: "Use extension of view function")
 public struct SSToastModifier: ViewModifier {
   var toastStore: StoreOf<SSToastReducer>
@@ -26,10 +28,8 @@ public struct SSToastModifier: ViewModifier {
   }
 }
 
-
 public extension View {
   func showToast(store: StoreOf<SSToastReducer>) -> some View {
-    self
-      .modifier(SSToastModifier(toastStore: store))
+    modifier(SSToastModifier(toastStore: store))
   }
 }

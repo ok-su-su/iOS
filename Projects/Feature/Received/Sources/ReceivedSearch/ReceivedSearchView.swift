@@ -9,8 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import SSEnvelope
 import SSSearch
-import SwiftUI
 import SSToast
+import SwiftUI
 
 struct ReceivedSearchView: View {
   // MARK: Reducer
@@ -50,7 +50,6 @@ struct ReceivedSearchView: View {
 
           makeContentView()
         }
-
       }
       .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
       .navigationBarBackButtonHidden()
