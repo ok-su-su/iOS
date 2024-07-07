@@ -12,8 +12,8 @@ import SSPersistancy
 
 // MARK: - ReceivedSearchPersistence
 
-enum ReceivedSearchPersistence {
-  case `default`
+struct ReceivedSearchPersistence {
+  private init() {}
   func getPrevSearchItems() -> [ReceivedSearchItem] {
     return SSUserDefaultsManager.shared.getValue(key: Self.key) ?? []
   }
@@ -22,7 +22,6 @@ enum ReceivedSearchPersistence {
     guard let item else {
       return
     }
-    let prevItems = getPrevSearchItems()
     let newUniquedItems = Array((getPrevSearchItems() + [item]).uniqued().prefix(5))
     setPrevSearchItems(newUniquedItems)
   }
@@ -37,7 +36,7 @@ enum ReceivedSearchPersistence {
 // MARK: DependencyKey
 
 extension ReceivedSearchPersistence: DependencyKey {
-  static var liveValue: ReceivedSearchPersistence = .default
+  static var liveValue: ReceivedSearchPersistence = .init()
 }
 
 extension DependencyValues {

@@ -52,7 +52,7 @@ struct ReceivedSearch {
   }
 
   enum AsyncAction: Equatable {
-    case searchLedgerByName(String?)
+    case searchLedgerByName(String)
   }
 
   @CasePathable
@@ -86,16 +86,19 @@ struct ReceivedSearch {
     }
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case let .search(.changeTextField(text)):
       return ToastRegexManager.isShowToastByLedgerName(text) ?
         .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none
     case let .search(.tappedPrevItem(id)):
-      // ID Logic
+      let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
+      state.path.append(.main(ledgerMainState))
       return .none
 
     case let .search(.tappedSearchItem(id)):
+      let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
+      state.path.append(.main(ledgerMainState))
       return .none
 
     case .search:
@@ -123,15 +126,16 @@ struct ReceivedSearch {
     }
   }
 
-  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
-    switch action {
-    case .searchLedgerByName(_):
-      return .none
-    }
+  enum NetworkCancelID {
+    case searchLedger
+  }
+
+  func asyncAction(_: inout State, _: Action.AsyncAction) -> Effect<Action> {
+    return .none
   }
 
   @Dependency(\.receivedSearchPersistence) var persistence
-  ///  @Dependency(\.receivedSearchPersistence) var persistence
+  @Dependency(\.receivedSearchNetwork) var network
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
