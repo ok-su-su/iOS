@@ -1,5 +1,5 @@
 //
-//  LedgerDetailNetwork.swift
+//  LedgerDetailEditNetwork.swift
 //  Received
 //
 //  Created by MaraMincho on 7/7/24.
@@ -12,9 +12,9 @@ import Moya
 import SSInterceptor
 import SSNetwork
 
-// MARK: - LedgerDetailNetwork
+// MARK: - LedgerDetailEditNetwork
 
-struct LedgerDetailNetwork {
+struct LedgerDetailEditNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   func getLedgerProperty() async throws {}
 
@@ -24,9 +24,11 @@ struct LedgerDetailNetwork {
   }
 }
 
-// MARK: LedgerDetailNetwork.Network
+// MARK: DependencyKey
 
-extension LedgerDetailNetwork {
+extension LedgerDetailEditNetwork: DependencyKey {
+  static var liveValue: LedgerDetailEditNetwork = .init()
+
   private enum Network: SSNetworkTargetType {
     case getLedgerDetailProperty(id: Int64)
     case saveLedger(id: Int64, body: Data)
@@ -60,5 +62,12 @@ extension LedgerDetailNetwork {
         .requestData(body)
       }
     }
+  }
+}
+
+extension DependencyValues {
+  var ledgerDetailEditNetwork: LedgerDetailEditNetwork {
+    get { self[LedgerDetailEditNetwork.self] }
+    set { self[LedgerDetailEditNetwork.self] = newValue }
   }
 }

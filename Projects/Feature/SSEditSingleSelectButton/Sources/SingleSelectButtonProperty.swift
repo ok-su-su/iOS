@@ -26,6 +26,10 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     return (items + [isCustomItem]).compactMap { $0 }
   }
 
+  public var isCustomItemSelected: Bool {
+    return selectedItem?.id == isCustomItem?.id
+  }
+
   public init(titleText: String, items: [Item], isCustomItem: Item?, customTextFieldPrompt: String?, isEssentialProperty: Bool = true) {
     self.titleText = titleText
     self.items = items

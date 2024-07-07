@@ -150,7 +150,7 @@ struct LedgerDetailEditView: View {
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .top) {
       SSColor
         .gray15
         .ignoresSafeArea()

@@ -43,6 +43,9 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     }
   }
 
+  @Dependency(\.ledgerDetailEditNetwork) var network
+  @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerDetailPublisher
+  @Dependency(\.dismiss) var dismiss
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
@@ -94,7 +97,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       return .none
 
     case .tappedSaveButton:
-      return .none
+      return .send(.async(.saveLedger))
     }
   }
 
@@ -102,7 +105,9 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case setInitialItem
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case saveLedger
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -113,8 +118,31 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
 
   enum DelegateAction: Equatable {}
 
-  func asyncAction(_: inout State, _: AsyncAction) -> ComposableArchitecture.Effect<Action> {
-    return .none
+  func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .saveLedger:
+      let id = state.ledgerProperty.id
+      let customCategory = state.editProperty.categoryEditProperty.isCustomItemSelected ?
+        state.editProperty.categoryEditProperty.isCustomItem?.title : nil
+      let startDate = state.editProperty.dateEditProperty.startDate
+      let endDate = state.editProperty.dateEditProperty.isShowEndDate ?
+        state.editProperty.dateEditProperty.endDate : startDate
+
+      let body = CreateAndUpdateLedgerRequest(
+        title: state.editProperty.nameEditProperty.textFieldText,
+        description: nil,
+        categoryId: state.editProperty.categoryEditProperty.selectedItem?.id,
+        customCategory: customCategory,
+        startAt: startDate,
+        endAt: endDate
+      )
+      return .run { _ in
+        let response = try await network.saveLedger(id: id, body: body)
+        let updatedLedgerID = response.ledger.id
+        updateLedgerDetailPropertyPublisher.send(ledgerID: updatedLedgerID)
+        await dismiss()
+      }
+    }
   }
 
   func innerAction(_: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {

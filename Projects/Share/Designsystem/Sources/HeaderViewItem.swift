@@ -35,9 +35,9 @@ extension HeaderView {
         }
       } label: {
         Image(.commonArrow)
+          .frame(width: 56, height: 24, alignment: .leading)
+          .padding(.leading, Constants.headerLeftMargin)
       }
-      .frame(width: 56, height: 24, alignment: .leading)
-      .padding(.leading, Constants.headerLeftMargin)
     }
   }
 
@@ -89,8 +89,8 @@ extension HeaderView {
         } label: {
           currentIcon
             .padding(Constants.imagePadding)
+            .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
         }
-        .frame(width: Constants.buttonWidthAndHeight, height: Constants.buttonWidthAndHeight)
       }
       .frame(alignment: .trailing)
     case .none:
