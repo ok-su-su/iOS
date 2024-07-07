@@ -26,6 +26,11 @@ struct ReceivedSearchPersistence {
     setPrevSearchItems(newUniquedItems)
   }
 
+  func deleteItem(id: Int64) {
+    let filteredItem = getPrevSearchItems().filter { $0.id != id }
+    setPrevSearchItems(filteredItem)
+  }
+
   private func setPrevSearchItems(_ items: [ReceivedSearchItem]) {
     SSUserDefaultsManager.shared.setValue(key: Self.key, value: items)
   }

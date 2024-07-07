@@ -37,11 +37,16 @@ struct ReceivedSearchView: View {
     NavigationStack(path: $store.scope(state: \.path, action: \.scope.path)) {
       ZStack {
         SSColor
-          .gray15
+          .gray10
           .ignoresSafeArea()
+          .whenTapDismissKeyboard()
 
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+
+          Spacer()
+            .frame(height: 8)
+
           makeContentView()
         }
       }

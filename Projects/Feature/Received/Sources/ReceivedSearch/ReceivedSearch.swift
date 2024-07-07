@@ -90,8 +90,12 @@ struct ReceivedSearch {
   func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case let .search(.changeTextField(text)):
-      return ToastRegexManager.isShowToastByLedgerName(text) ?
-        .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none
+      return .concatenate(
+        ToastRegexManager.isShowToastByLedgerName(text) ?
+          .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none,
+
+        .send(.async(.searchLedgerByName(text)))
+      )
     case let .search(.tappedPrevItem(id)):
       let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
       state.path.append(.main(ledgerMainState))
@@ -99,8 +103,13 @@ struct ReceivedSearch {
 
     case let .search(.tappedSearchItem(id)):
       let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
+      persistence.setSearchItems(state.searchProperty.nowSearchedItem.first(where: { $0.id == id }))
       state.path.append(.main(ledgerMainState))
       return .none
+
+    case let .search(.tappedDeletePrevItem(id)):
+      persistence.deleteItem(id: id)
+      return .send(.inner(.prevSearchItems))
 
     case .search:
       return .none

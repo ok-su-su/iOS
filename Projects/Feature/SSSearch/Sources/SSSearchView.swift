@@ -192,6 +192,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
       SSColor
         .gray10
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
       VStack(spacing: 0) {
         makeContentView()
       }
