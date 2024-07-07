@@ -31,7 +31,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
       TextField(
         "SearchTextField",
         text: $store.helper.textFieldText.sending(\.changeTextField),
-        prompt: Text(store.helper.textFieldPromptText)
+        prompt: Text(store.helper.textFieldPromptText).foregroundStyle(SSColor.gray60)
       )
       .modifier(SSTypoModifier(.text_xxs))
       .frame(maxWidth: .infinity)

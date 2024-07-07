@@ -49,6 +49,7 @@ struct ReceivedSearch {
   enum InnerAction: Equatable {
     case push(LedgerDetailPath.State)
     case prevSearchItems
+    case updateSearchItems([ReceivedSearchItem])
   }
 
   enum AsyncAction: Equatable {
@@ -120,8 +121,13 @@ struct ReceivedSearch {
     case let .push(pathState):
       state.path.append(pathState)
       return .none
+
     case .prevSearchItems:
       state.searchProperty.prevSearchedItem = persistence.getPrevSearchItems()
+      return .none
+
+    case let .updateSearchItems(items):
+      state.searchProperty.nowSearchedItem = items
       return .none
     }
   }
@@ -130,8 +136,15 @@ struct ReceivedSearch {
     case searchLedger
   }
 
-  func asyncAction(_: inout State, _: Action.AsyncAction) -> Effect<Action> {
-    return .none
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case let .searchLedgerByName(name):
+      return .run { send in
+        let items = try await network.searchLedgersByName(name)
+        await send(.inner(.updateSearchItems(items)))
+      }
+      .cancellable(id: NetworkCancelID.searchLedger, cancelInFlight: true)
+    }
   }
 
   @Dependency(\.receivedSearchPersistence) var persistence

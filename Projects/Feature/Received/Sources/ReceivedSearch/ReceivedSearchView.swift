@@ -29,6 +29,7 @@ struct ReceivedSearchView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       SSSearchView(store: store.scope(state: \.search, action: \.scope.search))
+        .padding(.horizontal, 16)
     }
   }
 
