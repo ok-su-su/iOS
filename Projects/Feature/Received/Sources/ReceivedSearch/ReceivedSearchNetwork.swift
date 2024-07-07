@@ -21,12 +21,25 @@ struct ReceivedSearchNetwork {
 
   func searchLedgersByName(_ name: String) async throws -> [ReceivedSearchItem] {
     let response: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgersByName(name))
-    return response.data.map {
-      .init(
-        id: $0.ledger.id,
-        title: $0.ledger.title,
-        firstContentDescription: $0.category.category,
-        secondContentDescription: $0.ledger.endAt
+    return response.data.map { val in
+      let dateDescription: String?
+
+      if val.ledger.startAt == val.ledger.endAt {
+        let currentDateString =  val.ledger.startAt
+        dateDescription = CustomDateFormatter.getYearAndMonthDateString(from: currentDateString)
+      }else {
+        let startDateString = val.ledger.startAt
+        let endDateString = val.ledger.endAt
+        let end = CustomDateFormatter.getYearAndMonthDateString(from: endDateString) ?? ""
+        let start = CustomDateFormatter.getYearAndMonthDateString(from: startDateString) ?? ""
+        dateDescription = start + "-" + end
+      }
+
+      return .init(
+        id: val.ledger.id,
+        title: val.ledger.title,
+        firstContentDescription: val.category.category,
+        secondContentDescription: dateDescription
       )
     }
   }
