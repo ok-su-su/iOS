@@ -12,7 +12,38 @@ import SSRegexManager
 
 // MARK: - LedgerDetailEditProperty
 
-struct LedgerDetailEditProperty: Equatable {}
+struct LedgerDetailEditProperty: Equatable {
+  var nameEditProperty: NameEditProperty
+  var dateEditProperty: DateEditProperty
+  var categoryEditProperty: SingleSelectButtonProperty<CategoryEditProperty>
+  var categoryEditCustomItem: CategoryEditProperty
+
+  init(ledgerDetailProperty: LedgerDetailProperty, category: [CategoryEditProperty]) {
+    nameEditProperty = .init(textFieldText: ledgerDetailProperty.title)
+    dateEditProperty = .init(date: ledgerDetailProperty.startDate, endDate: ledgerDetailProperty.endDate)
+    var customItem: CategoryEditProperty? = nil
+    if let customItemID = category.last?.id {
+      if let customCategory = ledgerDetailProperty.customCategory {
+        customItem = .init(id: customItemID, title: customCategory)
+      } else {
+        customItem = .init(id: customItemID, title: "")
+      }
+    }
+    categoryEditCustomItem = customItem ?? .init(id: -1, title: "")
+
+    categoryEditProperty = .init(
+      titleText: "카테고리",
+      items: category,
+      isCustomItem: categoryEditCustomItem,
+      customTextFieldPrompt: "경조사 이름",
+      isEssentialProperty: true
+    )
+  }
+
+  mutating func changeNameTextField(_ name: String) {
+    nameEditProperty.textFieldText = name
+  }
+}
 
 // MARK: - NameEditProperty
 
@@ -32,14 +63,17 @@ struct NameEditProperty: Equatable {
 // MARK: - DateEditProperty
 
 struct DateEditProperty: Equatable {
-  var date: Date
+  var startDate: Date
+  var endDate: Date
 
   var dateText: String {
-    return CustomDateFormatter.getKoreanDateString(from: date)
+//    return CustomDateFormatter.getKoreanDateString(from: date)
+    ""
   }
 
-  init(date: Date) {
-    self.date = date
+  init(date: Date, endDate: Date) {
+    startDate = date
+    self.endDate = endDate
   }
 }
 

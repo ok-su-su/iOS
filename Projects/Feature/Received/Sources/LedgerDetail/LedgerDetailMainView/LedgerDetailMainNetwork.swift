@@ -33,6 +33,11 @@ struct LedgerDetailMainNetwork {
     try await provider.request(.deletedLedger(ID: id))
   }
 
+  func getCategories() async throws -> [CategoryModel] {
+    let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
+    return data.categories
+  }
+
   func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(param))
     return data.data.compactMap { cur -> EnvelopeViewForLedgerMainProperty? in
@@ -70,6 +75,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
     case searchLedgerDetail(ledgerID: Int64)
     case deletedLedger(ID: Int64)
     case getFilterItems
+    case getCategoriesAndRelationships
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -80,7 +86,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         "ledgers/\(ledgerID)"
       case .deletedLedger:
         "ledgers"
-      case .getFilterItems:
+      case .getCategoriesAndRelationships,
+           .getFilterItems:
         "envelopes/configs/create-envelopes"
       }
     }
@@ -93,7 +100,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .get
       case .deletedLedger:
         .delete
-      case .getFilterItems:
+      case .getCategoriesAndRelationships,
+           .getFilterItems:
         .get
       }
     }
@@ -106,7 +114,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         .requestParameters(parameters: ["id": ledgerID], encoding: URLEncoding.queryString)
       case let .deletedLedger(ID: ledgerID):
         .requestParameters(parameters: ["ids": ledgerID], encoding: URLEncoding.queryString)
-      case .getFilterItems:
+      case .getCategoriesAndRelationships,
+           .getFilterItems:
         .requestPlain
       }
     }

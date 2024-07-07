@@ -256,9 +256,17 @@ struct LedgerDetailMain {
     switch action {
     // 편집 버튼
     case .header(.tappedDoubleTextButton(.leading)):
-      let editState = LedgerDetailEdit.State(ledgerProperty: state.ledgerProperty)
-      LedgerDetailRouterPublisher.send(.edit(editState))
-      return .none
+      let ledgerProperty = state.ledgerProperty
+      return .run { _ in
+        var category = try await network.getCategories()
+        let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name) }
+        let editState = LedgerDetailEdit.State(
+          ledgerProperty: ledgerProperty,
+          ledgerDetailEditProperty: .init(ledgerDetailProperty: ledgerProperty, category: categoryEditProperty)
+        )
+
+        LedgerDetailRouterPublisher.send(.edit(editState))
+      }
 
     case .header(.tappedDoubleTextButton(.trailing)):
       state.showMessageAlert = true

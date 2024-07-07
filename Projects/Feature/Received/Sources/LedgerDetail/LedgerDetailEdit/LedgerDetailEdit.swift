@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSEditSingleSelectButton
 
 // MARK: - LedgerDetailEdit
 
@@ -19,8 +20,12 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(type: .defaultNonIconType))
     var ledgerProperty: LedgerDetailProperty
-    init(ledgerProperty: LedgerDetailProperty) {
+    @Shared var editProperty: LedgerDetailEditProperty
+    var categorySection: SingleSelectButtonReducer<CategoryEditProperty>.State
+    init(ledgerProperty: LedgerDetailProperty, ledgerDetailEditProperty: LedgerDetailEditProperty) {
       self.ledgerProperty = ledgerProperty
+      _editProperty = .init(ledgerDetailEditProperty)
+      categorySection = .init(singleSelectButtonHelper: _editProperty.categoryEditProperty)
     }
   }
 
@@ -32,20 +37,11 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case changeNameTextField(String)
   }
-
-  enum InnerAction: Equatable {}
-
-  enum AsyncAction: Equatable {}
-
-  @CasePathable
-  enum ScopeAction: Equatable {
-    case header(HeaderViewFeature.Action)
-  }
-
-  enum DelegateAction: Equatable {}
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
@@ -55,8 +51,23 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       }
       state.isOnAppear = isAppear
       return .none
+    case let .changeNameTextField(name):
+      state.editProperty.changeNameTextField(name)
+      return .none
     }
   }
+
+  enum InnerAction: Equatable {}
+
+  enum AsyncAction: Equatable {}
+
+  @CasePathable
+  enum ScopeAction: Equatable {
+    case header(HeaderViewFeature.Action)
+    case categorySection(SingleSelectButtonReducer<CategoryEditProperty>.Action)
+  }
+
+  enum DelegateAction: Equatable {}
 
   func asyncAction(_: inout State, _: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     return .none
@@ -70,12 +81,18 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     switch action {
     case .header:
       return .none
+    case .categorySection:
+      return .none
     }
   }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+
+    Scope(state: \.categorySection, action: \.scope.categorySection) {
+      SingleSelectButtonReducer()
     }
 
     Reduce { state, action in

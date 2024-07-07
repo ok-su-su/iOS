@@ -66,6 +66,9 @@ struct ReceivedSearchView: View {
 
       case let .envelopeEdit(store):
         SpecificEnvelopeEditView(store: store)
+
+      case let .edit(store):
+        SpecificEnvelopeEditView(store: store)
       }
     }
   }

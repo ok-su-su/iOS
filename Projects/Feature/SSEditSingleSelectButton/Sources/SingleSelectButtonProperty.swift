@@ -9,9 +9,13 @@
 import Foundation
 
 public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equatable {
+  /// 타이틀 텍스트 이릅입니다.
   public var titleText: String
+  /// 커스텀 아이템을 제외한 아이템들을 보관합니다.
   public var items: [Item]
+  /// selectedItem입니다.
   public var selectedItem: Item?
+  // customItem입니다.
   public var isCustomItem: Item?
   public var isStartedAddingNewCustomItem = false
   public var customTextFieldPrompt: String?
