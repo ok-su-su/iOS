@@ -7,8 +7,10 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSEnvelope
 import SSSearch
 import SwiftUI
+import SSToast
 
 struct ReceivedSearchView: View {
   // MARK: Reducer
@@ -28,6 +30,7 @@ struct ReceivedSearchView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       SSSearchView(store: store.scope(state: \.search, action: \.scope.search))
+        .padding(.horizontal, 16)
     }
   }
 
@@ -35,18 +38,36 @@ struct ReceivedSearchView: View {
     NavigationStack(path: $store.scope(state: \.path, action: \.scope.path)) {
       ZStack {
         SSColor
-          .gray15
+          .gray10
           .ignoresSafeArea()
+          .whenTapDismissKeyboard()
+
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+
+          Spacer()
+            .frame(height: 8)
+
           makeContentView()
         }
+
       }
+      .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
       .navigationBarBackButtonHidden()
       .onAppear {
         store.send(.view(.onAppear(true)))
       }
-    } destination: { _ in
+    } destination: { store in
+      switch store.case {
+      case let .main(store):
+        LedgerDetailMainView(store: store)
+
+      case let .envelopeDetail(store):
+        SpecificEnvelopeDetailView(store: store)
+
+      case let .envelopeEdit(store):
+        SpecificEnvelopeEditView(store: store)
+      }
     }
   }
 

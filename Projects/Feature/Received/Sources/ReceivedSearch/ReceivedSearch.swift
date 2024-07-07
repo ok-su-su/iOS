@@ -9,7 +9,10 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSEnvelope
+import SSRegexManager
 import SSSearch
+import SSToast
 
 // MARK: - ReceivedSearch
 
@@ -24,6 +27,7 @@ struct ReceivedSearch {
     var search: SSSearchReducer<ReceivedSearchProperty>.State
     var path: StackState<LedgerDetailPath.State> = .init()
     var header: HeaderViewFeature.State = .init(.init(type: .depth2NonIconType))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     init() {
       _searchProperty = .init(.default)
       search = .init(helper: _searchProperty)
@@ -42,15 +46,22 @@ struct ReceivedSearch {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case push(LedgerDetailPath.State)
+    case prevSearchItems
+    case updateSearchItems([ReceivedSearchItem])
+  }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case searchLedgerByName(String)
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case search(SSSearchReducer<ReceivedSearchProperty>.Action)
     case path(StackActionOf<LedgerDetailPath>)
     case header(HeaderViewFeature.Action)
+    case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -62,32 +73,97 @@ struct ReceivedSearch {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return .merge(
+        // Subscribe
+        .publisher {
+          LedgerDetailRouterPublisher
+            .publisher()
+            .map { .inner(.push($0)) }
+        },
+
+        // initialSearch
+        .send(.inner(.prevSearchItems))
+      )
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, action in
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
+    case let .search(.changeTextField(text)):
+      return .concatenate(
+        ToastRegexManager.isShowToastByLedgerName(text) ?
+          .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none,
+
+        .send(.async(.searchLedgerByName(text)))
+      )
+    case let .search(.tappedPrevItem(id)):
+      let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
+      state.path.append(.main(ledgerMainState))
+      return .none
+
+    case let .search(.tappedSearchItem(id)):
+      let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
+      persistence.setSearchItems(state.searchProperty.nowSearchedItem.first(where: { $0.id == id }))
+      state.path.append(.main(ledgerMainState))
+      return .none
+
+    case let .search(.tappedDeletePrevItem(id)):
+      persistence.deleteItem(id: id)
+      return .send(.inner(.prevSearchItems))
+
     case .search:
       return .none
+
     case .path:
       return .none
+
     case .header:
+      return .none
+
+    case .toast:
       return .none
     }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { _, _ in
-    return .none
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .push(pathState):
+      state.path.append(pathState)
+      return .none
+
+    case .prevSearchItems:
+      state.searchProperty.prevSearchedItem = persistence.getPrevSearchItems()
+      return .none
+
+    case let .updateSearchItems(items):
+      state.searchProperty.nowSearchedItem = items
+      return .none
+    }
   }
 
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { _, _ in
-    return .none
+  enum NetworkCancelID {
+    case searchLedger
   }
 
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case let .searchLedgerByName(name):
+      return .run { send in
+        let items = try await network.searchLedgersByName(name)
+        await send(.inner(.updateSearchItems(items)))
+      }
+      .cancellable(id: NetworkCancelID.searchLedger, cancelInFlight: true)
+    }
+  }
+
+  @Dependency(\.receivedSearchPersistence) var persistence
+  @Dependency(\.receivedSearchNetwork) var network
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+    Scope(state: \.search, action: \.scope.search) {
+      SSSearchReducer()
     }
     Reduce { state, action in
       switch action {
@@ -101,73 +177,12 @@ struct ReceivedSearch {
         return scopeAction(&state, currentAction)
       }
     }
+    .addFeatures()
   }
 }
 
-extension Reducer where Self.State == ReceivedSearch.State, Self.Action == ReceivedSearch.Action {}
-
-// MARK: - ReceivedSearchProperty
-
-struct ReceivedSearchProperty: SSSearchPropertiable {
-  typealias item = ReceivedSearchItem
-  var prevSearchedItem: [ReceivedSearchItem]
-  var nowSearchedItem: [ReceivedSearchItem]
-  var textFieldPromptText: String
-  var prevSearchedNoContentTitleText: String
-  var prevSearchedNoContentDescriptionText: String
-  var textFieldText: String
-  var iconType: SSSearch.SSSearchIconType
-  var noSearchResultTitle: String
-  var noSearchResultDescription: String
-
-  init(
-    prevSearchedItem: [ReceivedSearchItem],
-    nowSearchedItem: [ReceivedSearchItem],
-    textFieldPromptText: String,
-    prevSearchedNoContentTitleText: String,
-    prevSearchedNoContentDescriptionText: String,
-    textFieldText: String,
-    iconType: SSSearchIconType,
-    noSearchResultTitle: String,
-    noSearchResultDescription: String
-  ) {
-    self.prevSearchedItem = prevSearchedItem
-    self.nowSearchedItem = nowSearchedItem
-    self.textFieldPromptText = textFieldPromptText
-    self.prevSearchedNoContentTitleText = prevSearchedNoContentTitleText
-    self.prevSearchedNoContentDescriptionText = prevSearchedNoContentDescriptionText
-    self.textFieldText = textFieldText
-    self.iconType = iconType
-    self.noSearchResultTitle = noSearchResultTitle
-    self.noSearchResultDescription = noSearchResultDescription
+extension Reducer where Self.State == ReceivedSearch.State, Self.Action == ReceivedSearch.Action {
+  func addFeatures() -> some ReducerOf<Self> {
+    forEach(\.path, action: \.scope.path)
   }
-}
-
-extension ReceivedSearchProperty {
-  static var `default`: Self {
-    .init(
-      prevSearchedItem: [],
-      nowSearchedItem: [],
-      textFieldPromptText: "찾고 싶은 장부를 검색해보세요",
-      prevSearchedNoContentTitleText: "어떤 장부를 찾아드릴까요?",
-      prevSearchedNoContentDescriptionText: "장부 이름, 경조사 카테고리 등을\n검색해볼 수 있어요",
-      textFieldText: "",
-      iconType: .inventory,
-      noSearchResultTitle: "원하는 검색 결과가 없나요?",
-      noSearchResultDescription: "장부 이름, 경조사 카테고리 등을\n검색해볼 수 있어요"
-    )
-  }
-}
-
-// MARK: - ReceivedSearchItem
-
-struct ReceivedSearchItem: SSSearchItemable {
-  /// 장부의 아이디 입니다.
-  var id: Int64
-  /// 장부의 이름 입니다.
-  var title: String
-  /// 장부의 카테고리 입니다.
-  var firstContentDescription: String?
-  /// 장부의 날짜 입니다.
-  var secondContentDescription: String?
 }

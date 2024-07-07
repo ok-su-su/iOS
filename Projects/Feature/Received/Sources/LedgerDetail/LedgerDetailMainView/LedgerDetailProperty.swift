@@ -80,7 +80,6 @@ extension LedgerDetailProperty {
   }
 
   init(ledgerDetailResponse dto: LedgerDetailResponse) {
-    dump(dto)
     id = dto.ledger.id
     categoryID = dto.category.id
     category = dto.category.category
