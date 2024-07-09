@@ -31,6 +31,20 @@ public struct RefreshTokenTargetType: SSNetworkTargetType {
   }
 }
 
+// MARK: - ValidTokenTargetType
+
+public struct ValidTokenTargetType: SSNetworkTargetType {
+  public var additionalHeader: [String: String]? = nil
+
+  public var path: String = "envelopes"
+
+  public var method: Moya.Method = .get
+
+  public var task: Moya.Task {
+    .requestPlain
+  }
+}
+
 // MARK: - RefreshResponseDTO
 
 struct RefreshResponseDTO: Decodable {

@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import AppleLogin
 import Foundation
 import KakaoLogin
 import Moya
@@ -21,24 +22,27 @@ struct OnBoardingAdditionalNetwork: Equatable {
 
   enum Network: SSNetworkTargetType {
     case signupByKakao(SingUpBodyDTOData: Data, token: String)
+    case signupByApple(SingUpBodyDTOData: Data, token: String)
+
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
       case .signupByKakao:
         return "oauth/KAKAO/sign-up"
+      case .signupByApple:
+        return "oauth/APPLE/sign-up"
       }
     }
 
     var method: Moya.Method {
-      switch self {
-      case .signupByKakao:
-        return .post
-      }
+      .post
     }
 
     var task: Moya.Task {
       switch self {
       case let .signupByKakao(singUpBodyDTO, token):
+        return .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
+      case let .signupByApple(singUpBodyDTO, token):
         return .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
       }
     }
@@ -53,12 +57,14 @@ struct OnBoardingAdditionalNetwork: Equatable {
       guard let token = LoginWithKakao.getToken() else {
         throw OnboardingSignUpError.tokenError
       }
-      os_log("token = \(token)")
-      os_log("body = \(String(data: bodyData, encoding: .utf8) ?? "")")
       return try await provider.request(.signupByKakao(SingUpBodyDTOData: bodyData, token: token))
 
     case .APPLE:
-      throw OnboardingSignUpError.notImplementLoginMethod("Apple")
+      let bodyData = try body.makeBodyData()
+      guard let token = LoginWithApple.identityToken else {
+        throw OnboardingSignUpError.tokenError
+      }
+      return try await provider.request(.signupByApple(SingUpBodyDTOData: bodyData, token: token))
 
     case .GOOGLE:
       throw OnboardingSignUpError.notImplementLoginMethod("Google")
