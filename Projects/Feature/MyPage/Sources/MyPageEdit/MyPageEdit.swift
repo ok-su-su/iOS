@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import SSBottomSelectSheet
 import SSEditSingleSelectButton
+import SSRegexManager
 import SSToast
 
 // MARK: - MyPageEdit
@@ -34,7 +35,8 @@ struct MyPageEdit {
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isPushable: Bool {
       if (userInfo.name != nameTextFieldText && RegexManager.isValidName(nameTextFieldText)) ||
-        (userInfo.birth != selectedBottomSheetItem?.id) {
+        (userInfo.birth != selectedBottomSheetItem?.id) ||
+        (userInfo.gender != selectedGender?.genderIdentifierString) {
         return true
       }
       return false
@@ -136,10 +138,8 @@ struct MyPageEdit {
 
     case let .nameEdited(text):
       state.nameTextFieldText = text
-      if state.nameTextFieldText.count > 10 {
-        return .send(.scope(.toast(.showToastMessage("이름은 한글 또는 영문 10글자 이내로 입력해주세요"))))
-      }
-      return .none
+      return ToastRegexManager.isShowToastByName(text) ?
+        .send(.scope(.toast(.showToastMessage("이름은 한글 또는 영문 10글자 이내로 입력해주세요")))) : .none
 
     case .selectedYearItem:
       state.bottomSheet = .init(

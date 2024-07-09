@@ -131,6 +131,7 @@ struct MyPageEditView: View {
               .onTapGesture {
                 store.sendViewAction(.tappedEditConfirmButton)
               }
+              .disabled(!store.isPushable)
           }
           .padding(.horizontal, 16)
         }
@@ -158,6 +159,6 @@ struct MyPageEditView: View {
     static let nameCellTitle: String = "이름"
     static let birthdayCellTitle: String = "생년월일"
     static let genderCellTitle: String = "성별"
-    static let confirmButtonText: String = "확인"
+    static let confirmButtonText: String = "등록"
   }
 }
