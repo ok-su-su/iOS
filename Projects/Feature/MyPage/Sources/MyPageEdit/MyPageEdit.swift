@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSBottomSelectSheet
+import SSEditSingleSelectButton
 import SSToast
 
 // MARK: - MyPageEdit
@@ -22,7 +23,9 @@ struct MyPageEdit {
   struct State: Equatable {
     var isOnAppear = false
     var userInfo: UserInfoResponseDTO
-    var selectedGender: Gender?
+    var selectedGender: Gender? { genderSectionProperty.selectedItem?.gender }
+    @Shared var genderSectionProperty: SingleSelectButtonProperty<GenderSelectButtonItem>
+    var genderSection: SingleSelectButtonReducer<GenderSelectButtonItem>.State?
     var nameTextFieldText: String = ""
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<SelectYearBottomSheetItem>.State?
     @Shared var selectedBottomSheetItem: SelectYearBottomSheetItem?
@@ -31,7 +34,6 @@ struct MyPageEdit {
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isPushable: Bool {
       if (userInfo.name != nameTextFieldText && RegexManager.isValidName(nameTextFieldText)) ||
-        (userInfo.gender != selectedGender?.genderIdentifierString) ||
         (userInfo.birth != selectedBottomSheetItem?.id) {
         return true
       }
@@ -49,11 +51,29 @@ struct MyPageEdit {
     init() {
       userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: nil, birth: nil)
       _selectedBottomSheetItem = .init(nil)
+      _genderSectionProperty = .init(
+        .init(
+          titleText: "성별",
+          items: .default,
+          isCustomItem: nil,
+          customTextFieldPrompt: nil,
+          isEssentialProperty: false
+        )
+      )
     }
 
     init(_ userInfo: UserInfoResponseDTO) {
       self.userInfo = userInfo
       _selectedBottomSheetItem = .init(nil)
+      _genderSectionProperty = .init(
+        .init(
+          titleText: "성별",
+          items: .default,
+          isCustomItem: nil,
+          customTextFieldPrompt: nil,
+          isEssentialProperty: false
+        )
+      )
     }
   }
 
@@ -92,6 +112,7 @@ struct MyPageEdit {
     case tabBar(SSTabBarFeature.Action)
     case toast(SSToastReducer.Action)
     case bottomSheet(PresentationAction<SSSelectableBottomSheetReducer<SelectYearBottomSheetItem>.Action>)
+    case genderSection(SingleSelectButtonReducer<GenderSelectButtonItem>.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -110,7 +131,7 @@ struct MyPageEdit {
       return .send(.inner(.updateInitialProperty))
 
     case let .selectGender(gender):
-      state.selectedGender = gender
+      state.genderSectionProperty.selectItem(by: gender.id)
       return .none
 
     case let .nameEdited(text):
@@ -173,12 +194,13 @@ struct MyPageEdit {
           state.selectedBottomSheetItem = .init(description: birth.description + "년", id: birth)
         }
 
-        if let genderString = state.userInfo.gender {
-          state.selectedGender = .initByString(genderString)
-        }
+        let genderString = state.userInfo.gender
+        let currentGender = Gender.getGenderByKey(genderString ?? "")
 
-        let name = state.userInfo.name
-        return .send(.view(.nameEdited(name)))
+        state.nameTextFieldText = state.userInfo.name
+        state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty, initialValue: currentGender?.description)
+        return .none
+
       case .inner(.updateUserInformation):
         return .send(.async(.updateUserInformation))
 
@@ -196,6 +218,8 @@ struct MyPageEdit {
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.route(.dismiss))
         }
+      case .scope(.genderSection(_)):
+        return .none
       }
     }
     .activateScope()
@@ -206,6 +230,9 @@ extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdi
   func activateScope() -> some ReducerOf<Self> {
     ifLet(\.$bottomSheet, action: \.scope.bottomSheet) {
       SSSelectableBottomSheetReducer()
+    }
+    .ifLet(\.genderSection, action: \.scope.genderSection) {
+      SingleSelectButtonReducer()
     }
   }
 }

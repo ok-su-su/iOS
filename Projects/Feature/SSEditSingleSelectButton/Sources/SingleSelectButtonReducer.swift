@@ -60,6 +60,7 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
           state.singleSelectButtonHelper.saveCustomTextField(title: customItemName)
         }
         return .send(.initialValue(state.initialValue))
+
       case let .tappedID(id):
         state.singleSelectButtonHelper.selectItem(by: id)
         return .none

@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
+import SSEditSingleSelectButton
 import SSToast
 import SwiftUI
 
@@ -108,32 +109,10 @@ struct MyPageEditView: View {
 
   @ViewBuilder
   private func makeGenderItem() -> some View {
-    HStack(spacing: 0) {
-      Text(Constants.genderCellTitle)
-        .modifier(SSTypoModifier(.title_xxs))
-        .foregroundStyle(SSColor.gray60)
-
-      Spacer()
-      HStack(spacing: 8) {
-        ForEach(Gender.allCases, id: \.id) { gender in
-          let isSelected = store.selectedGender == gender
-          SSButton(
-            .init(
-              size: .sh32,
-              status: isSelected ? .active : .inactive,
-              style: .filled,
-              color: .orange,
-              buttonText: gender.description,
-              frame: .init(maxWidth: 116)
-            )
-          ) {
-            store.send(.view(.selectGender(gender)))
-          }
-        }
-      }
+    if let selectableStore = store.scope(state: \.genderSection, action: \.scope.genderSection) {
+      SingleSelectButtonView(store: selectableStore, isOneLine: true)
+        .padding(.vertical, 16)
     }
-    .frame(maxWidth: .infinity, maxHeight: 28)
-    .padding(.vertical, Metrics.itemVerticalSpacing)
   }
 
   var body: some View {

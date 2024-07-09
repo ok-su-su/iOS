@@ -38,4 +38,15 @@ enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible
   static func initByString(_ val: String) -> Self? {
     allCases.filter { $0.genderIdentifierString == val }.first
   }
+
+  static func getGenderByKey(_ val: String) -> Self? {
+    switch val {
+    case "F":
+      .female
+    case "M":
+      .male
+    default:
+      nil
+    }
+  }
 }
