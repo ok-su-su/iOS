@@ -143,12 +143,11 @@ extension Reducer where State == MyPageInformation.State, Action == MyPageInform
 // MARK: - MyPageInformationListItem
 
 struct MyPageInformationListItem: MyPageMainItemListCellItemable, Equatable {
-  var id: Int { type.rawValue }
+  var id: Int
   var title: String
   var subTitle: String?
-  var type: MyPageInformationListItemType
-  init(type: MyPageInformationListItemType, title: String, subTitle: String?) {
-    self.type = type
+  init(id: Int, title: String, subTitle: String?) {
+    self.id = id
     self.title = title
     self.subTitle = subTitle
   }
@@ -161,11 +160,11 @@ private extension UserInfoResponseDTO {
       case .name:
         self.name
       case .birthDay:
-        self.birth?.description
+        self.birth?.description.appending("년")
       case .gender:
-        self.gender
+        getGenderText(self.gender)
       }
-      return MyPageInformationListItem(type: type, title: type.titleString, subTitle: content)
+      return MyPageInformationListItem(id: type.rawValue, title: type.titleString, subTitle: content)
     }
     return items.sorted { $0.id < $1.id }.map { .init(property: $0) }
   }
@@ -187,5 +186,17 @@ enum MyPageInformationListItemType: Int, Equatable, CaseIterable {
     case .gender:
       "성별"
     }
+  }
+}
+
+/// "F" 여자, "M" 남자 나머지 ""
+private func getGenderText(_ val: String?) -> String {
+  switch val {
+  case "F":
+    "여자"
+  case "M":
+    "남자"
+  default:
+    ""
   }
 }
