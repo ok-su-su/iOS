@@ -109,7 +109,7 @@ public struct SpecificEnvelopeEditView: View {
       TextField("", text: $store.editHelper.nameEditProperty.textFieldText.sending(\.view.changeNameTextField), prompt: nil)
         .frame(maxWidth: .infinity)
         .modifier(SSTypoModifier(.title_s))
-        .foregroundStyle(SSColor.gray70)
+        .foregroundStyle(SSColor.gray100)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
