@@ -34,12 +34,17 @@ struct MyPageEdit {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isPushable: Bool {
-      if (userInfo.name != nameTextFieldText && RegexManager.isValidName(nameTextFieldText)) ||
+      isValid && isChanged
+    }
+
+    var isValid: Bool {
+      RegexManager.isValidName(nameTextFieldText)
+    }
+
+    var isChanged: Bool {
+      (userInfo.name != nameTextFieldText) ||
         (userInfo.birth != selectedBottomSheetItem?.id) ||
-        (userInfo.gender != selectedGender?.genderIdentifierString) {
-        return true
-      }
-      return false
+        (userInfo.gender != selectedGender?.genderIdentifierString)
     }
 
     var nameText: String {
