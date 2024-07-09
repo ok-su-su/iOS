@@ -26,6 +26,7 @@ public enum SSImage {
   public static let commonRefresh = Image(.commonRefresh)
   public static let commonSearch = Image(.commonSearch)
   public static let commonUnCheckBox = Image(.commonUncheckBox)
+  public static let commonForwardArrow = Image(.commonForwardArrow)
 
   /// 로그인 화면 icon
   public static let signInKakaoLogo = Image(.kakaoLogo)
