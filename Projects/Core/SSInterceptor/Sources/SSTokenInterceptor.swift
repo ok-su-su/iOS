@@ -121,6 +121,11 @@ public extension SSTokenInterceptor {
     try SSTokenManager.shared.saveToken(response)
   }
 
+  func isValidToken() async throws {
+    let provider = MoyaProvider<ValidTokenTargetType>(session: .init(interceptor: self))
+    try await provider.request(.init())
+  }
+
   func healthCheck() async {
     let customEndpointClosure = { (target: HealthCheck) -> Endpoint in
       return Endpoint(

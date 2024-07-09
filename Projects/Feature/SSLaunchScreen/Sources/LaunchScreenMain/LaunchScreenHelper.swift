@@ -27,7 +27,9 @@ struct LaunchScreenHelper {
     }
 
     do {
+      try await SSTokenInterceptor.shared.isValidToken()
       try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
+      os_log("토큰 갱신에 성공하였습니다.")
       return .prevUser
     } catch {
       os_log("\(error.localizedDescription)")
@@ -37,6 +39,8 @@ struct LaunchScreenHelper {
 
   private func newUserRoutine() -> EndedLaunchScreenStatus {
     SSTokenManager.shared.removeToken()
-    return .prevUser
+    return .newUser
   }
+
+  private func isValidToken() async throws {}
 }
