@@ -110,7 +110,7 @@ struct MyPageEditView: View {
   @ViewBuilder
   private func makeGenderItem() -> some View {
     if let selectableStore = store.scope(state: \.genderSection, action: \.scope.genderSection) {
-      SingleSelectButtonView(store: selectableStore, isOneLine: true)
+      SingleSelectButtonView(store: selectableStore, ssButtonFrame: .init(maxWidth: 116), isOneLine: true)
         .padding(.vertical, 16)
     }
   }
@@ -143,7 +143,7 @@ struct MyPageEditView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .safeAreaInset(edge: .bottom) { makeTabBar() }
   }

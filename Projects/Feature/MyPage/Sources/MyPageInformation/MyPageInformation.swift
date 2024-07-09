@@ -162,7 +162,7 @@ private extension UserInfoResponseDTO {
       case .birthDay:
         self.birth?.description.appending("년")
       case .gender:
-        getGenderText(self.gender)
+        Gender.getGenderByKey(self.gender)?.description ?? "미입력"
       }
       return MyPageInformationListItem(id: type.rawValue, title: type.titleString, subTitle: content)
     }
@@ -186,17 +186,5 @@ enum MyPageInformationListItemType: Int, Equatable, CaseIterable {
     case .gender:
       "성별"
     }
-  }
-}
-
-/// "F" 여자, "M" 남자 나머지 ""
-private func getGenderText(_ val: String?) -> String {
-  switch val {
-  case "F":
-    "여자"
-  case "M":
-    "남자"
-  default:
-    ""
   }
 }

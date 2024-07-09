@@ -19,20 +19,17 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
   @Bindable
   var store: StoreOf<SingleSelectButtonReducer<Item>>
-  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil) {
+  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil, isOneLine: Bool = false) {
     self.store = store
     self.ssButtonFrame = ssButtonFrame
-  }
-
-  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, isOneLine: Bool) {
-    self.store = store
     self.isOneLine = isOneLine
   }
 
   @ViewBuilder
   private func makeOneLineView() -> some View {
     let items = store.singleSelectButtonHelper.items
-    HStack {
+    HStack(alignment: .center, spacing: 8) {
+      Spacer()
       ForEach(items) { item in
         SSButton(
           .init(
@@ -41,7 +38,7 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
             style: .filled,
             color: .orange,
             buttonText: item.title,
-            frame: .init(maxWidth: .infinity)
+            frame: ssButtonFrame
           )) {
             store.send(.tappedID(item.id))
           }
@@ -107,7 +104,7 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    HStack(alignment: .top, spacing: 16) {
+    HStack(alignment: .center, spacing: 16) {
       Text(store.singleSelectButtonHelper.titleText)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
