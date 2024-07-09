@@ -26,9 +26,12 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
       customTextFieldText = singleSelectButtonHelper.isCustomItem?.title.wrappedValue ?? ""
     }
 
-    public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>, initialValue: String) {
+    public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>, initialValue: String?) {
       _singleSelectButtonHelper = singleSelectButtonHelper
       customTextFieldText = singleSelectButtonHelper.isCustomItem?.title.wrappedValue ?? ""
+      guard let initialValue else {
+        return
+      }
       self.initialValue = initialValue
     }
   }
