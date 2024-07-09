@@ -105,7 +105,9 @@ struct MyPageMainView: View {
           .foregroundStyle(SSColor.gray60)
 
         SSImage
-          .envelopeForwardArrow
+          .commonForwardArrow
+          .resizable()
+          .frame(width: 16, height: 16)
       }
     }
     .padding(.horizontal, Metrics.horizontalSpacing)

@@ -11,6 +11,7 @@ let project = Project.makeModule(
       .share(.shareLayer),
       .share(.sSLayout),
       .core(.coreLayers),
+      .feature(.sSEditSingleSelectButton),
     ],
     testDependencies: [],
     infoPlist: [

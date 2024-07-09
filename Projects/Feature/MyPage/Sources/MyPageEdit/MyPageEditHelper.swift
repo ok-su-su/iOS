@@ -11,8 +11,8 @@ import Foundation
 // MARK: - Gender
 
 enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible {
-  case male = 0
-  case female
+  case female = 0
+  case male
 
   var id: Int { return rawValue }
 
@@ -20,9 +20,9 @@ enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible
   var description: String {
     switch self {
     case .male:
-      "남자"
+      "남성"
     case .female:
-      "여자"
+      "여성"
     }
   }
 
@@ -37,5 +37,16 @@ enum Gender: Int, Identifiable, Equatable, CaseIterable, CustomStringConvertible
 
   static func initByString(_ val: String) -> Self? {
     allCases.filter { $0.genderIdentifierString == val }.first
+  }
+
+  static func getGenderByKey(_ val: String?) -> Self? {
+    switch val {
+    case "F":
+      .female
+    case "M":
+      .male
+    default:
+      nil
+    }
   }
 }

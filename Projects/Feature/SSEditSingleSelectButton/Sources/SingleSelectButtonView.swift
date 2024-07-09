@@ -15,73 +15,105 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
   // MARK: Reducer
 
   var ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil
+  var isOneLine: Bool = false
 
   @Bindable
   var store: StoreOf<SingleSelectButtonReducer<Item>>
-  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil) {
+  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil, isOneLine: Bool = false) {
     self.store = store
     self.ssButtonFrame = ssButtonFrame
+    self.isOneLine = isOneLine
+  }
+
+  @ViewBuilder
+  private func makeOneLineView() -> some View {
+    let items = store.singleSelectButtonHelper.items
+    HStack(alignment: .center, spacing: 8) {
+      Spacer()
+      ForEach(items) { item in
+        SSButton(
+          .init(
+            size: .sh32,
+            status: item == store.singleSelectButtonHelper.selectedItem ? .active : .inactive,
+            style: .filled,
+            color: .orange,
+            buttonText: item.title,
+            frame: ssButtonFrame
+          )) {
+            store.send(.tappedID(item.id))
+          }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeMultilineView() -> some View {
+    WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
+      // MARK: - Defaults Item
+
+      let items = store.singleSelectButtonHelper.items
+      ForEach(items) { item in
+        SSButton(
+          .init(
+            size: .sh32,
+            status: item == store.singleSelectButtonHelper.selectedItem ? .active : .inactive,
+            style: .filled,
+            color: .orange,
+            buttonText: item.title,
+            frame: ssButtonFrame
+          )) {
+            store.send(.tappedID(item.id))
+          }
+      }
+
+      // 만약 CustomItem을 추가할 수 있을 떄
+      if let customItem = store.singleSelectButtonHelper.isCustomItem {
+        if store.singleSelectButtonHelper.isStartedAddingNewCustomItem || store.singleSelectButtonHelper.isSaved {
+          // CustomText Field Button
+          SSTextFieldButton(
+            .init(
+              size: .sh32,
+              status: store.singleSelectButtonHelper.isSaved ? .saved : .filled,
+              style: .filled,
+              color: store.singleSelectButtonHelper.selectedItem == customItem ? .orange : .gray,
+              textFieldText: $store.customTextFieldText.sending(\.changedText),
+              showCloseButton: true,
+              showDeleteButton: true,
+              prompt: store.singleSelectButtonHelper.customTextFieldPrompt ?? ""
+            )) {
+              store.send(.tappedCustomItem)
+            } onTapCloseButton: {
+              store.send(.tappedCloseButton)
+            } onTapSaveButton: {
+              store.send(.tappedSaveAndEditButton)
+            }
+
+        } else { // + add Button
+          SSImage
+            .commonAdd
+            .padding(.all, 4)
+            .background(SSColor.gray70)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .onTapGesture {
+              store.send(.tappedAddCustomButton)
+            }
+        }
+      }
+    }
   }
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    HStack(alignment: .top, spacing: 16) {
+    HStack(alignment: .center, spacing: 16) {
       Text(store.singleSelectButtonHelper.titleText)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
         .foregroundStyle(SSColor.gray70)
 
-      WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        // MARK: - Defaults Item
-
-        let items = store.singleSelectButtonHelper.items
-        ForEach(items) { item in
-          SSButton(
-            .init(
-              size: .sh32,
-              status: item == store.singleSelectButtonHelper.selectedItem ? .active : .inactive,
-              style: .filled,
-              color: .orange,
-              buttonText: item.title,
-              frame: ssButtonFrame
-            )) {
-              store.send(.tappedID(item.id))
-            }
-        }
-
-        // 만약 CustomItem을 추가할 수 있을 떄
-        if let customItem = store.singleSelectButtonHelper.isCustomItem {
-          if store.singleSelectButtonHelper.isStartedAddingNewCustomItem || store.singleSelectButtonHelper.isSaved {
-            // CustomText Field Button
-            SSTextFieldButton(
-              .init(
-                size: .sh32,
-                status: store.singleSelectButtonHelper.isSaved ? .saved : .filled,
-                style: .filled,
-                color: store.singleSelectButtonHelper.selectedItem == customItem ? .orange : .gray,
-                textFieldText: $store.customTextFieldText.sending(\.changedText),
-                showCloseButton: true,
-                showDeleteButton: true,
-                prompt: store.singleSelectButtonHelper.customTextFieldPrompt ?? ""
-              )) {
-                store.send(.tappedCustomItem)
-              } onTapCloseButton: {
-                store.send(.tappedCloseButton)
-              } onTapSaveButton: {
-                store.send(.tappedSaveAndEditButton)
-              }
-
-          } else { // + add Button
-            SSImage
-              .commonAdd
-              .padding(.all, 4)
-              .background(SSColor.gray70)
-              .clipShape(RoundedRectangle(cornerRadius: 4))
-              .onTapGesture {
-                store.send(.tappedAddCustomButton)
-              }
-          }
-        }
+      if isOneLine {
+        makeOneLineView()
+      } else {
+        makeMultilineView()
       }
     }
     .padding(.vertical, 16)
