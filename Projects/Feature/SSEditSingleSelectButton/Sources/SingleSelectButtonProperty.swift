@@ -46,6 +46,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     if let firstItemIndex = items.firstIndex(where: { $0.id == id }) {
       if isEssentialProperty == false && selectedItem == items[firstItemIndex] {
         selectedItem = nil
+        return
       }
       selectedItem = items[firstItemIndex]
     }

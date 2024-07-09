@@ -31,9 +31,12 @@ public struct SpecificEnvelopeEditReducer {
 
     init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
-      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
-      relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
-      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
+      let initialEvent = editHelper.envelopeDetailProperty.eventName
+      let initialRelation = editHelper.envelopeDetailProperty.relation
+      let initialVisited = editHelper.envelopeDetailProperty.isVisitedText
+      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper, initialValue: initialEvent)
+      relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper, initialValue: initialRelation)
+      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper, initialValue: initialVisited)
     }
 
     public init(envelopeID: Int64) async throws {
@@ -67,7 +70,6 @@ public struct SpecificEnvelopeEditReducer {
   }
 
   public enum InnerAction: Equatable {
-    case setInitialValue
     case isLoading(Bool)
   }
 
@@ -150,7 +152,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
     switch action {
     case let .onAppear(isAppear):
       state.isOnAppear = isAppear
-      return .send(.inner(.setInitialValue))
+      return .none
 
     case let .changeNameTextField(text):
       state.editHelper.changeName(text)
@@ -184,15 +186,6 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
   public func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
-    case .setInitialValue:
-      let initialEvent = state.editHelper.envelopeDetailProperty.eventName
-      let initialRelation = state.editHelper.envelopeDetailProperty.relation
-      let initialVisited = state.editHelper.envelopeDetailProperty.isVisitedText
-      return .run { send in
-        await send(.scope(.eventSection(.initialValue(initialEvent))))
-        await send(.scope(.relationSection(.initialValue(initialRelation))))
-        await send(.scope(.visitedSection(.initialValue(initialVisited ?? ""))))
-      }
     case let .isLoading(val):
       state.isLoading = val
       return .none
