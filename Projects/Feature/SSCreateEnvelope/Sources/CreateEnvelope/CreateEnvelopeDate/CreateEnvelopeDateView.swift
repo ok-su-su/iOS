@@ -100,7 +100,9 @@ struct CreateEnvelopeDateView: View {
         makeNextButton()
       }
     }
-    .modifier(SSDateBottomSheetModifier(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)))
+    .showDatePickerWithNextButton(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
+      store.sendViewAction(.tappedNextButton)
+    }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

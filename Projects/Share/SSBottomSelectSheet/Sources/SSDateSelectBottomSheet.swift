@@ -138,19 +138,16 @@ public struct SSDateSelectBottomSheetView: View {
   }
 }
 
-
-// MARK: - SSDateSelectBottomSheetView
+// MARK: - SSDateSelectBottomSheetWithNextButtonView
 
 public struct SSDateSelectBottomSheetWithNextButtonView: View {
-
-  var nextButtonTappedAction: () -> ()
+  var nextButtonTappedAction: () -> Void
   @Bindable
   var store: StoreOf<SSDateSelectBottomSheetReducer>
-  public init(store: StoreOf<SSDateSelectBottomSheetReducer>, completion: @escaping () -> ()) {
+  public init(store: StoreOf<SSDateSelectBottomSheetReducer>, completion: @escaping () -> Void) {
     self.store = store
-    self.nextButtonTappedAction = completion
+    nextButtonTappedAction = completion
   }
-
 
   @ViewBuilder
   private func makeContentView() -> some View {
@@ -179,8 +176,9 @@ public struct SSDateSelectBottomSheetWithNextButtonView: View {
   public var body: some View {
     ZStack {
       SSColor.gray10
-      VStack {
+      VStack(spacing: 0) {
         makeContentView()
+          .padding(.bottom, 5)
       }
     }
     .safeAreaInset(edge: .bottom) {

@@ -29,11 +29,13 @@ public struct SSDateBottomSheetModifier: ViewModifier {
   }
 }
 
+// MARK: - showDatePickerWithNextButtonModifier
+
 public struct showDatePickerWithNextButtonModifier: ViewModifier {
-  let nextButtonAction: () -> ()
+  let nextButtonAction: () -> Void
   public init(
     store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
-    nextButtonAction: @escaping () -> ()
+    nextButtonAction: @escaping () -> Void
   ) {
     _store = store
     self.nextButtonAction = nextButtonAction
@@ -59,7 +61,7 @@ public extension View {
 
   func showDatePickerWithNextButton(
     store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
-    tapped: @escaping () -> ()
+    tapped: @escaping () -> Void
   ) -> some View {
     modifier(showDatePickerWithNextButtonModifier(store: store, nextButtonAction: tapped))
   }
