@@ -16,13 +16,20 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
   var ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil
   var isOneLine: Bool = false
+  var titleTextColor: Color
 
   @Bindable
   var store: StoreOf<SingleSelectButtonReducer<Item>>
-  public init(store: StoreOf<SingleSelectButtonReducer<Item>>, ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil, isOneLine: Bool = false) {
+  public init(
+    store: StoreOf<SingleSelectButtonReducer<Item>>,
+    ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil,
+    isOneLine: Bool = false,
+    titleTextColor: Color = SSColor.gray70
+  ) {
     self.store = store
     self.ssButtonFrame = ssButtonFrame
     self.isOneLine = isOneLine
+    self.titleTextColor = titleTextColor
   }
 
   @ViewBuilder
@@ -108,7 +115,7 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
       Text(store.singleSelectButtonHelper.titleText)
         .modifier(SSTypoModifier(.title_xxs))
         .frame(width: 72, alignment: .topLeading)
-        .foregroundStyle(SSColor.gray70)
+        .foregroundStyle(titleTextColor)
 
       if isOneLine {
         makeOneLineView()

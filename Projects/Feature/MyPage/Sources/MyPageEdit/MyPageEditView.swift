@@ -110,7 +110,7 @@ struct MyPageEditView: View {
   @ViewBuilder
   private func makeGenderItem() -> some View {
     if let selectableStore = store.scope(state: \.genderSection, action: \.scope.genderSection) {
-      SingleSelectButtonView(store: selectableStore, ssButtonFrame: .init(maxWidth: 116), isOneLine: true)
+      SingleSelectButtonView(store: selectableStore, ssButtonFrame: .init(maxWidth: 116), isOneLine: true, titleTextColor: SSColor.gray60)
         .padding(.vertical, 16)
     }
   }
