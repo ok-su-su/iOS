@@ -45,8 +45,10 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       VStack(alignment: .leading, spacing: 0) {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
-        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
+    }
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()

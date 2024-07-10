@@ -76,7 +76,6 @@ struct CreateEnvelopeAdditionalSection {
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .selectSection)
         return .none
-
       }
     }
   }

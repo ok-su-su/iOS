@@ -71,7 +71,7 @@ struct CreateEnvelopeAdditionalSectionView: View {
         makeContentView()
       }
     }
-    .nextButton(store.pushable){
+    .nextButton(store.pushable) {
       store.sendViewAction(.tappedNextButton)
     }
     .onAppear {

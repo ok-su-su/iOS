@@ -45,6 +45,7 @@ public struct SSTextFieldButton: View {
           text: property.$textFieldText,
           prompt: Text(property.prompt)
         )
+        .keyboardType(.default)
         .multilineTextAlignment(.center)
         .modifier(SSTypoModifier(property.font))
         .foregroundStyle(property.textColor)

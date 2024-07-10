@@ -14,10 +14,10 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
+    var pushable = false
     @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
 
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
-    var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
     init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
       _isVisitedEventHelper = isVisitedEventHelper
@@ -39,6 +39,7 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {
@@ -49,21 +50,20 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>()
     }
     Reduce { state, action in
       switch action {
+      case .view(.tappedNextButton):
+        return .send(.inner(.push))
+
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
@@ -74,15 +74,10 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
         CreateEnvelopeRequestShared.setIsVisited(isVisited)
         return .none
 
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.inner(.push))
-
-      case .scope(.nextButton):
-        return .none
-
       case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: id)))):
         let pushable = !id.isEmpty
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
+        state.pushable = pushable
+        return .none
 
       case .scope(.createEnvelopeSelectionItems):
         return .none
