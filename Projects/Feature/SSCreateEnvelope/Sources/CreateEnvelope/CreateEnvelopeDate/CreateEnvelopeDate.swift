@@ -36,6 +36,10 @@ struct CreateEnvelopeDate {
       return CustomDateFormatter.getDay(from: selectedDate)
     }
 
+    var pushable: Bool {
+      !isInitialStateOfDate
+    }
+
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       _selectedDate = .init(.now)
@@ -56,6 +60,7 @@ struct CreateEnvelopeDate {
     case onAppear(Bool)
     case tappedNextButton
     case tappedDateSheet
+    case dismissDatePicker
   }
 
   enum InnerAction: Equatable {
@@ -96,6 +101,9 @@ struct CreateEnvelopeDate {
       case .view(.tappedDateSheet):
         state.datePicker = .init(selectedDate: state.$selectedDate, isInitialStateOfDate: state.$isInitialStateOfDate)
         return .none
+
+      case .view(.dismissDatePicker):
+        return .send(.scope(.datePicker(.dismiss)))
       }
     }
     .addFeatures()

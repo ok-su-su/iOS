@@ -33,6 +33,11 @@ public struct SSDateBottomSheetModifier: ViewModifier {
 
 public struct showDatePickerWithNextButtonModifier: ViewModifier {
   let nextButtonAction: () -> Void
+
+  /// 다음 버튼이 있는 DatePicker를 만듭니다.
+  /// - Parameters:
+  ///   - store:present된 StoreOf<SSDateSelectBottomSheetReducer>?
+  ///   - nextButtonAction: 반드시 datePicker가 dsimiss되는 Action을 포함시켜야 합니다.
   public init(
     store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
     nextButtonAction: @escaping () -> Void
