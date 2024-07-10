@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
 import SSToast
 
 @Reducer
@@ -17,8 +18,8 @@ struct CreateEnvelopeAdditionalMemo {
     var isOnAppear = false
     @Shared var memoHelper: CreateEnvelopeAdditionalMemoHelper
 
-    var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var pushable = false
 
     init(memoHelper: Shared<CreateEnvelopeAdditionalMemoHelper>) {
       _memoHelper = memoHelper
@@ -38,6 +39,7 @@ struct CreateEnvelopeAdditionalMemo {
     case onAppear(Bool)
     case textFieldChange(String)
     case isHighlightChanged(Bool)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {
@@ -48,7 +50,6 @@ struct CreateEnvelopeAdditionalMemo {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case toast(SSToastReducer.Action)
   }
 
@@ -58,12 +59,12 @@ struct CreateEnvelopeAdditionalMemo {
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
     }
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
 
     Reduce { state, action in
       switch action {
+      case .view(.tappedNextButton):
+        return .send(.inner(.push))
+
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
@@ -73,26 +74,17 @@ struct CreateEnvelopeAdditionalMemo {
         CreateAdditionalRouterPublisher.shared.push(from: .memo)
         return .none
 
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.inner(.push))
-
-      case .scope(.nextButton):
-        return .none
-
       case let .view(.textFieldChange(text)):
         state.memoHelper.textFieldText = text
-        let pushable = text.count < 30 && !text.isEmpty
-        let isShowToastMessage = text.count > 30
-        return .run { send in
-          if isShowToastMessage {
-            await send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요"))))
-          }
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
+        let pushable = RegexManager.isValidMemo(text)
+        state.pushable = pushable
+        return ToastRegexManager.isShowToastByMemo(text) ?
+          .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요")))) : .none
 
       case let .view(.isHighlightChanged(highlight)):
         state.memoHelper.isHighlight = highlight
         return .none
+
       case .scope(.toast):
         return .none
       }

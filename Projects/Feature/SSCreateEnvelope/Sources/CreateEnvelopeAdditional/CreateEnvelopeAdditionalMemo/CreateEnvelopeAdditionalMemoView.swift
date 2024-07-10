@@ -15,6 +15,7 @@ struct CreateEnvelopeAdditionalMemoView: View {
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalMemo>
+  @FocusState var focus
 
   // MARK: Content
 
@@ -32,9 +33,15 @@ struct CreateEnvelopeAdditionalMemoView: View {
         prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
+      .onReturnKeyPressed(textFieldText: store.memoHelper.textFieldText) { text in
+        focus = false
+        store.sendViewAction(.textFieldChange(text))
+      }
+      .focused($focus)
+      .submitLabel(.done)
+      .keyboardType(.default)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
-
       Spacer()
     }
   }
@@ -44,15 +51,19 @@ struct CreateEnvelopeAdditionalMemoView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
       VStack {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
-        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
+    }
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
+      focus = true
       store.send(.view(.onAppear(true)))
     }
   }
