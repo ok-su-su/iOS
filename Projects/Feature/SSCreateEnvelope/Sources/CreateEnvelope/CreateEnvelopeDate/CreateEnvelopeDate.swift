@@ -46,6 +46,11 @@ struct CreateEnvelopeDate {
       _isInitialStateOfDate = .init(true)
       envelopeTargetName = CreateFriendRequestShared.getName() ?? "김수수"
     }
+
+    func resetDatePicker() {
+      isInitialStateOfDate = true
+      selectedDate = .now
+    }
   }
 
   enum Action: Equatable, FeatureAction {

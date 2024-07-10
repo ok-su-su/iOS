@@ -16,7 +16,7 @@ struct CreateEnvelopeAdditionalSection {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
-    var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var pushable: Bool = true
 
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
@@ -38,6 +38,7 @@ struct CreateEnvelopeAdditionalSection {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {
@@ -48,16 +49,12 @@ struct CreateEnvelopeAdditionalSection {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
       CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
@@ -66,7 +63,9 @@ struct CreateEnvelopeAdditionalSection {
       switch action {
       case .view(.onAppear):
         CreateEnvelopeRequestShared.resetAdditional()
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
+        return .none
+      case .view(.tappedNextButton):
+        return .send(.inner(.push))
 
       case .scope(.createEnvelopeSelectionItems(.delegate(.selected(id: _)))):
         return .none
@@ -78,11 +77,6 @@ struct CreateEnvelopeAdditionalSection {
         CreateAdditionalRouterPublisher.shared.push(from: .selectSection)
         return .none
 
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.inner(.push))
-
-      case .scope(.nextButton):
-        return .none
       }
     }
   }
