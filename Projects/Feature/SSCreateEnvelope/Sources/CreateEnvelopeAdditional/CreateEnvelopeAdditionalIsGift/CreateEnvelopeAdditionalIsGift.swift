@@ -18,7 +18,7 @@ struct CreateEnvelopeAdditionalIsGift {
     var isHighlight = false
     @Shared var textFieldText: String
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     init(textFieldText: Shared<String>) {
       _textFieldText = textFieldText

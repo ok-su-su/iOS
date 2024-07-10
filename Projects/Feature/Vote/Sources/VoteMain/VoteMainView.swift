@@ -193,17 +193,6 @@ struct VoteMainView: View {
   }
 
   @ViewBuilder
-  private func makeTabBar() -> some View {
-    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-      .background {
-        Color.white
-      }
-      .ignoresSafeArea()
-      .frame(height: 56)
-      .toolbar(.hidden, for: .tabBar)
-  }
-
-  @ViewBuilder
   private func makeFavoriteSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(Constants.favoriteVoteTitleText)
@@ -319,7 +308,7 @@ struct VoteMainView: View {
     .fullScreenCover(item: $store.scope(state: \.voteRouter, action: \.scope.voteRouter)) { store in
       VoteRouterView(store: store)
     }
-    .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
   }
 
   private enum Metrics {

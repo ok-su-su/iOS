@@ -189,16 +189,8 @@ struct ReceivedMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 16)
-
-    }.safeAreaInset(edge: .bottom) {
-      SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-        .background {
-          Color.white
-        }
-        .ignoresSafeArea()
-        .frame(height: 56)
-        .toolbar(.hidden, for: .tabBar)
     }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .onAppear {
       store.sendViewAction(.onAppear(true))
     }

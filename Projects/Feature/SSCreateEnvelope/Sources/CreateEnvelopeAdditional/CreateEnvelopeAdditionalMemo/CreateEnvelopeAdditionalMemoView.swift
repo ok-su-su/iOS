@@ -50,7 +50,7 @@ struct CreateEnvelopeAdditionalMemoView: View {
         CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
     }
-    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

@@ -128,17 +128,6 @@ struct SentMainView: View {
     .padding(.bottom, Constants.topButtonsSpacing)
   }
 
-  @ViewBuilder
-  func makeTabBar() -> some View {
-    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-      .background {
-        Color.white
-      }
-      .ignoresSafeArea()
-      .frame(height: 56)
-      .toolbar(.hidden, for: .tabBar)
-  }
-
   // MARK: - View Body
 
   var body: some View {
@@ -165,7 +154,7 @@ struct SentMainView: View {
         .padding(.horizontal, Constants.leadingAndTrailingSpacing)
     }
     .navigationBarBackButtonHidden()
-    .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(currentType: .sent) { data in
         store.sendViewAction(.finishedCreateEnvelopes(data))

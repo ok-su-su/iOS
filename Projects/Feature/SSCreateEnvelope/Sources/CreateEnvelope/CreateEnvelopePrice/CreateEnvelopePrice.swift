@@ -23,7 +23,7 @@ struct CreateEnvelopePrice {
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
     var isFocused = false
-    var toast: SSToastReducer.State = .init(.init(toastMessage: " 금액 글자수 안내", trailingType: .none, duration: 2))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: " 금액 글자수 안내", trailingType: .none))
     var wrappedText: String = ""
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false

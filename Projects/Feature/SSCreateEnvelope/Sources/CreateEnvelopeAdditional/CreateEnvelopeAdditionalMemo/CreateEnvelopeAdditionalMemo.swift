@@ -18,7 +18,7 @@ struct CreateEnvelopeAdditionalMemo {
     @Shared var memoHelper: CreateEnvelopeAdditionalMemoHelper
 
     var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none, duration: 1))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     init(memoHelper: Shared<CreateEnvelopeAdditionalMemoHelper>) {
       _memoHelper = memoHelper

@@ -57,17 +57,6 @@ struct StatisticsMainView: View {
     .padding(.horizontal, 16)
   }
 
-  @ViewBuilder
-  private func makeTabBar() -> some View {
-    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-      .background {
-        Color.white
-      }
-      .ignoresSafeArea()
-      .frame(height: 56)
-      .toolbar(.hidden, for: .tabBar)
-  }
-
   var body: some View {
     ZStack {
       SSColor
@@ -79,7 +68,7 @@ struct StatisticsMainView: View {
       }
     }
     .navigationBarBackButtonHidden()
-    .safeAreaInset(edge: .bottom) { makeTabBar() }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

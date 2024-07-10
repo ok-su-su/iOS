@@ -45,17 +45,6 @@ struct MyPageEditView: View {
   }
 
   @ViewBuilder
-  private func makeTabBar() -> some View {
-    SSTabbar(store: store.scope(state: \.tabBar, action: \.scope.tabBar))
-      .background {
-        Color.white
-      }
-      .ignoresSafeArea()
-      .frame(height: 56)
-      .toolbar(.hidden, for: .tabBar)
-  }
-
-  @ViewBuilder
   private func makeNameTextfieldItem() -> some View {
     HStack {
       HStack(alignment: .top, spacing: 4) {

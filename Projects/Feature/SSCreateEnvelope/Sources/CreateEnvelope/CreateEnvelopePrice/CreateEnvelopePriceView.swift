@@ -124,7 +124,7 @@ struct CreateEnvelopePriceView: View {
 
       VStack(alignment: .leading) {
         makeContentView()
-          .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
+          .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
         makeNextButton()
       }
     }
