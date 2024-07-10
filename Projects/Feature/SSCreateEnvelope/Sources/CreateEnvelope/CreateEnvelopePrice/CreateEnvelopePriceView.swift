@@ -117,12 +117,12 @@ struct CreateEnvelopePriceView: View {
 
       VStack(alignment: .leading) {
         makeContentView()
-          .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
       }
     }
     .nextButton(store.isAbleToPush) {
       store.sendViewAction(.tappedNextButton)
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

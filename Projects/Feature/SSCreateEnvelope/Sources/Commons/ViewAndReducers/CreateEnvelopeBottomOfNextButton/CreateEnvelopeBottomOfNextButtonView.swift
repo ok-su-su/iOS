@@ -60,7 +60,7 @@ struct NextButtonView: View {
   }
 
   var body: some View {
-    SSButton(
+    SSButtonWithState(
       .init(
         size: .mh60,
         status: isAbleToPush ? .active : .inactive,
@@ -73,7 +73,6 @@ struct NextButtonView: View {
       tapAction()
     }
     .background(isAbleToPush ? SSColor.gray100 : SSColor.gray30)
-    .disabled(isAbleToPush)
   }
 }
 

@@ -80,7 +80,7 @@ struct CreateEnvelopePrice {
       }
       state.textFieldText = value
       let pushable = RegexManager.isValidPrice(value)
-      let isShowToast = ToastRegexManager.isShowToastByGift(value)
+      let isShowToast = ToastRegexManager.isShowToastByPrice(value)
       state.isAbleToPush = pushable
       return isShowToast ?
         .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다.")))) : .none
