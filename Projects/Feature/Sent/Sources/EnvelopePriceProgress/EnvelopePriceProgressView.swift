@@ -70,7 +70,7 @@ struct EnvelopePriceProgressView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 4) {
       makeMiddleView()
       makeProgressBarView()
       makeBottomView()
