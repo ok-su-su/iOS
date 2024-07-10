@@ -16,6 +16,10 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
   var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: 1024, title: "")
 
+  mutating func resetSelectedItems() {
+    selectedID.removeAll()
+  }
+
   /// 선택된 items 중 사용자가 입력하지 않은 ID를 리턴합니다.
   func getSelectedID() -> Int? {
     return selectedID.first
