@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeEventView: View {
@@ -42,13 +43,12 @@ struct CreateEnvelopeEventView: View {
 
   @ViewBuilder
   private func makeItem() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
-      .modifier(SSLoadingModifier(isLoading: store.isLoading))
-  }
-
-  @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
+    ScrollView {
+      VStack(alignment: .leading, spacing: 8) {
+        CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+          .modifier(SSLoadingModifier(isLoading: store.isLoading))
+      }
+    }
   }
 
   @ViewBuilder
@@ -59,11 +59,14 @@ struct CreateEnvelopeEventView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
       VStack {
         makeContentView()
-
-        makeNextButton()
       }
+    }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
