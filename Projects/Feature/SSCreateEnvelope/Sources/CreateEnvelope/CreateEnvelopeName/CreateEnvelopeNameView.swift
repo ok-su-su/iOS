@@ -104,13 +104,6 @@ struct CreateEnvelopeNameView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(
-      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
-    )
-  }
-
   var body: some View {
     ZStack {
       SSColor
@@ -118,9 +111,12 @@ struct CreateEnvelopeNameView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
-        makeNextButton()
       }
     }
+    .nextButton(store.isPushable) {
+      store.sendViewAction(.tappedNextButton)
+    }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

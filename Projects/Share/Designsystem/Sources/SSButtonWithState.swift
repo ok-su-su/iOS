@@ -20,7 +20,6 @@ public struct SSButtonWithState: View {
 
   public var body: some View {
     Button {
-//      property.status = property.status == .active ? .inactive : .active
       onTap()
     } label: {
       HStack(spacing: 6) {

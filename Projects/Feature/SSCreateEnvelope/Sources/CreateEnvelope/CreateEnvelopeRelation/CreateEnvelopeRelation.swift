@@ -66,7 +66,7 @@ struct CreateEnvelopeRelation {
       }
 
     case .tappedNextButton:
-      return .none
+      return .send(.inner(.push))
     }
   }
 

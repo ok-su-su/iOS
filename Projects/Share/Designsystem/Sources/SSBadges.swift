@@ -111,7 +111,7 @@ public struct SmallBadge: View {
   public var body: some View {
     VStack {
       Text(property.badgeString)
-        .modifier(SSTypoModifier(.title_xxs))
+        .modifier(SSTypoModifier(.title_xxxs))
         .foregroundStyle(property.textColor)
     }
     .padding(.vertical, property.verticalPaddingValue)
