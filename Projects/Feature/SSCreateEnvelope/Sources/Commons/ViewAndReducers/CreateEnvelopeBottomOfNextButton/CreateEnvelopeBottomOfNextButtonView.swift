@@ -15,6 +15,11 @@ struct CreateEnvelopeBottomOfNextButtonView: View {
   @Bindable
   var store: StoreOf<CreateEnvelopeBottomOfNextButton>
 
+  @available(*, deprecated, renamed: "nextButton(Bool:escaping:)", message: "use no tca View")
+  init(store: StoreOf<CreateEnvelopeBottomOfNextButton>) {
+    self.store = store
+  }
+
   // MARK: Content
 
   @ViewBuilder
@@ -39,4 +44,40 @@ struct CreateEnvelopeBottomOfNextButtonView: View {
   private enum Metrics {}
 
   private enum Constants {}
+}
+
+struct NextButtonView: View {
+  var isAbleToPush: Bool
+  let tapAction: () -> ()
+
+  init(isAbleToPush: Bool, tapAction: @escaping () -> Void) {
+    self.isAbleToPush = isAbleToPush
+    self.tapAction = tapAction
+  }
+  var body:some View {
+    SSButton(
+      .init(
+        size: .mh60,
+        status: isAbleToPush ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )
+    ) {
+      tapAction()
+    }
+    .background(isAbleToPush ? SSColor.gray100 : SSColor.gray30)
+    .disabled(isAbleToPush)
+  }
+}
+
+
+extension View {
+  func nextButton(_ isAbleToPush: Bool, tapAction: @escaping () -> Void) -> some View {
+    self
+      .safeAreaInset(edge: .bottom) {
+        NextButtonView(isAbleToPush: isAbleToPush, tapAction: tapAction)
+      }
+  }
 }
