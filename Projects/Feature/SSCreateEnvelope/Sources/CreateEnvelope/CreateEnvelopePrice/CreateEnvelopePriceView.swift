@@ -99,7 +99,7 @@ struct CreateEnvelopePriceView: View {
               buttonText: "\(item ?? price.description)원"
             )
           ) {
-            store.send(.view(.tappedGuidValue(price.description)))
+            store.sendViewAction(.tappedGuidValue(price))
           }
         }
       }

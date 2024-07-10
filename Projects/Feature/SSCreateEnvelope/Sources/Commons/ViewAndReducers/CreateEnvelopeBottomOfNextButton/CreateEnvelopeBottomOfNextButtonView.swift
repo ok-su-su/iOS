@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
+// MARK: - CreateEnvelopeBottomOfNextButtonView
+
 struct CreateEnvelopeBottomOfNextButtonView: View {
   // MARK: Reducer
 
@@ -46,15 +48,18 @@ struct CreateEnvelopeBottomOfNextButtonView: View {
   private enum Constants {}
 }
 
+// MARK: - NextButtonView
+
 struct NextButtonView: View {
   var isAbleToPush: Bool
-  let tapAction: () -> ()
+  let tapAction: () -> Void
 
   init(isAbleToPush: Bool, tapAction: @escaping () -> Void) {
     self.isAbleToPush = isAbleToPush
     self.tapAction = tapAction
   }
-  var body:some View {
+
+  var body: some View {
     SSButton(
       .init(
         size: .mh60,
@@ -72,12 +77,10 @@ struct NextButtonView: View {
   }
 }
 
-
 extension View {
   func nextButton(_ isAbleToPush: Bool, tapAction: @escaping () -> Void) -> some View {
-    self
-      .safeAreaInset(edge: .bottom) {
-        NextButtonView(isAbleToPush: isAbleToPush, tapAction: tapAction)
-      }
+    safeAreaInset(edge: .bottom) {
+      NextButtonView(isAbleToPush: isAbleToPush, tapAction: tapAction)
+    }
   }
 }
