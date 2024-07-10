@@ -33,6 +33,11 @@ struct CreateEnvelopeEvent {
         isCustomItem: createEnvelopeProperty.eventHelper.customEvent,
         regexPatternString: RegexPatternString.category.regexString
       )
+      resetSelectedItems()
+    }
+
+    func resetSelectedItems() {
+      createEnvelopeProperty.eventHelper.resetSelectedItems()
     }
   }
 
