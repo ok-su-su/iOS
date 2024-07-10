@@ -19,13 +19,13 @@ struct EnvelopePriceProgressView: View {
   private func makeMiddleView() -> some View {
     HStack {
       Text(store.envelopePriceProgressProperty.leadingDescriptionText)
-        .modifier(SSTypoModifier(.text_xxxs))
+        .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
       Text(store.envelopePriceProgressProperty.trailingDescriptionText)
-        .modifier(SSTypoModifier(.text_xxxs))
+        .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray60)
     }
   }
@@ -52,16 +52,14 @@ struct EnvelopePriceProgressView: View {
   @ViewBuilder
   private func makeBottomView() -> some View {
     HStack {
-      // TODO: API 호출 된 Value 로 변경
       Text(store.envelopePriceProgressProperty.leadingPriceText)
-        .modifier(SSTypoModifier(.text_xxxs))
+        .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
-      // TODO: API 호출 된 Value 로 변경
       Text(store.envelopePriceProgressProperty.trailingPriceText)
-        .modifier(SSTypoModifier(.text_xxxs))
+        .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray60)
     }
   }
@@ -70,7 +68,7 @@ struct EnvelopePriceProgressView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 4) {
       makeMiddleView()
       makeProgressBarView()
       makeBottomView()

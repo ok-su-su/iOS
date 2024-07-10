@@ -21,6 +21,15 @@ public struct SmallBadgeProperty {
     self.badgeColor = badgeColor
   }
 
+  var badgeHeight: CGFloat {
+    switch size {
+    case .small:
+      24
+    case .xSmall:
+      20
+    }
+  }
+
   public enum BadgeColor: String {
     case gray20
     case orange60
@@ -110,6 +119,6 @@ public struct SmallBadge: View {
     .background {
       property.backgroundColor
     }
-    .cornerRadius(4)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 }

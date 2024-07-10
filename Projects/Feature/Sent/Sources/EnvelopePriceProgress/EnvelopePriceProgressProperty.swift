@@ -29,11 +29,11 @@ struct EnvelopePriceProgressProperty: Equatable {
   }
 
   var leadingPriceText: String {
-    return CustomNumberFormatter.formattedByThreeZero(leadingPriceValue) ?? ""
+    return CustomNumberFormatter.formattedByThreeZero(leadingPriceValue, subFixString: "원") ?? ""
   }
 
   var trailingPriceText: String {
-    return CustomNumberFormatter.formattedByThreeZero(trailingPriceValue) ?? ""
+    return CustomNumberFormatter.formattedByThreeZero(trailingPriceValue, subFixString: "원") ?? ""
   }
 
   static func makeFakeData() -> Self {
