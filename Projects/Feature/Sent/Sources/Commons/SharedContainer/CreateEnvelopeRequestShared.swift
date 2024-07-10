@@ -78,10 +78,6 @@ enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func printBody() {
-    dump(getBody())
-  }
-
   static func getBody() -> CreateEnvelopeRequestBody {
     SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "SENT")
   }

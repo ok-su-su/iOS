@@ -34,14 +34,11 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
     }
   }
 
-  @ViewBuilder
-  func makeImage(isEqualType: Bool) -> some View {
+  func makeImage(isEqualType: Bool) -> Image {
     if isEqualType {
       fillImage
-        .resizable()
     } else {
       outlineImage
-        .resizable()
     }
   }
 
@@ -127,32 +124,51 @@ public struct SSTabbar: View {
   @Bindable
   var store: StoreOf<SSTabBarFeature>
 
+  @available(*, deprecated, renamed: "addSSTabBar(Store:)", message: "useViewFunction")
   public init(store: StoreOf<SSTabBarFeature>) {
     self.store = store
   }
 
+  init(_ store: StoreOf<SSTabBarFeature>) {
+    self.store = store
+  }
+
+  @ViewBuilder
+  func makeItem(type tabbarType: SSTabType) -> some View {
+    let selectionType = store.tabbarType
+
+    VStack(alignment: .center, spacing: 0) {
+      tabbarType
+        .makeImage(isEqualType: selectionType == tabbarType)
+        .resizable()
+        .frame(width: 24, height: 24, alignment: .center)
+
+      Text(tabbarType.title)
+        .applySSFont(.title_xxxxs)
+        .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
+    }
+  }
+
   public var body: some View {
     if store.state.isAppear {
-      HStack(alignment: .center) {
+      HStack(alignment: .center, spacing: 0) {
         ForEach(SSTabType.allCases, id: \.self) { tabbarType in
-          Button {
-            store.send(.tappedSection(tabbarType))
-          } label: {
-            let selectionType = store.tabbarType
-            GeometryReader { geometry in
-              VStack(alignment: .center, spacing: 4) {
-                tabbarType
-                  .makeImage(isEqualType: selectionType == tabbarType)
-                  .frame(width: 24, height: 24, alignment: .center)
-
-                SSText(text: tabbarType.title, designSystemFont: .title_xxxxs)
-                  .bold(true)
-                  .foregroundColor(store.tabbarType == tabbarType ? SSColor.gray100 : SSColor.gray40)
-              }.frame(width: geometry.size.width, height: geometry.size.height)
+          makeItem(type: tabbarType)
+            .frame(maxWidth: .infinity, maxHeight: 56)
+            .onTapGesture {
+              store.send(.tappedSection(tabbarType))
             }
-          }
         }
       }
+      .background(SSColor.gray10)
+    }
+  }
+}
+
+public extension View {
+  func addSSTabBar(_ store: StoreOf<SSTabBarFeature>) -> some View {
+    safeAreaInset(edge: .bottom) {
+      SSTabbar(store)
     }
   }
 }

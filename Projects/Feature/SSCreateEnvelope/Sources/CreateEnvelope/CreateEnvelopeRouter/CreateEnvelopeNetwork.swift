@@ -44,7 +44,6 @@ struct CreateEnvelopeNetwork: Equatable {
   }
 
   func createEnvelope(_ bodyProperty: CreateEnvelopeRequestBody) async throws -> Data {
-    dump(bodyProperty)
     return try await provider.requestData(.createEnvelope(bodyProperty))
   }
 }
