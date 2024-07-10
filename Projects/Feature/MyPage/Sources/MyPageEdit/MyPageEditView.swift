@@ -145,7 +145,6 @@ struct MyPageEditView: View {
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
-    .safeAreaInset(edge: .bottom) { makeTabBar() }
   }
 
   private enum Metrics {
