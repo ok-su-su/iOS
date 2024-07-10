@@ -61,10 +61,11 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
           status: store.customItemSaved ? .saved : .filled,
           style: .filled,
           color: store.selectedID.contains(item.id) ? .orange : .black,
-          textFieldText: $store.customTitleText,
+          textFieldText: $store.customTitleText.sending(\.view.changeTextField),
           showCloseButton: true,
           showDeleteButton: true,
-          prompt: Constants.addNewRelationTextFieldPrompt
+          prompt: Constants.addNewRelationTextFieldPrompt,
+          regex: store.regex
         )) {
           if store.customItemSaved {
             store.send(.view(.tappedItem(id: item.id)))

@@ -108,6 +108,7 @@ struct CreateEnvelopeNameView: View {
     ZStack {
       SSColor
         .gray15
+        .whenTapDismissKeyboard()
         .ignoresSafeArea()
       VStack {
         makeContentView()

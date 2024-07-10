@@ -54,14 +54,13 @@ struct CreateEnvelopeRelationView: View {
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
-  @ViewBuilder
-  private func makeAddCustomRelation() -> some View {}
-
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack {
         makeContentView()
       }

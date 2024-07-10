@@ -8,6 +8,8 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
+import SSToast
 
 // MARK: - CreateEnvelopeRelation
 
@@ -19,6 +21,7 @@ struct CreateEnvelopeRelation {
     var isLoading = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isPushable: Bool = false
@@ -28,7 +31,8 @@ struct CreateEnvelopeRelation {
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.relationHelper.defaultRelations,
         selectedID: createEnvelopeProperty.relationHelper.selectedID,
-        isCustomItem: createEnvelopeProperty.relationHelper.customRelation
+        isCustomItem: createEnvelopeProperty.relationHelper.customRelation,
+        regexPatternString: RegexPatternString.relationship.regexString
       )
       resetSelected()
     }
@@ -107,14 +111,22 @@ struct CreateEnvelopeRelation {
   @CasePathable
   enum ScopeAction: Equatable {
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.Action)
+    case toast(SSToastReducer.Action)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
     switch action {
+    case .toast:
+      return .none
+
     case .createEnvelopeSelectionItems(.delegate(.selected)):
       let pushable = !state.createEnvelopeProperty.relationHelper.selectedID.isEmpty
       state.isPushable = pushable
       return .none
+
+    case let .createEnvelopeSelectionItems(.delegate(.invalidText(text))):
+      return ToastRegexManager.isShowToastByName(text) ?
+        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none
 
     case .createEnvelopeSelectionItems:
       return .none
@@ -126,6 +138,9 @@ struct CreateEnvelopeRelation {
   @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
     }
