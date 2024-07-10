@@ -36,14 +36,17 @@ struct EnvelopeView: View {
       Button {
         store.send(.tappedDetailButton)
       } label: {
-        if store.showDetail == false {
-          SSImage.envelopeDownArrow
-        } else {
-          SSImage.envelopeDownArrow
-            .rotationEffect(.degrees(180))
-        }
+        makeDetailPressButton()
       }
     }
+  }
+
+  @ViewBuilder
+  private func makeDetailPressButton() -> some View {
+    SSImage.envelopeDownArrow
+      .resizable()
+      .frame(width: 24, height: 24)
+      .rotationEffect(.degrees(store.showDetail ? 180 : 0))
   }
 
   @ViewBuilder
