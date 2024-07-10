@@ -29,8 +29,38 @@ public struct SSDateBottomSheetModifier: ViewModifier {
   }
 }
 
+public struct showDatePickerWithNextButtonModifier: ViewModifier {
+  let nextButtonAction: () -> ()
+  public init(
+    store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
+    nextButtonAction: @escaping () -> ()
+  ) {
+    _store = store
+    self.nextButtonAction = nextButtonAction
+  }
+
+  @Binding var store: StoreOf<SSDateSelectBottomSheetReducer>?
+
+  public func body(content: Content) -> some View {
+    content
+      .sheet(item: $store) { store in
+        SSDateSelectBottomSheetWithNextButtonView(store: store, completion: nextButtonAction)
+          .presentationDetents([.height(282), .medium, .large])
+          .presentationContentInteraction(.scrolls)
+          .presentationDragIndicator(.automatic)
+      }
+  }
+}
+
 public extension View {
   func showDatePicker(store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>) -> some View {
     modifier(SSDateBottomSheetModifier(store: store))
+  }
+
+  func showDatePickerWithNextButton(
+    store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
+    tapped: @escaping () -> ()
+  ) -> some View {
+    modifier(showDatePickerWithNextButtonModifier(store: store, nextButtonAction: tapped))
   }
 }
