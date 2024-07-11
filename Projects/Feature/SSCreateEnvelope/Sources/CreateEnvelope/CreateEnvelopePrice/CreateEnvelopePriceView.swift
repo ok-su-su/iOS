@@ -26,10 +26,25 @@ struct CreateEnvelopePriceView: View {
 
   // MARK: Content
 
+  @ViewBuilder
+  private func makeTextFieldWrapperView() -> some View {
+    // Visiable TextField
+    let currentText = store.wrappedText + "원"
+    Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : currentText)
+      .multilineTextAlignment(.leading)
+      .modifier(SSTypoModifier(.title_xl))
+      .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
+      .frame(alignment: .leading)
+      .background(SSColor.gray15)
+      .onTapGesture {
+        isFocused = true
+      }
+  }
+
   // TODO: TextField어떻게 만들었는지 Trouble shooting 글 작성
   @ViewBuilder
   private func makeTextField() -> some View {
-    ZStack {
+    ZStack(alignment: .topLeading) {
       // invisiableTextField
       TextField(
         "",
@@ -37,6 +52,7 @@ struct CreateEnvelopePriceView: View {
         prompt: nil,
         axis: .vertical
       )
+      .tint(.clear)
       .foregroundStyle(Color.clear)
       .keyboardType(.numberPad)
       .modifier(SSTypoModifier(.title_xl))
@@ -47,27 +63,9 @@ struct CreateEnvelopePriceView: View {
       .onChange(of: store.isFocused) { _, newValue in
         isFocused = newValue
       }
-
-      // Visiable TextField
-      HStack(spacing: 0) {
-        Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
-          .modifier(SSTypoModifier(.title_xl))
-          .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
-
-        if !store.textFieldText.isEmpty {
-          Text("원")
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(SSColor.gray100)
-        }
-        Spacer()
-      }
-      .frame(maxWidth: .infinity, maxHeight: 46)
-      .background(SSColor.gray15)
+      // wrapping View
+      makeTextFieldWrapperView()
     }
-    .onTapGesture {
-      isFocused = true
-    }
-    .frame(height: 44)
   }
 
   @ViewBuilder
@@ -123,11 +121,11 @@ struct CreateEnvelopePriceView: View {
       VStack(alignment: .leading) {
         makeContentView()
       }
+      .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
     .nextButton(store.isAbleToPush) {
       store.sendViewAction(.tappedNextButton)
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
