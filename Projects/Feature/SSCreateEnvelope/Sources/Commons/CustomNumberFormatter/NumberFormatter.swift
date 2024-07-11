@@ -39,7 +39,7 @@ enum CustomNumberFormatter {
 
   static func formattedByThreeZero(_ val: String) -> String? {
     var resString: [Character] = []
-    let chars = val.map { $0 }
+    let chars: [Character] = val.map { $0 }.reversed()
     for ind in 0 ..< chars.count {
       let cur = chars[ind]
       if ind % 3 == 0 && !resString.isEmpty {
@@ -47,6 +47,7 @@ enum CustomNumberFormatter {
       }
       resString.append(cur)
     }
-    return String(resString)
+
+    return String(resString.reversed())
   }
 }
