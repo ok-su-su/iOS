@@ -86,15 +86,18 @@ extension CreateEnvelopeRequestBody {
 public struct CategoryRequestBody: Codable, Equatable {
   var id: Int?
   var customCategory: String?
+  var name: String?
 
-  public init(id: Int? = nil, customCategory: String? = nil) {
+  public init(id: Int? = nil, name: String? = nil, customCategory: String? = nil) {
     self.id = id
+    self.name = name
     self.customCategory = customCategory
   }
 
   enum CodingKeys: String, CodingKey {
     case id
     case customCategory
+    case name
   }
 }
 

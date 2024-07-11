@@ -77,8 +77,9 @@ struct CreateEnvelopeEvent {
     switch action {
     case .push:
       // Set ID
-      if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
-        CreateEnvelopeRequestShared.setEvent(id: selectedID)
+      if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID(),
+         let selectedName = state.createEnvelopeProperty.eventHelper.getSelectedItemName() {
+        CreateEnvelopeRequestShared.setEvent(id: selectedID, name: selectedName)
       }
       // Set Custom Name if exist
       if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {

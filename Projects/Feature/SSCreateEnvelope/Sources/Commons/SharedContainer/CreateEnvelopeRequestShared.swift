@@ -17,11 +17,15 @@ public enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  public static func setEvent(id: Int) {
+  public static func setEvent(id: Int, name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
-    body.category = .init(id: id)
+    body.category = .init(id: id, name: name)
     setBody(body)
+  }
+
+  public static func getEvent() -> String? {
+    return getBody().category?.name
   }
 
   static func setAmount(_ amount: Int64) {
@@ -95,6 +99,7 @@ public enum CreateEnvelopeRequestShared {
     if let currentCreateType {
       return currentCreateType
     }
+    // 매개변수로 CreateType을 받기 땨문에 error가 발생하지 않습니다.
     os_log(.error, "CreateType이 지정되어지지 않았습니다. 생성자를 확인해주세요")
     return .sent
   }

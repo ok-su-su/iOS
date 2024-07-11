@@ -20,10 +20,11 @@ struct CreateEnvelopeAdditionalContactView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    let contactName = store.friendName ?? ""
     VStack(alignment: .leading, spacing: 32) {
       HStack(spacing: 4) {
         // TODO: change Property
-        Text(Constants.contactNameText)
+        Text(contactName)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
@@ -71,7 +72,6 @@ struct CreateEnvelopeAdditionalContactView: View {
   }
 
   private enum Constants {
-    static let contactNameText = "김철수님의"
     static let descriptionText = "연락처를 남겨주세요"
   }
 }

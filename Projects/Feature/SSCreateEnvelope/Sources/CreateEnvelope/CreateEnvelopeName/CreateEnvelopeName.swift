@@ -25,6 +25,7 @@ struct CreateEnvelopeName {
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var isPushable = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var createType = CreateEnvelopeRequestShared.getCreateType()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 

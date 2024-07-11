@@ -22,8 +22,9 @@ struct CreateEnvelopeRelation {
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var displayEventName = CreateEnvelopeRequestShared.
 
-    @Shared var createEnvelopeProperty: CreateEnvelopeProperty
+      @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isPushable: Bool = false
 
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
