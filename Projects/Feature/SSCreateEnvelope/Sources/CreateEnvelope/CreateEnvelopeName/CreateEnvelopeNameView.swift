@@ -85,21 +85,14 @@ struct CreateEnvelopeNameView: View {
         axis: .vertical
       )
       .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
+        isFocused = false
         store.sendViewAction(.changeText(text))
       }
       .submitLabel(.done)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
       .focused($isFocused)
-      .onChange(of: isFocused) { _, newValue in
-        store.sendViewAction(.changeFocused(newValue))
-      }
-      .onChange(of: store.isFocused) { _, newValue in
-        isFocused = newValue
-      }
-      .onChange(of: store.textFieldText) { _, newValue in
-        store.sendViewAction(.changeText(newValue))
-      }
+
       Spacer()
         .frame(height: 24)
 
@@ -125,6 +118,7 @@ struct CreateEnvelopeNameView: View {
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
+      isFocused = true
       store.send(.view(.onAppear(true)))
     }
   }
