@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSBottomSelectSheet
+import SSCreateEnvelope
 
 // MARK: - SentMain
 
@@ -39,6 +40,8 @@ struct SentMain {
     @Shared var sentMainProperty: SentMainProperty
 
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
+
+    var createEnvelopeProperty: CreateEnvelopeRequestBody = .init(type: .sent)
 
     var isFilteredHeaderButtonItem: Bool {
       return !(sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.sentPeopleFilterHelper.isFilteredAmount)

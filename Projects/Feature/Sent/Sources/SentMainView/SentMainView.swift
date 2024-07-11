@@ -162,7 +162,10 @@ struct SentMainView: View {
     .navigationBarBackButtonHidden()
     .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
-      CreateEnvelopeRouterBuilder(currentType: .sent) { data in
+      CreateEnvelopeRouterBuilder(
+        currentType: .sent,
+        initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
+      ) { data in
         store.sendViewAction(.finishedCreateEnvelopes(data))
       }
     }
