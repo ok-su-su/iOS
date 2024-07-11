@@ -12,6 +12,8 @@ import Foundation
 import OSLog
 import SSAlert
 
+// MARK: - SpecificEnvelopeHistoryList
+
 @Reducer
 struct SpecificEnvelopeHistoryList {
   @ObservableState
@@ -55,6 +57,35 @@ struct SpecificEnvelopeHistoryList {
     case onAppearDetail(EnvelopeContent)
   }
 
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .send(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope))
+      }
+      state.isOnAppear = isAppear
+      return .send(.async(.getEnvelopeDetail))
+
+    case let .presentAlert(present):
+      state.isDeleteAlertPresent = present
+      return .none
+
+    case let .tappedSpecificEnvelope(property):
+      let id = property.id
+      return .send(.inner(.pushEnvelopeDetail(id: id)))
+
+    case .tappedAlertConfirmButton:
+      return .send(.async(.deleteFriend))
+
+    case let .onAppearDetail(property):
+      if property == state.envelopeContents.last && !state.isEndOfPage {
+        return .send(.async(.getEnvelopeDetail))
+          .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
+      }
+      return .none
+    }
+  }
+
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
@@ -62,15 +93,76 @@ struct SpecificEnvelopeHistoryList {
     case updateEnvelopeDetailIfUserDeleteEnvelope
   }
 
+  func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case let .isLoading(value):
+      state.isLoading = value
+      return .none
+
+    case let .updateEnvelopeContents(envelopeContents):
+      let prevEnvelopesCount = state.envelopeContents.count
+      state.envelopeContents = (state.envelopeContents + envelopeContents).uniqued()
+      if prevEnvelopesCount == state.envelopeContents.count {
+        state.isEndOfPage = true
+      }
+      return .none
+
+    case let .pushEnvelopeDetail(id):
+      SpecificEnvelopeHistoryRouterPublisher
+        .push(.specificEnvelopeHistoryDetail(.init(envelopeID: id)))
+      return .none
+
+    case .updateEnvelopeDetailIfUserDeleteEnvelope:
+      if let id = SpecificEnvelopeSharedState.shared.getDeletedEnvelopeID() {
+        state.envelopeContents.removeAll(where: { $0.id == id })
+      }
+      return .none
+    }
+  }
+
   enum AsyncAction: Equatable {
     case getEnvelopeDetail
     case deleteFriend
+  }
+
+  func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .getEnvelopeDetail:
+      let page = state.page
+      state.page += 1
+      return .run { [id = state.envelopeProperty.id] send in
+        await send(.inner(.isLoading(true)))
+        let envelopeContents = try await network.getEnvelope(friendID: id, page: page)
+        await send(.inner(.updateEnvelopeContents(envelopeContents)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case .deleteFriend:
+      return .run { [id = state.envelopeProperty.id] _ in
+        try await network.deleteFriend(id: id)
+        await dismiss()
+      }
+    }
   }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case envelopePriceProgress(EnvelopePriceProgress.Action)
+  }
+
+  func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header(.tappedTextButton):
+      state.isDeleteAlertPresent = true
+      return .none
+
+    case .header:
+      return .none
+
+    case .envelopePriceProgress:
+      return .none
+    }
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -89,80 +181,19 @@ struct SpecificEnvelopeHistoryList {
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .send(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope))
-        }
-        state.isOnAppear = isAppear
-        return .send(.async(.getEnvelopeDetail))
-
-      case .scope(.header(.tappedTextButton)):
-        state.isDeleteAlertPresent = true
-        return .none
-
-      case .scope(.header):
-        return .none
-
-      // envelope Detail 화면으로 이동
-      case let .view(.tappedSpecificEnvelope(property)):
-        let id = property.id
-        return .send(.inner(.pushEnvelopeDetail(id: id)))
-
-      case .scope(.envelopePriceProgress):
-        return .none
-
-      // 친구 삭제를 누를 경우
-      case .view(.tappedAlertConfirmButton):
-        return .send(.async(.deleteFriend))
-
-      case .async(.getEnvelopeDetail):
-        let page = state.page
-        state.page += 1
-        return .run { [id = state.envelopeProperty.id] send in
-          await send(.inner(.isLoading(true)))
-          let envelopeContents = try await network.getEnvelope(friendID: id, page: page)
-          await send(.inner(.updateEnvelopeContents(envelopeContents)))
-          await send(.inner(.isLoading(false)))
-        }
-      case let .inner(.isLoading(value)):
-        state.isLoading = value
-        return .none
-
-      case let .inner(.updateEnvelopeContents(envelopeContents)):
-        let prevEnvelopesCount = state.envelopeContents.count
-        state.envelopeContents = (state.envelopeContents + envelopeContents).uniqued()
-        if prevEnvelopesCount == state.envelopeContents.count {
-          state.isEndOfPage = true
-        }
-        return .none
-
-      case .async(.deleteFriend):
-        return .run { [id = state.envelopeProperty.id] _ in
-          try await network.deleteFriend(id: id)
-          await dismiss()
-        }
-
-      case let .view(.presentAlert(present)):
-        state.isDeleteAlertPresent = present
-        return .none
-
-      case let .inner(.pushEnvelopeDetail(id)):
-        SpecificEnvelopeHistoryRouterPublisher
-          .push(.specificEnvelopeHistoryDetail(.init(envelopeID: id)))
-        return .none
-
-      case let .view(.onAppearDetail(property)):
-        if property == state.envelopeContents.last && !state.isEndOfPage {
-          return .send(.async(.getEnvelopeDetail))
-            .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
-        }
-        return .none
-      case .inner(.updateEnvelopeDetailIfUserDeleteEnvelope):
-        if let id = SpecificEnvelopeSharedState.shared.getDeletedEnvelopeID() {
-          state.envelopeContents.removeAll(where: { $0.id == id })
-        }
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
     }
   }
 }
+
+// MARK: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction
+
+extension SpecificEnvelopeHistoryList: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction {}
