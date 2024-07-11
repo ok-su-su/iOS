@@ -56,6 +56,7 @@ struct CreateEnvelopeRouter {
     case dismiss(Bool)
     case updateDismissData(Data)
     case isLoading(Bool)
+    case dismissScreen
   }
 
   private enum CancelID {
@@ -138,9 +139,12 @@ struct CreateEnvelopeRouter {
         if state.path.isEmpty {
           return .send(.dismiss(true))
         }
+        return .send(.dismissScreen)
+          .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
+
+      case .dismissScreen:
         _ = state.path.popLast()
         return .send(.changeProgress)
-          .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
 
       case .header:
         return .none
