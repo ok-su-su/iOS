@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeRelationView: View {
@@ -61,9 +62,8 @@ struct CreateEnvelopeRelationView: View {
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
 
-      VStack {
-        makeContentView()
-      }
+      makeContentView()
+        .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
     .nextButton(store.isPushable) {
       store.sendViewAction(.tappedNextButton)
