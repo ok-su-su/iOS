@@ -73,6 +73,44 @@ struct SentMain {
     case finishedCreateEnvelopes(Data)
   }
 
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case .tappedSortButton:
+      state.filterBottomSheet = .init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial)
+      return .none
+
+    case .tappedFilterButton:
+      state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+      return .none
+
+    case .tappedEmptyEnvelopeButton:
+      return .send(.inner(.showCreateEnvelopRouter))
+
+    case let .onAppear(appear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = appear
+      return .send(.async(.updateEnvelopesByFilter))
+        .throttle(id: ThrottleID.getFriendThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
+
+    case let .tappedFilteredPersonButton(id):
+      state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
+      return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+    case .tappedFilteredAmountButton:
+      state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
+      return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+    case let .presentCreateEnvelope(present):
+      state.presentCreateEnvelope = present
+      return .none
+
+    case .finishedCreateEnvelopes:
+      return .send(.async(.updateEnvelopesByFilterInitialPage))
+    }
+  }
+
   @CasePathable
   enum InnerAction: Equatable {
     case showCreateEnvelopRouter
@@ -80,10 +118,73 @@ struct SentMain {
     case isLoading(Bool)
   }
 
+  func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
+    switch action {
+    case .showCreateEnvelopRouter:
+      state.presentCreateEnvelope = true
+      return .none
+
+    case let .updateEnvelopes(val):
+      let prevEnvelopesCount = state.envelopes.count
+      let currentEnvelopeProperty = (state.envelopes.map(\.envelopeProperty) + val).uniqued()
+      let uniqueElement = currentEnvelopeProperty.map { Envelope.State(envelopeProperty: $0) }
+      if prevEnvelopesCount == state.envelopes.count || val.count % 30 != 0 {
+        state.isEndOfPage = true
+      }
+      state.envelopes = .init(uniqueElements: uniqueElement)
+      return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+    }
+  }
+
   @CasePathable
   enum AsyncAction: Equatable {
     case updateEnvelopesByFilter
     case updateEnvelopesByFilterInitialPage
+  }
+
+  func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
+    switch action {
+    case .updateEnvelopesByFilter:
+      let page = state.page
+      state.page += 1
+      let urlParameter = SearchFriendsParameter(
+        friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+        fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+        toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
+        page: page,
+        sort: state.sentMainProperty.selectedFilterDial ?? .highestAmount
+      )
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+        await send(.inner(.updateEnvelopes(envelopeProperties)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case .updateEnvelopesByFilterInitialPage:
+      state.page = 1
+      state.isEndOfPage = false
+      let currentState = state.sentMainProperty.selectedFilterDial?.sortString
+      os_log("current Selected Section \(currentState ?? "nil")")
+      state.envelopes = .init(uniqueElements: [])
+      let urlParameter = SearchFriendsParameter(
+        friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+        fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+        toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
+        page: 0,
+        sort: state.sentMainProperty.selectedFilterDial ?? .latest
+      )
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+        await send(.inner(.updateEnvelopes(envelopeProperties)))
+        await send(.inner(.isLoading(false)))
+      }
+    }
   }
 
   @CasePathable
@@ -98,6 +199,44 @@ struct SentMain {
 
     case envelopes(IdentifiedActionOf<Envelope>)
     case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
+  }
+
+  func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
+    switch action {
+    case let .envelopes(.element(id: _, action: .pushEnvelopeDetail(property))):
+      state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State(envelopeProperty: property)
+      return .none
+
+    case .header(.tappedSearchButton):
+      state.searchEnvelope = .init()
+      return .none
+
+    case .floatingButton(.tapped):
+      return .send(.inner(.showCreateEnvelopRouter))
+
+    case .filterBottomSheet(.presented(.tapped(item: _))):
+      return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+    case .sentEnvelopeFilter(.presented(.tappedConfirmButton)):
+      return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+    case let .envelopes(.element(id: uuid, action: .isOnAppear(true))):
+      if state.envelopes.last?.id == uuid && !state.isEndOfPage {
+        let isEndOfPage = state.isEndOfPage.description
+        os_log("페이지를 요청합니다., \(isEndOfPage)")
+        return .send(.async(.updateEnvelopesByFilter))
+          .throttle(id: ThrottleID.getFriendThrottleID, for: 2, scheduler: RunLoop.main, latest: false)
+      }
+      return .none
+
+    case .searchEnvelope,
+         .specificEnvelopeHistoryRouter,
+         .tabBar:
+      return .none
+
+    default:
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {
@@ -124,132 +263,20 @@ struct SentMain {
 
     Reduce { state, action in
       switch action {
-      case let .view(.presentCreateEnvelope(present)):
-        state.presentCreateEnvelope = present
-        return .none
-      case .view(.tappedEmptyEnvelopeButton):
-        return .send(.inner(.showCreateEnvelopRouter))
-
-      // Navigation Specific Router
-      case let .scope(.envelopes(.element(id: _, action: .pushEnvelopeDetail(property)))):
-        state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State(envelopeProperty: property)
-        return .none
-
-      case .scope(.header(.tappedSearchButton)):
-        state.searchEnvelope = .init()
-        return .none
-
-      case .scope(.floatingButton(.tapped)):
-        return .send(.inner(.showCreateEnvelopRouter))
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
 
       case .binding:
         return .none
 
-      case .inner(.showCreateEnvelopRouter):
-        state.presentCreateEnvelope = true
+      case .delegate:
         return .none
-
-      case .delegate(.pushFilter):
-        return .none
-
-      case .view(.tappedSortButton):
-        state.filterBottomSheet = .init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial)
-        return .none
-
-      case .view(.tappedFilterButton):
-        state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
-        return .none
-
-      case .scope(.filterBottomSheet(.presented(.tapped(item: _)))):
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
-
-      // FilterView에서 confirmButton을 누른다면, Server에 FilterData를 요청합니다.
-      case .scope(.sentEnvelopeFilter(.presented(.tappedConfirmButton))):
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
-
-      // 만약 envelope Reducer onAppear방출시 맨 마지막 일 경우이면서, endOfPage가 아닐 경우 서버로 요청합니다.
-      case let .scope(.envelopes(.element(id: uuid, action: .isOnAppear(true)))):
-        if state.envelopes.last?.id == uuid && !state.isEndOfPage {
-          let isEndOfPage = state.isEndOfPage.description
-          os_log("페이지를 요청합니다., \(isEndOfPage.description)")
-          return .send(.async(.updateEnvelopesByFilter))
-            .throttle(id: ThrottleID.getFriendThrottleID, for: 2, scheduler: RunLoop.main, latest: false)
-        }
-        return .none
-
-      case .scope:
-        return .none
-
-      case let .view(.onAppear(appear)):
-        if state.isOnAppear {
-          return .none
-        }
-        state.isOnAppear = appear
-        return .send(.async(.updateEnvelopesByFilter))
-          .throttle(id: ThrottleID.getFriendThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
-
-      case let .inner(.updateEnvelopes(val)):
-        let prevEnvelopesCount = state.envelopes.count
-        let currentEnvelopeProperty = (state.envelopes.map(\.envelopeProperty) + val).uniqued()
-        let uniqueElement = currentEnvelopeProperty.map { Envelope.State(envelopeProperty: $0) }
-        // API 보낼 때 보내는사이즈가 30입니다. 30보다 적게 오는 경우 남은 봉투가 이보다 적다고 판단합니다.
-        if prevEnvelopesCount == state.envelopes.count || val.count % 30 != 0 {
-          state.isEndOfPage = true
-        }
-        state.envelopes = .init(uniqueElements: uniqueElement)
-        return .none
-
-      case let .inner(.isLoading(val)):
-        state.isLoading = val
-        return .none
-
-      case .async(.updateEnvelopesByFilter):
-        let page = state.page
-        state.page += 1
-        let urlParameter = SearchFriendsParameter(
-          friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
-          fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
-          toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
-          page: page,
-          sort: state.sentMainProperty.selectedFilterDial ?? .highestAmount
-        )
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestSearchFriends(urlParameter)
-          await send(.inner(.updateEnvelopes(envelopeProperties)))
-          await send(.inner(.isLoading(false)))
-        }
-
-      case let .view(.tappedFilteredPersonButton(id: id)):
-        state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
-
-      case .view(.tappedFilteredAmountButton):
-        state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
-
-      // 0페이지의 Envleope을 요청합니다. 현재 envelopes를 지웁니다.
-      case .async(.updateEnvelopesByFilterInitialPage):
-        state.page = 1
-        state.isEndOfPage = false
-        let currentState = state.sentMainProperty.selectedFilterDial?.sortString
-        os_log("current Selected Section \(currentState ?? "nil")")
-        state.envelopes = .init(uniqueElements: [])
-        let urlParameter = SearchFriendsParameter(
-          friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
-          fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
-          toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
-          page: 0,
-          sort: state.sentMainProperty.selectedFilterDial ?? .latest
-        )
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let envelopeProperties = try await network.requestSearchFriends(urlParameter)
-          await send(.inner(.updateEnvelopes(envelopeProperties)))
-          await send(.inner(.isLoading(false)))
-        }
-      case .view(.finishedCreateEnvelopes):
-        return .send(.async(.updateEnvelopesByFilterInitialPage))
       }
     }
     .subFeatures1()
@@ -331,3 +358,7 @@ extension [FilterDialItem] {
     .latest
   }
 }
+
+// MARK: - SentMain + FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, FeatureScopeAction
+
+extension SentMain: FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, FeatureScopeAction {}
