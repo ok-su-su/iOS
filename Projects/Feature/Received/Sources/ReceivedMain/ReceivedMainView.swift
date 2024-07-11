@@ -183,12 +183,9 @@ struct ReceivedMainView: View {
         makeLedgerView()
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
-
-      FloatingButtonView {
-        store.sendViewAction(.tappedFloatingButton)
-      }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 16)
+    }
+    .ssFloatingButton {
+      store.sendViewAction(.tappedFloatingButton)
     }
     .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .onAppear {

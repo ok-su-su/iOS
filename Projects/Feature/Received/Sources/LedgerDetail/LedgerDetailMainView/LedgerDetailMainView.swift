@@ -205,12 +205,6 @@ struct LedgerDetailMainView: View {
         .onAppear {
           store.sendViewAction(.isOnAppear(true))
         }
-
-      FloatingButtonView {
-        store.sendViewAction(.tappedFloatingButton)
-      }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 16)
     }
     .sSAlert(
       isPresented: $store.showMessageAlert.sending(\.view.showAlert),
@@ -224,6 +218,9 @@ struct LedgerDetailMainView: View {
         }
       )
     )
+    .ssFloatingButton {
+      store.sendViewAction(.tappedFloatingButton)
+    }
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.scope.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(currentType: .received(ledgerId: store.ledgerID)) { data in
         store.sendViewAction(.dismissCreateEnvelope(data))

@@ -61,6 +61,41 @@ struct SentSearch {
     case searchThrottleID
   }
 
+  func searchAction(state: inout State, action: SSSearchReducer<SentSearchProperty>.Action) -> Effect<Action> {
+    switch action {
+    case let .changeTextField(textFieldText):
+      if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
+        return .send(.searchEnvelope)
+          .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: RunLoop.main, latest: true)
+      }
+      return .none
+
+    case let .tappedPrevItem(id: id):
+      guard let currentPrevItem = state.property.prevSearchedItem.first(where: { $0.id == id }) else {
+        return .none
+      }
+      return .send(.search(.changeTextField(currentPrevItem.title)))
+
+    case let .tappedDeletePrevItem(id: id):
+      persistence.deleteSearchItem(id: id)
+      state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
+      return .none
+    case let .tappedSearchItem(id: id):
+      let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
+      return .run { _ in
+        // 만약 id검색에 성공한다면 화면 푸쉬를 진행합니다.
+        guard let envelopeProperty = try await network.getEnvelopePropertyBy(id: id) else {
+          return
+        }
+        persistence.setSearchItems(searchedItem)
+        SpecificEnvelopeHistoryRouterPublisher
+          .push(.specificEnvelopeHistoryList(.init(envelopeProperty: envelopeProperty)))
+      }
+    default:
+      return .none
+    }
+  }
+
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
@@ -89,39 +124,9 @@ struct SentSearch {
 
       // MARK: - Search Action
 
-      case let .search(action):
-        switch action {
-        case let .changeTextField(textFieldText):
-          if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
-            return .send(.searchEnvelope)
-              .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: RunLoop.main, latest: true)
-          }
-          return .none
+      case let .search(currentAction):
+        return searchAction(state: &state, action: currentAction)
 
-        case let .tappedPrevItem(id: id):
-          guard let currentPrevItem = state.property.prevSearchedItem.first(where: { $0.id == id }) else {
-            return .none
-          }
-          return .send(.search(.changeTextField(currentPrevItem.title)))
-
-        case let .tappedDeletePrevItem(id: id):
-          persistence.deleteSearchItem(id: id)
-          state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
-          return .none
-        case let .tappedSearchItem(id: id):
-          let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
-          return .run { _ in
-            // 만약 id검색에 성공한다면 화면 푸쉬를 진행합니다.
-            guard let envelopeProperty = try await network.getEnvelopePropertyBy(id: id) else {
-              return
-            }
-            persistence.setSearchItems(searchedItem)
-            SpecificEnvelopeHistoryRouterPublisher
-              .push(.specificEnvelopeHistoryList(.init(envelopeProperty: envelopeProperty)))
-          }
-        default:
-          return .none
-        }
       case let .push(pathState):
         state.path.append(pathState)
         return .none
@@ -145,7 +150,6 @@ struct SentSearch {
       case let .updateSearchResult(results):
         let count = state.property.nowSearchedItem.count
         let text = state.property.textFieldText
-        os_log("검색 결과 카운트 = \(count), text = \(text)")
         state.property.nowSearchedItem = results
         return .none
 
