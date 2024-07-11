@@ -31,6 +31,32 @@ public struct CreateEnvelopeRequestBody: Codable, Equatable {
   /// 경조사에 대해서 나타냅니다.
   public var category: CategoryRequestBody?
 
+  public init(type: CreateType) {
+    self.type = type.key
+  }
+
+  public init(
+    type: String,
+    friendID: Int64? = nil,
+    ledgerID: Int64? = nil,
+    amount: Int64? = nil,
+    gift: String? = nil,
+    memo: String? = nil,
+    hasVisited: Bool? = nil,
+    handedOverAt: String? = nil,
+    category: CategoryRequestBody? = nil
+  ) {
+    self.type = type
+    self.friendID = friendID
+    self.ledgerID = ledgerID
+    self.amount = amount
+    self.gift = gift
+    self.memo = memo
+    self.hasVisited = hasVisited
+    self.handedOverAt = handedOverAt
+    self.category = category
+  }
+
   enum CodingKeys: String, CodingKey {
     case type
     case friendID = "friendId"
@@ -60,6 +86,11 @@ extension CreateEnvelopeRequestBody {
 public struct CategoryRequestBody: Codable, Equatable {
   var id: Int?
   var customCategory: String?
+
+  public init(id: Int? = nil, customCategory: String? = nil) {
+    self.id = id
+    self.customCategory = customCategory
+  }
 
   enum CodingKeys: String, CodingKey {
     case id

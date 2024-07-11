@@ -222,7 +222,10 @@ struct LedgerDetailMainView: View {
       store.sendViewAction(.tappedFloatingButton)
     }
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.scope.presentCreateEnvelope)) {
-      CreateEnvelopeRouterBuilder(currentType: .received(ledgerId: store.ledgerID)) { data in
+      CreateEnvelopeRouterBuilder(
+        currentType: .received,
+        initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
+      ) { data in
         store.sendViewAction(.dismissCreateEnvelope(data))
       }
     }
