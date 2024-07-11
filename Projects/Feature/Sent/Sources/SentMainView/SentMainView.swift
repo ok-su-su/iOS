@@ -25,7 +25,6 @@ struct SentMainView: View {
   @ViewBuilder
   private func makeEnvelope() -> some View {
     if store.state.envelopes.isEmpty {
-      // 봉투가 한개도 없을 때
       VStack {
         Spacer()
         Text(Constants.emptyEnvelopesText)
@@ -37,7 +36,14 @@ struct SentMainView: View {
         Spacer()
       }
     } else {
-      ScrollView {
+      makeUserEnvelopes()
+    }
+  }
+
+  @ViewBuilder
+  private func makeUserEnvelopes() -> some View {
+    ScrollView {
+      LazyVStack {
         ForEach(
           store.scope(state: \.envelopes, action: \.scope.envelopes)
         ) { store in
@@ -46,6 +52,7 @@ struct SentMainView: View {
         }
       }
     }
+    .scrollIndicators(.hidden)
   }
 
   @ViewBuilder

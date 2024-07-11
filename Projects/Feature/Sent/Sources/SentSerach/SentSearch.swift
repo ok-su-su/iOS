@@ -61,7 +61,7 @@ struct SentSearch {
     case searchThrottleID
   }
 
-  func searchAction(state: inout State, action: SSSearchReducer<SentSearchProperty>.Action) -> Effect<Action>{
+  func searchAction(state: inout State, action: SSSearchReducer<SentSearchProperty>.Action) -> Effect<Action> {
     switch action {
     case let .changeTextField(textFieldText):
       if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
