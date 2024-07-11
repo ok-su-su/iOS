@@ -87,7 +87,6 @@ struct CreateEnvelopeDateView: View {
       store.sendViewAction(.tappedNextButton)
     }
     .showDatePickerWithNextButton(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
-      store.sendViewAction(.dismissDatePicker)
       store.sendViewAction(.tappedNextButton)
     }
     .navigationBarBackButtonHidden()

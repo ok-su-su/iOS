@@ -182,7 +182,8 @@ public struct SSDateSelectBottomSheetWithNextButtonView: View {
       }
     }
     .safeAreaInset(edge: .bottom) {
-      NextButtonView(isAbleToPush: !store.isInitialStateOfDate) {
+      NextButtonView(isAbleToPush: true) {
+        store.send(.didTapConfirmButton)
         nextButtonTappedAction()
       }
     }
