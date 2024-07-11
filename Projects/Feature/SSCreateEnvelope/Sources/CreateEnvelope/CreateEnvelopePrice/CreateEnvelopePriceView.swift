@@ -70,13 +70,14 @@ struct CreateEnvelopePriceView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    let titleText = store.createType == .sent ? Constants.sentTitleText : Constants.receivedTitleText
     VStack(alignment: .leading, spacing: 0) {
       Spacer()
         .frame(height: 34)
 
       // MARK: - TextFieldTitleView
 
-      Text(Constants.titleText)
+      Text(titleText)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
 
@@ -137,6 +138,7 @@ struct CreateEnvelopePriceView: View {
   }
 
   private enum Constants {
-    static let titleText: String = "얼마를 보냈나요?"
+    static let sentTitleText: String = "얼마를 보냈나요?"
+    static let receivedTitleText: String = "얼마를 받았나요?"
   }
 }

@@ -31,6 +31,7 @@ struct CreateEnvelopePrice {
     /// 숫자만 저장합니다.
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
+    var createType = CreateEnvelopeRequestShared.getCreateType()
 
     var guidPrices: [Int64] = [
       10000, 30000, 50000, 100_000, 500_000,

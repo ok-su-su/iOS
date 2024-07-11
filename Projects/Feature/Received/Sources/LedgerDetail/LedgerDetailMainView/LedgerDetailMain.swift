@@ -27,6 +27,8 @@ struct LedgerDetailMain {
     var isOnAppear = false
     var presentCreateEnvelope = false
 
+    var createEnvelopeProperty: CreateEnvelopeRequestBody = .init(type: .received)
+
     /// 무한 스크롤을 위해 사용되는 Property
     var page = 0
     var isEndOfPage = false
@@ -111,12 +113,11 @@ struct LedgerDetailMain {
       )
 
     case .tappedFloatingButton:
-      CreateEnvelopeRequestShared.setCreateType(.received(ledgerId: state.ledgerID))
-      CreateEnvelopeRequestShared.setLedger(id: state.ledgerID)
-      CreateEnvelopeRequestShared.setEvent(id: state.ledgerProperty.categoryID)
-      if let customCategory = state.ledgerProperty.customCategory {
-        CreateEnvelopeRequestShared.setCustomEvent(customCategory)
-      }
+      state.createEnvelopeProperty = CreateEnvelopeRequestBody(
+        type: "RECEIVED",
+        ledgerID: state.ledgerID,
+        category: .init(id: state.ledgerProperty.categoryID, customCategory: state.ledgerProperty.customCategory)
+      )
       state.presentCreateEnvelope = true
       return .none
 

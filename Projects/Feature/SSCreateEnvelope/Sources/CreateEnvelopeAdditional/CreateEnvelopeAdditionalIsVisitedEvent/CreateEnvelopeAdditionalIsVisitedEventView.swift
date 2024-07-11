@@ -24,10 +24,11 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    let eventNameText = store.eventName ?? ""
     VStack(alignment: .leading) {
       HStack(spacing: 4) {
         // TODO: change Property
-        Text(Constants.eventNameText)
+        Text(eventNameText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
@@ -69,7 +70,6 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   }
 
   private enum Constants {
-    static let eventNameText = "결혼식을"
     static let descriptionText = "방문했나요?"
   }
 }

@@ -37,6 +37,16 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
     selectedID.first
   }
 
+  func getSelectedItemName() -> String? {
+    guard let selectedID = selectedID.first else {
+      return nil
+    }
+    guard let selectedItem = defaultEvent.first(where: { $0.id == selectedID }) else {
+      return "기타"
+    }
+    return selectedItem.title
+  }
+
   mutating func resetSelectedItems() {
     selectedID.removeAll()
   }

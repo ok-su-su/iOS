@@ -21,10 +21,10 @@ struct CreateEnvelopeName {
   struct State: Equatable {
     var isOnAppear = false
     var textFieldText: String = ""
-    var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var isPushable = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var createType = CreateEnvelopeRequestShared.getCreateType()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
@@ -50,7 +50,6 @@ struct CreateEnvelopeName {
     case onAppear(Bool)
     case tappedFilterItem(name: String)
     case changeText(String)
-    case changeFocused(Bool)
     case tappedNextButton
   }
 
@@ -61,7 +60,6 @@ struct CreateEnvelopeName {
         return .none
       }
       state.isOnAppear = isAppear
-      state.isFocused = true
       return .none
 
     case let .tappedFilterItem(name):
@@ -80,9 +78,6 @@ struct CreateEnvelopeName {
           .none : .send(.async(.searchName(text))).throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
       )
 
-    case let .changeFocused(val):
-      state.isFocused = val
-      return .none
     case .tappedNextButton:
       return .send(.inner(.push))
     }

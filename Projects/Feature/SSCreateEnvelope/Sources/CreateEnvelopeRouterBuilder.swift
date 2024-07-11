@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 // MARK: - CreateEnvelopeRouterBuilder
@@ -14,23 +15,39 @@ public struct CreateEnvelopeRouterBuilder: View {
   private var currentType: CreateType
 
   private var completion: (Data) -> Void
-  public init(currentType: CreateType, completion: @escaping (Data) -> Void) {
+
+  @Bindable
+  var store: StoreOf<CreateEnvelopeRouter>
+
+  /// CreateEnvelopeView
+  /// - Parameters:
+  ///   - currentType: Sent, Received
+  ///   - initialCreateEnvelopeRequestBody: Set InitialOfCreateEnvelopeBody Value
+  ///   - completion: run when createEnvelopeRouterBuild dismiss
+  public init(
+    currentType: CreateType,
+    initialCreateEnvelopeRequestBody: CreateEnvelopeRequestBody,
+    completion: @escaping (Data) -> Void
+  ) {
+    CreateEnvelopeRequestShared.setBody(initialCreateEnvelopeRequestBody)
     self.currentType = currentType
     self.completion = completion
+    store = .init(
+      initialState: .init(type: currentType)) {
+        CreateEnvelopeRouter()
+      }
   }
 
   public var body: some View {
-    CreateEnvelopeRouterView(store: .init(initialState: .init(type: currentType), reducer: {
-      CreateEnvelopeRouter()
-    }), completion: completion)
+    CreateEnvelopeRouterView(store: store, completion: completion)
   }
 }
 
 // MARK: - CreateType
 
-public enum CreateType: Equatable {
+public enum CreateType: Equatable, CaseIterable {
   case sent
-  case received(ledgerId: Int64)
+  case received
 
   var key: String {
     switch self {
@@ -39,5 +56,12 @@ public enum CreateType: Equatable {
     case .received:
       return "RECEIVED"
     }
+  }
+
+  static func getTypeBy(_ val: String?) -> Self? {
+    guard let val else {
+      return nil
+    }
+    return CreateType.allCases.first { $0.key == val }
   }
 }

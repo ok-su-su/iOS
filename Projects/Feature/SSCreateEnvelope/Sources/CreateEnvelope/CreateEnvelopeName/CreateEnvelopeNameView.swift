@@ -62,13 +62,14 @@ struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    let titleText = store.createType == .sent ? Constants.sentTitleText : Constants.receivedTitleText
     VStack(alignment: .leading) {
       Spacer()
         .frame(height: 34)
 
       // MARK: - TextFieldTitleView
 
-      Text(Constants.titleText)
+      Text(titleText)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
 
@@ -84,21 +85,14 @@ struct CreateEnvelopeNameView: View {
         axis: .vertical
       )
       .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
+        isFocused = false
         store.sendViewAction(.changeText(text))
       }
       .submitLabel(.done)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
       .focused($isFocused)
-      .onChange(of: isFocused) { _, newValue in
-        store.sendViewAction(.changeFocused(newValue))
-      }
-      .onChange(of: store.isFocused) { _, newValue in
-        isFocused = newValue
-      }
-      .onChange(of: store.textFieldText) { _, newValue in
-        store.sendViewAction(.changeText(newValue))
-      }
+
       Spacer()
         .frame(height: 24)
 
@@ -124,6 +118,7 @@ struct CreateEnvelopeNameView: View {
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
+      isFocused = true
       store.send(.view(.onAppear(true)))
     }
   }
@@ -133,6 +128,7 @@ struct CreateEnvelopeNameView: View {
   }
 
   private enum Constants {
-    static let titleText: String = "누구에게 보냈나요?"
+    static let sentTitleText: String = "누구에게 보냈나요?"
+    static let receivedTitleText: String = "누구에게 받았나요?"
   }
 }

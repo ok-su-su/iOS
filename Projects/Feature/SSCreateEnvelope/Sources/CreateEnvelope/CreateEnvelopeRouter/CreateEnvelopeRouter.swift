@@ -37,9 +37,6 @@ struct CreateEnvelopeRouter {
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
 
       CreateEnvelopeRequestShared.setCreateType(type)
-      if case let CreateType.received(ledgerId: ledgerId) = type {
-        CreateEnvelopeRequestShared.setLedger(id: ledgerId)
-      }
     }
   }
 

@@ -20,6 +20,7 @@ struct CreateEnvelopeDateView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    let descriptionText = store.createType == .sent ? Constants.sentNameDescriptionText : Constants.receivedNameDescriptionText
     VStack(alignment: .leading) {
       Spacer()
         .frame(height: 20)
@@ -30,7 +31,7 @@ struct CreateEnvelopeDateView: View {
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
-        Text(Constants.nameDescriptionText)
+        Text(descriptionText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
@@ -100,7 +101,8 @@ struct CreateEnvelopeDateView: View {
   }
 
   private enum Constants {
-    static let nameDescriptionText: String = "언제 보냈나요"
+    static let sentNameDescriptionText: String = "언제 보냈나요"
+    static let receivedNameDescriptionText: String = "언제 받았나요"
 
     static let yearTextFieldTextPrompt: Text = .init("2024")
     static let monthTextFieldTextPrompt: Text = .init("11")

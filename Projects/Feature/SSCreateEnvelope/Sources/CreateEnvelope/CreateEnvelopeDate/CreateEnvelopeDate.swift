@@ -23,6 +23,7 @@ struct CreateEnvelopeDate {
 
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State? = nil
     var envelopeTargetName: String
+    var createType = CreateEnvelopeRequestShared.getCreateType()
 
     var yearStringText: String {
       return CustomDateFormatter.getYear(from: selectedDate)

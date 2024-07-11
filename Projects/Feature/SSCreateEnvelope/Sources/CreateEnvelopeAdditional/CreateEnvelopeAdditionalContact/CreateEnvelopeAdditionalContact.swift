@@ -19,6 +19,7 @@ struct CreateEnvelopeAdditionalContact {
     @Shared var contactHelper: CreateEnvelopeAdditionalContactHelper
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var pushable = false
+    var friendName = CreateFriendRequestShared.getName()
 
     init(contactHelper: Shared<CreateEnvelopeAdditionalContactHelper>) {
       _contactHelper = contactHelper
