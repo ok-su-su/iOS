@@ -155,10 +155,9 @@ struct SentMainView: View {
 
         .padding(.horizontal, Constants.leadingAndTrailingSpacing)
       }
-
-      // FloatingButton
-      FloatingButtonView(store: store.scope(state: \.floatingButton, action: \.scope.floatingButton))
-        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+    }
+    .ssFloatingButton {
+      store.sendViewAction(.tappedFloatingButton)
     }
     .navigationBarBackButtonHidden()
     .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))

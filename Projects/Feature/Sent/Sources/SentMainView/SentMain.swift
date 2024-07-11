@@ -25,7 +25,6 @@ struct SentMain {
 
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .envelope)
-    var floatingButton: FloatingButton.State = .init()
     var isLoading = true
     var isOnAppear = false
     var page: Int = 0
@@ -71,6 +70,7 @@ struct SentMain {
     case tappedFilteredAmountButton
     case presentCreateEnvelope(Bool)
     case finishedCreateEnvelopes(Data)
+    case tappedFloatingButton
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
@@ -108,6 +108,9 @@ struct SentMain {
 
     case .finishedCreateEnvelopes:
       return .send(.async(.updateEnvelopesByFilterInitialPage))
+
+    case .tappedFloatingButton:
+      return .send(.inner(.showCreateEnvelopRouter))
     }
   }
 
@@ -191,8 +194,6 @@ struct SentMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-
-    case floatingButton(FloatingButton.Action)
     case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
     case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
     case searchEnvelope(PresentationAction<SentSearch.Action>)
@@ -210,9 +211,6 @@ struct SentMain {
     case .header(.tappedSearchButton):
       state.searchEnvelope = .init()
       return .none
-
-    case .floatingButton(.tapped):
-      return .send(.inner(.showCreateEnvelopRouter))
 
     case .filterBottomSheet(.presented(.tapped(item: _))):
       return .send(.async(.updateEnvelopesByFilterInitialPage))
