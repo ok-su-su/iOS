@@ -65,6 +65,7 @@ extension HeaderView {
           .frame(width: 96, height: 4, alignment: .center)
         Color.orange60
           .frame(width: progressValue(degree), alignment: .leading)
+          .animation(.easeInOut(duration: 0.5), value: degree)
       }
       .frame(width: 96, height: 4)
       .clipShape(.rect(cornerRadius: Constants.progressCornerRadius))

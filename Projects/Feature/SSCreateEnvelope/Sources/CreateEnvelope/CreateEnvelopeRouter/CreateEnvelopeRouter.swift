@@ -144,7 +144,7 @@ struct CreateEnvelopeRouter {
 
       case .dismissScreen:
         _ = state.path.popLast()
-        return .send(.changeProgress)
+        return .send(.changeProgress, animation: .easeIn(duration: 0.8))
 
       case .header:
         return .none
@@ -208,23 +208,26 @@ struct CreateEnvelopeRouter {
 
       case let .push(pathState):
         state.path.append(pathState)
-        return .send(.changeProgress, animation: .easeIn(duration: 0.8))
+        return .send(.changeProgress)
 
       case .path:
         return .none
 
       case .changeProgress:
-        state.header.updateProperty(.init(type: .depthProgressBar(Double(state.path.count * 12) / 96)))
-        return .none
+        let level = state.path.count + 1
+        let headerViewProperty: HeaderViewProperty = .init(type: .depthProgressBar(Double(level * 16) / 96))
+        return .send(.header(.updateProperty(headerViewProperty)), animation: .easeIn(duration: 0.8))
 
       case .createPrice:
         return .none
 
       case let .screenEnded(currentState):
         return endedScreenHandler(currentState, state: state)
+
       case let .updateDismissData(data):
         state.currentCreateEnvelopeData = data
         return .none
+
       case let .isLoading(val):
         state.isLoading = val
         return .none
