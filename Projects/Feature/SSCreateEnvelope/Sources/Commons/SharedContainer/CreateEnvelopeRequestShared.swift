@@ -89,9 +89,14 @@ public enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  static func getCreateType() -> String {
+  static func getCreateType() -> CreateType {
     let typeString: String? = SharedContainer.getValue(key: String(describing: CreateType.self))
-    return typeString ?? ""
+    let currentCreateType = CreateType.getTypeBy(typeString)
+    if let currentCreateType {
+      return currentCreateType
+    }
+    os_log(.error, "CreateType이 지정되어지지 않았습니다. 생성자를 확인해주세요")
+    return .sent
   }
 
   public static func setLedger(id: Int64) {

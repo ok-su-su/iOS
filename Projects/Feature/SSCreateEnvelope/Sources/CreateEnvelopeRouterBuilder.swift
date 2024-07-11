@@ -45,7 +45,7 @@ public struct CreateEnvelopeRouterBuilder: View {
 
 // MARK: - CreateType
 
-public enum CreateType: Equatable {
+public enum CreateType: Equatable, CaseIterable {
   case sent
   case received
 
@@ -56,5 +56,12 @@ public enum CreateType: Equatable {
     case .received:
       return "RECEIVED"
     }
+  }
+
+  static func getTypeBy(_ val: String?) -> Self? {
+    guard let val else {
+      return nil
+    }
+    return CreateType.allCases.first { $0.key == val }
   }
 }
