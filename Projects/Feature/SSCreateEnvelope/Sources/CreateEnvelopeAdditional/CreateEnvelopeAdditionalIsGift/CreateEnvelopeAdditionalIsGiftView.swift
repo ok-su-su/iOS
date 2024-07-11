@@ -15,6 +15,8 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalIsGift>
+  @FocusState
+  var focus
 
   // MARK: Content
 
@@ -30,6 +32,13 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
         prompt: Text("무엇을 선물했나요?").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
+      .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
+        focus = false
+        store.sendViewAction(.changedTextField(text))
+      }
+      .submitLabel(.done)
+      .keyboardType(.default)
+      .focused($focus)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
 
@@ -42,15 +51,20 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack(alignment: .leading, spacing: 0) {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
-        CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
       }
+    }
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
+      focus = true
       store.send(.view(.onAppear(true)))
     }
   }

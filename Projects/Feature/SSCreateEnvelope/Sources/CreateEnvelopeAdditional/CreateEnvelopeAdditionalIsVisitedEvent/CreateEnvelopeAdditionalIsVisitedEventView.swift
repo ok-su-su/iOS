@@ -23,11 +23,6 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   }
 
   @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
-  }
-
-  @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading) {
       HStack(spacing: 4) {
@@ -58,10 +53,11 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
       VStack(spacing: 0) {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
-        makeNextButton()
       }
     }
-
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
+    }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

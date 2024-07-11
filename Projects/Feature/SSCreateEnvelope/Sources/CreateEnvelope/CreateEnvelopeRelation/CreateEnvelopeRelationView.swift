@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSToast
 import SwiftUI
 
 struct CreateEnvelopeRelationView: View {
@@ -54,25 +55,18 @@ struct CreateEnvelopeRelationView: View {
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
-  @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(
-      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
-    )
-  }
-
-  @ViewBuilder
-  private func makeAddCustomRelation() -> some View {}
-
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
-      VStack {
-        makeContentView()
-        makeNextButton()
-      }
+        .whenTapDismissKeyboard()
+
+      makeContentView()
+        .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
+    }
+    .nextButton(store.isPushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))

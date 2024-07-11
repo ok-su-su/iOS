@@ -21,6 +21,7 @@ public struct SSTextFieldButtonProperty {
   var showDeleteButton: Bool
   var prompt: String
   let frame: SSButtonFrame
+  var regex: Regex<Substring>?
 
   public struct SSButtonFrame {
     let minWidth: CGFloat?
@@ -62,6 +63,7 @@ public struct SSTextFieldButtonProperty {
   ///   - showCloseButton: closButton을 표시할지 나타냅니다.
   ///   - showDeleteButton: deleteButton을 표시할지 나타냅니다.
   ///   - frame: frame입니다.
+  ///   - Regex: Contains에 판별된 regex 입니다.
   public init(
     size: Size,
     status: Status,
@@ -71,7 +73,8 @@ public struct SSTextFieldButtonProperty {
     showCloseButton: Bool,
     showDeleteButton: Bool,
     prompt: String,
-    frame: SSButtonFrame = .init()
+    frame: SSButtonFrame = .init(),
+    regex: Regex<Substring>? = nil
   ) {
     self.size = size
     self.status = status
@@ -82,6 +85,7 @@ public struct SSTextFieldButtonProperty {
     self.showDeleteButton = showDeleteButton
     self.prompt = prompt
     self.frame = frame
+    self.regex = regex
   }
 
   public mutating func update(text: String) {
@@ -247,6 +251,22 @@ public extension SSTextFieldButtonProperty {
          .saved:
       return SSColor.gray100
     }
+  }
+
+  var isValidRegex: Bool {
+    if let regex {
+      if textFieldText.contains(regex) {
+        return true
+      } else {
+        return false
+      }
+    }
+    return true
+  }
+
+  /// 정규식을 만족하는지에 따라 컬러바 바뀝니다.
+  var saveButtonBackgroundColor: Color {
+    return isValidRegex ? SSColor.gray100 : SSColor.gray40
   }
 
   var buttonHorizontalSpacing: CGFloat { 8 }

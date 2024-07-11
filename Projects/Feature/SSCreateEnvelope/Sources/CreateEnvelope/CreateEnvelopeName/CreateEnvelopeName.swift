@@ -10,6 +10,10 @@ import Designsystem
 import FeatureAction
 import Foundation
 import OSLog
+import SSRegexManager
+import SSToast
+
+// MARK: - CreateEnvelopeName
 
 @Reducer
 struct CreateEnvelopeName {
@@ -19,6 +23,8 @@ struct CreateEnvelopeName {
     var textFieldText: String = ""
     var isFocused = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
+    var isPushable = false
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
@@ -45,19 +51,86 @@ struct CreateEnvelopeName {
     case tappedFilterItem(name: String)
     case changeText(String)
     case changeFocused(Bool)
+    case tappedNextButton
+  }
+
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = isAppear
+      state.isFocused = true
+      return .none
+
+    case let .tappedFilterItem(name):
+      state.textFieldText = name
+      return .none
+
+    case let .changeText(text):
+      state.textFieldText = text
+      let pushable = RegexManager.isValidName(text)
+      state.isPushable = pushable
+
+      let isShowToast = ToastRegexManager.isShowToastByName(text)
+      return .merge(
+        isShowToast ? .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none,
+        !pushable ?
+          .none : .send(.async(.searchName(text))).throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
+      )
+
+    case let .changeFocused(val):
+      state.isFocused = val
+      return .none
+    case .tappedNextButton:
+      return .send(.inner(.push))
+    }
   }
 
   enum InnerAction: Equatable {
     case push
     case updateEnvelopes([PrevEnvelope])
+  }
+
+  func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+    switch action {
+    case .push:
+      CreateFriendRequestShared.setName(state.textFieldText)
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
+      return .none
+
+    case let .updateEnvelopes(prevEnvelopes):
+      let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
+      state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
+      return .none
+    }
+  }
+
+  enum AsyncAction: Equatable {
     case searchName(String)
   }
 
-  enum AsyncAction: Equatable {}
+  func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
+    switch action {
+    case let .searchName(val):
+      return .run { send in
+        let prevEnvelopes = try await network.searchPrevName(val)
+        await send(.inner(.updateEnvelopes(prevEnvelopes)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
+    case toast(SSToastReducer.Action)
+  }
+
+  func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
+    switch action {
+    case .toast:
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -71,68 +144,24 @@ struct CreateEnvelopeName {
   @Dependency(\.createEnvelopeNameNetwork) var network
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
     }
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .none
-        }
-        state.isOnAppear = isAppear
-        state.isFocused = true
-        return .run { send in
-          let prevEnvelopes = try await network.searchInitialEnvelope()
-          await send(.inner(.updateEnvelopes(prevEnvelopes)))
-        }
-
-      case .inner(.push):
-        CreateFriendRequestShared.setName(state.textFieldText)
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(state.$createEnvelopeProperty)))
-        return .none
-
-      case let .view(.tappedFilterItem(name: name)):
-        state.textFieldText = name
-        return .none
-
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .run { send in
-          await send(.inner(.push))
-        }
-
-      case .scope(.nextButton):
-        return .none
-
-      case let .view(.changeText(text)):
-        state.textFieldText = text
-        // 만약 이름 검색 조건을 만족한다면
-        if NameRegexManager.isValid(name: text) {
-          return .run { send in
-            await send(.inner(.searchName(text)))
-            await send(.scope(.nextButton(.delegate(.isAbleToPush(true)))))
-          }
-          .throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
-        }
-
-        // 만약 이름 검색 조건을 만족하지 않는다면
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(false)))))
-
-      case let .view(.changeFocused(val)):
-        state.isFocused = val
-        return .none
-
-      case let .inner(.updateEnvelopes(prevEnvelopes)):
-        let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
-        state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
-        return .none
-
-      case let .inner(.searchName(val)):
-        return .run { send in
-          let prevEnvelopes = try await network.searchPrevName(val)
-          await send(.inner(.updateEnvelopes(prevEnvelopes)))
-        }
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
     }
   }
 }
+
+// MARK: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction
+
+extension CreateEnvelopeName: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction {}

@@ -38,8 +38,16 @@ enum CustomNumberFormatter {
   }
 
   static func formattedByThreeZero(_ val: String) -> String? {
-    let val = val.map { String($0) }.compactMap { Int($0) }.map { String($0) }
-    numberFormatter.numberStyle = .decimal
-    return numberFormatter.string(for: Int(val.joined()))
+    var resString: [Character] = []
+    let chars: [Character] = val.map { $0 }.reversed()
+    for ind in 0 ..< chars.count {
+      let cur = chars[ind]
+      if ind % 3 == 0 && !resString.isEmpty {
+        resString.append(",")
+      }
+      resString.append(cur)
+    }
+
+    return String(resString.reversed())
   }
 }

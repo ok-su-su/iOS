@@ -36,11 +36,20 @@ struct CreateEnvelopeDate {
       return CustomDateFormatter.getDay(from: selectedDate)
     }
 
+    var pushable: Bool {
+      !isInitialStateOfDate
+    }
+
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       _selectedDate = .init(.now)
       _isInitialStateOfDate = .init(true)
       envelopeTargetName = CreateFriendRequestShared.getName() ?? "김수수"
+    }
+
+    func resetDatePicker() {
+      isInitialStateOfDate = true
+      selectedDate = .now
     }
   }
 

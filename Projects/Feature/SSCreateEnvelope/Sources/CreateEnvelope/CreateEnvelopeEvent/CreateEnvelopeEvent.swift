@@ -8,6 +8,10 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
+import SSToast
+
+// MARK: - CreateEnvelopeEvent
 
 @Reducer
 struct CreateEnvelopeEvent {
@@ -17,6 +21,8 @@ struct CreateEnvelopeEvent {
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.State
     var isLoading = false
+    var pushable = false
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
@@ -24,8 +30,14 @@ struct CreateEnvelopeEvent {
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.eventHelper.defaultEvent,
         selectedID: createEnvelopeProperty.eventHelper.selectedID,
-        isCustomItem: createEnvelopeProperty.eventHelper.customEvent
+        isCustomItem: createEnvelopeProperty.eventHelper.customEvent,
+        regexPatternString: RegexPatternString.category.regexString
       )
+      resetSelectedItems()
+    }
+
+    func resetSelectedItems() {
+      createEnvelopeProperty.eventHelper.resetSelectedItems()
     }
   }
 
@@ -39,6 +51,20 @@ struct CreateEnvelopeEvent {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case tappedNextButton
+  }
+
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = isAppear
+      return .send(.async(.getEventItems))
+    case .tappedNextButton:
+      return .send(.inner(.push))
+    }
   }
 
   enum InnerAction: Equatable {
@@ -47,12 +73,70 @@ struct CreateEnvelopeEvent {
     case update([CreateEnvelopeEventProperty])
   }
 
-  enum AsyncAction: Equatable {}
+  func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
+    switch action {
+    case .push:
+      // Set ID
+      if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
+        CreateEnvelopeRequestShared.setEvent(id: selectedID)
+      }
+      // Set Custom Name if exist
+      if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {
+        CreateEnvelopeRequestShared.setCustomEvent(customName)
+      }
+
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
+      return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+
+    case let .update(events):
+      state.createEnvelopeProperty.eventHelper.updateItems(events)
+      return .none
+    }
+  }
+
+  enum AsyncAction: Equatable {
+    case getEventItems
+  }
+
+  func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getEventItems:
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let data = try await network.getEventItems()
+        await send(.inner(.update(data)))
+        await send(.inner(.isLoading(false)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.Action)
+    case toast(SSToastReducer.Action)
+  }
+
+  func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
+    switch action {
+    case let .createEnvelopeSelectionItems(.delegate(.selected(id))):
+      let pushable = !id.isEmpty
+      state.pushable = pushable
+      return .none
+
+    case let .createEnvelopeSelectionItems(.delegate(.invalidText(text))):
+      return ToastRegexManager.isShowToastByCustomCategory(text) ?
+        .send(.scope(.toast(.showToastMessage("경조사는 10글자까지만 입력 가능해요")))) : .none
+
+    case .createEnvelopeSelectionItems:
+      return .none
+
+    case .toast:
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -60,63 +144,31 @@ struct CreateEnvelopeEvent {
   @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>(multipleSelectionCount: 1)
     }
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
+
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .none
-        }
-        state.isOnAppear = isAppear
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-          let data = try await network.getEventItems()
-          await send(.inner(.update(data)))
-          await send(.inner(.isLoading(false)))
-        }
-
-      case .inner(.push):
-        // Set ID
-        if let selectedID = state.createEnvelopeProperty.eventHelper.getSelectedItemID() {
-          CreateEnvelopeRequestShared.setEvent(id: selectedID)
-        }
-        // Set Custom Name if exist
-        if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {
-          CreateEnvelopeRequestShared.setCustomEvent(customName)
-        }
-
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
-        return .none
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .run { send in
-          await send(.inner(.push))
-        }
-
-      case let .scope(.createEnvelopeSelectionItems(.delegate(.selected(id)))):
-        let pushable = !id.isEmpty
-        return .send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-      case .scope(.nextButton):
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
 
       case .delegate:
-        return .none
-
-      case .scope(.createEnvelopeSelectionItems):
-        return .none
-
-      case let .inner(.isLoading(val)):
-        state.isLoading = val
-        return .none
-
-      case let .inner(.update(events)):
-        state.createEnvelopeProperty.eventHelper.updateItems(events)
         return .none
       }
     }
   }
 }
+
+// MARK: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction
+
+extension CreateEnvelopeEvent: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction {}

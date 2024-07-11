@@ -54,7 +54,7 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
       VStack(spacing: 0) {
         makeContentView()

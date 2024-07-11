@@ -7,12 +7,21 @@
 //
 import ComposableArchitecture
 import Foundation
+import SSRegexManager
 
 @Reducer
 public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
+
+    let regexPatternString: String?
+    var regex: Regex<Substring>? {
+      if let regexPatternString {
+        return try? Regex(regexPatternString)
+      }
+      return nil
+    }
 
     /// Add Custom Item TextField Button 의 TextField Text입니다.
     var customTitleText: String = ""
@@ -43,26 +52,28 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     ///   - isCustomItem: 사용자 입력을 통한 새로운 아이템을 받을지 여부를 나타냅니다.
     ///
     ///    isCustomItem을 Nil로 할 경우 "직접 입력" 버튼이 추가되지 않습니다.
-    public init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>) {
+    public init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>, regexPatternString: String? = nil) {
       _items = items
       _selectedID = selectedID
       _isCustomItem = isCustomItem
+      self.regexPatternString = regexPatternString
     }
   }
 
-  public enum Action: Equatable, BindableAction {
-    case binding(BindingAction<State>)
+  public enum Action: Equatable {
     case view(ViewAction)
     case inner(InnerAction)
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedItem(id: Int)
     case tappedAddCustomTextField
     case tappedTextFieldCloseButton
     case tappedTextFieldSaveAndEditButton
+    case changeTextField(String)
   }
 
   public enum InnerAction: Equatable {
@@ -74,6 +85,7 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
 
   public enum DelegateAction: Equatable {
     case selected(id: [Int])
+    case invalidText(String)
   }
 
   public var multipleSelectionCount = 1
@@ -83,9 +95,17 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
   }
 
   public var body: some Reducer<State, Action> {
-    BindingReducer()
     Reduce { state, action in
       switch action {
+      case let .view(.changeTextField(text)):
+        state.customTitleText = text
+        if let regexString = state.regexPatternString,
+           let regexPattern = try? Regex(regexString) {
+          return !text.contains(regexPattern) ?
+            .send(.delegate(.invalidText(text))) : .none
+        }
+        return .none
+
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
@@ -139,9 +159,6 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
           await send(.delegate(.selected(id: curSelection)))
         }
 
-      case .binding:
-        return .none
-
       case .view(.tappedAddCustomTextField):
         return .run { send in
           await send(.inner(.startAddCustomRelation))
@@ -170,6 +187,9 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
 
       case .inner(.endAddCustomRelation):
         state.isAddingNewItem = false
+        return .none
+
+      case .delegate(.invalidText):
         return .none
       }
     }

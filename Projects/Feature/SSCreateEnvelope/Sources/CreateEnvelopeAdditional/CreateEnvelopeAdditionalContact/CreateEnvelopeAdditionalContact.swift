@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
 import SSToast
 
 @Reducer
@@ -16,8 +17,8 @@ struct CreateEnvelopeAdditionalContact {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var contactHelper: CreateEnvelopeAdditionalContactHelper
-    var nextButton: CreateEnvelopeBottomOfNextButton.State = .init()
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
+    var pushable = false
 
     init(contactHelper: Shared<CreateEnvelopeAdditionalContactHelper>) {
       _contactHelper = contactHelper
@@ -37,6 +38,7 @@ struct CreateEnvelopeAdditionalContact {
     case onAppear(Bool)
     case changedTextField(String)
     case changeIsHighlight(Bool)
+    case tappedNextButton
   }
 
   enum InnerAction: Equatable {
@@ -47,17 +49,12 @@ struct CreateEnvelopeAdditionalContact {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case toast(SSToastReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
-
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
     }
@@ -69,32 +66,25 @@ struct CreateEnvelopeAdditionalContact {
 
       case let .view(.changedTextField(text)):
         state.contactHelper.textFieldText = text
-        let pushable = ContactsRegexManager.isValid(text)
-        let isShowToastMessage = text.count > 11
-        return .run { send in
-          if isShowToastMessage {
-            await send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요"))))
-          }
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
+        let pushable = RegexManager.isValidContacts(text)
+        state.pushable = pushable
+        return ToastRegexManager.isShowToastByContacts(text) ?
+          .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요")))) : .none
 
       case let .view(.changeIsHighlight(isHighlight)):
         state.contactHelper.isHighlight = isHighlight
         return .none
-
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .send(.inner(.push))
 
       case .inner(.push):
         CreateAdditionalRouterPublisher.shared.push(from: .contact)
         CreateFriendRequestShared.setContacts(state.contactHelper.textFieldText)
         return .none
 
-      case .scope(.nextButton):
-        return .none
-
       case .scope(.toast):
         return .none
+
+      case .view(.tappedNextButton):
+        return .send(.inner(.push))
       }
     }
   }

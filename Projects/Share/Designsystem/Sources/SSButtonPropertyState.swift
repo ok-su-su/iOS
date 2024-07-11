@@ -316,6 +316,11 @@ public extension SSButtonPropertyState {
   }
 
   var isDisable: Bool {
-    return false
+    switch status {
+    case .active:
+      false
+    case .inactive:
+      true
+    }
   }
 }

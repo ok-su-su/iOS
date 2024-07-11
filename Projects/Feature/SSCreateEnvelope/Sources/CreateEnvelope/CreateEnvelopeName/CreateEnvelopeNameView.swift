@@ -80,8 +80,12 @@ struct CreateEnvelopeNameView: View {
       TextField(
         "",
         text: $store.textFieldText.sending(\.view.changeText),
-        prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30)
+        prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
+      .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
+        store.sendViewAction(.changeText(text))
+      }
       .submitLabel(.done)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
@@ -104,23 +108,20 @@ struct CreateEnvelopeNameView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(
-      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
-    )
-  }
-
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
       VStack {
         makeContentView()
-        makeNextButton()
       }
     }
+    .nextButton(store.isPushable) {
+      store.sendViewAction(.tappedNextButton)
+    }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

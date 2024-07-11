@@ -38,6 +38,7 @@ public struct HeaderViewFeature {
     case tappedSearchButton
     case tappedTextButton
     case tappedDoubleTextButton(DoubleTextButtonAction)
+    case updateProperty(HeaderViewProperty)
 
     public enum DoubleTextButtonAction {
       case leading
@@ -46,8 +47,11 @@ public struct HeaderViewFeature {
   }
 
   public var body: some Reducer<State, Action> {
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
+      case let .updateProperty(property):
+        state.updateProperty(property)
+        return .none
       case .tappedDismissButton:
         return .none
 

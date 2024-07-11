@@ -41,10 +41,11 @@ public struct SSTextFieldButton: View {
     } label: {
       HStack(spacing: 6) {
         TextField(
-          "ㅇㅇ",
+          "",
           text: property.$textFieldText,
           prompt: Text(property.prompt)
         )
+        .keyboardType(.default)
         .multilineTextAlignment(.center)
         .modifier(SSTypoModifier(property.font))
         .foregroundStyle(property.textColor)
@@ -64,7 +65,7 @@ public struct SSTextFieldButton: View {
             }
           }
 
-          // SaveBUtton
+          // SaveButton
           if property.showCloseButton {
             Button {
               if let onTapSaveButton {
@@ -77,7 +78,8 @@ public struct SSTextFieldButton: View {
                 .padding(.vertical, property.buttonVerticalSpacing)
                 .padding(.horizontal, property.buttonHorizontalSpacing)
             }
-            .background(property.buttonBackgroundColor)
+            .background(property.saveButtonBackgroundColor)
+            .disabled(!property.isValidRegex)
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .disabled(property.disableSaveButton)
           }

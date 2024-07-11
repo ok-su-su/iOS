@@ -137,3 +137,55 @@ public struct SSDateSelectBottomSheetView: View {
     }
   }
 }
+
+// MARK: - SSDateSelectBottomSheetWithNextButtonView
+
+public struct SSDateSelectBottomSheetWithNextButtonView: View {
+  var nextButtonTappedAction: () -> Void
+  @Bindable
+  var store: StoreOf<SSDateSelectBottomSheetReducer>
+  public init(store: StoreOf<SSDateSelectBottomSheetReducer>, completion: @escaping () -> Void) {
+    self.store = store
+    nextButtonTappedAction = completion
+  }
+
+  @ViewBuilder
+  private func makeContentView() -> some View {
+    GeometryReader { geometry in
+      VStack(alignment: .leading) {
+        DatePicker(
+          "",
+          selection: $store.selectedDate.sending(\.didSelectedStartDate),
+          in: store.initialStartDate ... store.initialEndDate,
+          displayedComponents: [.date]
+        )
+        .clipped()
+        .frame(maxWidth: .infinity)
+        .datePickerStyle(.wheel)
+        .labelsHidden()
+        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
+        .padding()
+        .colorMultiply(SSColor.gray100)
+        .font(.custom(.title_xxs))
+        .preferredColorScheme(.light)
+
+      }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
+    }.edgesIgnoringSafeArea(.all)
+  }
+
+  public var body: some View {
+    ZStack {
+      SSColor.gray10
+      VStack(spacing: 0) {
+        makeContentView()
+          .padding(.bottom, 5)
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
+      NextButtonView(isAbleToPush: true) {
+        store.send(.didTapConfirmButton)
+        nextButtonTappedAction()
+      }
+    }
+  }
+}

@@ -11,24 +11,28 @@ import Designsystem
 import FeatureAction
 import Foundation
 import OSLog
+import SSRegexManager
 import SSToast
+
+// MARK: - CreateEnvelopePrice
 
 @Reducer
 struct CreateEnvelopePrice {
   @ObservableState
   struct State: Equatable {
     var subscriptions: Set<AnyCancellable> = .init()
-    var nextButton = CreateEnvelopeBottomOfNextButton.State()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
     var isFocused = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: " 금액 글자수 안내", trailingType: .none))
+    /// TextField 를 래핑한 값을 저장합니다.
     var wrappedText: String = ""
+    /// 숫자만 저장합니다.
     var textFieldText: String = ""
     var textFieldIsHighlight: Bool = false
 
-    var guidPrices: [Int] = [
+    var guidPrices: [Int64] = [
       10000, 30000, 50000, 100_000, 500_000,
     ]
 
@@ -36,9 +40,7 @@ struct CreateEnvelopePrice {
       return guidPrices.compactMap { CustomNumberFormatter.formattedByThreeZero($0) }
     }
 
-    var isAbleToPush: Bool {
-      return textFieldText != ""
-    }
+    var isAbleToPush: Bool = false
 
     init(createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
@@ -57,20 +59,72 @@ struct CreateEnvelopePrice {
   @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedGuidValue(String)
+    case tappedGuidValue(Int64)
     case changeText(String)
+    case tappedNextButton
+  }
+
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      state.isFocused = true
+      return .none
+
+    case let .tappedGuidValue(value):
+      return .send(.inner(.addPrice(value)))
+
+    case let .changeText(value):
+      if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
+        state.wrappedText = formattedValue
+      }
+      state.textFieldText = value
+      let pushable = RegexManager.isValidPrice(value)
+      let isShowToast = ToastRegexManager.isShowToastByPrice(value)
+      state.isAbleToPush = pushable
+      return isShowToast ?
+        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다.")))) : .none
+
+    case .tappedNextButton:
+      return .send(.inner(.push))
+    }
   }
 
   enum InnerAction: Equatable {
     case convertPrice(String)
     case push
+    case addPrice(Int64)
+  }
+
+  func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
+    switch action {
+    case let .convertPrice(value):
+      state.textFieldText = value
+      return .none
+
+    case .push:
+      if let amount = Int64(state.textFieldText) {
+        CreateEnvelopeRequestShared.setAmount(amount)
+      }
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
+      return .none
+
+    case let .addPrice(value):
+      if state.textFieldText.isEmpty {
+        state.textFieldText = "0"
+      }
+      if let currentPrice = Int64(state.textFieldText) {
+        let addedValue = currentPrice + value
+        return .send(.view(.changeText(addedValue.description)))
+      }
+      return .none
+    }
   }
 
   enum AsyncAction: Equatable {}
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case nextButton(CreateEnvelopeBottomOfNextButton.Action)
     case toast(SSToastReducer.Action)
   }
 
@@ -81,63 +135,19 @@ struct CreateEnvelopePrice {
   var body: some Reducer<State, Action> {
     BindingReducer()
 
-    Scope(state: \.nextButton, action: \.scope.nextButton) {
-      CreateEnvelopeBottomOfNextButton()
-    }
-
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
     }
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        state.isFocused = true
-        return .none
-
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
       case .delegate(.dismissCreateFlow):
         return .none
       case .binding:
-        return .none
-
-      case let .view(.tappedGuidValue(value)):
-        return .send(.view(.changeText(value)))
-
-      case .scope(.nextButton(.view(.tappedNextButton))):
-        return .run { send in
-          await send(.inner(.push))
-        }
-
-      case .scope(.nextButton):
-        return .none
-
-      case let .inner(.convertPrice(value)):
-        state.textFieldText = value
-        return .none
-
-      case let .view(.changeText(value)):
-        if let formattedValue = CustomNumberFormatter.formattedByThreeZero(value) {
-          state.wrappedText = formattedValue
-        }
-        state.textFieldText = value
-        // Logic to Pushable
-        // 자리 보다 크고 10자리 보다 작아야 함
-        let pushable = value.count < 10 && value.count > 4
-        let isShowToastMessage = value.count > 10
-        return .run { send in
-          if isShowToastMessage {
-            await send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다."))))
-          }
-          await send(.scope(.nextButton(.delegate(.isAbleToPush(pushable)))))
-        }
-
-      case .inner(.push):
-        if let amount = Int64(state.textFieldText) {
-          CreateEnvelopeRequestShared.setAmount(amount)
-        }
-
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
         return .none
 
       case .scope(.toast):
@@ -146,3 +156,7 @@ struct CreateEnvelopePrice {
     }
   }
 }
+
+// MARK: FeatureViewAction, FeatureInnerAction
+
+extension CreateEnvelopePrice: FeatureViewAction, FeatureInnerAction {}

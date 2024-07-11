@@ -19,22 +19,6 @@ struct CreateEnvelopeDateView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeNextButton() -> some View {
-    SSButton(
-      .init(
-        size: .mh60,
-        status: store.isInitialStateOfDate ? .inactive : .active,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )
-    ) {
-      store.send(.view(.tappedNextButton))
-    }
-  }
-
-  @ViewBuilder
   private func makeContentView() -> some View {
     VStack(alignment: .leading) {
       Spacer()
@@ -97,10 +81,14 @@ struct CreateEnvelopeDateView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
-        makeNextButton()
       }
     }
-    .modifier(SSDateBottomSheetModifier(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)))
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
+    }
+    .showDatePickerWithNextButton(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
+      store.sendViewAction(.tappedNextButton)
+    }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

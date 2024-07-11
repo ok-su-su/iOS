@@ -60,11 +60,6 @@ struct CreateEnvelopeAdditionalSectionView: View {
   }
 
   @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(store: store.scope(state: \.nextButton, action: \.scope.nextButton))
-  }
-
-  @ViewBuilder
   private func makeAddCustomRelation() -> some View {}
 
   var body: some View {
@@ -74,9 +69,10 @@ struct CreateEnvelopeAdditionalSectionView: View {
         .ignoresSafeArea()
       VStack {
         makeContentView()
-
-        makeNextButton()
       }
+    }
+    .nextButton(store.pushable) {
+      store.sendViewAction(.tappedNextButton)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))

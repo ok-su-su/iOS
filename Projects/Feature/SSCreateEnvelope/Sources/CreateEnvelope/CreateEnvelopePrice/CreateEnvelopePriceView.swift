@@ -26,16 +26,33 @@ struct CreateEnvelopePriceView: View {
 
   // MARK: Content
 
+  @ViewBuilder
+  private func makeTextFieldWrapperView() -> some View {
+    // Visiable TextField
+    let currentText = store.wrappedText + "원"
+    Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : currentText)
+      .multilineTextAlignment(.leading)
+      .modifier(SSTypoModifier(.title_xl))
+      .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
+      .frame(alignment: .leading)
+      .background(SSColor.gray15)
+      .onTapGesture {
+        isFocused = true
+      }
+  }
+
   // TODO: TextField어떻게 만들었는지 Trouble shooting 글 작성
   @ViewBuilder
   private func makeTextField() -> some View {
-    ZStack {
+    ZStack(alignment: .topLeading) {
       // invisiableTextField
       TextField(
         "",
         text: $store.textFieldText.sending(\.view.changeText),
-        prompt: nil
+        prompt: nil,
+        axis: .vertical
       )
+      .tint(.clear)
       .foregroundStyle(Color.clear)
       .keyboardType(.numberPad)
       .modifier(SSTypoModifier(.title_xl))
@@ -46,24 +63,9 @@ struct CreateEnvelopePriceView: View {
       .onChange(of: store.isFocused) { _, newValue in
         isFocused = newValue
       }
-
-      // Visiable TextField
-      HStack(spacing: 0) {
-        Text(store.textFieldText.isEmpty ? "금액을 입력해 주세요" : store.wrappedText)
-          .modifier(SSTypoModifier(.title_xl))
-          .foregroundStyle(store.textFieldText.isEmpty ? SSColor.gray30 : SSColor.gray100)
-
-        if !store.textFieldText.isEmpty {
-          Text("원")
-            .modifier(SSTypoModifier(.title_xl))
-            .foregroundStyle(SSColor.gray100)
-        }
-        Spacer()
-      }
-      .frame(maxWidth: .infinity, maxHeight: 46)
-      .background(SSColor.gray15)
+      // wrapping View
+      makeTextFieldWrapperView()
     }
-    .frame(height: 44)
   }
 
   @ViewBuilder
@@ -99,7 +101,7 @@ struct CreateEnvelopePriceView: View {
               buttonText: "\(item ?? price.description)원"
             )
           ) {
-            store.send(.view(.tappedGuidValue(price.description)))
+            store.sendViewAction(.tappedGuidValue(price))
           }
         }
       }
@@ -109,24 +111,20 @@ struct CreateEnvelopePriceView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  @ViewBuilder
-  private func makeNextButton() -> some View {
-    CreateEnvelopeBottomOfNextButtonView(
-      store: store.scope(state: \.nextButton, action: \.scope.nextButton)
-    )
-  }
-
   var body: some View {
     ZStack {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
 
       VStack(alignment: .leading) {
         makeContentView()
-          .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
-        makeNextButton()
       }
+      .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
+    }
+    .nextButton(store.isAbleToPush) {
+      store.sendViewAction(.tappedNextButton)
     }
     .navigationBarBackButtonHidden()
     .onAppear {
