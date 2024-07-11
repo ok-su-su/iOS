@@ -34,7 +34,8 @@ struct CreateEnvelopePriceView: View {
       TextField(
         "",
         text: $store.textFieldText.sending(\.view.changeText),
-        prompt: nil
+        prompt: nil,
+        axis: .vertical
       )
       .foregroundStyle(Color.clear)
       .keyboardType(.numberPad)
@@ -62,6 +63,9 @@ struct CreateEnvelopePriceView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray15)
+    }
+    .onTapGesture {
+      isFocused = true
     }
     .frame(height: 44)
   }
@@ -114,6 +118,7 @@ struct CreateEnvelopePriceView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
 
       VStack(alignment: .leading) {
         makeContentView()

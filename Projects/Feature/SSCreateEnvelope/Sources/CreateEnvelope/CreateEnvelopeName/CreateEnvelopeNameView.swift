@@ -80,8 +80,12 @@ struct CreateEnvelopeNameView: View {
       TextField(
         "",
         text: $store.textFieldText.sending(\.view.changeText),
-        prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30)
+        prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30),
+        axis: .vertical
       )
+      .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
+        store.sendViewAction(.changeText(text))
+      }
       .submitLabel(.done)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
