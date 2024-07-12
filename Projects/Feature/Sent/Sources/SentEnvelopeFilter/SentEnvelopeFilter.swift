@@ -27,8 +27,8 @@ struct SentEnvelopeFilter {
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
-    var sliderStartValue: Double = 0
-    var sliderEndValue: Double = 100_000
+    var sliderStartValue: Int64 = 0
+    var sliderEndValue: Int64 = 100_000
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
@@ -53,6 +53,8 @@ struct SentEnvelopeFilter {
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
     case getFriendsDataByName(String?)
+    case getMaximumSentValue
+    case updateMaximumSentValue(Int64)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -78,6 +80,15 @@ struct SentEnvelopeFilter {
 
     Reduce { state, action in
       switch action {
+      case let .updateMaximumSentValue(val):
+        state.sliderEndValue = val
+        return .none
+
+      case .getMaximumSentValue:
+        return .run { send in
+          let maximumValue = try await network.getMaximumSentValue()
+          await send(.updateMaximumSentValue(maximumValue))
+        }
       case .header(.tappedDismissButton):
         return .run { send in
           await send(.reset)
@@ -96,7 +107,6 @@ struct SentEnvelopeFilter {
         return .none
 
       case let .onAppear(isAppear):
-        os_log("필터 뷰 생겼음!")
         if state.isOnAppear {
           return .none
         }
@@ -105,6 +115,8 @@ struct SentEnvelopeFilter {
           await send(.isLoading(true))
           let data = try await network.getInitialData()
           await send(.update(data))
+
+          await send(.getMaximumSentValue)
           await send(.isLoading(false))
         }
 

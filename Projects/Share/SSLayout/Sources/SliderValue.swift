@@ -7,7 +7,7 @@ import SwiftUI
 /// SliderValue to restrict double range: 0.0 to 1.0
 @propertyWrapper
 public struct SliderValue {
-  var value: Double
+  private var value: Double
 
   public init(wrappedValue: Double) {
     value = wrappedValue
@@ -24,84 +24,25 @@ public struct SliderValue {
 public class SliderHandle: ObservableObject {
   var isLeftHandle = false
   weak var otherSlide: SliderHandle? = nil
-  /// Slider Size
-  let sliderWidth: CGFloat
-  let sliderHeight: CGFloat
 
   /// Slider Range
-  let sliderValueStart: Double
-  let sliderValueRange: Double
-
-  /// Slider Handle
-  var diameter: CGFloat = 24
-  var startLocation: CGPoint
+  let sliderValueStart: Double = 0
+  let sliderValueRange: Double = 1
 
   /// Current Value
   @Published public var currentPercentage: SliderValue
 
   /// Slider Button Location
   @Published var onDrag: Bool
-  @Published var currentLocation: CGPoint
 
-  init(sliderWidth: CGFloat, sliderHeight: CGFloat, sliderValueStart: Double, sliderValueEnd: Double, startPercentage: SliderValue) {
-    self.sliderWidth = sliderWidth
-    self.sliderHeight = sliderHeight
-
-    self.sliderValueStart = sliderValueStart
-    sliderValueRange = sliderValueEnd - sliderValueStart
-
-    let startLocation = CGPoint(x: (CGFloat(startPercentage.wrappedValue) / 1.0) * sliderWidth, y: sliderHeight / 2)
-
-    self.startLocation = startLocation
-    currentLocation = startLocation
+  init(startPercentage: SliderValue) {
     currentPercentage = startPercentage
 
     onDrag = false
   }
 
-  lazy var sliderDragGesture: _EndedGesture<_ChangedGesture<DragGesture>> = DragGesture()
-    .onChanged { value in
-      self.onDrag = true
-
-      let dragLocation = value.location
-
-      // Restrict possible drag area
-      self.restrictSliderBtnLocation(dragLocation)
-
-      // Get current value
-      self.currentPercentage.wrappedValue = Double(self.currentLocation.x / self.sliderWidth)
-
-    }.onEnded { _ in
-      self.onDrag = false
-    }
-
-  private func restrictSliderBtnLocation(_ dragLocation: CGPoint) {
-    // 왼쪽 핸들 오른쪽 핸들 분기
-    if (isLeftHandle && dragLocation.x > otherSlide!.currentLocation.x) ||
-      (!isLeftHandle && dragLocation.x < otherSlide!.currentLocation.x) {
-      return
-    }
-
-    if dragLocation.x > CGPoint.zero.x && dragLocation.x < sliderWidth {
-      calcSliderBtnLocation(dragLocation)
-    }
-  }
-
-  private func calcSliderBtnLocation(_ dragLocation: CGPoint) {
-    if dragLocation.y != sliderHeight / 2 {
-      currentLocation = CGPoint(x: dragLocation.x, y: sliderHeight / 2)
-    } else {
-      currentLocation = dragLocation
-    }
-  }
-
-  /// Current Value
-  var currentValue: Double {
-    return sliderValueStart + currentPercentage.wrappedValue * sliderValueRange
-  }
-
-  public var currentValueBy1000: Int64 {
-    return Int64(currentValue) / 1000 * 1000
+  func updateCurrentPercentage(_ val: Double) {
+    currentPercentage.wrappedValue = val
   }
 }
 
@@ -109,12 +50,11 @@ public class SliderHandle: ObservableObject {
 
 public class CustomSlider: ObservableObject {
   /// Slider Size
-  var width: CGFloat
   let lineWidth: CGFloat = 8
 
   /// Slider value range from valueStart to valueEnd
-  var valueStart: Double
-  var valueEnd: Double
+  var valueStart: Double = 0
+  var valueEnd: Double = 1
 
   /// Slider Handle
   @Published public var highHandle: SliderHandle
@@ -124,57 +64,30 @@ public class CustomSlider: ObservableObject {
   @SliderValue var highHandleStartPercentage = 1.0
   @SliderValue var lowHandleStartPercentage = 0.0
 
+  public var currentLowHandlePercentage: Double {
+    lowHandle.currentPercentage.wrappedValue
+  }
+
+  public var currentHighHandlePercentage: Double {
+    highHandle.currentPercentage.wrappedValue
+  }
+
+  public var isInitialState: Bool {
+    currentLowHandlePercentage == lowHandleStartPercentage &&
+      currentHighHandlePercentage == highHandleStartPercentage
+  }
+
   var anyCancellableHigh: AnyCancellable?
   var anyCancellableLow: AnyCancellable?
 
-  public func updateSlider(start: Double, end: Double) {
-    valueStart = start
-    valueEnd = end
-
+  public init() {
     highHandle = SliderHandle(
-      sliderWidth: width,
-      sliderHeight: lineWidth,
-      sliderValueStart: valueStart,
-      sliderValueEnd: valueEnd,
       startPercentage: _highHandleStartPercentage
     )
 
     lowHandle = SliderHandle(
-      sliderWidth: width,
-      sliderHeight: lineWidth,
-      sliderValueStart: valueStart,
-      sliderValueEnd: valueEnd,
       startPercentage: _lowHandleStartPercentage
     )
-  }
-
-  public init(start: Double, end: Double, width: CGFloat = 300) {
-    self.width = width
-    valueStart = start
-    valueEnd = end
-
-    highHandle = SliderHandle(
-      sliderWidth: width,
-      sliderHeight: lineWidth,
-      sliderValueStart: valueStart,
-      sliderValueEnd: valueEnd,
-      startPercentage: _highHandleStartPercentage
-    )
-
-    lowHandle = SliderHandle(
-      sliderWidth: width,
-      sliderHeight: lineWidth,
-      sliderValueStart: valueStart,
-      sliderValueEnd: valueEnd,
-      startPercentage: _lowHandleStartPercentage
-    )
-
-    // MARK: Dependency Injection Other Handle
-
-    highHandle.otherSlide = lowHandle
-    highHandle.isLeftHandle = false
-    lowHandle.otherSlide = highHandle
-    lowHandle.isLeftHandle = true
 
     anyCancellableHigh = highHandle.objectWillChange.sink { _ in
       self.objectWillChange.send()
@@ -189,20 +102,9 @@ public class CustomSlider: ObservableObject {
     return String(format: "%.2f", highHandle.currentPercentage.wrappedValue - lowHandle.currentPercentage.wrappedValue)
   }
 
-  /// Value between high and low handle
-  var valueBetween: String {
-    return String(format: "%.2f", highHandle.currentValue - lowHandle.currentValue)
-  }
-
-  public func isInitialState() -> Bool {
-    return highHandle.currentValueBy1000 == 100_000 && lowHandle.currentValueBy1000 == 0
-  }
-
   public func reset() {
     highHandle.currentPercentage.wrappedValue = 1
-    highHandle.currentLocation = highHandle.startLocation
 
     lowHandle.currentPercentage.wrappedValue = 0
-    lowHandle.currentLocation = lowHandle.startLocation
   }
 }

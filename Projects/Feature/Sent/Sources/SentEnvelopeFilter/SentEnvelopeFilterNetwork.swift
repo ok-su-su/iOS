@@ -27,6 +27,11 @@ struct SentEnvelopeFilterNetwork {
     let data: SearchFriendsResponseDTO = try await provider.request(.findByName(name))
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
+
+  func getMaximumSentValue() async throws -> Int64 {
+    let data: SearchFilterEnvelopeResponse = try await provider.request(.getFilterConfig)
+    return data.maxSentAmount
+  }
 }
 
 extension DependencyValues {
@@ -50,9 +55,18 @@ extension SentEnvelopeFilterNetwork: DependencyKey, Equatable {
     case findByName(String)
     case findByRange(lowest: Int, highest: Int)
     case find(name: String, lowest: Int, highest: Int)
+    case getFilterConfig
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes/friend-statistics" }
+    var path: String {
+      switch self {
+      case .getFilterConfig:
+        "envelopes/configs/search-filter"
+      default:
+        "envelopes/friend-statistics"
+      }
+    }
+
     var method: Moya.Method { .get }
     var task: Moya.Task {
       switch self {
@@ -71,6 +85,8 @@ extension SentEnvelopeFilterNetwork: DependencyKey, Equatable {
           ],
           encoding: URLEncoding.default
         )
+      case .getFilterConfig:
+        .requestPlain
       }
     }
   }

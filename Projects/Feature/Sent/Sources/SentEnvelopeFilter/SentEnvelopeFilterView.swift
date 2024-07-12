@@ -21,7 +21,7 @@ struct SentEnvelopeFilterView: View {
   var showSelectedSliderButton: Bool = false
 
   @ObservedObject
-  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
+  var sliderProperty: CustomSlider = .init()
 
   // MARK: Content
 
@@ -58,19 +58,13 @@ struct SentEnvelopeFilterView: View {
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(SSColor.gray100)
       VStack(alignment: .leading, spacing: 8) {
-        Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
+        Text(sliderRangeText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
         HStack(spacing: 0) {
           // TODO: View고치기
           SliderView(slider: sliderProperty)
-            .onChange(of: store.sliderEndValue) { _, newValue in
-              sliderProperty.updateSlider(start: store.sliderStartValue, end: newValue)
-            }
-            .onChange(of: store.sliderStartValue) { _, newValue in
-              sliderProperty.updateSlider(start: newValue, end: store.sliderEndValue)
-            }
         }
       }
     }
@@ -81,7 +75,7 @@ struct SentEnvelopeFilterView: View {
   private func makeBottomButtonOfDeselectable() -> some View {
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
       // Slider ResetButton
-      makeSliderFilterButton()
+//      makeSliderFilterButton()
 
       // FilterPeople ResetButton
       ForEach(0 ..< store.filterHelper.selectedPerson.count, id: \.self) { index in
@@ -138,18 +132,18 @@ struct SentEnvelopeFilterView: View {
       // MARK: - CustomSLider가 Reducer가 아니라 생명주기를 컨트롤하지 못하는 문제가 있습니다.
 
       // 따라서 ObservedObject를 활용하여 해결했습니다. 차후 빠르게 Reducer를 활용하는 slider를 만들겠습니다.
-      store.send(
-        .tappedConfirmButton(
-          lowest: sliderProperty.lowHandle.currentValueBy1000,
-          highest: sliderProperty.highHandle.currentValueBy1000
-        )
-      )
+//      store.send(
+//        .tappedConfirmButton(
+//          lowest: sliderProperty.lowHandle.currentValueBy1000,
+//          highest: sliderProperty.highHandle.currentValueBy1000
+//        )
+//      )
     }
   }
 
   @ViewBuilder
   private func makeSliderFilterButton() -> some View {
-    if !sliderProperty.isInitialState() {
+    if !sliderProperty.isInitialState {
       SSButton(
         .init(
           size: .xsh28,
@@ -157,7 +151,7 @@ struct SentEnvelopeFilterView: View {
           style: .filled,
           color: .orange,
           rightIcon: .icon(SSImage.commonDeleteWhite),
-          buttonText: "\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원"
+          buttonText: sliderRangeText
         )) {
           sliderProperty.reset()
         }
@@ -211,6 +205,12 @@ struct SentEnvelopeFilterView: View {
     .onAppear {
       store.send(.onAppear(true))
     }
+  }
+
+  var minimumTextValue: Int64 { Int64(Double(store.sliderStartValue) * sliderProperty.currentLowHandlePercentage) }
+  var maximumTextValue: Int64 { Int64(Double(store.sliderEndValue) * sliderProperty.currentHighHandlePercentage) }
+  var sliderRangeText: String {
+    "\(minimumTextValue)원 ~ \(maximumTextValue)원"
   }
 
   // MARK: Init
