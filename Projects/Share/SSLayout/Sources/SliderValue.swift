@@ -49,7 +49,11 @@ public class SliderHandle: ObservableObject {
 
 // MARK: - CustomSlider
 
-public class CustomSlider: ObservableObject {
+public class CustomSlider: ObservableObject, Equatable {
+  public static func == (lhs: CustomSlider, rhs: CustomSlider) -> Bool {
+    lhs === rhs
+  }
+
   /// Slider Size
   let lineWidth: CGFloat = 8
 

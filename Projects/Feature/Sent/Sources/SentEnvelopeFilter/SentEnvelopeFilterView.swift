@@ -30,7 +30,7 @@ struct SentEnvelopeFilterView: View {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(sentPeople) { person in
           let isSelected = store.filterHelper.isSelected(person)
-          SSButtonWithState(
+          SSButton(
             .init(
               size: .xsh28,
               status: isSelected ? .active : .inactive,
@@ -46,10 +46,10 @@ struct SentEnvelopeFilterView: View {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
         ForEach(filteredPeople) { person in
           let isSelected = store.filterHelper.isSelected(person)
-          SSButtonWithState(
+          SSButton(
             .init(
-              size: .sh48,
-              status: isSelected ? .inactive : .active,
+              size: .xsh28,
+              status: isSelected ? .active : .inactive,
               style: .lined,
               color: .black,
               buttonText: person.name
@@ -74,7 +74,6 @@ struct SentEnvelopeFilterView: View {
           .foregroundStyle(SSColor.gray100)
 
         HStack(spacing: 0) {
-          // TODO: View고치기
           SliderView(slider: store.sliderProperty)
         }
       }
@@ -136,15 +135,7 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makeConfirmButton() -> some View {
     SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
-      // MARK: - CustomSLider가 Reducer가 아니라 생명주기를 컨트롤하지 못하는 문제가 있습니다.
-
-      // 따라서 ObservedObject를 활용하여 해결했습니다. 차후 빠르게 Reducer를 활용하는 slider를 만들겠습니다.
-//      store.send(
-//        .tappedConfirmButton(
-//          lowest: sliderProperty.lowHandle.currentValueBy1000,
-//          highest: sliderProperty.highHandle.currentValueBy1000
-//        )
-//      )
+      store.send(.tappedConfirmButton)
     }
   }
 
@@ -160,7 +151,7 @@ struct SentEnvelopeFilterView: View {
           rightIcon: .icon(SSImage.commonDeleteWhite),
           buttonText: store.sliderRangeText
         )) {
-//          sliderProperty.reset()
+          store.send(.tappedSliderValueResetButton)
         }
     }
   }

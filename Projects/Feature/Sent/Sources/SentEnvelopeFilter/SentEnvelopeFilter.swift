@@ -24,17 +24,17 @@ struct SentEnvelopeFilter {
 
     // MARK: - Scope
 
-    @Shared var sliderProperty: CustomSlider
+    var sliderProperty: CustomSlider = .init()
 
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
     var sliderStartValue: Int64 = 0
-    var sliderEndValue: Int64 = 100_000
+    var sliderEndValue: Int64 = 0
+    var curVoid: Void?
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
-      _sliderProperty = .init(.init())
     }
 
     var filterByTextField: [SentPerson] {
@@ -44,14 +44,19 @@ struct SentEnvelopeFilter {
       return filterHelper.sentPeople.filter { $0.name.contains(regex) }
     }
 
-    var minimumTextValue: Int64 { Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000 }
-    var maximumTextValue: Int64 { Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000 }
+    var minimumTextValue: Int64 = 0
+    var maximumTextValue: Int64 = 0
     var sliderRangeText: String {
       "\(minimumTextValue)원 ~ \(maximumTextValue)원"
     }
 
     var isInitialState: Bool {
-      false
+      return minimumTextValue == 0 && maximumTextValue == sliderEndValue
+    }
+
+    mutating func updateSliderValueProperty() {
+      minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
+      maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
     }
   }
 
@@ -60,13 +65,15 @@ struct SentEnvelopeFilter {
     case onAppear(Bool)
     case tappedPerson(SentPerson)
     case reset
-    case tappedConfirmButton(lowest: Int64? = nil, highest: Int64? = nil)
+    case tappedConfirmButton
     case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
     case getFriendsDataByName(String?)
     case getMaximumSentValue
     case updateMaximumSentValue(Int64)
+    case changedSliderProperty
+    case tappedSliderValueResetButton
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -92,8 +99,13 @@ struct SentEnvelopeFilter {
 
     Reduce { state, action in
       switch action {
+      case .tappedSliderValueResetButton:
+        state.sliderProperty.reset()
+        state.updateSliderValueProperty()
+        return .none
       case let .updateMaximumSentValue(val):
         state.sliderEndValue = val
+        state.updateSliderValueProperty()
         return .none
 
       case .getMaximumSentValue:
@@ -115,19 +127,32 @@ struct SentEnvelopeFilter {
         state.sliderProperty.reset()
         return .none
 
+      case .changedSliderProperty:
+        state.updateSliderValueProperty()
+        return .none
+
       case let .onAppear(isAppear):
         if state.isOnAppear {
           return .none
         }
         state.isOnAppear = isAppear
-        return .run { send in
-          await send(.isLoading(true))
-          let data = try await network.getInitialData()
-          await send(.update(data))
+        return .merge(
+          .run { send in
+            await send(.isLoading(true))
+            let data = try await network.getInitialData()
+            await send(.update(data))
 
-          await send(.getMaximumSentValue)
-          await send(.isLoading(false))
-        }
+            await send(.getMaximumSentValue)
+            await send(.isLoading(false))
+          },
+          .publisher {
+            state.sliderProperty
+              .objectWillChange
+              .map { _ in
+                return .changedSliderProperty
+              }
+          }
+        )
 
       case .header:
         return .none
@@ -143,13 +168,11 @@ struct SentEnvelopeFilter {
       case .customTextField:
         return .none
 
-      case let .tappedConfirmButton(lowestVal, highestVal):
-        // 만약 입력된 값이 초기값과 똑같지 않을 경우(Slider에 변화가 있을 경우)
-        // TODO: Slider적용하는 기능 생성
-//        if !(lowestVal == Int64(state.sliderStartValue) && highestVal == Int64(state.sliderEndValue)) {
-//          state.filterHelper.lowestAmount = lowestVal
-//          state.filterHelper.highestAmount = highestVal
-//        }
+      case .tappedConfirmButton:
+        if !state.isInitialState {
+          state.filterHelper.lowestAmount = state.minimumTextValue
+          state.filterHelper.highestAmount = state.maximumTextValue
+        }
         return .run { _ in await dismiss() }
 
       case let .isLoading(loading):
