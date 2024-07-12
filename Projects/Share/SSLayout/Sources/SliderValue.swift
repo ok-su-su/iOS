@@ -43,6 +43,7 @@ public class SliderHandle: ObservableObject {
 
   func updateCurrentPercentage(_ val: Double) {
     currentPercentage.wrappedValue = val
+    objectWillChange.send()
   }
 }
 

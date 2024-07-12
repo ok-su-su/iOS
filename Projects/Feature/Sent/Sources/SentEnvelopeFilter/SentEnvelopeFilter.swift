@@ -24,6 +24,8 @@ struct SentEnvelopeFilter {
 
     // MARK: - Scope
 
+    @Shared var sliderProperty: CustomSlider
+
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
@@ -32,6 +34,7 @@ struct SentEnvelopeFilter {
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
+      _sliderProperty = .init(.init())
     }
 
     var filterByTextField: [SentPerson] {
@@ -40,13 +43,22 @@ struct SentEnvelopeFilter {
       }
       return filterHelper.sentPeople.filter { $0.name.contains(regex) }
     }
+
+    var minimumTextValue: Int64 { Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000 }
+    var maximumTextValue: Int64 { Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000 }
+    var sliderRangeText: String {
+      "\(minimumTextValue)원 ~ \(maximumTextValue)원"
+    }
+
+    var isInitialState: Bool {
+      false
+    }
   }
 
   enum Action: Equatable {
     case isLoading(Bool)
     case onAppear(Bool)
-    case tappedPerson(Int64)
-    case tappedSelectedPerson(Int64)
+    case tappedPerson(SentPerson)
     case reset
     case tappedConfirmButton(lowest: Int64? = nil, highest: Int64? = nil)
     case header(HeaderViewFeature.Action)
@@ -94,16 +106,13 @@ struct SentEnvelopeFilter {
           await send(.reset)
           await dismiss()
         }
-      case let .tappedPerson(ind):
-        state.filterHelper.select(selectedId: ind)
-        return .none
-
-      case let .tappedSelectedPerson(ind):
-        state.filterHelper.select(selectedId: ind)
+      case let .tappedPerson(person):
+        state.filterHelper.select(sentPerson: person)
         return .none
 
       case .reset:
         state.filterHelper.reset()
+        state.sliderProperty.reset()
         return .none
 
       case let .onAppear(isAppear):
@@ -128,7 +137,6 @@ struct SentEnvelopeFilter {
         // TODO: Throttle을 호출할 떄 주의점에 대해서 블로그 포스팅 하기
         if NameRegexManager.isValid(name: text) {
           return .send(.getFriendsDataByName(text))
-            .throttle(id: ThrottleID.searchName, for: .seconds(2), scheduler: mainQueue, latest: true)
         }
         return .none
 
@@ -137,10 +145,11 @@ struct SentEnvelopeFilter {
 
       case let .tappedConfirmButton(lowestVal, highestVal):
         // 만약 입력된 값이 초기값과 똑같지 않을 경우(Slider에 변화가 있을 경우)
-        if !(lowestVal == Int64(state.sliderStartValue) && highestVal == Int64(state.sliderEndValue)) {
-          state.filterHelper.lowestAmount = lowestVal
-          state.filterHelper.highestAmount = highestVal
-        }
+        // TODO: Slider적용하는 기능 생성
+//        if !(lowestVal == Int64(state.sliderStartValue) && highestVal == Int64(state.sliderEndValue)) {
+//          state.filterHelper.lowestAmount = lowestVal
+//          state.filterHelper.highestAmount = highestVal
+//        }
         return .run { _ in await dismiss() }
 
       case let .isLoading(loading):

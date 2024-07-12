@@ -14,6 +14,8 @@ import SwiftUI
 
 public struct SliderView: View {
   @ObservedObject var slider: CustomSlider
+  let numberOfIntervals: Int = 100
+
   public init(slider: CustomSlider) {
     self.slider = slider
   }
