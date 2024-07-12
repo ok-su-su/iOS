@@ -25,11 +25,13 @@ struct EnvelopeView: View {
         .padding(.trailing, Metrics.textAndBadgeSpacing)
         .foregroundStyle(SSColor.gray100)
       // 전체 금액
-      SmallBadge(property: .init(
-        size: .small,
-        badgeString: store.envelopeProperty.totalPriceText,
-        badgeColor: .gray20
-      ))
+      SSBadge(
+        property: .init(
+          size: .small,
+          badgeString: store.envelopeProperty.totalPriceText,
+          badgeColor: .gray20
+        )
+      )
       Spacer()
 
       // DetailView Button
@@ -59,7 +61,7 @@ struct EnvelopeView: View {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeBackArrow
-          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray90))
+          SSBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray90))
           Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray100)
@@ -73,7 +75,7 @@ struct EnvelopeView: View {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeForwardArrow
-          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray40)) // TODO: 수정
+          SSBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray40))
           Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray50)
@@ -168,6 +170,9 @@ struct EnvelopeView: View {
   var body: some View {
     VStack(spacing: 0) {
       makeEnvelopeTotalView()
+        .onTapGesture {
+          store.send(.tappedFullContentOfEnvelopeButton)
+        }
       Spacer()
         .frame(height: 8)
       makeEnvelopeDetailView()

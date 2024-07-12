@@ -30,7 +30,7 @@ struct EnvelopeProperty: Equatable, Hashable, Identifiable {
   }
 
   var receivedSubSentValue: Int64 {
-    return totalSentPrice - totalReceivedPrice
+    return totalReceivedPrice - totalSentPrice
   }
 
   /// 봉투 세부 사항을 보여줍니다.
