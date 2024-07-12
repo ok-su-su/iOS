@@ -63,11 +63,11 @@ public struct SpecificEnvelopeEditView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray15)
+      .onTapGesture {
+        focus = true
+      }
     }
     .frame(height: 44)
-    .onTapGesture {
-      focus = true
-    }
   }
 
   @ViewBuilder

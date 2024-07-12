@@ -152,9 +152,7 @@ struct LedgerDetailFilterView: View {
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
-        HStack(spacing: 0) {
-          SliderView(slider: store.sliderProperty)
-        }
+        SliderView(slider: store.sliderProperty)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

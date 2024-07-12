@@ -15,6 +15,7 @@ import SwiftUI
 public struct SliderView: View {
   @ObservedObject var slider: CustomSlider
   let numberOfIntervals: Int = 100
+  var sliderHandlerBorderSize: CGFloat = 8
 
   public init(slider: CustomSlider) {
     self.slider = slider
@@ -39,7 +40,7 @@ public struct SliderView: View {
             // Low Handle
             SliderHandleView(handle: slider.lowHandle)
               .position(
-                x: slider.lowHandle.currentPercentage.wrappedValue * width,
+                x: sliderHandlerBorderSize + slider.lowHandle.currentPercentage.wrappedValue * width,
                 y: midHeight
               )
               .highPriorityGesture(
@@ -53,7 +54,7 @@ public struct SliderView: View {
 
             SliderHandleView(handle: slider.highHandle)
               .position(
-                x: slider.highHandle.currentPercentage.wrappedValue * width,
+                x: slider.highHandle.currentPercentage.wrappedValue * width - sliderHandlerBorderSize,
                 y: midHeight
               )
               .highPriorityGesture(
@@ -67,6 +68,7 @@ public struct SliderView: View {
           }
         }
       )
+      .frame(maxWidth: .infinity, minHeight: 24)
   }
 }
 
