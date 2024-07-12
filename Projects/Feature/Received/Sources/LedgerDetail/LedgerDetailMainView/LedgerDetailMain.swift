@@ -228,7 +228,7 @@ struct LedgerDetailMain {
     case getEnvelopes
   }
 
-  func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
+  func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case .getLedgerDetailProperty:
       return .run { [id = state.ledgerID] send in

@@ -32,7 +32,7 @@ struct LedgerDetailMainView: View {
           .frame(width: 61, height: 24)
           .cornerRadius(4)
           .overlay {
-            Text("총 \(store.envelopeItems.count)개")
+            Text("총 \(store.ledgerProperty.totalCounts)개")
               .modifier(SSTypoModifier(.title_xxxs))
               .foregroundColor(SSColor.gray70)
           }
