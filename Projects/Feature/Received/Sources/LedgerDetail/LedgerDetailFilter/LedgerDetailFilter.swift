@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSLayout
 
 // MARK: - LedgerDetailFilter
 
@@ -22,9 +23,32 @@ struct LedgerDetailFilter {
     var prevProperty: LedgerDetailFilterProperty
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var isLoading = true
-    var sliderStartValue: Double = 0
-    var sliderEndValue: Double = 100_000
     var ledgerProperty = SharedContainer.getValue(LedgerDetailProperty.self)
+
+    var sliderProperty: CustomSlider = .init()
+    var sliderEndValue: Int64 = 100_000
+    var minimumTextValue: Int64 = 0
+    var maximumTextValue: Int64 = 0
+    var sliderRangeText: String {
+      "\(minimumTextValue)원 ~ \(maximumTextValue)원"
+    }
+
+    var isInitialState: Bool {
+      return minimumTextValue == 0 && maximumTextValue == sliderEndValue
+    }
+
+    var filterByTextField: [LedgerFilterItemProperty] {
+      guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
+        return []
+      }
+      return prevProperty.selectableItems.filter { $0.title.contains(regex) }
+    }
+
+    mutating func updateSliderValueProperty() {
+      minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
+      maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
+    }
+
     init(_ property: Shared<LedgerDetailFilterProperty>) {
       _property = property
       prevProperty = property.wrappedValue
@@ -45,18 +69,22 @@ struct LedgerDetailFilter {
     case tappedItem(LedgerFilterItemProperty)
     case changeTextField(String)
     case closeButtonTapped
-    case tappedConfirmButton(lowest: Int64, highest: Int64)
+    case tappedConfirmButton
     case reset
+    case tappedSliderResetButton
   }
 
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateItems([LedgerFilterItemProperty])
+    case updateMaximumReceivedValue(Int64)
+    case updateSliderPropertyItems
   }
 
   enum AsyncAction: Equatable {
     case searchInitialFriends
     case searchFriendsBy(name: String)
+    case getInitialMaxPriceValue
   }
 
   @CasePathable
@@ -75,7 +103,16 @@ struct LedgerDetailFilter {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.searchInitialFriends))
+      return .merge(
+        .send(.async(.searchInitialFriends)),
+        .send(.async(.getInitialMaxPriceValue)),
+        .publisher {
+          state
+            .sliderProperty
+            .objectWillChange
+            .map { _ in .inner(.updateSliderPropertyItems) }
+        }
+      )
 
     case let .tappedItem(item):
       state.property.select(item.id)
@@ -91,17 +128,22 @@ struct LedgerDetailFilter {
         await dismiss()
       }
 
-    case let .tappedConfirmButton(lowest, highest):
-      if !(lowest == Int64(state.sliderStartValue) && highest == Int64(state.sliderEndValue)) {
-        state.property.lowestAmount = lowest
-        state.property.highestAmount = highest
+    case .tappedConfirmButton:
+      if !state.isInitialState {
+        state.property.lowestAmount = state.minimumTextValue
+        state.property.highestAmount = state.maximumTextValue
       }
       return .run { _ in
         await dismiss()
       }
 
     case .reset:
+      state.sliderProperty.reset()
       state.property.reset()
+      return .none
+
+    case .tappedSliderResetButton:
+      state.sliderProperty.reset()
       return .none
     }
   }
@@ -123,6 +165,15 @@ struct LedgerDetailFilter {
       let uniqueItem = (state.property.selectableItems + items).uniqued()
       state.property.selectableItems = uniqueItem
       return .none
+
+    case let .updateMaximumReceivedValue(price):
+      state.sliderEndValue = price
+      state.updateSliderValueProperty()
+      return .none
+
+    case .updateSliderPropertyItems:
+      state.updateSliderValueProperty()
+      return .none
     }
   }
 
@@ -135,6 +186,7 @@ struct LedgerDetailFilter {
       }
       return .run { send in
         await send(.inner(.isLoading(true)))
+        // 초기 친구 검색
         let items = try await network.getInitialData(ledgerID: id)
         await send(.inner(.updateItems(items)))
         await send(.inner(.isLoading(false)))
@@ -144,18 +196,16 @@ struct LedgerDetailFilter {
       guard let id = state.ledgerProperty?.id else {
         return .none
       }
-      return .none
-//      return .run { send in
-//        await send(.inner(.isLoading(true)))
-//        let items = try await network.findFriendsBy(name: name, ledgerID: id)
-//        await send(.inner(.updateItems(items)))
-//        await send(.inner(.isLoading(false)))
-//      }
+      return .run { send in
+        let items = try await network.findFriendsBy(name: name, ledgerID: id)
+        await send(.inner(.updateItems(items)))
+      }
+    case .getInitialMaxPriceValue:
+      return .run { send in
+        let price = try await network.getMaximumSentValue()
+        await send(.inner(.updateMaximumReceivedValue(price)))
+      }
     }
-  }
-
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { _, _ in
-    return .none
   }
 
   var body: some Reducer<State, Action> {
@@ -173,8 +223,6 @@ struct LedgerDetailFilter {
         return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-      case let .delegate(currentAction):
-        return delegateAction(&state, currentAction)
       }
     }
   }
