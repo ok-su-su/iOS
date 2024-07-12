@@ -30,7 +30,7 @@ struct SentEnvelopeFilterNetwork {
 
   func getMaximumSentValue() async throws -> Int64 {
     let data: SearchFilterEnvelopeResponse = try await provider.request(.getFilterConfig)
-    return data.maxSentAmount
+    return max(data.maxSentAmount, data.maxReceivedAmount)
   }
 }
 
