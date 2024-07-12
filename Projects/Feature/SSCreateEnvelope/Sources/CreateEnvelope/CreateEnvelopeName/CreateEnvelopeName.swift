@@ -73,9 +73,9 @@ struct CreateEnvelopeName {
 
       let isShowToast = ToastRegexManager.isShowToastByName(text)
       return .merge(
-        isShowToast ? .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none,
-        !pushable ?
-          .none : .send(.async(.searchName(text))).throttle(id: ThrottleID.search, for: 0.5, scheduler: mainQueue, latest: true)
+        isShowToast ?
+          .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none,
+        .send(.async(.searchName(text)))
       )
 
     case .tappedNextButton:

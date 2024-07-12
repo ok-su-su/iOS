@@ -41,6 +41,9 @@ struct EnvelopeView: View {
         makeDetailPressButton()
       }
     }
+    .onTapGesture {
+      store.send(.tappedFullContentOfEnvelopeButton)
+    }
   }
 
   @ViewBuilder
@@ -61,7 +64,7 @@ struct EnvelopeView: View {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeBackArrow
-          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray90))
+          SSBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray90))
           Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray100)
@@ -75,7 +78,7 @@ struct EnvelopeView: View {
       HStack {
         HStack(spacing: 12) {
           SSImage.envelopeForwardArrow
-          SmallBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray40)) // TODO: 수정
+          SSBadge(property: .init(size: .small, badgeString: eventNameTextString, badgeColor: .gray40))
           Text(dateTextString)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray50)

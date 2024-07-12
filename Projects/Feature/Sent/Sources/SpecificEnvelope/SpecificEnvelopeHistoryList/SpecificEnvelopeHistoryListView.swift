@@ -33,7 +33,7 @@ struct SpecificEnvelopeHistoryListView: View {
           .foregroundStyle(SSColor.gray100)
           .modifier(SSTypoModifier(.title_m))
 
-        SSBadge( property: .init( size: .small, badgeString: sentSubReceivedTitleText, badgeColor: .gray30) )
+        SSBadge(property: .init(size: .small, badgeString: sentSubReceivedTitleText, badgeColor: .gray30))
 
         // MARK: ProgressView
 
