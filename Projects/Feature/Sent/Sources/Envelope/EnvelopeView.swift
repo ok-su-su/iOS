@@ -25,11 +25,13 @@ struct EnvelopeView: View {
         .padding(.trailing, Metrics.textAndBadgeSpacing)
         .foregroundStyle(SSColor.gray100)
       // 전체 금액
-      SmallBadge(property: .init(
-        size: .small,
-        badgeString: store.envelopeProperty.totalPriceText,
-        badgeColor: .gray20
-      ))
+      SSBadge(
+        property: .init(
+          size: .small,
+          badgeString: store.envelopeProperty.totalPriceText,
+          badgeColor: .gray20
+        )
+      )
       Spacer()
 
       // DetailView Button
