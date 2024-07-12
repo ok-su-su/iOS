@@ -29,8 +29,10 @@ struct LedgerDetailFilter {
     var sliderEndValue: Int64 = 100_000
     var minimumTextValue: Int64 = 0
     var maximumTextValue: Int64 = 0
+    var minimumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(minimumTextValue) ?? "0" }
+    var maximumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(minimumTextValue) ?? "0" }
     var sliderRangeText: String {
-      "\(minimumTextValue)원 ~ \(maximumTextValue)원"
+      "\(minimumTextValueString)원 ~ \(maximumTextValueString)원"
     }
 
     var isInitialState: Bool {
