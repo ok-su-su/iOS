@@ -20,9 +20,6 @@ struct LedgerDetailFilterView: View {
   @State
   var showSelectedSliderButton: Bool = false
 
-  @ObservedObject
-  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 32)
-
   // MARK: Init
 
   init(store: StoreOf<LedgerDetailFilter>) {
@@ -80,19 +77,45 @@ struct LedgerDetailFilterView: View {
   @ViewBuilder
   private func makeTopButtonSection() -> some View {
     WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-      ForEach(store.property.selectableItems.prefix(20)) { item in
-        let isSelected = store.property.isSelectedItems(id: item.id)
-        SSButton(
-          .init(
-            size: .xsh28,
-            status: isSelected ? .active : .inactive,
-            style: .lined,
-            color: .black,
-            buttonText: item.title
-          )
-        ) {
-          store.sendViewAction(.tappedItem(item))
-        }
+      if store.textFieldText.isEmpty {
+        makeTopNotFilteredTItems()
+      } else {
+        makeTopFilteredItems()
+      }
+    }
+  }
+
+  @ViewBuilder func makeTopNotFilteredTItems() -> some View {
+    ForEach(store.property.selectableItems.prefix(20)) { item in
+      let isSelected = store.property.isSelectedItems(id: item.id)
+      SSButton(
+        .init(
+          size: .xsh28,
+          status: isSelected ? .active : .inactive,
+          style: .lined,
+          color: .black,
+          buttonText: item.title
+        )
+      ) {
+        store.sendViewAction(.tappedItem(item))
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeTopFilteredItems() -> some View {
+    ForEach(store.filterByTextField.prefix(20)) { item in
+      let isSelected = store.property.isSelectedItems(id: item.id)
+      SSButton(
+        .init(
+          size: .xsh28,
+          status: isSelected ? .active : .inactive,
+          style: .lined,
+          color: .black,
+          buttonText: item.title
+        )
+      ) {
+        store.sendViewAction(.tappedItem(item))
       }
     }
   }
@@ -125,14 +148,11 @@ struct LedgerDetailFilterView: View {
         .foregroundStyle(SSColor.gray100)
 
       VStack(alignment: .leading, spacing: 8) {
-        Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
+        Text(store.sliderRangeText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
-        HStack(spacing: 0) {
-          // TODO: View고치기
-          SliderView(slider: sliderProperty)
-        }
+        SliderView(slider: store.sliderProperty)
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -144,12 +164,7 @@ struct LedgerDetailFilterView: View {
       // MARK: - CustomSLider가 Reducer가 아니라 생명주기를 컨트롤하지 못하는 문제가 있습니다.
 
       // 따라서 ObservedObject를 활용하여 해결했습니다. 차후 빠르게 Reducer를 활용하는 slider를 만들겠습니다.
-      store.sendViewAction(
-        .tappedConfirmButton(
-          lowest: sliderProperty.lowHandle.currentValueBy1000,
-          highest: sliderProperty.highHandle.currentValueBy1000
-        )
-      )
+      store.sendViewAction(.tappedConfirmButton)
     }
   }
 
@@ -157,7 +172,6 @@ struct LedgerDetailFilterView: View {
   private func makeResetButton() -> some View {
     HStack(alignment: .top, spacing: 8) {
       Button {
-        sliderProperty.reset()
         store.sendViewAction(.reset)
       } label: {
         SSImage.commonRefresh
@@ -208,7 +222,7 @@ struct LedgerDetailFilterView: View {
 
   @ViewBuilder
   private func makeSliderFilterButton() -> some View {
-    if !sliderProperty.isInitialState() {
+    if !store.isInitialState {
       SSButton(
         .init(
           size: .xsh28,
@@ -216,9 +230,9 @@ struct LedgerDetailFilterView: View {
           style: .filled,
           color: .orange,
           rightIcon: .icon(SSImage.commonDeleteWhite),
-          buttonText: "\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원"
+          buttonText: store.sliderRangeText
         )) {
-          sliderProperty.reset()
+          store.sendViewAction(.tappedSliderResetButton)
         }
     }
   }
@@ -249,6 +263,8 @@ struct LedgerDetailFilterView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()

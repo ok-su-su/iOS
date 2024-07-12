@@ -43,7 +43,7 @@ struct SentMainView: View {
   @ViewBuilder
   private func makeUserEnvelopes() -> some View {
     ScrollView {
-      LazyVStack {
+      LazyVStack(spacing: 8) {
         ForEach(
           store.scope(state: \.envelopes, action: \.scope.envelopes)
         ) { store in

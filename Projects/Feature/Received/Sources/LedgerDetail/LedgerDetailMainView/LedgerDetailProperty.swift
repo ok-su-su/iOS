@@ -29,6 +29,8 @@ struct LedgerDetailProperty: Equatable {
   let endDate: Date
   /// CustomCategory
   var customCategory: String? = nil
+  /// 봉투 갯수
+  let totalCounts: Int64
 
   var totalAmountText: String {
     CustomNumberFormatter.formattedByThreeZero(totalAmounts, subFixString: "원") ?? ""
@@ -61,7 +63,8 @@ struct LedgerDetailProperty: Equatable {
     description: String,
     totalAmounts: Int64,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    totalCounts: Int64
   ) {
     self.id = id
     self.categoryID = categoryID
@@ -71,12 +74,13 @@ struct LedgerDetailProperty: Equatable {
     self.totalAmounts = totalAmounts
     self.startDate = startDate
     self.endDate = endDate
+    self.totalCounts = totalCounts
   }
 }
 
 extension LedgerDetailProperty {
   static var initial: Self {
-    .init(id: -1, categoryID: -1, category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now)
+    .init(id: -1, categoryID: -1, category: "", title: "", description: "", totalAmounts: 0, startDate: .now, endDate: .now, totalCounts: 0)
   }
 
   init(ledgerDetailResponse dto: LedgerDetailResponse) {
@@ -89,5 +93,6 @@ extension LedgerDetailProperty {
     totalAmounts = dto.totalAmounts
     startDate = CustomDateFormatter.getDate(from: dto.ledger.startAt) ?? .now
     endDate = CustomDateFormatter.getDate(from: dto.ledger.endAt) ?? .now
+    totalCounts = dto.totalCounts
   }
 }

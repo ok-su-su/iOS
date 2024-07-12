@@ -14,6 +14,9 @@ import SwiftUI
 // MARK: - SpecificEnvelopeEditView
 
 public struct SpecificEnvelopeEditView: View {
+  @FocusState
+  var focus
+
   // MARK: Reducer
 
   @Bindable
@@ -34,6 +37,7 @@ public struct SpecificEnvelopeEditView: View {
 
         makeSubContents()
       }
+      .whenTapDismissKeyboard()
     }
   }
 
@@ -46,6 +50,7 @@ public struct SpecificEnvelopeEditView: View {
         text: $store.editHelper.priceProperty.priceTextFieldText.sending(\.view.changePriceTextField),
         prompt: nil
       )
+      .focused($focus)
       .keyboardType(.numberPad)
       .modifier(SSTypoModifier(.title_xl))
 
@@ -58,7 +63,9 @@ public struct SpecificEnvelopeEditView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray15)
-      .allowsHitTesting(false)
+      .onTapGesture {
+        focus = true
+      }
     }
     .frame(height: 44)
   }

@@ -24,11 +24,14 @@ struct SentEnvelopeFilter {
 
     // MARK: - Scope
 
+    var sliderProperty: CustomSlider = .init()
+
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
     var customTextField: CustomTextField.State = .init(text: "")
     var textFieldText: String = ""
-    var sliderStartValue: Double = 0
-    var sliderEndValue: Double = 100_000
+    var sliderStartValue: Int64 = 0
+    var sliderEndValue: Int64 = 0
+    var curVoid: Void?
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
@@ -40,19 +43,39 @@ struct SentEnvelopeFilter {
       }
       return filterHelper.sentPeople.filter { $0.name.contains(regex) }
     }
+
+    var minimumTextValue: Int64 = 0
+    var maximumTextValue: Int64 = 0
+    var minimumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(minimumTextValue) ?? "0" }
+    var maximumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(maximumTextValue) ?? "0" }
+    var sliderRangeText: String {
+      "\(minimumTextValueString)원 ~ \(maximumTextValueString)원"
+    }
+
+    var isInitialState: Bool {
+      return minimumTextValue == 0 && maximumTextValue == sliderEndValue
+    }
+
+    mutating func updateSliderValueProperty() {
+      minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
+      maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
+    }
   }
 
   enum Action: Equatable {
     case isLoading(Bool)
     case onAppear(Bool)
-    case tappedPerson(Int64)
-    case tappedSelectedPerson(Int64)
+    case tappedPerson(SentPerson)
     case reset
-    case tappedConfirmButton(lowest: Int64? = nil, highest: Int64? = nil)
+    case tappedConfirmButton
     case header(HeaderViewFeature.Action)
     case customTextField(CustomTextField.Action)
     case update([SentPerson])
     case getFriendsDataByName(String?)
+    case getMaximumSentValue
+    case updateMaximumSentValue(Int64)
+    case changedSliderProperty
+    case tappedSliderValueResetButton
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -78,35 +101,60 @@ struct SentEnvelopeFilter {
 
     Reduce { state, action in
       switch action {
+      case .tappedSliderValueResetButton:
+        state.sliderProperty.reset()
+        state.updateSliderValueProperty()
+        return .none
+      case let .updateMaximumSentValue(val):
+        state.sliderEndValue = val
+        state.updateSliderValueProperty()
+        return .none
+
+      case .getMaximumSentValue:
+        return .run { send in
+          let maximumValue = try await network.getMaximumSentValue()
+          await send(.updateMaximumSentValue(maximumValue))
+        }
       case .header(.tappedDismissButton):
         return .run { send in
           await send(.reset)
           await dismiss()
         }
-      case let .tappedPerson(ind):
-        state.filterHelper.select(selectedId: ind)
-        return .none
-
-      case let .tappedSelectedPerson(ind):
-        state.filterHelper.select(selectedId: ind)
+      case let .tappedPerson(person):
+        state.filterHelper.select(sentPerson: person)
         return .none
 
       case .reset:
         state.filterHelper.reset()
+        state.sliderProperty.reset()
+        return .none
+
+      case .changedSliderProperty:
+        state.updateSliderValueProperty()
         return .none
 
       case let .onAppear(isAppear):
-        os_log("필터 뷰 생겼음!")
         if state.isOnAppear {
           return .none
         }
         state.isOnAppear = isAppear
-        return .run { send in
-          await send(.isLoading(true))
-          let data = try await network.getInitialData()
-          await send(.update(data))
-          await send(.isLoading(false))
-        }
+        return .merge(
+          .run { send in
+            await send(.isLoading(true))
+            let data = try await network.getInitialData()
+            await send(.update(data))
+
+            await send(.getMaximumSentValue)
+            await send(.isLoading(false))
+          },
+          .publisher {
+            state.sliderProperty
+              .objectWillChange
+              .map { _ in
+                return .changedSliderProperty
+              }
+          }
+        )
 
       case .header:
         return .none
@@ -116,18 +164,16 @@ struct SentEnvelopeFilter {
         // TODO: Throttle을 호출할 떄 주의점에 대해서 블로그 포스팅 하기
         if NameRegexManager.isValid(name: text) {
           return .send(.getFriendsDataByName(text))
-            .throttle(id: ThrottleID.searchName, for: .seconds(2), scheduler: mainQueue, latest: true)
         }
         return .none
 
       case .customTextField:
         return .none
 
-      case let .tappedConfirmButton(lowestVal, highestVal):
-        // 만약 입력된 값이 초기값과 똑같지 않을 경우(Slider에 변화가 있을 경우)
-        if !(lowestVal == Int64(state.sliderStartValue) && highestVal == Int64(state.sliderEndValue)) {
-          state.filterHelper.lowestAmount = lowestVal
-          state.filterHelper.highestAmount = highestVal
+      case .tappedConfirmButton:
+        if !state.isInitialState {
+          state.filterHelper.lowestAmount = state.minimumTextValue
+          state.filterHelper.highestAmount = state.maximumTextValue
         }
         return .run { _ in await dismiss() }
 

@@ -20,9 +20,6 @@ struct SentEnvelopeFilterView: View {
   @State
   var showSelectedSliderButton: Bool = false
 
-  @ObservedObject
-  var sliderProperty: CustomSlider = .init(start: 0, end: 100_000, width: UIScreen.main.bounds.size.width - 65)
-
   // MARK: Content
 
   @ViewBuilder
@@ -31,20 +28,34 @@ struct SentEnvelopeFilterView: View {
     let sentPeople = store.filterHelper.sentPeople
     if filteredPeople == [] && store.textFieldText == "" {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        ForEach(0 ..< sentPeople.count, id: \.self) { index in
-          let current = sentPeople[index]
-          SSButtonWithState(store.filterHelper.ssButtonProperties[current.id, default: Constants.butonProperty]) {
-            store.send(.tappedPerson(current.id))
-          }
+        ForEach(sentPeople) { person in
+          let isSelected = store.filterHelper.isSelected(person)
+          SSButton(
+            .init(
+              size: .xsh28,
+              status: isSelected ? .active : .inactive,
+              style: .lined,
+              color: .black,
+              buttonText: person.name
+            )) {
+              store.send(.tappedPerson(person))
+            }
         }
       }
     } else {
       WrappingHStack(horizontalSpacing: 8, verticalSpacing: 8) {
-        ForEach(0 ..< filteredPeople.count, id: \.self) { index in
-          let current = filteredPeople[index]
-          SSButtonWithState(store.filterHelper.ssButtonProperties[current.id, default: Constants.butonProperty]) {
-            store.send(.tappedPerson(current.id))
-          }
+        ForEach(filteredPeople) { person in
+          let isSelected = store.filterHelper.isSelected(person)
+          SSButton(
+            .init(
+              size: .xsh28,
+              status: isSelected ? .active : .inactive,
+              style: .lined,
+              color: .black,
+              buttonText: person.name
+            )) {
+              store.send(.tappedPerson(person))
+            }
         }
       }
     }
@@ -58,20 +69,11 @@ struct SentEnvelopeFilterView: View {
         .modifier(SSTypoModifier(.title_xs))
         .foregroundStyle(SSColor.gray100)
       VStack(alignment: .leading, spacing: 8) {
-        Text("\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원")
+        Text(store.sliderRangeText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
-        HStack(spacing: 0) {
-          // TODO: View고치기
-          SliderView(slider: sliderProperty)
-            .onChange(of: store.sliderEndValue) { _, newValue in
-              sliderProperty.updateSlider(start: store.sliderStartValue, end: newValue)
-            }
-            .onChange(of: store.sliderStartValue) { _, newValue in
-              sliderProperty.updateSlider(start: newValue, end: store.sliderEndValue)
-            }
-        }
+        SliderView(slider: store.sliderProperty)
       }
     }
     .frame(maxWidth: .infinity)
@@ -84,21 +86,18 @@ struct SentEnvelopeFilterView: View {
       makeSliderFilterButton()
 
       // FilterPeople ResetButton
-      ForEach(0 ..< store.filterHelper.selectedPerson.count, id: \.self) { index in
-        if index < store.filterHelper.selectedPerson.count {
-          let person = store.filterHelper.selectedPerson[index]
-          SSButton(
-            .init(
-              size: .xsh28,
-              status: .active,
-              style: .filled,
-              color: .orange,
-              rightIcon: .icon(SSImage.commonDeleteWhite),
-              buttonText: person.name
-            )
-          ) {
-            store.send(.tappedSelectedPerson(person.id))
-          }
+      ForEach(store.filterHelper.selectedPerson) { person in
+        SSButton(
+          .init(
+            size: .xsh28,
+            status: .active,
+            style: .filled,
+            color: .orange,
+            rightIcon: .icon(SSImage.commonDeleteWhite),
+            buttonText: person.name
+          )
+        ) {
+          store.send(.tappedPerson(person))
         }
       }
     }
@@ -118,7 +117,6 @@ struct SentEnvelopeFilterView: View {
   private func makeResetButton() -> some View {
     HStack(alignment: .top, spacing: 8) {
       Button {
-        sliderProperty.reset()
         store.send(.reset)
       } label: {
         SSImage.commonRefresh
@@ -135,21 +133,13 @@ struct SentEnvelopeFilterView: View {
   @ViewBuilder
   private func makeConfirmButton() -> some View {
     SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
-      // MARK: - CustomSLider가 Reducer가 아니라 생명주기를 컨트롤하지 못하는 문제가 있습니다.
-
-      // 따라서 ObservedObject를 활용하여 해결했습니다. 차후 빠르게 Reducer를 활용하는 slider를 만들겠습니다.
-      store.send(
-        .tappedConfirmButton(
-          lowest: sliderProperty.lowHandle.currentValueBy1000,
-          highest: sliderProperty.highHandle.currentValueBy1000
-        )
-      )
+      store.send(.tappedConfirmButton)
     }
   }
 
   @ViewBuilder
   private func makeSliderFilterButton() -> some View {
-    if !sliderProperty.isInitialState() {
+    if !store.isInitialState {
       SSButton(
         .init(
           size: .xsh28,
@@ -157,9 +147,9 @@ struct SentEnvelopeFilterView: View {
           style: .filled,
           color: .orange,
           rightIcon: .icon(SSImage.commonDeleteWhite),
-          buttonText: "\(sliderProperty.lowHandle.currentValueBy1000)원 ~ \(sliderProperty.highHandle.currentValueBy1000)원"
+          buttonText: store.sliderRangeText
         )) {
-          sliderProperty.reset()
+          store.send(.tappedSliderValueResetButton)
         }
     }
   }
@@ -200,6 +190,8 @@ struct SentEnvelopeFilterView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
           .padding(.bottom, 24)

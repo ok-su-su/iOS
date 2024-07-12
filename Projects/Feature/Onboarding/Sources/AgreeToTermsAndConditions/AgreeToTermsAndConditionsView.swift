@@ -101,7 +101,7 @@ struct AgreeToTermsAndConditionsView: View {
       Spacer()
         .frame(width: 16)
 
-      SmallBadge(property: SmallBadgeProperty(
+      SSBadge(property: SmallBadgeProperty(
         size: .small,
         badgeString: item.isEssential ? Constants.essentialBadgeText : Constants.optionalBadgeText,
         badgeColor: item.isEssential ? .blue60 : .gray30

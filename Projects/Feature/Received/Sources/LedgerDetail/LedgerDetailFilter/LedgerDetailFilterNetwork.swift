@@ -45,6 +45,11 @@ struct LedgerDetailFilterNetwork {
       return .init(id: id, title: name)
     }
   }
+
+  func getMaximumSentValue() async throws -> Int64 {
+    let data: SearchFilterEnvelopeResponse = try await provider.request(.getFilterConfig)
+    return data.maxReceivedAmount
+  }
 }
 
 extension DependencyValues {
@@ -61,15 +66,44 @@ extension LedgerDetailFilterNetwork: DependencyKey {
 
   enum Network: SSNetworkTargetType {
     case getEnvelopeFriends(GetEnvelopesRequestParameter)
+    case getFilterConfig
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "envelopes" }
+    var path: String {
+      switch self {
+      case .getEnvelopeFriends:
+        "envelopes"
+      case .getFilterConfig:
+        "envelopes/configs/search-filter"
+      }
+    }
+
     var method: Moya.Method { .get }
     var task: Moya.Task {
       switch self {
+      case .getFilterConfig:
+        .requestPlain
       case let .getEnvelopeFriends(param):
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       }
     }
+  }
+}
+
+// MARK: - SearchFilterEnvelopeResponse
+
+struct SearchFilterEnvelopeResponse: Decodable {
+  let minReceivedAmount: Int64
+  let maxReceivedAmount: Int64
+  let minSentAmount: Int64
+  let maxSentAmount: Int64
+  let totalAmount: Int64
+
+  enum CodingKeys: CodingKey {
+    case minReceivedAmount
+    case maxReceivedAmount
+    case minSentAmount
+    case maxSentAmount
+    case totalAmount
   }
 }

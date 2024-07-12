@@ -77,8 +77,8 @@ struct SpecificEnvelopeHistoryListView: View {
     HStack {
       HStack(spacing: 12) {
         property.envelopeType == .sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
-        SmallBadge(
-          property: .init(
+        SSBadge(property:
+          .init(
             size: .small,
             badgeString: property.eventName,
             badgeColor: property.envelopeType == .sent ? .gray90 : .gray40

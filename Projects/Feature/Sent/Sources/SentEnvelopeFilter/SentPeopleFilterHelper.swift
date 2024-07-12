@@ -5,8 +5,6 @@
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-
-import Designsystem
 import SwiftUI
 
 // MARK: - SentPeopleFilterHelper
@@ -18,7 +16,6 @@ struct SentPeopleFilterHelper: Equatable {
 
   var sentPeople: [SentPerson]
   var selectedPerson: [SentPerson] = []
-  var ssButtonProperties: [Int64: SSButtonPropertyState] = [:]
 
   var lowestAmount: Int64? = nil
   var highestAmount: Int64? = nil
@@ -45,43 +42,38 @@ struct SentPeopleFilterHelper: Equatable {
 
   init(sentPeople: [SentPerson] = []) {
     self.sentPeople = sentPeople
-    setButtonProperties()
-  }
-
-  private mutating func setButtonProperties() {
-    ssButtonProperties.removeAll()
-    for sentPerson in sentPeople {
-      ssButtonProperties[sentPerson.id] = .init(
-        size: .xsh28,
-        status: .inactive,
-        style: .lined,
-        color: .black,
-        buttonText: sentPerson.name
-      )
-    }
   }
 
   mutating func updateSentPeople(_ people: [SentPerson]) {
     sentPeople = (people + sentPeople).uniqued()
-    setButtonProperties()
+  }
+
+  mutating func select(sentPerson: SentPerson) {
+    if selectedPerson.contains(sentPerson) {
+      selectedPerson.removeAll(where: { $0 == sentPerson })
+    } else {
+      selectedPerson.append(sentPerson)
+    }
   }
 
   mutating func select(selectedId: Int64) {
-    if
-      let ind = selectedPerson.firstIndex(where: { $0.id == selectedId }),
-      let propertyIndex = sentPeople.firstIndex(where: { $0.id == selectedId }) {
-      selectedPerson.remove(at: ind)
-      ssButtonProperties[sentPeople[propertyIndex].id]?.toggleStatus()
-    } else if let ind = sentPeople.firstIndex(where: { $0.id == selectedId }) {
-      ssButtonProperties[sentPeople[ind].id]?.toggleStatus()
-      selectedPerson.append(sentPeople[ind])
+    if selectedPerson.contains(where: { $0.id == selectedId }) {
+      selectedPerson.removeAll(where: { $0.id == selectedId })
+    } else if let person = sentPeople.first(where: { $0.id == selectedId }) {
+      selectedPerson.append(person)
     }
   }
 
+  func isSelected(id: Int64) -> Bool {
+    return selectedPerson.first(where: { $0.id == id }) != nil
+  }
+
+  func isSelected(_ person: SentPerson) -> Bool {
+    return selectedPerson.contains(person)
+  }
+
   mutating func reset() {
-    for person in selectedPerson {
-      select(selectedId: person.id)
-    }
+    selectedPerson.removeAll()
   }
 }
 
