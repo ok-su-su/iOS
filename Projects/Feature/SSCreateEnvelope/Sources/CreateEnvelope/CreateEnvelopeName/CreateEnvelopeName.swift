@@ -72,10 +72,12 @@ struct CreateEnvelopeName {
       state.isPushable = pushable
 
       let isShowToast = ToastRegexManager.isShowToastByName(text)
+      let isEmptyTextField = text.isEmpty
       return .merge(
         isShowToast ?
           .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none,
-        .send(.async(.searchName(text)))
+        isEmptyTextField ?
+          .send(.inner(.emptyTextField)) : .send(.async(.searchName(text)))
       )
 
     case .tappedNextButton:
@@ -86,6 +88,7 @@ struct CreateEnvelopeName {
   enum InnerAction: Equatable {
     case push
     case updateEnvelopes([PrevEnvelope])
+    case emptyTextField
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -98,6 +101,10 @@ struct CreateEnvelopeName {
     case let .updateEnvelopes(prevEnvelopes):
       let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
       state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
+      return .none
+
+    case .emptyTextField:
+      state.createEnvelopeProperty.prevEnvelopes.removeAll()
       return .none
     }
   }
