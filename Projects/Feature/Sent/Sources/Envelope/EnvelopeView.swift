@@ -41,9 +41,6 @@ struct EnvelopeView: View {
         makeDetailPressButton()
       }
     }
-    .onTapGesture {
-      store.send(.tappedFullContentOfEnvelopeButton)
-    }
   }
 
   @ViewBuilder
@@ -173,6 +170,9 @@ struct EnvelopeView: View {
   var body: some View {
     VStack(spacing: 0) {
       makeEnvelopeTotalView()
+        .onTapGesture {
+          store.send(.tappedFullContentOfEnvelopeButton)
+        }
       Spacer()
         .frame(height: 8)
       makeEnvelopeDetailView()
