@@ -77,14 +77,14 @@ struct SpecificEnvelopeHistoryListView: View {
     HStack {
       HStack(spacing: 12) {
         property.envelopeType == .sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
-        SSBadge(property: 
-            .init(
-              size: .small,
-              badgeString: property.eventName,
-              badgeColor: property.envelopeType == .sent ? .gray90 : .gray40
-            )
+        SSBadge(property:
+          .init(
+            size: .small,
+            badgeString: property.eventName,
+            badgeColor: property.envelopeType == .sent ? .gray90 : .gray40
+          )
         )
-        
+
         Text(property.dateText)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(textColor)

@@ -46,7 +46,7 @@ public struct LedgerBoxView: View {
     HStack {
       VStack(alignment: .leading, spacing: 0) {
         let smallBadgeColor: SmallBadgeProperty.BadgeColor = .init(rawValue: property.style.lowercased()) ?? .gray40
-        SmallBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
+        SSBadge(property: .init(size: .small, badgeString: property.categoryName, badgeColor: smallBadgeColor))
           .padding(.bottom, 8)
 
         Text(property.categoryDescription)
