@@ -37,38 +37,48 @@ public struct SliderView: View {
             }
             .stroke(SSColor.orange60, lineWidth: slider.lineWidth)
 
-            // Low Handle
-            SliderHandleView(handle: slider.lowHandle)
-              .position(
-                x: sliderHandlerBorderSize + slider.lowHandle.currentPercentage.wrappedValue * width,
-                y: midHeight
-              )
-              .highPriorityGesture(
-                DragGesture().onChanged { value in
-                  let currentLocation = value.location
-                  let currentPercentage = currentLocation.x / width
-                  let percentage = min(max(0, currentPercentage), slider.highHandle.currentPercentage.wrappedValue)
-                  slider.lowHandle.updateCurrentPercentage(percentage)
-                }
-              )
-
-            SliderHandleView(handle: slider.highHandle)
-              .position(
-                x: slider.highHandle.currentPercentage.wrappedValue * width - sliderHandlerBorderSize,
-                y: midHeight
-              )
-              .highPriorityGesture(
-                DragGesture().onChanged { value in
-                  let currentLocation = value.location
-                  let currentPercentage = currentLocation.x / width
-                  let percentage = max(min(1, currentPercentage), slider.lowHandle.currentPercentage.wrappedValue)
-                  slider.highHandle.updateCurrentPercentage(percentage)
-                }
-              )
+            makeProgressHandler()
+              .padding(.horizontal, sliderHandlerBorderSize)
           }
         }
       )
       .frame(maxWidth: .infinity, minHeight: 24)
+  }
+
+  @ViewBuilder
+  private func makeProgressHandler() -> some View {
+    GeometryReader { proxy in
+      let width = proxy.size.width
+      let midHeight = proxy.size.height / 2
+      // Low Handle
+      SliderHandleView(handle: slider.lowHandle)
+        .position(
+          x: slider.lowHandle.currentPercentage.wrappedValue * width,
+          y: midHeight
+        )
+        .highPriorityGesture(
+          DragGesture().onChanged { value in
+            let currentLocation = value.location
+            let currentPercentage = currentLocation.x / width
+            let percentage = min(max(0, currentPercentage), slider.highHandle.currentPercentage.wrappedValue)
+            slider.lowHandle.updateCurrentPercentage(percentage)
+          }
+        )
+
+      SliderHandleView(handle: slider.highHandle)
+        .position(
+          x: slider.highHandle.currentPercentage.wrappedValue * width,
+          y: midHeight
+        )
+        .highPriorityGesture(
+          DragGesture().onChanged { value in
+            let currentLocation = value.location
+            let currentPercentage = currentLocation.x / width
+            let percentage = max(min(1, currentPercentage), slider.lowHandle.currentPercentage.wrappedValue)
+            slider.highHandle.updateCurrentPercentage(percentage)
+          }
+        )
+    }
   }
 }
 

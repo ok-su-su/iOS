@@ -100,29 +100,6 @@ public struct SmallBadgeProperty {
   }
 }
 
-// MARK: - SmallBadge
-
-public struct SmallBadge: View {
-  let property: SmallBadgeProperty
-
-  @available(*, deprecated, renamed: "SSBadge(property:)", message: "this init was deprecated. use SSBadge")
-  public init(property: SmallBadgeProperty) {
-    self.property = property
-  }
-
-  public var body: some View {
-    Text(property.badgeString)
-      .modifier(SSTypoModifier(.title_xxxs))
-      .foregroundStyle(property.textColor)
-      .padding(.vertical, property.verticalPaddingValue)
-      .padding(.horizontal, property.horizontalPaddingValue)
-      .background {
-        property.backgroundColor
-      }
-      .clipShape(RoundedRectangle(cornerRadius: 4))
-  }
-}
-
 // MARK: - SSBadge
 
 public struct SSBadge: View {
