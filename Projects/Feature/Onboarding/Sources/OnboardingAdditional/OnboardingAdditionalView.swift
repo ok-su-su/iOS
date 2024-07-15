@@ -77,7 +77,7 @@ struct OnboardingAdditionalView: View {
   @ViewBuilder
   private func makeBirthSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(Constants.genderSectionTitleText)
+      Text(Constants.birthSectionTitleText)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray60)
         .multilineTextAlignment(.leading)
@@ -125,7 +125,12 @@ struct OnboardingAdditionalView: View {
     .safeAreaInset(edge: .bottom) {
       makeNextScreenButton()
     }
-    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
+    .selectableBottomSheetWithBottomView(
+      store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet),
+      sheetHeight: 342
+    ) {
+      makeNextScreenButton()
+    }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -136,12 +141,12 @@ struct OnboardingAdditionalView: View {
   private func makeNowYear() -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy"
-    return dateFormatter.string(from: .now)
+    return dateFormatter.string(from: .now) + "년"
   }
 
   private enum Constants {
     static let titleText: String = "아래 정보들을 알려주시면\n통계를 알려드릴 수 있어요"
     static let genderSectionTitleText: String = "성별"
-    static let birthSectionTitleText: String = "출생 년도"
+    static let birthSectionTitleText: String = "출생년도"
   }
 }
