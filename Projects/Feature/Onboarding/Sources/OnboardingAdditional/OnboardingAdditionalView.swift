@@ -52,20 +52,25 @@ struct OnboardingAdditionalView: View {
 
       HStack(spacing: 8) {
         ForEach(store.helper.genderItems) { item in
-          SSButton(
-            .init(
-              size: .mh60,
-              status: store.helper.selectedGenderItem == item ? .active : .inactive,
-              style: .ghost,
-              color: .black,
-              buttonText: item.title,
-              frame: .init(maxWidth: .infinity)
-            )
-          ) {
-            store.send(.view(.tappedGenderButton(item)))
-          }
+          makeGenderSectionItem(item)
         }
       }
+    }
+  }
+
+  @ViewBuilder
+  private func makeGenderSectionItem(_ item: GenderButtonProperty) -> some View {
+    SSButton(
+      .init(
+        size: .mh60,
+        status: store.helper.selectedGenderItem == item ? .active : .inactive,
+        style: .ghost,
+        color: .black,
+        buttonText: item.title,
+        frame: .init(maxWidth: .infinity)
+      )
+    ) {
+      store.send(.view(.tappedGenderButton(item)))
     }
   }
 

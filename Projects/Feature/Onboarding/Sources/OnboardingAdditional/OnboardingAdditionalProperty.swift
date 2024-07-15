@@ -17,6 +17,10 @@ struct OnboardingAdditionalProperty: Equatable {
   var selectedGenderItem: GenderButtonProperty?
   @Shared var selectedBirth: BottomSheetYearItem?
 
+  mutating func selectItem(_ item: GenderButtonProperty) {
+    selectedGenderItem = selectedGenderItem == item ? nil : item
+  }
+
   func selectedGenderItemToBodyString() -> String? {
     guard let selectedGenderItem else {
       return nil
