@@ -46,7 +46,6 @@ struct EnvelopePriceProgressView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: Metrics.progressHeightValue)
     .clipShape(RoundedRectangle(cornerRadius: Metrics.progressCornerRadius, style: .continuous))
-    .padding(.vertical, Metrics.progressBarVerticalSpacing)
   }
 
   @ViewBuilder

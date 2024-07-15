@@ -20,26 +20,27 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
   // MARK: Content
 
   @ViewBuilder
+  private func makeCellContentView() -> some View {
+    ForEach(store.items) { item in
+      Text(item.description)
+        .applySSFont(.title_xxs)
+        .padding(.vertical, itemVerticalSpacing)
+        .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
+        .frame(maxWidth: .infinity)
+        .onTapGesture {
+          store.send(.tapped(item: item))
+        }
+        .id(item.id)
+    }
+  }
+
+  @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       ScrollViewReader { value in
         ScrollView(showsIndicators: false) {
-          Spacer()
-            .frame(height: 16)
           VStack(spacing: 0) {
-            // TODO: 블로그 작성
-            ForEach(store.items) { item in
-              Text(item.description)
-                .modifier(SSTypoModifier(.title_xxs))
-                .padding(.vertical, itemVerticalSpacing)
-                .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
-                .onTapGesture {
-                  store.send(.tapped(item: item))
-                }
-                .id(item.id)
-            }
+            makeCellContentView()
           }
           .scrollTargetLayout()
         }
@@ -51,14 +52,25 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
     }
   }
 
+  @ViewBuilder
+  private func makeHandleView() -> some View {
+    RoundedRectangle(cornerRadius: 100)
+      .frame(width: 56, height: 6)
+      .foregroundStyle(SSColor.gray20)
+      .frame(maxWidth: .infinity, maxHeight: 38)
+      .background(SSColor.gray10)
+  }
+
   public var body: some View {
-    ZStack {
+    ZStack(alignment: .center) {
       SSColor
         .gray10
         .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
-      }
+
+      makeContentView()
+    }
+    .safeAreaInset(edge: .top) {
+      makeHandleView()
     }
     .navigationBarBackButtonHidden()
     .onAppear {
