@@ -68,7 +68,7 @@ struct OnboardingAdditional {
         return .none
 
       case let .view(.tappedGenderButton(item)):
-        state.helper.selectedGenderItem = item
+        state.helper.selectItem(item)
         return .none
 
       case .view(.tappedBirthButton):
