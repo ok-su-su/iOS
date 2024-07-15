@@ -124,6 +124,15 @@ public enum SSFont {
     }
   }
 
+  var UIFont: UIFont {
+    return switch weightType {
+    case .title:
+      .init(name: "Pretendard-Bold", size: sizeTypes.fontSize)!
+    case .text:
+      .init(name: "Pretendard-Regular", size: sizeTypes.fontSize)!
+    }
+  }
+
   var lineHeight: CGFloat {
     return sizeTypes.lineHeight
   }
@@ -143,6 +152,33 @@ enum SizeTypes {
   case xxs
   case xxxs
   case xxxxs
+
+  var lineHeight: CGFloat {
+    switch self {
+    case .xxxxl:
+      56
+    case .xxxl:
+      52
+    case .xxl:
+      48
+    case .xl:
+      44
+    case .l:
+      40
+    case .m:
+      32
+    case .s:
+      30
+    case .xs:
+      28
+    case .xxs:
+      24
+    case .xxxs:
+      20
+    case .xxxxs:
+      16
+    }
+  }
 
   var fontSize: CGFloat {
     return switch self {
@@ -168,27 +204,6 @@ enum SizeTypes {
       12
     case .xxxxs:
       10
-    }
-  }
-
-  var lineHeight: CGFloat {
-    return switch self {
-    case .l,
-         .xl,
-         .xxl,
-         .xxxl,
-         .xxxxl:
-      8
-    case .m,
-         .s,
-         .xs:
-      6
-    case .xxs:
-      5
-    case .xxxs:
-      4
-    case .xxxxs:
-      3
     }
   }
 }

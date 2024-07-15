@@ -20,9 +20,9 @@ public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyI
     content
       .sheet(item: $store) { store in
         SSSelectableBottomSheetView<Item>(store: store)
-          .presentationDetents([.height(282), .medium, .large])
+          .presentationDetents([.height(230), .medium, .large])
           .presentationContentInteraction(.scrolls)
-          .presentationDragIndicator(.automatic)
+          .presentationDragIndicator(.hidden)
       }
   }
 }

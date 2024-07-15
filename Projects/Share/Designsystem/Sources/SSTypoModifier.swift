@@ -23,7 +23,20 @@ public struct SSText: View {
     Text(text)
       .font(designSystemFont.font)
       .tracking(ssLetterSpacing)
-      .lineSpacing(designSystemFont.lineHeight)
+  }
+}
+
+// MARK: - FontWithLineHeight
+
+struct FontWithLineHeight: ViewModifier {
+  let font: UIFont
+  let lineHeight: CGFloat
+
+  func body(content: Content) -> some View {
+    content
+      .font(Font(font))
+      .lineSpacing(lineHeight - font.lineHeight)
+      .padding(.vertical, (lineHeight - font.lineHeight) / 2)
   }
 }
 
@@ -60,9 +73,8 @@ public struct SSTypoModifier: ViewModifier {
   @ViewBuilder
   public func body(content: Content) -> some View {
     content
-      .font(designSystemFont.font)
+      .modifier(FontWithLineHeight(font: designSystemFont.UIFont, lineHeight: designSystemFont.sizeTypes.lineHeight))
       .tracking(ssLetterSpacing)
-      .lineSpacing(designSystemFont.lineHeight)
   }
 }
 
