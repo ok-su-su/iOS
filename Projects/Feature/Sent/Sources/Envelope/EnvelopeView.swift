@@ -168,13 +168,11 @@ struct EnvelopeView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 8) {
       makeEnvelopeTotalView()
         .onTapGesture {
           store.send(.tappedFullContentOfEnvelopeButton)
         }
-      Spacer()
-        .frame(height: 8)
       makeEnvelopeDetailView()
     }
     .onAppear {
