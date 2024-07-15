@@ -164,6 +164,7 @@ public struct SSTextFieldView: View {
           text: $store.property.text.sending(\.changeTextField),
           prompt: Text(store.property.placeHolderText.placeHolderTextString).foregroundStyle(SSColor.gray30)
         )
+        .autocorrectionDisabled()
         .background(.clear)
         .foregroundColor(.gray100)
         .modifier(SSTypoModifier(.title_l))
