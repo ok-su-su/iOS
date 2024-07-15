@@ -41,23 +41,16 @@ struct AgreeToTermsAndConditionsView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    VStack(spacing: 0) {
-      SSButton(.init(
-        size: .mh60,
-        status: store.helper.activeNextScreenButton ? .active : .inactive,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )) {
+    Text("다음")
+      .applySSFont(.title_xs)
+      .foregroundStyle(SSColor.gray10)
+      .padding(.vertical, 16)
+      .frame(maxWidth: .infinity)
+      .background(!store.helper.activeNextScreenButton ? SSColor.gray30 : SSColor.gray100)
+      .allowsHitTesting(store.helper.activeNextScreenButton)
+      .onTapGesture {
         store.send(.view(.tappedNextScreenButton))
       }
-      .allowsHitTesting(store.helper.activeNextScreenButton)
-
-      Color.clear
-        .frame(maxHeight: 24)
-    }
-    .background(store.helper.activeNextScreenButton ? SSColor.gray100 : SSColor.gray30)
   }
 
   @ViewBuilder
@@ -137,12 +130,9 @@ struct AgreeToTermsAndConditionsView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
-
-      VStack {
-        Spacer()
-        makeNextScreenButton()
-      }
-      .ignoresSafeArea()
+    }
+    .safeAreaInset(edge: .bottom) {
+      makeNextScreenButton()
     }
     .navigationBarBackButtonHidden()
     .onAppear {

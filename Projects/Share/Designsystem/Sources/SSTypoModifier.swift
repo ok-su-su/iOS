@@ -72,9 +72,13 @@ public struct SSTypoModifier: ViewModifier {
 
   @ViewBuilder
   public func body(content: Content) -> some View {
+    let lineSpacing = designSystemFont.lineHeight - designSystemFont.sizeTypes.fontSize
+    let linePadding = lineSpacing / 2
     content
-      .modifier(FontWithLineHeight(font: designSystemFont.UIFont, lineHeight: designSystemFont.sizeTypes.lineHeight))
+      .font(designSystemFont.font)
       .tracking(ssLetterSpacing)
+      .padding(.vertical, linePadding)
+      .lineSpacing(lineSpacing)
   }
 }
 

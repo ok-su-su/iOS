@@ -19,71 +19,50 @@ struct OnboardingRegisterNameView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading) {
-      Spacer()
-        .frame(height: 34)
-
+    VStack(alignment: .leading, spacing: 24) {
       // MARK: - TextFieldTitleView
 
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
 
-      Spacer()
-        .frame(height: 34)
-
       // MARK: - TextFieldView
 
       SSTextFieldView(store: store.scope(state: \.textField, action: \.scope.textField))
-      Spacer()
     }
     .padding(.horizontal, 16)
   }
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    VStack(spacing: 0) {
-      SSButton(.init(
-        size: .mh60,
-        status: store.isActiveNextButton ? .active : .inactive,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )) {
-        store.send(.view(.tappedNextButton))
-      }
+    Text("다음")
+      .applySSFont(.title_xs)
+      .foregroundStyle(SSColor.gray10)
+      .padding(.vertical, 16)
+      .frame(maxWidth: .infinity)
+      .background(store.isActiveNextButton ? SSColor.gray100 : SSColor.gray30)
       .allowsHitTesting(store.isActiveNextButton)
-
-      Color.clear
-        .frame(maxHeight: 24)
-    }
-    .background(store.isActiveNextButton ? SSColor.gray100 : SSColor.gray30)
+      .onTapGesture {
+        store.sendViewAction(.tappedNextButton)
+      }
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .top) {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
 
-      VStack(spacing: 0) {
+      VStack(spacing: 34) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
-        if store.textFieldProperty.getIsFocused {
-          Spacer()
-          makeNextScreenButton()
-        }
-      }
-      // KeyBoard 레이아웃을 조정하기 위한 장치
-      if !store.textFieldProperty.getIsFocused {
-        VStack {
-          Spacer()
-          makeNextScreenButton()
-        }.ignoresSafeArea()
       }
     }
     .navigationBarBackButtonHidden()
+    .safeAreaInset(edge: .bottom) {
+      makeNextScreenButton()
+    }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

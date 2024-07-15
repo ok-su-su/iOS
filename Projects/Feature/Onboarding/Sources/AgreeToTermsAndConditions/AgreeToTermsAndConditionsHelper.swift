@@ -20,6 +20,9 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
 
   func checkItemsID() -> [Int] {
     var checkedId = termItems.filter(\.isCheck).map(\.id)
+    if checkedId.isEmpty {
+      return []
+    }
     checkedId.remove(at: 0)
     return checkedId
   }

@@ -99,21 +99,15 @@ struct OnboardingAdditionalView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    VStack(spacing: 0) {
-      SSButton(.init(
-        size: .mh60,
-        status: .active,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )) {
-        store.send(.view(.tappedNextButton))
+    Text("다음")
+      .applySSFont(.title_xs)
+      .foregroundStyle(SSColor.gray10)
+      .padding(.vertical, 16)
+      .frame(maxWidth: .infinity)
+      .background(SSColor.gray100)
+      .onTapGesture {
+        store.sendViewAction(.tappedNextButton)
       }
-      SSColor.gray100
-        .frame(maxHeight: 24)
-    }
-    .background(SSColor.gray100)
   }
 
   var body: some View {
@@ -126,12 +120,11 @@ struct OnboardingAdditionalView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
-      VStack {
-        Spacer()
-        makeNextScreenButton()
-      }.ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
+    .safeAreaInset(edge: .bottom) {
+      makeNextScreenButton()
+    }
     .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
     .onAppear {
       store.send(.view(.onAppear(true)))
