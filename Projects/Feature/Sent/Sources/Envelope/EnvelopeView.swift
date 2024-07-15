@@ -41,6 +41,7 @@ struct EnvelopeView: View {
         makeDetailPressButton()
       }
     }
+    .frame(height: 28)
   }
 
   @ViewBuilder
@@ -153,17 +154,13 @@ struct EnvelopeView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-      VStack(spacing: 0) {
+      VStack(spacing: Metrics.topAndMiddleSpacing) {
         makeHeaderView()
-
-        Spacer()
-          .frame(height: Metrics.topAndMiddleSpacing)
 
         EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.envelopePRiceProgress))
       }
       .padding(Metrics.contentSpacing)
     }
-    .frame(maxHeight: Metrics.viewMaxHeight)
     .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 
