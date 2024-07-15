@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSRegexManager
 
 @Reducer
 struct OnboardingRegisterName {
@@ -28,7 +29,7 @@ struct OnboardingRegisterName {
         SSTextFieldReducerProperty(
           text: "",
           maximumTextLength: 10,
-          regexPattern: .SSNameRegexString,
+          regexPattern: RegexPatternString.name.regexString,
           placeHolderText: .account,
           errorMessage: "한글과 영문 10자 이내로 작성해주세요"
         )

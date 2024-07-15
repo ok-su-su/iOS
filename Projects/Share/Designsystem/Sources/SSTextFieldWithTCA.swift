@@ -157,7 +157,7 @@ public struct SSTextFieldView: View {
   }
 
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       HStack(spacing: 8) {
         TextField(
           "",
@@ -205,6 +205,7 @@ public struct SSTextFieldView: View {
       if store.property.status == .error {
         Text(store.property.errorMessage)
           .foregroundStyle(SSColor.red60)
+          .frame(alignment: .leading)
           .frame(alignment: .leading)
       }
       Spacer()
