@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSAlert
 import SSPersistancy
 
@@ -218,13 +219,22 @@ struct MyPageMain {
 
       case .async(.logout):
         return .run { send in
-          try await network.logout()
+          do {
+            try await network.logout()
+          } catch {
+            os_log(.fault, "\(error.localizedDescription)")
+          }
           await send(.inner(.pushOnboarding))
         }
 
       case .async(.resign):
         return .run { send in
-          try await network.resign()
+          do {
+            try await network.resign()
+          } catch {
+            os_log(.fault, "\(error.localizedDescription)")
+          }
+
           await send(.inner(.pushOnboarding))
         }
 
