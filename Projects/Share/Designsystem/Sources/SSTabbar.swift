@@ -152,13 +152,22 @@ public struct SSTabbar: View {
   public var body: some View {
     if store.state.isAppear {
       HStack(alignment: .center, spacing: 0) {
-        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+        // 1차 배포 탭바
+        ForEach([SSTabType.envelope, SSTabType.received, SSTabType.mypage], id: \.self) { tabbarType in
           makeItem(type: tabbarType)
             .frame(maxWidth: .infinity, maxHeight: 56)
             .onTapGesture {
               store.send(.tappedSection(tabbarType))
             }
         }
+        // 전체 탭바
+//        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+//          makeItem(type: tabbarType)
+//            .frame(maxWidth: .infinity, maxHeight: 56)
+//            .onTapGesture {
+//              store.send(.tappedSection(tabbarType))
+//            }
+//        }
       }
       .background(SSColor.gray10)
     }
