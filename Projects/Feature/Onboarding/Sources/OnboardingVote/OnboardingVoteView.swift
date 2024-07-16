@@ -86,8 +86,8 @@ struct OnboardingVoteView: View {
         if isVisible {
           makeContentView()
             .offset(y: offsetY)
-            .transition(.opacity.animation(.easeOut(duration: 0.6)))
-            .animation(.easeIn(duration: 0.6), value: offsetY)
+            .transition(.opacity.animation(.easeOut(duration: 0.8)))
+            .animation(.easeIn(duration: 0.8), value: offsetY)
         }
       }
       .onAppear {
@@ -108,7 +108,7 @@ struct OnboardingVoteView: View {
           offsetY = 0
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
           withAnimation {
             store.send(.view(.onAppear(true)))
             return
