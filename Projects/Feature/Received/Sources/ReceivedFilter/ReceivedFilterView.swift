@@ -48,7 +48,6 @@ struct ReceivedFilterView: View {
       Text("경조사 카테고리")
         .modifier(SSTypoModifier(.title_xs))
         .foregroundColor(SSColor.gray100)
-        .padding(.leading, Spacing.leading)
 
       WrappingHStack(horizontalSpacing: 8) {
         ForEach(store.property.selectableLedgers) { property in
