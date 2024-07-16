@@ -16,14 +16,14 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
 
   var header: Header
   var content: Content
-  var refreshAction: () async -> Void
+  var refreshAction: () -> Void
 
   public init(
     isLoading: Bool,
     isRefresh: Bool,
     @ViewBuilder header: () -> Header,
     @ViewBuilder content: () -> Content,
-    refreshAction: @escaping () async -> Void
+    refreshAction: @escaping () -> Void
   ) {
     self.isLoading = isLoading
     self.isRefresh = isRefresh
@@ -73,25 +73,28 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       .padding(.top, 1)
     }
     .refreshable {
-      await refreshAction()
+      showingHeader = true
+      DispatchQueue.main.async {
+        refreshAction()
+      }
       do {
         try await waitForRefreshToEnd()
       } catch {
         os_log(.fault, "waitForRefrshToEnd가 비정상적으로 종료되었습니다.")
       }
+      showingHeader = true
     }
     .animation(.default, value: showingHeader)
     .allowsHitTesting(!isRefresh)
     .onChange(of: isLoading) { _, _ in
-      if isLoading {
-        showingHeader = true
-      }
+      showingHeader = true
     }
+    .clipped()
   }
 
   private func waitForRefreshToEnd() async throws {
     while isRefresh {
-      try await Task.sleep(nanoseconds: 100_000_000) // 100 milliseconds
+      try await Task.sleep(nanoseconds: 1_000_000_000) // 10 milliseconds
     }
   }
 }

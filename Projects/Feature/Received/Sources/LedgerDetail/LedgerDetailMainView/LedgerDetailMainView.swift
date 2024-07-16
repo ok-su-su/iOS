@@ -175,11 +175,16 @@ struct LedgerDetailMainView: View {
         .frame(height: 8)
 
       // BottomSection
-      VStack(spacing: 0) {
+      ScrollViewWithFilterItems(
+        isLoading: store.isLoading,
+        isRefresh: store.isRefresh
+      ) {
         makeFilterSection()
           .padding(.bottom, 16)
-
+      } content: {
         makeEnvelopesView()
+      } refreshAction: {
+        store.sendViewAction(.pullRefreshButton)
       }
       .padding(.horizontal, 16)
       .padding(.top, 16)
@@ -194,7 +199,6 @@ struct LedgerDetailMainView: View {
         .ignoresSafeArea()
 
       makeContentView()
-        .modifier(SSLoadingModifier(isLoading: store.isLoading))
         .onAppear {
           store.sendViewAction(.isOnAppear(true))
         }

@@ -24,6 +24,7 @@ struct LedgerDetailMain {
     var ledgerID: Int64
     var ledgerProperty: LedgerDetailProperty
     var isLoading = true
+    var isRefresh = false
     var isOnAppear = false
     var presentCreateEnvelope = false
 
@@ -36,8 +37,8 @@ struct LedgerDetailMain {
     var envelopeItems: [EnvelopeViewForLedgerMainProperty] = []
 
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
-    @Shared var sortProperty: SortHelperProperty
-    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
+    @Shared var sortProperty: SortHelperForLedgerEnvelope
+    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.State?
     var showMessageAlert = false
 
     @Shared var filterProperty: LedgerDetailFilterProperty
@@ -81,6 +82,7 @@ struct LedgerDetailMain {
     case tappedFilteredPersonButton(id: Int64)
     case appearedEnvelope(EnvelopeViewForLedgerMainProperty)
     case tappedEnvelope(id: Int64)
+    case pullRefreshButton
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
@@ -162,9 +164,18 @@ struct LedgerDetailMain {
         return .send(.inner(.getEnvelopesNextPage))
       }
       return .none
+
     case let .tappedEnvelope(id):
       LedgerDetailRouterPublisher.send(.envelopeDetail(.init(envelopeID: id)))
       return .none
+
+    case .pullRefreshButton:
+      return .concatenate(
+        .send(.inner(.isRefresh(true))),
+        .send(.async(.getLedgerDetailProperty)),
+        .send(.inner(.getEnvelopesInitialPage)),
+        .send(.inner(.isRefresh(false)))
+      )
     }
   }
 
@@ -177,6 +188,7 @@ struct LedgerDetailMain {
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
     case deleteEnvelope(id: Int64)
+    case isRefresh(Bool)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -219,6 +231,10 @@ struct LedgerDetailMain {
     case let .updateLedgerDetailPropertyByLedgerID(ledgerID):
       state.ledgerID = ledgerID
       return .send(.async(.getLedgerDetailProperty))
+
+    case let .isRefresh(val):
+      state.isRefresh = val
+      return .none
     }
   }
 
@@ -263,7 +279,7 @@ struct LedgerDetailMain {
     case header(HeaderViewFeature.Action)
     case presentCreateEnvelope(Bool)
     case filter(PresentationAction<LedgerDetailFilter.Action>)
-    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
+    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
