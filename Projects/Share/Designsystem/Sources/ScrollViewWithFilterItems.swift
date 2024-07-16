@@ -47,6 +47,11 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       GeometryReader { outer in
         let outerHeight = outer.size.height
         ScrollView(.vertical) {
+          if !showingHeader {
+            Spacer()
+              .frame(height: 20)
+          }
+
           content
             .background {
               GeometryReader { proxy in
