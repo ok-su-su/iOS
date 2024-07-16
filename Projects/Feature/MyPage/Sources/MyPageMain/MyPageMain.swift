@@ -215,7 +215,7 @@ struct MyPageMain {
         return .none
 
       case .view(.tappedLogOut):
-        return .send(.async(.resign))
+        return .send(.async(.logout))
 
       case .async(.logout):
         return .run { send in
