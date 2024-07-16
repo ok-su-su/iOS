@@ -52,6 +52,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
     .padding(.horizontal, 16)
     .padding(.vertical, 8)
     .background(SSColor.gray15)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
   // MARK: Content
