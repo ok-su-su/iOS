@@ -41,58 +41,54 @@ struct ReceivedMainView: View {
 
   @ViewBuilder
   func makeLedgerView() -> some View {
-    GeometryReader { geometry in
-      if store.ledgersProperty.isEmpty {
-        // 장부가 없을 때 보여줄 뷰
-        VStack {
-          makeDotLineButton()
-        }.frame(
-          width: ledgerBoxWidthAndHeight,
-          height: ledgerBoxWidthAndHeight,
-          alignment: .topLeading
-        )
-        .padding(.horizontal, 16)
+    if store.ledgersProperty.isEmpty {
+      // 장부가 없을 때 보여줄 뷰
+      VStack {
+        makeDotLineButton()
+      }.frame(
+        width: ledgerBoxWidthAndHeight,
+        height: ledgerBoxWidthAndHeight,
+        alignment: .topLeading
+      )
+      .padding(.horizontal, 16)
 
-        VStack {
-          Spacer()
-          Text(Constants.emptyInventoryText)
-            .modifier(SSTypoModifier(.text_s))
-            .foregroundColor(SSColor.gray50)
-            .frame(width: geometry.size.width, height: 30, alignment: .center)
-          Spacer()
+      VStack {
+        Spacer()
+        Text(Constants.emptyInventoryText)
+          .modifier(SSTypoModifier(.text_s))
+          .foregroundColor(SSColor.gray50)
+          .frame(maxWidth: .infinity, maxHeight: 30, alignment: .center)
+        Spacer()
+      }
+
+    } else {
+      let gridColumns = [
+        // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
+        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
+        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
+      ]
+      LazyVGrid(
+        columns: gridColumns,
+        alignment: .center,
+        spacing: 8
+      ) {
+        ForEach(store.ledgersProperty) { property in
+          LedgerBoxView(property)
+            .frame(height: ledgerBoxWidthAndHeight)
+            .onAppear {
+              store.sendViewAction(.onAppearedLedger(property))
+            }
+            .onTapGesture {
+              store.sendViewAction(.tappedLedgerBox(property))
+            }
         }
-
-      } else {
-        let gridColumns = [
-          // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
-          GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
-          GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
-        ]
-        ScrollView {
-          LazyVGrid(
-            columns: gridColumns,
-            alignment: .center,
-            spacing: 8
-          ) {
-            ForEach(store.ledgersProperty) { property in
-              LedgerBoxView(property)
-                .frame(height: ledgerBoxWidthAndHeight)
-                .onAppear {
-                  store.sendViewAction(.onAppearedLedger(property))
-                }
-                .onTapGesture {
-                  store.sendViewAction(.tappedLedgerBox(property))
-                }
-            }
-            VStack {
-              // add Ledger View
-              makeDotLineButton()
-                .frame(height: ledgerBoxWidthAndHeight)
-            }
-          }
-          .padding(.horizontal, 16)
+        VStack {
+          // add Ledger View
+          makeDotLineButton()
+            .frame(height: ledgerBoxWidthAndHeight)
         }
       }
+      .padding(.horizontal, 16)
     }
   }
 
@@ -184,10 +180,16 @@ struct ReceivedMainView: View {
         Spacer()
           .frame(height: 16)
 
-        makeFilterSection()
-
-        makeLedgerView()
-          .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        ScrollViewWithFilterItems(
+          isLoading: store.isLoading,
+          isRefresh: store.isRefresh
+        ) {
+          makeFilterSection()
+        } content: {
+          makeLedgerView()
+        } refreshAction: {
+          store.sendViewAction(.pullRefreshButton)
+        }
       }
     }
     .ssFloatingButton {
