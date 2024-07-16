@@ -11,6 +11,7 @@ import FeatureAction
 import Foundation
 import KakaoLogin
 import OSLog
+import SSPersistancy
 
 @Reducer
 struct OnboardingLogin {
@@ -112,6 +113,8 @@ struct OnboardingLogin {
           os_log("토큰값이 유효하지 않습니다. loginType =\(loginType.rawValue)")
           return .none
         }
+        // 어떤 로그인을 통해서 들어왔는지 KeyChain에 저장
+        SSOAuthManager.setOAuthType(loginType.OAuthType)
         return .run { send in
           // 새로운 유저라면
           if await network.isNewUser(loginType: loginType, token: token) {

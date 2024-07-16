@@ -5,11 +5,13 @@
 //  Created by MaraMincho on 5/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import AppleLogin
 import Combine
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import OSLog
 import SSAlert
 import SSPersistancy
 
@@ -214,17 +216,35 @@ struct MyPageMain {
         return .none
 
       case .view(.tappedLogOut):
-        return .send(.async(.resign))
+        return .send(.async(.logout))
 
       case .async(.logout):
         return .run { send in
-          try await network.logout()
+          do {
+            try await network.logout()
+          } catch {
+            os_log(.fault, "\(error.localizedDescription)")
+          }
           await send(.inner(.pushOnboarding))
         }
 
       case .async(.resign):
         return .run { send in
-          try await network.resign()
+          do {
+            let OAuthType = SSOAuthManager.getOAuthType() ?? .KAKAO
+            switch OAuthType {
+            case .APPLE:
+              let appleIdentityToken = LoginWithApple.identityToken
+              try await network.resignWithApple(identity: appleIdentityToken)
+            case .KAKAO:
+              try await network.resign()
+            case .GOOGLE:
+              break
+            }
+          } catch {
+            os_log(.fault, "\(error.localizedDescription)")
+          }
+
           await send(.inner(.pushOnboarding))
         }
 

@@ -59,15 +59,15 @@ struct OnboardingVoteView: View {
   private func makeVoteView() -> some View {
     VStack(spacing: 8) {
       ForEach(store.helper.items) { item in
-        SSButton(
-          .init(
-            size: .mh60,
-            status: .inactive,
-            style: .ghost,
-            color: .black,
-            buttonText: item.title,
-            frame: .init(maxWidth: .infinity)
-          )) {
+        Text(item.title)
+          .applySSFont(.title_xs)
+          .foregroundStyle(SSColor.gray30)
+          .padding(.horizontal, 24)
+          .padding(.vertical, 16)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .background(SSColor.gray10)
+          .cornerRadius(4)
+          .onTapGesture {
             store.send(.view(.tappedButtonItem(item)))
           }
       }
@@ -84,12 +84,10 @@ struct OnboardingVoteView: View {
           .ignoresSafeArea()
 
         if isVisible {
-          VStack(spacing: 0) {
-            makeContentView()
-          }
-          .offset(y: offsetY)
-          .transition(.opacity.animation(.easeOut(duration: 1.2)))
-          .animation(.easeIn(duration: 1.2), value: offsetY)
+          makeContentView()
+            .offset(y: offsetY)
+            .transition(.opacity.animation(.easeOut(duration: 0.5)))
+            .animation(.easeIn(duration: 1.2), value: offsetY)
         }
       }
       .onAppear {

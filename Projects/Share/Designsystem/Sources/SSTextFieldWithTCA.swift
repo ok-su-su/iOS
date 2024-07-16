@@ -157,13 +157,14 @@ public struct SSTextFieldView: View {
   }
 
   public var body: some View {
-    VStack(spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       HStack(spacing: 8) {
         TextField(
           "",
           text: $store.property.text.sending(\.changeTextField),
           prompt: Text(store.property.placeHolderText.placeHolderTextString).foregroundStyle(SSColor.gray30)
         )
+        .autocorrectionDisabled()
         .background(.clear)
         .foregroundColor(.gray100)
         .modifier(SSTypoModifier(.title_l))
@@ -205,6 +206,7 @@ public struct SSTextFieldView: View {
       if store.property.status == .error {
         Text(store.property.errorMessage)
           .foregroundStyle(SSColor.red60)
+          .frame(alignment: .leading)
           .frame(alignment: .leading)
       }
       Spacer()

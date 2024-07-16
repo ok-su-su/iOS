@@ -77,7 +77,7 @@ struct OnboardingAdditionalView: View {
   @ViewBuilder
   private func makeBirthSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(Constants.genderSectionTitleText)
+      Text(Constants.birthSectionTitleText)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray60)
         .multilineTextAlignment(.leading)
@@ -99,21 +99,15 @@ struct OnboardingAdditionalView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    VStack(spacing: 0) {
-      SSButton(.init(
-        size: .mh60,
-        status: .active,
-        style: .filled,
-        color: .black,
-        buttonText: "다음",
-        frame: .init(maxWidth: .infinity)
-      )) {
-        store.send(.view(.tappedNextButton))
+    Text("다음")
+      .applySSFont(.title_xs)
+      .foregroundStyle(SSColor.gray10)
+      .padding(.vertical, 16)
+      .frame(maxWidth: .infinity)
+      .background(SSColor.gray100)
+      .onTapGesture {
+        store.sendViewAction(.tappedNextButton)
       }
-      SSColor.gray100
-        .frame(maxHeight: 24)
-    }
-    .background(SSColor.gray100)
   }
 
   var body: some View {
@@ -126,13 +120,17 @@ struct OnboardingAdditionalView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
       }
-      VStack {
-        Spacer()
-        makeNextScreenButton()
-      }.ignoresSafeArea()
     }
     .navigationBarBackButtonHidden()
-    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
+    .safeAreaInset(edge: .bottom) {
+      makeNextScreenButton()
+    }
+    .selectableBottomSheetWithBottomView(
+      store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet),
+      sheetHeight: 342
+    ) {
+      makeNextScreenButton()
+    }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -143,12 +141,12 @@ struct OnboardingAdditionalView: View {
   private func makeNowYear() -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy"
-    return dateFormatter.string(from: .now)
+    return dateFormatter.string(from: .now) + "년"
   }
 
   private enum Constants {
     static let titleText: String = "아래 정보들을 알려주시면\n통계를 알려드릴 수 있어요"
     static let genderSectionTitleText: String = "성별"
-    static let birthSectionTitleText: String = "출생 년도"
+    static let birthSectionTitleText: String = "출생년도"
   }
 }

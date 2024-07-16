@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSRegexManager
 
 @Reducer
 struct OnboardingRegisterName {
@@ -28,7 +29,7 @@ struct OnboardingRegisterName {
         SSTextFieldReducerProperty(
           text: "",
           maximumTextLength: 10,
-          regexPattern: .SSNameRegexString,
+          regexPattern: RegexPatternString.name.regexString,
           placeHolderText: .account,
           errorMessage: "한글과 영문 10자 이내로 작성해주세요"
         )
@@ -75,7 +76,7 @@ struct OnboardingRegisterName {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
+        return .send(.scope(.textField(.changedOnFocused(true))))
 
       case .view(.tappedNextButton):
         guard let signupObject = SharedStateContainer.getValue(SignUpBodyProperty.self) else {

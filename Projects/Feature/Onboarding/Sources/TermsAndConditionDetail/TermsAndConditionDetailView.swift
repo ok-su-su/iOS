@@ -30,22 +30,15 @@ struct TermsAndConditionDetailView: View {
 
   @ViewBuilder
   private func makeNextScreenButton() -> some View {
-    VStack(spacing: 0) {
-      SSButton(.init(
-        size: .mh60,
-        status: .active,
-        style: .filled,
-        color: .black,
-        buttonText: "동의하기",
-        frame: .init(maxWidth: .infinity)
-      )) {
+    Text("동의하기")
+      .applySSFont(.title_xs)
+      .foregroundStyle(SSColor.gray10)
+      .padding(.vertical, 16)
+      .frame(maxWidth: .infinity)
+      .background(SSColor.gray100)
+      .onTapGesture {
         store.send(.view(.tappedAgreeButton))
       }
-
-      SSColor.gray100
-        .frame(maxHeight: 24)
-    }
-    .background(SSColor.gray100)
   }
 
   var body: some View {
