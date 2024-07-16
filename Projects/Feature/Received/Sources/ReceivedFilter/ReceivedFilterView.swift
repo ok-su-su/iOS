@@ -113,7 +113,6 @@ struct ReceivedFilterView: View {
         .frame(alignment: .leading)
 
       HStack(spacing: 16) {
-
         HStack(spacing: 4) {
           SSColor.gray15
             .frame(width: 118, height: 36)
@@ -148,7 +147,7 @@ struct ReceivedFilterView: View {
           Text("까지")
             .modifier(SSTypoModifier(.title_xxs))
             .foregroundColor(SSColor.gray100)
-        } 
+        }
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

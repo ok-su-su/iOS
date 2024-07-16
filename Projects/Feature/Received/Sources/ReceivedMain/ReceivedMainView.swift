@@ -52,7 +52,7 @@ struct ReceivedMainView: View {
           alignment: .topLeading
         )
         .padding(.horizontal, 16)
-        
+
         VStack {
           Spacer()
           Text(Constants.emptyInventoryText)
@@ -61,7 +61,7 @@ struct ReceivedMainView: View {
             .frame(width: geometry.size.width, height: 30, alignment: .center)
           Spacer()
         }
-        
+
       } else {
         let gridColumns = [
           GridItem(.fixed(ledgerBoxWidthAndHeight)),
