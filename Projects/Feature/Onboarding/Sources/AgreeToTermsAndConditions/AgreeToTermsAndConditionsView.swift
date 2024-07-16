@@ -111,8 +111,7 @@ struct AgreeToTermsAndConditionsView: View {
 
       if item.isDetailContent {
         SSImage
-          .commonArrow
-          .rotationEffect(.radians(Double.pi))
+          .commonForwardArrow
           .onTapGesture {
             store.send(.view(.tappedTermDetailButton(item)))
           }
