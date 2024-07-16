@@ -47,9 +47,9 @@ enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encod
     case .oldest:
       "startAt,desc"
     case .highestAmount:
-      "totalSentAmounts,desc"
+      "totalReceivedAmounts,desc"
     case .lowestAmount:
-      "totalSentAmounts,asc"
+      "totalReceivedAmounts,asc"
     }
   }
 }
