@@ -212,8 +212,8 @@ struct OnboardingLoginView: View {
             makeContentView()
           }
           .offset(y: offsetY)
-          .transition(.opacity.animation(.easeOut(duration: 0.5)))
-          .animation(.easeIn(duration: 1.5), value: offsetY)
+          .transition(.opacity.animation(.easeOut(duration: 0.6)))
+          .animation(.easeIn(duration: 0.6), value: offsetY)
         }
       }
 
@@ -236,7 +236,7 @@ struct OnboardingLoginView: View {
           offsetY = 0
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
           store.send(.view(.onAppear(true)))
         }
       }
