@@ -33,7 +33,7 @@ struct ReceivedMainView: View {
           .frame(width: 18, height: 18)
       )
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .background(Color.clear)
+      .contentShape(.rect)
       .onTapGesture {
         store.sendViewAction(.tappedAddLedgerButton)
       }
@@ -64,8 +64,9 @@ struct ReceivedMainView: View {
 
       } else {
         let gridColumns = [
-          GridItem(.fixed(ledgerBoxWidthAndHeight)),
-          GridItem(.fixed(ledgerBoxWidthAndHeight)),
+          // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
+          GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
+          GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
         ]
         ScrollView {
           LazyVGrid(
@@ -213,7 +214,7 @@ struct ReceivedMainView: View {
   }
 
   /// Box Size +  horizontal Spacing
-  var ledgerBoxWidthAndHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 - 8) / 2
+  var ledgerBoxWidthAndHeight: CGFloat = (UIScreen.main.bounds.width - (16 * 2) - 8) / 2
 
   private enum Constants {
     // MARK: Property
