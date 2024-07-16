@@ -91,38 +91,36 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
       let searchResult = store.helper.nowSearchedItem
       if !searchResult.isEmpty {
         // 최대 5개 까지 나타냄
-        ForEach(0 ..< min(searchResult.count, 5), id: \.self) { ind in
-          if ind < searchResult.count {
-            let currentItem = searchResult[ind]
-            HStack(spacing: 16) {
-              iconImage(type: store.helper.iconType)
+        ForEach(searchResult.prefix(5)) { currentItem in
+          HStack(spacing: 16) {
+            iconImage(type: store.helper.iconType)
 
-              VStack(spacing: 0) {
-                Text("\(currentItem.title)")
-                  .modifier(SSTypoModifier(.title_s))
-                  .foregroundStyle(SSColor.gray100)
-                  .frame(maxWidth: .infinity, alignment: .topLeading)
+            VStack(spacing: 0) {
+              Text("\(currentItem.title)")
+                .modifier(SSTypoModifier(.title_s))
+                .foregroundStyle(SSColor.gray100)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                HStack {
-                  if let firstDescriptionText = currentItem.firstContentDescription {
-                    Text("\(firstDescriptionText)")
-                      .modifier(SSTypoModifier(.title_xxs))
-                      .foregroundStyle(SSColor.gray40)
-                  }
-
-                  if let secondDescriptionText = currentItem.secondContentDescription {
-                    Text("\(secondDescriptionText)")
-                      .modifier(SSTypoModifier(.text_xxs))
-                      .foregroundStyle(SSColor.gray40)
-                  }
-
-                  Spacer()
+              HStack(spacing: 8) {
+                if let firstDescriptionText = currentItem.firstContentDescription {
+                  Text("\(firstDescriptionText)")
+                    .modifier(SSTypoModifier(.title_xxs))
+                    .foregroundStyle(SSColor.gray40)
                 }
+
+                if let secondDescriptionText = currentItem.secondContentDescription {
+                  Text("\(secondDescriptionText)")
+                    .modifier(SSTypoModifier(.text_xxs))
+                    .foregroundStyle(SSColor.gray40)
+                }
+
+                Spacer()
               }
             }
-            .onTapGesture {
-              store.send(.tappedSearchItem(id: currentItem.id))
-            }
+          }
+          .contentShape(.rect)
+          .onTapGesture {
+            store.send(.tappedSearchItem(id: currentItem.id))
           }
         }
       } else {
