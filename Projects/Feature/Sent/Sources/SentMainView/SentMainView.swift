@@ -131,6 +131,7 @@ struct SentMainView: View {
         }
       }
     }
+    .scrollIndicators(.hidden)
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, Constants.topButtonsSpacing)
   }
@@ -146,14 +147,16 @@ struct SentMainView: View {
       // Content
       VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-
-        VStack(spacing: 16) {
+        ScrollViewWithFilterItems(
+          isLoading: store.isLoading,
+          isRefresh: store.isRefresh
+        ) {
           makeFilterSection()
+        } content: {
           makeEnvelope()
-            .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        } refreshAction: {
+          store.send(.view(.pullRefreshButton))
         }
-
-        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
       }
     }
     .ssFloatingButton {
@@ -190,7 +193,7 @@ struct SentMainView: View {
   private enum Constants {
     static let leadingAndTrailingSpacing: CGFloat = 16
     static let filterBadgeTopAndBottomSpacing: CGFloat = 16
-    static let topButtonsSpacing: CGFloat = 8
+    static let topButtonsSpacing: CGFloat = 16
     static let emptyEnvelopesText: String = "아직 보낸 봉투가 없습니다."
     static let addNewEnvelopeButtonText: String = "보낸 봉투 추가하기"
 
