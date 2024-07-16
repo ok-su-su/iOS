@@ -147,6 +147,7 @@ struct SentMainView: View {
       // Content
       VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+
         ScrollViewWithFilterItems(
           isLoading: store.isLoading,
           isRefresh: store.isRefresh
@@ -157,6 +158,7 @@ struct SentMainView: View {
         } refreshAction: {
           store.send(.view(.pullRefreshButton))
         }
+        .padding(.horizontal, 16)
       }
     }
     .ssFloatingButton {
@@ -193,7 +195,7 @@ struct SentMainView: View {
   private enum Constants {
     static let leadingAndTrailingSpacing: CGFloat = 16
     static let filterBadgeTopAndBottomSpacing: CGFloat = 16
-    static let topButtonsSpacing: CGFloat = 16
+    static let topButtonsSpacing: CGFloat = 8
     static let emptyEnvelopesText: String = "아직 보낸 봉투가 없습니다."
     static let addNewEnvelopeButtonText: String = "보낸 봉투 추가하기"
 
