@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import AppleLogin
 import Combine
 import ComposableArchitecture
 import Designsystem
@@ -230,7 +231,16 @@ struct MyPageMain {
       case .async(.resign):
         return .run { send in
           do {
-            try await network.resign()
+            let OAuthType = SSOAuthManager.getOAuthType() ?? .KAKAO
+            switch OAuthType {
+            case .APPLE:
+              let appleIdentityToken = LoginWithApple.identityToken
+              try await network.resignWithApple(identity: appleIdentityToken)
+            case .KAKAO:
+              try await network.resign()
+            case .GOOGLE:
+              break
+            }
           } catch {
             os_log(.fault, "\(error.localizedDescription)")
           }

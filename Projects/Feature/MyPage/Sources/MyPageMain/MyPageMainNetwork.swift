@@ -33,6 +33,13 @@ final class MyPageMainNetwork {
   func resign() async throws {
     try await provider.request(.withdraw)
   }
+
+  func resignWithApple(identity: String?) async throws {
+    guard let identity else {
+      throw NSError(domain: "No apple IdentityToken its fatal error", code: 30)
+    }
+    try await provider.request(.withdrawApple(identityToken: identity))
+  }
 }
 
 extension DependencyValues {
@@ -51,6 +58,7 @@ extension MyPageMainNetwork: DependencyKey {
     case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)
     case logout
     case withdraw
+    case withdrawApple(identityToken: String)
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -61,7 +69,8 @@ extension MyPageMainNetwork: DependencyKey {
         "users/\(userID.description)"
       case .logout:
         "auth/logout"
-      case .withdraw:
+      case .withdraw,
+           .withdrawApple:
         "auth/withdraw"
       }
     }
@@ -74,7 +83,8 @@ extension MyPageMainNetwork: DependencyKey {
         .patch
       case .logout:
         .post
-      case .withdraw:
+      case .withdraw,
+           .withdrawApple:
         .post
       }
     }
@@ -88,6 +98,8 @@ extension MyPageMainNetwork: DependencyKey {
         .requestData(body.getBody())
       case .withdraw:
         .requestPlain
+      case let .withdrawApple(token):
+        .requestParameters(parameters: ["appleAccessToken": token], encoding: URLEncoding.queryString)
       }
     }
   }

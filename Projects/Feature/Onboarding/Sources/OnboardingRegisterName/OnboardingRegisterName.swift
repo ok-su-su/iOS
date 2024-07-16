@@ -76,7 +76,7 @@ struct OnboardingRegisterName {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .none
+        return .send(.scope(.textField(.changedOnFocused(true))))
 
       case .view(.tappedNextButton):
         guard let signupObject = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
