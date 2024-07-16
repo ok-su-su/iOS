@@ -20,6 +20,7 @@ struct LedgerDetailMainView: View {
 
   @ViewBuilder
   private func makeTopContentView() -> some View {
+    let badgeText = "총 \(store.ledgerProperty.totalCounts)개"
     VStack(spacing: 16) {
       VStack(alignment: .leading, spacing: 8) {
         Text("전체 \(store.ledgerProperty.totalAmountText)")
@@ -27,15 +28,7 @@ struct LedgerDetailMainView: View {
           .foregroundColor(SSColor.gray100)
           .frame(maxWidth: .infinity, alignment: .leading)
 
-        Rectangle()
-          .fill(SSColor.gray30)
-          .frame(width: 61, height: 24)
-          .cornerRadius(4)
-          .overlay {
-            Text("총 \(store.ledgerProperty.totalCounts)개")
-              .modifier(SSTypoModifier(.title_xxxs))
-              .foregroundColor(SSColor.gray70)
-          }
+        SSBadge(property: .init(size: .small, badgeString: badgeText, badgeColor: .gray30))
       }
 
       VStack(spacing: 4) {
@@ -174,7 +167,7 @@ struct LedgerDetailMainView: View {
 
         makeTopContentView()
           .padding(.horizontal, 16)
-          .padding(.bottom, 8)
+          .padding(.bottom, 16)
       }
       .background(SSColor.gray15)
 

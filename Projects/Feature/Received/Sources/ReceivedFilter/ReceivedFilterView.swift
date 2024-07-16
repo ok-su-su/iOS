@@ -48,7 +48,6 @@ struct ReceivedFilterView: View {
       Text("경조사 카테고리")
         .modifier(SSTypoModifier(.title_xs))
         .foregroundColor(SSColor.gray100)
-        .padding(.leading, Spacing.leading)
 
       WrappingHStack(horizontalSpacing: 8) {
         ForEach(store.property.selectableLedgers) { property in
@@ -112,38 +111,42 @@ struct ReceivedFilterView: View {
         .foregroundColor(SSColor.gray100)
         .frame(alignment: .leading)
 
-      HStack(spacing: 0) {
-        Rectangle()
-          .fill(SSColor.gray15)
-          .frame(width: 118, height: 36)
-          .overlay {
-            Text(store.startDateText ?? store.defaultDateText)
-              .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(store.startDateText == nil ? SSColor.gray40 : SSColor.gray100)
-          }
-          .onTapGesture {
-            store.sendViewAction(.tappedLeftDateButton)
-          }
+      HStack(spacing: 16) {
+        HStack(spacing: 4) {
+          SSColor.gray15
+            .frame(width: 118, height: 36)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay {
+              Text(store.startDateText ?? store.defaultDateText)
+                .modifier(SSTypoModifier(.title_xs))
+                .foregroundColor(store.startDateText == nil ? SSColor.gray40 : SSColor.gray100)
+            }
+            .onTapGesture {
+              store.sendViewAction(.tappedLeftDateButton)
+            }
 
-        Text("부터")
-          .modifier(SSTypoModifier(.title_xxs))
-          .foregroundColor(SSColor.gray100)
+          Text("부터")
+            .modifier(SSTypoModifier(.title_xxs))
+            .foregroundColor(SSColor.gray100)
+        }
 
-        Rectangle()
-          .fill(SSColor.gray15)
-          .frame(width: 118, height: 36)
-          .overlay {
-            Text(store.endDateText ?? store.defaultDateText)
-              .modifier(SSTypoModifier(.title_xs))
-              .foregroundColor(store.endDateText == nil ? SSColor.gray40 : SSColor.gray100)
-          }
-          .onTapGesture {
-            store.sendViewAction(.tappedRightDateButton)
-          }
+        HStack(spacing: 4) {
+          SSColor.gray15
+            .frame(width: 118, height: 36)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay {
+              Text(store.endDateText ?? store.defaultDateText)
+                .modifier(SSTypoModifier(.title_xs))
+                .foregroundColor(store.endDateText == nil ? SSColor.gray40 : SSColor.gray100)
+            }
+            .onTapGesture {
+              store.sendViewAction(.tappedRightDateButton)
+            }
 
-        Text("까지")
-          .modifier(SSTypoModifier(.title_xxs))
-          .foregroundColor(SSColor.gray100)
+          Text("까지")
+            .modifier(SSTypoModifier(.title_xxs))
+            .foregroundColor(SSColor.gray100)
+        }
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)

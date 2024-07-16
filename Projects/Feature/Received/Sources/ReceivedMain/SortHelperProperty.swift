@@ -45,11 +45,11 @@ enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encod
     case .latest:
       "startAt"
     case .oldest:
-      "endAt"
+      "startAt,desc"
     case .highestAmount:
-      "amount,desc"
+      "totalReceivedAmounts,desc"
     case .lowestAmount:
-      "amount,asc"
+      "totalReceivedAmounts,asc"
     }
   }
 }
