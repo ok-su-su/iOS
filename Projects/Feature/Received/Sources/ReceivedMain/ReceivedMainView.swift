@@ -33,6 +33,7 @@ struct ReceivedMainView: View {
           .frame(width: 18, height: 18)
       )
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .background(Color.clear)
       .onTapGesture {
         store.sendViewAction(.tappedAddLedgerButton)
       }
