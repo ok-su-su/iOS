@@ -80,7 +80,7 @@ struct OnboardingLoginView: View {
           .background(.white)
           .clipShape(RoundedRectangle(cornerRadius: 4))
           .onChange(of: store.helper.displayPercentageText) { _, newValue in
-            withAnimation(.easeIn(duration: 1)) {
+            withAnimation(.easeInOut(duration: 1)) {
               firstLineTitleText = newValue
             }
           }
@@ -101,7 +101,7 @@ struct OnboardingLoginView: View {
           .background(.white)
           .clipShape(RoundedRectangle(cornerRadius: 4))
           .onChange(of: store.helper.displayPriceText) { _, newValue in
-            withAnimation(.easeIn(duration: 1)) {
+            withAnimation(.easeInOut(duration: 1)) {
               secondLineTitleText = newValue
             }
           }
@@ -116,18 +116,17 @@ struct OnboardingLoginView: View {
   @ViewBuilder
   private func makePieChartView() -> some View {
     ZStack {
-      Circle()
-        .frame(width: Metrics.circleWithAndHeight, height: Metrics.circleWithAndHeight)
-        .foregroundStyle(SSColor.orange20)
-
       SectorShape(
         startAngle: endAngle,
         endAngle: .init(degrees: 0),
         clockwise: false
       )
-      .stroke(SSColor.orange50, lineWidth: 8)
       .fill(SSColor.orange40)
-      .frame(width: 200, height: 200)
+      .frame(width: Metrics.circleWithAndHeight, height: Metrics.circleWithAndHeight)
+
+      Circle()
+        .frame(width: Metrics.smallCircleWithAndHeight, height: Metrics.smallCircleWithAndHeight)
+        .foregroundStyle(SSColor.orange20.opacity(0.48))
     }
     .onAppear {
       endAngle = .init(degrees: store.helper.displaySectorShapeDegree)
@@ -213,8 +212,8 @@ struct OnboardingLoginView: View {
             makeContentView()
           }
           .offset(y: offsetY)
-          .transition(.opacity.animation(.easeOut(duration: 1.2)))
-          .animation(.easeIn(duration: 1.2), value: offsetY)
+          .transition(.opacity.animation(.easeOut(duration: 0.5)))
+          .animation(.easeIn(duration: 1.5), value: offsetY)
         }
       }
 
@@ -245,6 +244,7 @@ struct OnboardingLoginView: View {
   }
 
   private enum Metrics {
+    static let smallCircleWithAndHeight: CGFloat = 184
     static let circleWithAndHeight: CGFloat = 200
   }
 

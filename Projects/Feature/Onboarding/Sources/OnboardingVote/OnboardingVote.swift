@@ -70,12 +70,14 @@ struct OnboardingVote {
       case .async(.getVoteItems):
         return .run { [helper = state.networkHelper] send in
           let items = await helper.getOnboardingVoteItems()
-          await send(.inner(.updateVoteItems(items)), animation: .default)
+          await send(.inner(.updateVoteItems(items)))
         }
         .cancellable(id: CancelID.getOnboardingVoteItems, cancelInFlight: true)
+
       case let .inner(.updateVoteItems(items)):
         state.helper.items = items
         return .none
+
       case .inner(.saveVote):
         state.persistencyHelper.saveKeyChainIsNotInitialUser()
         return .none
