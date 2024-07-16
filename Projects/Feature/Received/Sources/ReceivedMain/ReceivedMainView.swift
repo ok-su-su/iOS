@@ -46,9 +46,13 @@ struct ReceivedMainView: View {
         // 장부가 없을 때 보여줄 뷰
         VStack {
           makeDotLineButton()
-        }.frame(width: ledgerBoxHeight, height: ledgerBoxHeight, alignment: .topLeading)
-          .padding(.horizontal, 16)
-
+        }.frame(
+          width: ledgerBoxWidthAndHeight,
+          height: ledgerBoxWidthAndHeight,
+          alignment: .topLeading
+        )
+        .padding(.horizontal, 16)
+        
         VStack {
           Spacer()
           Text(Constants.emptyInventoryText)
@@ -57,11 +61,11 @@ struct ReceivedMainView: View {
             .frame(width: geometry.size.width, height: 30, alignment: .center)
           Spacer()
         }
-
+        
       } else {
         let gridColumns = [
-          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
-          GridItem(.adaptive(minimum: ledgerBoxHeight, maximum: .infinity)),
+          GridItem(.fixed(ledgerBoxWidthAndHeight)),
+          GridItem(.fixed(ledgerBoxWidthAndHeight)),
         ]
         ScrollView {
           LazyVGrid(
@@ -71,7 +75,7 @@ struct ReceivedMainView: View {
           ) {
             ForEach(store.ledgersProperty) { property in
               LedgerBoxView(property)
-                .frame(height: ledgerBoxHeight)
+                .frame(height: ledgerBoxWidthAndHeight)
                 .onAppear {
                   store.sendViewAction(.onAppearedLedger(property))
                 }
@@ -82,7 +86,7 @@ struct ReceivedMainView: View {
             VStack {
               // add Ledger View
               makeDotLineButton()
-                .frame(height: ledgerBoxHeight)
+                .frame(height: ledgerBoxWidthAndHeight)
             }
           }
           .padding(.horizontal, 16)
@@ -209,7 +213,7 @@ struct ReceivedMainView: View {
   }
 
   /// Box Size +  horizontal Spacing
-  var ledgerBoxHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 + 8) / 2
+  var ledgerBoxWidthAndHeight: CGFloat = (UIScreen.main.bounds.width - 16 * 2 - 8) / 2
 
   private enum Constants {
     // MARK: Property

@@ -56,6 +56,8 @@ public struct LedgerBoxView: View {
           .foregroundColor(SSColor.gray100)
           .padding(.bottom, 20)
 
+        Spacer()
+
         Text(totalAmountText)
           .modifier(SSTypoModifier(.title_xxxs))
           .foregroundColor(SSColor.gray70)
