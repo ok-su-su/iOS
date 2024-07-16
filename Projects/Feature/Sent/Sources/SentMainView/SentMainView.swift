@@ -131,6 +131,7 @@ struct SentMainView: View {
         }
       }
     }
+    .scrollIndicators(.hidden)
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, Constants.topButtonsSpacing)
   }
@@ -147,13 +148,17 @@ struct SentMainView: View {
       VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
 
-        VStack(spacing: 16) {
+        ScrollViewWithFilterItems(
+          isLoading: store.isLoading,
+          isRefresh: store.isRefresh
+        ) {
           makeFilterSection()
+        } content: {
           makeEnvelope()
-            .modifier(SSLoadingModifier(isLoading: store.isLoading))
+        } refreshAction: {
+          store.send(.view(.pullRefreshButton))
         }
-
-        .padding(.horizontal, Constants.leadingAndTrailingSpacing)
+        .padding(.horizontal, 16)
       }
     }
     .ssFloatingButton {

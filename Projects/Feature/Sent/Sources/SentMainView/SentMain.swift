@@ -30,6 +30,7 @@ struct SentMain {
     var isOnAppear = false
     var page: Int = 0
     var isEndOfPage: Bool = false
+    var isRefresh = false
 
     var presentCreateEnvelope = false
     @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
@@ -52,10 +53,13 @@ struct SentMain {
     }
   }
 
+  enum CancelID {
+    case refresh
+  }
+
   @Dependency(\.sentMainNetwork) var network
 
-  enum Action: Equatable, FeatureAction, BindableAction {
-    case binding(BindingAction<State>)
+  enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -74,6 +78,7 @@ struct SentMain {
     case presentCreateEnvelope(Bool)
     case finishedCreateEnvelopes(Data)
     case tappedFloatingButton
+    case pullRefreshButton
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
@@ -114,6 +119,14 @@ struct SentMain {
 
     case .tappedFloatingButton:
       return .send(.inner(.showCreateEnvelopRouter))
+
+    case .pullRefreshButton:
+      return .concatenate(
+        .send(.inner(.isRefresh(true))),
+        .send(.async(.updateEnvelopesByFilterInitialPage)),
+        .send(.inner(.isRefresh(false)))
+      )
+      .cancellable(id: CancelID.refresh, cancelInFlight: true)
     }
   }
 
@@ -122,6 +135,7 @@ struct SentMain {
     case showCreateEnvelopRouter
     case updateEnvelopes([EnvelopeProperty])
     case isLoading(Bool)
+    case isRefresh(Bool)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
@@ -142,6 +156,10 @@ struct SentMain {
 
     case let .isLoading(val):
       state.isLoading = val
+      return .none
+
+    case let .isRefresh(val):
+      state.isRefresh = val
       return .none
     }
   }
@@ -258,8 +276,6 @@ struct SentMain {
       SSTabBarFeature()
     }
 
-    BindingReducer()
-
     // MARK: - Reducer
 
     Reduce { state, action in
@@ -272,9 +288,6 @@ struct SentMain {
         return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-
-      case .binding:
-        return .none
 
       case .delegate:
         return .none

@@ -20,6 +20,7 @@ struct ReceivedMain {
   @ObservableState
   struct State: Equatable {
     var isLoading: Bool = true
+    var isRefresh = false
     var isOnAppear: Bool = false
     var page = 0
     var isEndOfPage = false
@@ -74,11 +75,13 @@ struct ReceivedMain {
     case tappedSortButton
     case tappedFloatingButton
     case tappedLedgerBox(LedgerBoxProperty)
+    case pullRefreshButton
   }
 
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateLedgers([LedgerBoxProperty])
+    case isRefresh(Bool)
   }
 
   enum AsyncAction: Equatable {
@@ -151,6 +154,13 @@ struct ReceivedMain {
     case let .tappedLedgerBox(property):
       state.detail = .init(.init(ledgerID: property.id))
       return .none
+
+    case .pullRefreshButton:
+      return .concatenate(
+        .send(.inner(.isRefresh(true))),
+        .send(.async(.getLedgersInitialPage)),
+        .send(.inner(.isRefresh(false)))
+      )
     }
   }
 
@@ -203,6 +213,9 @@ struct ReceivedMain {
       }
       state.page += 1
       state.ledgersProperty = currentProperty
+      return .none
+    case let .isRefresh(val):
+      state.isRefresh = val
       return .none
     }
   }
