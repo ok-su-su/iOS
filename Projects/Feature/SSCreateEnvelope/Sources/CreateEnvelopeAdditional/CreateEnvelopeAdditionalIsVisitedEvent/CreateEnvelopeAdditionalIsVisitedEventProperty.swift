@@ -28,9 +28,9 @@ struct CreateEnvelopeAdditionalIsVisitedEventHelper: Equatable {
   ]
   var selectedID: [Int] = []
 
-
   mutating func reset() {
     selectedID.removeAll()
   }
+
   var isVisited: Bool { return selectedID.first == 0 }
 }

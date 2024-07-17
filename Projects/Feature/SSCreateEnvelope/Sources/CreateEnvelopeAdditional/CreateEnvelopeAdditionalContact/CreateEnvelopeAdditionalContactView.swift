@@ -57,10 +57,10 @@ struct CreateEnvelopeAdditionalContactView: View {
           .padding(.horizontal, Metrics.horizontalSpacing)
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .nextButton(store.pushable) {
       store.sendViewAction(.tappedNextButton)
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
