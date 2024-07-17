@@ -24,19 +24,18 @@ struct SentMainView: View {
 
   @ViewBuilder
   private func makeEnvelope() -> some View {
-    if store.state.envelopes.isEmpty {
-      VStack {
-        Spacer()
-        Text(Constants.emptyEnvelopesText)
-          .modifier(SSTypoModifier(.text_s))
-          .foregroundStyle(SSColor.gray50)
-        SSButton(Constants.emptyEnvelopeButtonProperty) {
-          store.sendViewAction(.tappedEmptyEnvelopeButton)
-        }
-        Spacer()
+    makeUserEnvelopes()
+  }
+
+  @ViewBuilder
+  private func makeEmptyEnvelopesView() -> some View {
+    VStack(alignment: .center, spacing: 16) {
+      Text(Constants.emptyEnvelopesText)
+        .modifier(SSTypoModifier(.text_s))
+        .foregroundStyle(SSColor.gray50)
+      SSButton(Constants.emptyEnvelopeButtonProperty) {
+        store.sendViewAction(.tappedEmptyEnvelopeButton)
       }
-    } else {
-      makeUserEnvelopes()
     }
   }
 
@@ -136,6 +135,27 @@ struct SentMainView: View {
     .padding(.bottom, Constants.topButtonsSpacing)
   }
 
+  @ViewBuilder
+  private func makeFilterAndEnvelopesContentView() -> some View {
+    ZStack {
+      ScrollViewWithFilterItems(
+        isLoading: store.isLoading,
+        isRefresh: store.isRefresh
+      ) {
+        makeFilterSection()
+      } content: {
+        makeEnvelope()
+      } refreshAction: {
+        store.send(.view(.pullRefreshButton))
+      }
+      .padding(.horizontal, 16)
+
+      if store.envelopes.isEmpty && !store.isLoading {
+        makeEmptyEnvelopesView()
+      }
+    }
+  }
+
   // MARK: - View Body
 
   var body: some View {
@@ -148,17 +168,7 @@ struct SentMainView: View {
       VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
 
-        ScrollViewWithFilterItems(
-          isLoading: store.isLoading,
-          isRefresh: store.isRefresh
-        ) {
-          makeFilterSection()
-        } content: {
-          makeEnvelope()
-        } refreshAction: {
-          store.send(.view(.pullRefreshButton))
-        }
-        .padding(.horizontal, 16)
+        makeFilterAndEnvelopesContentView()
       }
     }
     .ssFloatingButton {

@@ -52,7 +52,7 @@ struct ReceivedFilterView: View {
       WrappingHStack(horizontalSpacing: 8) {
         ForEach(store.property.selectableLedgers) { property in
           let isSelected = store.property.isSelectedItems(id: property.id)
-          SSButtonWithState(
+          SSButton(
             .init(
               size: .xsh28,
               status: isSelected ? .active : .inactive,

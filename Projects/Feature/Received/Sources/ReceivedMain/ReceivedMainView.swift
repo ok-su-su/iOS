@@ -40,56 +40,42 @@ struct ReceivedMainView: View {
   }
 
   @ViewBuilder
-  func makeLedgerView() -> some View {
-    if store.ledgersProperty.isEmpty {
-      // 장부가 없을 때 보여줄 뷰
+  private func makeEmptyLedgersView() -> some View {
+    Text(Constants.emptyInventoryText)
+      .modifier(SSTypoModifier(.text_s))
+      .foregroundColor(SSColor.gray50)
+      .frame(maxWidth: .infinity, maxHeight: 30, alignment: .center)
+  }
+
+  @ViewBuilder
+  private func makeLedgersView() -> some View {
+    let gridColumns = [
+      // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
+      GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
+      GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
+    ]
+    LazyVGrid(
+      columns: gridColumns,
+      alignment: .center,
+      spacing: 8
+    ) {
+      ForEach(store.ledgersProperty) { property in
+        LedgerBoxView(property)
+          .frame(height: ledgerBoxWidthAndHeight)
+          .onAppear {
+            store.sendViewAction(.onAppearedLedger(property))
+          }
+          .onTapGesture {
+            store.sendViewAction(.tappedLedgerBox(property))
+          }
+      }
       VStack {
+        // add Ledger View
         makeDotLineButton()
-      }.frame(
-        width: ledgerBoxWidthAndHeight,
-        height: ledgerBoxWidthAndHeight,
-        alignment: .topLeading
-      )
-      .padding(.horizontal, 16)
-
-      VStack {
-        Spacer()
-        Text(Constants.emptyInventoryText)
-          .modifier(SSTypoModifier(.text_s))
-          .foregroundColor(SSColor.gray50)
-          .frame(maxWidth: .infinity, maxHeight: 30, alignment: .center)
-        Spacer()
+          .frame(height: ledgerBoxWidthAndHeight)
       }
-
-    } else {
-      let gridColumns = [
-        // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
-        GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
-        GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
-      ]
-      LazyVGrid(
-        columns: gridColumns,
-        alignment: .center,
-        spacing: 8
-      ) {
-        ForEach(store.ledgersProperty) { property in
-          LedgerBoxView(property)
-            .frame(height: ledgerBoxWidthAndHeight)
-            .onAppear {
-              store.sendViewAction(.onAppearedLedger(property))
-            }
-            .onTapGesture {
-              store.sendViewAction(.tappedLedgerBox(property))
-            }
-        }
-        VStack {
-          // add Ledger View
-          makeDotLineButton()
-            .frame(height: ledgerBoxWidthAndHeight)
-        }
-      }
-      .padding(.horizontal, 16)
     }
+    .padding(.horizontal, 16)
   }
 
   @ViewBuilder
@@ -164,9 +150,30 @@ struct ReceivedMainView: View {
         }
       }
     }
+    .scrollIndicators(.hidden)
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, 16)
     .padding(.horizontal, 16)
+  }
+
+  @ViewBuilder
+  private func makeFilterAndLedgersView() -> some View {
+    ZStack {
+      if !store.isLoading && store.ledgersProperty.isEmpty {
+        makeEmptyLedgersView()
+      }
+
+      ScrollViewWithFilterItems(
+        isLoading: store.isLoading,
+        isRefresh: store.isRefresh
+      ) {
+        makeFilterSection()
+      } content: {
+        makeLedgersView()
+      } refreshAction: {
+        store.sendViewAction(.pullRefreshButton)
+      }
+    }
   }
 
   var body: some View {
@@ -175,21 +182,9 @@ struct ReceivedMainView: View {
         .gray15
         .ignoresSafeArea()
 
-      VStack {
+      VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        Spacer()
-          .frame(height: 16)
-
-        ScrollViewWithFilterItems(
-          isLoading: store.isLoading,
-          isRefresh: store.isRefresh
-        ) {
-          makeFilterSection()
-        } content: {
-          makeLedgerView()
-        } refreshAction: {
-          store.sendViewAction(.pullRefreshButton)
-        }
+        makeFilterAndLedgersView()
       }
     }
     .ssFloatingButton {
