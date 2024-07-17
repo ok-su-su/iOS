@@ -29,7 +29,7 @@ struct SentSearch {
           prevSearchedItem: [],
           nowSearchedItem: [],
           textFieldPromptText: "찾고 싶은 봉투를 검색해보세요",
-          prevSearchedNoContentTitleText: "어떤 투표를 찾아드릴까요?",
+          prevSearchedNoContentTitleText: "어떤 봉투를 찾아드릴까요?",
           prevSearchedNoContentDescriptionText: "궁금하신 것들의 키워드를\n검색해볼 수 있어요",
           textFieldText: "",
           iconType: .sent,
