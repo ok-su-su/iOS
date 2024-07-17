@@ -37,6 +37,7 @@ public struct SpecificEnvelopeEditView: View {
 
         makeSubContents()
       }
+      .contentShape(Rectangle())
       .whenTapDismissKeyboard()
     }
   }
@@ -224,7 +225,7 @@ public struct SpecificEnvelopeEditView: View {
   public var body: some View {
     ZStack {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
 
