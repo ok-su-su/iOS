@@ -36,7 +36,7 @@ struct CreateEnvelopeAdditionalContactView: View {
       TextField(
         "",
         text: $store.contactHelper.textFieldText.sending(\.view.changedTextField),
-        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        prompt: Text("01000000000").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
       .keyboardType(.numberPad)
