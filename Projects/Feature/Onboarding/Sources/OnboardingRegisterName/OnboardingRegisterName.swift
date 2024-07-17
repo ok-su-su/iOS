@@ -21,7 +21,7 @@ struct OnboardingRegisterName {
     var isOnAppear: Bool = false
 
     var isActiveNextButton: Bool {
-      return textFieldProperty.getText.contains(RegexPatternString.name.regexString)
+      return RegexManager.isValidName(textFieldProperty.getText)
     }
 
     init() {

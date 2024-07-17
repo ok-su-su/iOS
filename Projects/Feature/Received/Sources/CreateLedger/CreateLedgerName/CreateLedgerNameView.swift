@@ -49,6 +49,8 @@ struct CreateLedgerNameView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         makeContentView()
           .padding(.horizontal, 16)

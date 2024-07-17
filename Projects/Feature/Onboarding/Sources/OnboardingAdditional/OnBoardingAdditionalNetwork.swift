@@ -51,7 +51,10 @@ struct OnBoardingAdditionalNetwork: Equatable {
   private let provider: MoyaProvider<Network> = .init()
 
   func requestSignUp(body: SignUpBodyProperty) async throws -> SignUpResponseDTO {
+    dump(body)
     let bodyData = try body.makeBodyData()
+    let cur = String(data: bodyData, encoding: .utf8)
+    dump(cur)
     switch body.getLoginType() {
     case .KAKAO:
       guard let token = LoginWithKakao.getToken() else {
