@@ -52,6 +52,7 @@ struct CreateEnvelopeAdditionalContactView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
       VStack {
         makeContentView()
           .padding(.horizontal, Metrics.horizontalSpacing)
