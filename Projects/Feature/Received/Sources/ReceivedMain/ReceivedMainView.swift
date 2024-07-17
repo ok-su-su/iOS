@@ -64,8 +64,8 @@ struct ReceivedMainView: View {
     } else {
       let gridColumns = [
         // 이유는 모르겠지만 8로 spaicng 설정하면 원하는대로 안나타남.
-        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
-        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 6),
+        GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
+        GridItem(.flexible(minimum: 116, maximum: .infinity), spacing: 6),
       ]
       LazyVGrid(
         columns: gridColumns,
