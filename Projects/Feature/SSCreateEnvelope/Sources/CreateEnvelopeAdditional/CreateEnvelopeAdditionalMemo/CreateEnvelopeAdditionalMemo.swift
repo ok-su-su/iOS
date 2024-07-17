@@ -66,8 +66,11 @@ struct CreateEnvelopeAdditionalMemo {
         return .send(.inner(.push))
 
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
+        return .send(.view(.textFieldChange("")))
 
       case .inner(.push):
         CreateEnvelopeRequestShared.setMemo(state.memoHelper.textFieldText)

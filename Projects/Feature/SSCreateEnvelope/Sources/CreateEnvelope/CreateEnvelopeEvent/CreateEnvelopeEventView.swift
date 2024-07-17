@@ -20,7 +20,7 @@ struct CreateEnvelopeEventView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 0) {
       Spacer()
         .frame(height: 34)
 
@@ -60,11 +60,10 @@ struct CreateEnvelopeEventView: View {
         .gray15
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
-      VStack {
-        makeContentView()
-      }
+
+      makeContentView()
+        .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .nextButton(store.pushable) {
       store.sendViewAction(.tappedNextButton)
     }

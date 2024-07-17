@@ -27,7 +27,6 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
     let eventNameText = store.eventName ?? ""
     VStack(alignment: .leading) {
       HStack(spacing: 4) {
-        // TODO: change Property
         Text(eventNameText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)

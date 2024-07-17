@@ -36,7 +36,7 @@ struct CreateEnvelopeAdditionalContactView: View {
       TextField(
         "",
         text: $store.contactHelper.textFieldText.sending(\.view.changedTextField),
-        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        prompt: Text("01000000000").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
       .keyboardType(.numberPad)
@@ -57,10 +57,10 @@ struct CreateEnvelopeAdditionalContactView: View {
           .padding(.horizontal, Metrics.horizontalSpacing)
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .nextButton(store.pushable) {
       store.sendViewAction(.tappedNextButton)
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

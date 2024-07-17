@@ -62,8 +62,11 @@ struct CreateEnvelopeAdditionalIsGift {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
-        return .none
+        return .send(.view(.changedTextField("")))
 
       case .view(.tappedNextButton):
         return .send(.inner(.push))

@@ -35,7 +35,7 @@ public enum RegexPatternString {
     case .memo:
       "^.{1,30}$"
     case .contacts:
-      "/^[\\d]{11}$/"
+      "^[\\d]{11}$"
     }
   }
 }
