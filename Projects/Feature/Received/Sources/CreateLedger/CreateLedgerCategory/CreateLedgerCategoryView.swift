@@ -52,6 +52,8 @@ struct CreateLedgerCategoryView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         makeContentView()
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
