@@ -65,7 +65,7 @@ public extension [Target] {
     var targets: [Target] = [
       Target.target(
         name: name,
-        destinations: .iOS,
+        destinations: [.iPhone],
         product: .app,
         productName: productName,
         bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased()).app",
@@ -85,7 +85,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(name)Tests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())Tests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -101,7 +101,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(name)UITests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name.lowercased())UITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -158,7 +158,7 @@ public extension [Target] {
     var targets: [Target] = [
       Target.target(
         name: "\(feature.targetName)",
-        destinations: .iOS,
+        destinations: [.iPhone],
         product: product,
         bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)",
         deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -175,7 +175,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(feature.targetName)FeatureTests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureTests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -191,7 +191,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(feature.targetName)FeatureUITests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureUITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -250,7 +250,7 @@ public extension [Target] {
     var targets: [Target] = [
       Target.target(
         name: "\(name)",
-        destinations: .iOS,
+        destinations: [.iPhone],
         product: product,
         bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)",
         deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -267,7 +267,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(name)Tests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .unitTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)FeatureTests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
@@ -283,7 +283,7 @@ public extension [Target] {
       targets.append(
         Target.target(
           name: "\(name)UITests",
-          destinations: .iOS,
+          destinations: [.iPhone],
           product: .uiTests,
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(name)FeatureUITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
