@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSSelectableItems
+import SSToast
 import SwiftUI
 
 struct CreateLedgerCategoryView: View {
@@ -31,8 +32,10 @@ struct CreateLedgerCategoryView: View {
         .foregroundStyle(SSColor.gray100)
         .modifier(SSTypoModifier(.title_m))
 
-      SSSelectableItemsView(store: store.scope(state: \.selection, action: \.scope.selection))
-
+      ScrollView {
+        SSSelectableItemsView(store: store.scope(state: \.selection, action: \.scope.selection))
+      }
+      .scrollIndicators(.hidden)
       Spacer()
     }.padding(.horizontal, 16)
   }
@@ -54,6 +57,7 @@ struct CreateLedgerCategoryView: View {
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .safeAreaInset(edge: .bottom) {
       nextButton()
     }

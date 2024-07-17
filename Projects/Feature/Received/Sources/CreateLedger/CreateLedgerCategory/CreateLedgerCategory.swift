@@ -8,7 +8,9 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
 import SSSelectableItems
+import SSToast
 
 // MARK: - CreateLedgerCategory
 
@@ -20,6 +22,7 @@ struct CreateLedgerCategory {
     @Shared var selectableItems: [CreateLedgerCategoryItem]
     @Shared var selectedItemsID: [Int]
     @Shared var customItems: CreateLedgerCategoryItem?
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var selection: SSSelectableItemsReducer<CreateLedgerCategoryItem>.State
     var isLoading = true
     var isPushable: Bool {
@@ -30,7 +33,12 @@ struct CreateLedgerCategory {
       _selectableItems = .init([])
       _selectedItemsID = .init([])
       _customItems = .init(nil)
-      selection = .init(items: _selectableItems, selectedID: _selectedItemsID, isCustomItem: _customItems)
+      selection = .init(
+        items: _selectableItems,
+        selectedID: _selectedItemsID,
+        isCustomItem: _customItems,
+        regexPatternString: RegexPatternString.ledger.regexString
+      )
     }
   }
 
@@ -93,10 +101,18 @@ struct CreateLedgerCategory {
   @CasePathable
   enum ScopeAction: Equatable {
     case selection(SSSelectableItemsReducer<CreateLedgerCategoryItem>.Action)
+    case toast(SSToastReducer.Action)
   }
 
   func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
+    case .toast:
+      return .none
+
+    case let .selection(.delegate(.invalidText(text))):
+      return ToastRegexManager.isShowToastByLedgerName(text) ?
+        .send(.scope(.toast(.showToastMessage("장부 이름은 10글자까지 입력 가능합니다.")))) : .none
+
     case .selection:
       return .none
     }
@@ -130,6 +146,10 @@ struct CreateLedgerCategory {
     Scope(state: \.selection, action: \.scope.selection) {
       SSSelectableItemsReducer<CreateLedgerCategoryItem>()
     }
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
+
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
