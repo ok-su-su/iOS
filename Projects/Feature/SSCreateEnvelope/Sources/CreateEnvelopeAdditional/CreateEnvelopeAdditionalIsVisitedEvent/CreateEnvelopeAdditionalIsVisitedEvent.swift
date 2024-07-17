@@ -27,6 +27,11 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
         selectedID: isVisitedEventHelper.selectedID,
         isCustomItem: .init(nil)
       )
+      reset()
+    }
+
+    mutating func reset() {
+      isVisitedEventHelper.reset()
     }
   }
 

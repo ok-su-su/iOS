@@ -63,7 +63,7 @@ struct CreateEnvelopeNameView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     let titleText = store.createType == .sent ? Constants.sentTitleText : Constants.receivedTitleText
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 0) {
       Spacer()
         .frame(height: 34)
 
@@ -108,14 +108,12 @@ struct CreateEnvelopeNameView: View {
         .gray15
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
-      VStack {
-        makeContentView()
-      }
+      makeContentView()
+        .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
     .nextButton(store.isPushable) {
       store.sendViewAction(.tappedNextButton)
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       isFocused = true

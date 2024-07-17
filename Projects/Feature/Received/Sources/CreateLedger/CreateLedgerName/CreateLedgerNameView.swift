@@ -53,6 +53,7 @@ struct CreateLedgerNameView: View {
         makeContentView()
           .padding(.horizontal, 16)
       }
+      .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
     .navigationBarBackButtonHidden()
     .safeAreaInset(edge: .bottom) {
@@ -60,7 +61,6 @@ struct CreateLedgerNameView: View {
         store.sendViewAction(.tappedNextButton)
       }
     }
-    .modifier(SSToastModifier(toastStore: store.scope(state: \.toast, action: \.scope.toast)))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
