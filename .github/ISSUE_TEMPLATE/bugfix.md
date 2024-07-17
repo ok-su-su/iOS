@@ -1,11 +1,9 @@
 ---
 name: BugFix
 about: Create a report to help us improve
-title: ''
-labels: bugFix
+title: '[BugFix]'
+labels: BugFix
 assignees: ''
 
 ---
 
-## Bug Name
-description
