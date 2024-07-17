@@ -11,6 +11,7 @@ import SwiftUI
 import UIKit
 
 class MyAppDelegate: NSObject, UIApplicationDelegate {
+  
   func application(
     _: UIApplication,
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil

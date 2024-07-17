@@ -30,6 +30,9 @@ let project = Project.makeModule(
       "CFBundleVersion": "202407169",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
+      "UISupportedInterfaceOrientations": .array([
+        "UIInterfaceOrientationPortrait",
+      ]),
       // KAKAO InfoPlist
       "LSApplicationQueriesSchemes":
         .array([
