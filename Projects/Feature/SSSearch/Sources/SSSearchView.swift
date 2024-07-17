@@ -51,6 +51,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 8)
+    .frame(maxHeight: 44)
     .background(SSColor.gray15)
     .clipShape(RoundedRectangle(cornerRadius: 4))
   }
@@ -192,6 +193,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
         .gray10
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         makeContentView()
       }
