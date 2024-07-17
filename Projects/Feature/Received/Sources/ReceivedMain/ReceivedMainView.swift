@@ -164,6 +164,7 @@ struct ReceivedMainView: View {
         }
       }
     }
+    .scrollIndicators(.hidden)
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, 16)
     .padding(.horizontal, 16)
