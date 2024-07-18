@@ -57,7 +57,7 @@ public final class LoginWithApple {
     }
     let userIdentifier = userCredential.user
     let appleAccessToken = userCredential.identityToken
-
+    print("이름은 뭐야??", userCredential.fullName ?? "이름 없음")
     if let userIdentifierData = userIdentifier.data(using: .utf8) {
       SSKeychain
         .shared
