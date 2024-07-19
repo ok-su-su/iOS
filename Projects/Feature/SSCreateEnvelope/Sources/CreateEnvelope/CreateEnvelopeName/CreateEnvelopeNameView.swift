@@ -24,39 +24,44 @@ struct CreateEnvelopeNameView: View {
   private func makeFilteredView() -> some View {
     ScrollView(.vertical) {
       let filteredPrevEnvelopes = store.filteredPrevEnvelopes
-      ForEach(0 ..< filteredPrevEnvelopes.count, id: \.self) { ind in
-        let current = filteredPrevEnvelopes[ind]
-        HStack(alignment: .top, spacing: 8) {
-          Text(current.name)
-            .modifier(SSTypoModifier(.title_xs))
-            .foregroundStyle(SSColor.gray100)
-
-          Text(current.relationShip)
-            .modifier(SSTypoModifier(.title_xs))
-            .foregroundStyle(SSColor.gray60)
-
-          if let eventName = current.eventName {
-            Text(eventName)
-              .modifier(SSTypoModifier(.text_xs))
-              .foregroundStyle(SSColor.gray40)
-          }
-
-          if let eventDate = current.eventDate {
-            Text(CustomDateFormatter.getString(from: eventDate, dateFormat: "yyyy.MM.dd"))
-              .modifier(SSTypoModifier(.text_xs))
-              .foregroundStyle(SSColor.gray40)
-          }
-
-          Spacer()
+      LazyVStack(spacing: 0) {
+        ForEach(0 ..< filteredPrevEnvelopes.count, id: \.self) { ind in
+          makeSearchFriendView(filteredPrevEnvelopes[ind])
         }
-        .onTapGesture {
-          store.send(.view(.tappedFilterItem(name: current.name)))
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
       }
+    }
+    .scrollIndicators(.hidden)
+  }
+
+  @ViewBuilder
+  private func makeSearchFriendView(_ current: PrevEnvelope) -> some View {
+    HStack(alignment: .top, spacing: 8) {
+      Text(current.name)
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray100)
+
+      Text(current.relationShip)
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray60)
+
+      if let eventName = current.eventName {
+        Text(eventName)
+          .modifier(SSTypoModifier(.text_xs))
+          .foregroundStyle(SSColor.gray40)
+      }
+
+      if let eventDate = current.eventDate {
+        Text(CustomDateFormatter.getString(from: eventDate, dateFormat: "yyyy.MM.dd"))
+          .modifier(SSTypoModifier(.text_xs))
+          .foregroundStyle(SSColor.gray40)
+      }
+      Spacer()
+    }
+    .padding(.horizontal, 24)
+    .padding(.vertical, 12)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.send(.view(.tappedFilterItem(name: current.name)))
     }
   }
 
@@ -72,6 +77,7 @@ struct CreateEnvelopeNameView: View {
       Text(titleText)
         .modifier(SSTypoModifier(.title_m))
         .foregroundStyle(SSColor.gray100)
+        .padding(.horizontal, Metrics.horizontalSpacing)
 
       Spacer()
         .frame(height: 34)
@@ -92,14 +98,13 @@ struct CreateEnvelopeNameView: View {
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
       .focused($isFocused)
+      .padding(.horizontal, Metrics.horizontalSpacing)
 
       Spacer()
         .frame(height: 24)
 
       makeFilteredView()
-      Spacer()
     }
-    .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
   var body: some View {
