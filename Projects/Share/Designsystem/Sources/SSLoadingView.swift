@@ -25,21 +25,18 @@ public struct SSLoadingModifier: ViewModifier {
   }
 
   public func body(content: Content) -> some View {
-    ZStack {
-      if isLoading {
-        let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
-        ZStack {
-          Color.clear
-          LottieView(animation: .filepath(filePath))
-            .looping()
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 72, height: 72)
-            .clipped()
-        }
+    let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
 
-      } else {
-        content
+    ZStack(alignment: .center) {
+      content
+        .opacity(isLoading ? 0 : 1)
+      if isLoading {
+        LottieView(animation: .filepath(filePath))
+          .looping()
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 72, height: 72)
+          .clipped()
       }
     }
   }

@@ -29,7 +29,7 @@ struct SentMainView: View {
 
   @ViewBuilder
   private func makeEmptyEnvelopesView() -> some View {
-    VStack(alignment: .center, spacing: 16) {
+    LazyVStack(alignment: .center, spacing: 16) {
       Text(Constants.emptyEnvelopesText)
         .modifier(SSTypoModifier(.text_s))
         .foregroundStyle(SSColor.gray50)
@@ -41,17 +41,15 @@ struct SentMainView: View {
 
   @ViewBuilder
   private func makeUserEnvelopes() -> some View {
-    ScrollView {
-      LazyVStack(spacing: 8) {
-        ForEach(
-          store.scope(state: \.envelopes, action: \.scope.envelopes)
-        ) { store in
-          EnvelopeView(store: store)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
+    LazyVStack(spacing: 8) {
+      ForEach(
+        store.scope(state: \.envelopes, action: \.scope.envelopes)
+      ) { store in
+        EnvelopeView(store: store)
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
     }
-    .scrollIndicators(.hidden)
+    .padding(.top, 16)
   }
 
   @ViewBuilder
@@ -133,6 +131,7 @@ struct SentMainView: View {
     .scrollIndicators(.hidden)
     .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding(.bottom, Constants.topButtonsSpacing)
+    .background(SSColor.gray15)
   }
 
   @ViewBuilder

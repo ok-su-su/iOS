@@ -57,7 +57,6 @@ public final class LoginWithApple {
     }
     let userIdentifier = userCredential.user
     let appleAccessToken = userCredential.identityToken
-
     if let userIdentifierData = userIdentifier.data(using: .utf8) {
       SSKeychain
         .shared

@@ -45,6 +45,7 @@ public struct SSDateSelectBottomSheetReducer {
     case reset
     case didTapConfirmButton
     case didSelectedStartDate(Date)
+    case changeDatePickerProperty(State)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -70,6 +71,9 @@ public struct SSDateSelectBottomSheetReducer {
           state.isInitialStateOfDate = true
         }
         return .none
+      case let .changeDatePickerProperty(nextState):
+        state = nextState
+        return .none
       }
     }
   }
@@ -80,8 +84,13 @@ public struct SSDateSelectBottomSheetReducer {
 public struct SSDateSelectBottomSheetView: View {
   @Bindable
   var store: StoreOf<SSDateSelectBottomSheetReducer>
-  public init(store: StoreOf<SSDateSelectBottomSheetReducer>) {
+  var isShowBottomFilterSectionView: Bool
+  public init(
+    store: StoreOf<SSDateSelectBottomSheetReducer>,
+    isShowBottomFilterSectionView: Bool = true
+  ) {
     self.store = store
+    self.isShowBottomFilterSectionView = isShowBottomFilterSectionView
   }
 
   @ViewBuilder
@@ -128,11 +137,13 @@ public struct SSDateSelectBottomSheetView: View {
   }
 
   public var body: some View {
-    ZStack {
+    ZStack(alignment: .center) {
       SSColor.gray10
       VStack {
         makeContentView()
-        makeFilterContentView()
+        if isShowBottomFilterSectionView {
+          makeFilterContentView()
+        }
       }
     }
   }

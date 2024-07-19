@@ -15,6 +15,7 @@ struct CreateLedgerNameView: View {
 
   @Bindable
   var store: StoreOf<CreateLedgerName>
+  @FocusState var isFocus
 
   // MARK: Init
 
@@ -37,6 +38,7 @@ struct CreateLedgerNameView: View {
         prompt: Text(Constants.promptText).foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
+      .focused($isFocus)
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
 
@@ -57,14 +59,15 @@ struct CreateLedgerNameView: View {
       }
       .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
+    .onAppear {
+      isFocus = true
+      store.send(.view(.onAppear(true)))
+    }
     .navigationBarBackButtonHidden()
     .safeAreaInset(edge: .bottom) {
       NextButtonView(isPushable: store.pushable) {
         store.sendViewAction(.tappedNextButton)
       }
-    }
-    .onAppear {
-      store.send(.view(.onAppear(true)))
     }
   }
 

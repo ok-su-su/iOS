@@ -60,6 +60,7 @@ struct CreateLedgerDate {
     case tappedStartDatePicker
     case tappedEndDatePicker
     case tappedNextButton
+    case tappedDatePickerNextButton
   }
 
   enum InnerAction: Equatable {
@@ -86,9 +87,10 @@ struct CreateLedgerDate {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.view(.tappedStartDatePicker))
 
     case .tappedStartDatePicker:
+      state.isInitialStateOfStartDate = true
       state.datePicker = .init(
         selectedDate: state.$startSelectedDate,
         isInitialStateOfDate: state.$isInitialStateOfStartDate,
@@ -115,6 +117,27 @@ struct CreateLedgerDate {
 
       return .send(.inner(.pushNextScreen))
         .throttle(id: CancelID.throttleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
+
+    case .tappedDatePickerNextButton:
+      switch state.displayType {
+      case .startAndEndDate:
+        if state.isInitialStateOfStartDate {
+          let startDate = state.startSelectedDate
+          let datePickerState: SSDateSelectBottomSheetReducer.State = .init(
+            selectedDate: state.$endSelectedDate,
+            isInitialStateOfDate: state.$isInitialStateOfEndDate,
+            restrictStartDate: startDate
+          )
+          return .concatenate(
+            .send(.scope(.datePicker(.presented(.didSelectedStartDate(startDate))))),
+            .send(.scope(.datePicker(.presented(.changeDatePickerProperty(datePickerState)))))
+          )
+        }
+
+        return .send(.view(.tappedNextButton))
+      case .startDate:
+        return .send(.view(.tappedNextButton))
+      }
     }
   }
 

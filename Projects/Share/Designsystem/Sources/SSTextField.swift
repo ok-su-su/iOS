@@ -19,6 +19,7 @@ public enum SSTextPlaceholderText {
   case contact
   case contents
   case holiday
+  case nickName
 
   public var placeHolderTextString: String {
     switch self {
@@ -36,6 +37,8 @@ public enum SSTextPlaceholderText {
       "입력해주세요"
     case .holiday:
       "경조사명을 입력해주세요"
+    case .nickName:
+      "닉네임을 입력해주세요"
     }
   }
 
@@ -53,7 +56,9 @@ public enum SSTextPlaceholderText {
       return .numberPad
     case .contents,
          .gift,
-         .holiday:
+         .holiday,
+         .nickName
+         :
       return .default
     }
   }
