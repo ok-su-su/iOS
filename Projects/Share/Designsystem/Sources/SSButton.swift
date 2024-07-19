@@ -64,6 +64,7 @@ public struct SSButton: View {
       .clipShape(RoundedRectangle(cornerRadius: SSButtonConstans.cornerRadius))
       .modifier(LinedModifier(lineColor: property.lineColor))
     }
+    .frame(height: property.size.height)
     .disabled(property.isDisable)
   }
 }

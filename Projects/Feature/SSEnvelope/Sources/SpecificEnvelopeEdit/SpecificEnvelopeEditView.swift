@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SSToast
 import SwiftUI
 
@@ -40,6 +41,7 @@ public struct SpecificEnvelopeEditView: View {
       .contentShape(Rectangle())
       .whenTapDismissKeyboard()
     }
+    .scrollIndicators(.hidden)
   }
 
   @ViewBuilder
@@ -63,7 +65,7 @@ public struct SpecificEnvelopeEditView: View {
         Spacer()
       }
       .frame(maxWidth: .infinity, maxHeight: 46)
-      .background(SSColor.gray15)
+      .background(SSColor.gray10)
       .onTapGesture {
         focus = true
       }
@@ -141,12 +143,13 @@ public struct SpecificEnvelopeEditView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .modifier(SSTypoModifier(.title_s))
         .foregroundStyle(SSColor.gray100)
-        .onTapGesture {
-          // TODO: - Date Picker Dial
-        }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, Metrics.itemVerticalSpacing)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.sendViewAction(.tappedDatePickerSection)
+    }
   }
 
   @ViewBuilder
@@ -243,6 +246,18 @@ public struct SpecificEnvelopeEditView: View {
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
+    }
+    .showDatePickerWithBottomView(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
+      Button {
+        store.send(.scope(.datePicker(.dismiss)))
+      } label: {
+        Text("저장")
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray10)
+          .frame(maxWidth: .infinity, maxHeight: 60)
+          .background(SSColor.gray100)
+      }
+      .disabled(true)
     }
   }
 

@@ -97,9 +97,9 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
         } else { // + add Button
           SSImage
-            .commonAdd
-            .padding(.all, 4)
-            .background(SSColor.gray70)
+            .inventoryAdd
+            .frame(width: 32, height: 32)
+            .background(SSColor.gray25)
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .onTapGesture {
               store.send(.tappedAddCustomButton)

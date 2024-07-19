@@ -285,6 +285,7 @@ extension VisitedSelectButtonItem {
 
 struct DateEditProperty: Equatable {
   var date: Date
+  var isInitialState = false
 
   var dateText: String {
     return CustomDateFormatter.getKoreanDateString(from: date)
