@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSBottomSelectSheet
 import SSEditSingleSelectButton
 import SSRegexManager
 import SSToast
@@ -28,6 +29,7 @@ public struct SpecificEnvelopeEditReducer {
     @Shared var editHelper: SpecificEnvelopeEditHelper
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isLoading = false
+    @Presents var datePicker: SSDateSelectBottomSheetReducer.State? = nil
 
     init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
@@ -67,6 +69,7 @@ public struct SpecificEnvelopeEditReducer {
     case changeContactTextField(String)
     case changeMemoTextField(String)
     case tappedSaveButton
+    case tappedDatePickerSection
   }
 
   public enum InnerAction: Equatable {
@@ -87,6 +90,7 @@ public struct SpecificEnvelopeEditReducer {
     case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
     case visitedSection(TitleAndItemsWithSingleSelectButton<VisitedSelectButtonItem>.Action)
     case toast(SSToastReducer.Action)
+    case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
   public enum DelegateAction: Equatable {}
@@ -121,6 +125,7 @@ public struct SpecificEnvelopeEditReducer {
         return asyncAction(&state, currentAction)
       }
     }
+    .addFeatures()
   }
 
   public init() {}
@@ -144,6 +149,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       return .none
 
     case .toast:
+      return .none
+
+    case .datePicker:
       return .none
     }
   }
@@ -181,6 +189,13 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
     case .tappedSaveButton:
       return .send(.async(.editFriendsAndEnvelope))
+
+    case .tappedDatePickerSection:
+      state.datePicker = .init(
+        selectedDate: state.$editHelper.dateEditProperty.date,
+        isInitialStateOfDate: state.$editHelper.dateEditProperty.isInitialState
+      )
+      return .none
     }
   }
 
@@ -250,6 +265,14 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         await send(.inner(.isLoading(false)))
         await dismiss()
       }
+    }
+  }
+}
+
+extension Reducer where State == SpecificEnvelopeEditReducer.State, Action == SpecificEnvelopeEditReducer.Action {
+  func addFeatures() -> some Reducer<State, Action> {
+    ifLet(\.$datePicker, action: \.scope.datePicker) {
+      SSDateSelectBottomSheetReducer()
     }
   }
 }

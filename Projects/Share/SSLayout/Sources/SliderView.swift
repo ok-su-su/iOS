@@ -70,6 +70,7 @@ public struct SliderView: View {
           x: slider.highHandle.currentPercentage.wrappedValue * width,
           y: midHeight
         )
+        .clipShape(Rectangle())
         .highPriorityGesture(
           DragGesture().onChanged { value in
             let currentLocation = value.location
