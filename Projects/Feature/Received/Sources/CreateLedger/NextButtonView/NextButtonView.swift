@@ -10,19 +10,21 @@ import Designsystem
 import SwiftUI
 
 struct NextButtonView: View {
-  var isPushable: Bool
-  var action: () -> Void
+  private var isPushable: Bool
+  private var buttonText: String
+  private var action: () -> Void
 
-  init(isPushable: Bool, action: @escaping () -> Void) {
+  init(isPushable: Bool, buttonText: String = "다음", action: @escaping () -> Void) {
     self.isPushable = isPushable
     self.action = action
+    self.buttonText = buttonText
   }
 
   var body: some View {
     Button {
       action()
     } label: {
-      Text("다음")
+      Text(buttonText)
         .foregroundStyle(SSColor.gray10)
         .frame(maxWidth: .infinity, maxHeight: 60)
     }

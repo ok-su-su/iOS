@@ -51,9 +51,9 @@ enum SortDialItemForLedgerEnvelopeItem: Int, SSSelectBottomSheetPropertyItemable
   var sortString: String {
     switch self {
     case .latest:
-      "startAt"
+      "handedOverAt"
     case .oldest:
-      "startAt,desc"
+      "handedOverAt,desc"
     case .highestAmount:
       "amount,desc"
     case .lowestAmount:
