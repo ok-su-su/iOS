@@ -245,13 +245,19 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
         state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
 
+      let giftText: String = state.editHelper.giftEditProperty.gift
+      let queryGiftText: String? = giftText.isEmpty ? nil : giftText
+
+      let memoText: String = state.editHelper.memoEditProperty.memo
+      let queryMemoText: String? = memoText.isEmpty ? nil : memoText
+
       let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
         type: state.editHelper.envelopeDetailProperty.type,
         friendId: friendID,
         ledgerId: state.editHelper.envelopeDetailProperty.ledgerID,
         amount: state.editHelper.priceProperty.price,
-        gift: state.editHelper.giftEditProperty.gift,
-        memo: state.editHelper.memoEditProperty.memo,
+        gift: queryGiftText,
+        memo: queryMemoText,
         hasVisited: state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited,
         handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
         category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)

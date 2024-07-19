@@ -97,7 +97,7 @@ struct SliderHandleView: View {
         .contentShape(Rectangle().size(width: 44, height: 44)) // 터치 영역 확장
 
       Circle()
-        .frame(width: 8, height: 8)
+        .frame(width: 12, height: 12)
         .foregroundColor(SSColor.orange60)
         .contentShape(Rectangle().size(width: 44, height: 44)) // 터치 영역 확장
     }
