@@ -30,7 +30,7 @@ struct OnboardingRegisterName {
           text: "",
           maximumTextLength: 10,
           regexPattern: RegexPatternString.name.regexString,
-          placeHolderText: .account,
+          placeHolderText: .nickName,
           errorMessage: "한글과 영문 10자 이내로 작성해주세요"
         )
       )
