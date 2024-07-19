@@ -128,5 +128,6 @@ public struct SSTextFieldButton: View {
       }
       .clipShape(RoundedRectangle(cornerRadius: SSTextFieldButtonConstans.cornerRadius))
     }
+    .frame(height: property.minimumHeight)
   }
 }
