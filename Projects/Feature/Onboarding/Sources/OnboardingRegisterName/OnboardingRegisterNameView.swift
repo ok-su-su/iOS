@@ -71,6 +71,6 @@ struct OnboardingRegisterNameView: View {
   private enum Metrics {}
 
   private enum Constants {
-    static let titleText = "반가워요!\n이름을 알려주세요"
+    static let titleText = "반가워요!\n닉네임을 알려주세요"
   }
 }
