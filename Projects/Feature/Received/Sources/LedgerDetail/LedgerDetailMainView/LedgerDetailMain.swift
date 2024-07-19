@@ -288,7 +288,7 @@ struct LedgerDetailMain {
     case .header(.tappedDoubleTextButton(.leading)):
       let ledgerProperty = state.ledgerProperty
       return .run { _ in
-        var category = try await network.getCategories()
+        let category = try await network.getCategories()
         let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name) }
         let editState = LedgerDetailEdit.State(
           ledgerProperty: ledgerProperty,
