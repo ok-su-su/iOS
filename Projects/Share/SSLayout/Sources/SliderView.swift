@@ -42,7 +42,7 @@ public struct SliderView: View {
           }
         }
       )
-      .frame(maxWidth: .infinity, minHeight: 24)
+      .frame(maxWidth: .infinity, maxHeight: 24)
   }
 
   @ViewBuilder
@@ -56,7 +56,7 @@ public struct SliderView: View {
           x: slider.lowHandle.currentPercentage.wrappedValue * width,
           y: midHeight
         )
-        .highPriorityGesture(
+        .simultaneousGesture(
           DragGesture().onChanged { value in
             let currentLocation = value.location
             let currentPercentage = currentLocation.x / width
@@ -70,8 +70,7 @@ public struct SliderView: View {
           x: slider.highHandle.currentPercentage.wrappedValue * width,
           y: midHeight
         )
-        .clipShape(Rectangle())
-        .highPriorityGesture(
+        .simultaneousGesture(
           DragGesture().onChanged { value in
             let currentLocation = value.location
             let currentPercentage = currentLocation.x / width
@@ -95,12 +94,12 @@ struct SliderHandleView: View {
         .foregroundColor(.white)
         .shadow(color: Color.black.opacity(0.08), radius: 8, x: 4, y: 2)
         .scaleEffect(handle.onDrag ? 1.3 : 1)
-        .contentShape(Rectangle())
+        .contentShape(Rectangle().size(width: 44, height: 44)) // 터치 영역 확장
 
       Circle()
         .frame(width: 8, height: 8)
         .foregroundColor(SSColor.orange60)
-        .contentShape(Rectangle())
+        .contentShape(Rectangle().size(width: 44, height: 44)) // 터치 영역 확장
     }
   }
 }
