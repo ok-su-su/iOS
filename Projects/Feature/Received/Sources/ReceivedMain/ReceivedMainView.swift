@@ -34,6 +34,7 @@ struct ReceivedMainView: View {
       )
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .contentShape(.rect)
+      .cornerRadius(4)
       .onTapGesture {
         store.sendViewAction(.tappedAddLedgerButton)
       }
@@ -69,11 +70,9 @@ struct ReceivedMainView: View {
             store.sendViewAction(.tappedLedgerBox(property))
           }
       }
-      VStack {
-        // add Ledger View
-        makeDotLineButton()
-          .frame(height: ledgerBoxWidthAndHeight)
-      }
+      // add Ledger View
+      makeDotLineButton()
+        .frame(height: ledgerBoxWidthAndHeight)
     }
     .padding(.horizontal, 16)
   }
