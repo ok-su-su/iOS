@@ -49,11 +49,12 @@ struct ScrollBottomOffsetPreferenceKey: PreferenceKey {
 // MARK: - ScrollViewWithFilterItems
 
 public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
-  @State private var showingHeader = true
+  @State private var showingHeader = false
   private var isLoading: Bool
   private var isRefresh: Bool
   @State private var scrollOffset: CGFloat = 0
-  @State private var isTopContentDisplayed = true
+  @State private var showingTopHeader = true
+  @State private var headerSize: CGFloat = 0
 
   var header: Header
   var content: Content
@@ -102,24 +103,22 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
   }
 
   @ViewBuilder
-  private func makeScrollContentView() -> some View {
-    VStack(spacing: 0) {
-      header
-        .opacity(0)
-
-      content
-        .modifier(SSLoadingModifier(isLoading: isLoading))
-    }
-  }
-
-  @ViewBuilder
   private func makeContentView() -> some View {
     GeometryReader { outer in
       ScrollView(.vertical) {
         ZStack {
           makeBackgroundScrollOffsetObserver(outer)
-
-          makeScrollContentView()
+          VStack(spacing: 0) {
+            header
+              .background {
+                GeometryReader { proxy in
+                  headerSize = proxy.size.height
+                  return EmptyView()
+                }
+              }
+            content
+              .modifier(SSLoadingModifier(isLoading: isLoading))
+          }
         }
       }
       .coordinateSpace(name: "scroll")
@@ -129,16 +128,26 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       defer {
         scrollOffset = value.topValue
       }
+      if headerSize + value.topValue >= 0 {
+        showingHeader = false
+      }
+
       if value.bottomValue > -50 || value.topValue > -50 {
         return
       }
+
+      // 스크롤 분기
       if (-1 ... 1) ~= offsetChange {
         return
       } else if offsetChange >= 0 {
-        showingHeader = true
+        withAnimation {
+          showingHeader = true
+        }
 
       } else {
-        showingHeader = false
+        withAnimation {
+          showingHeader = false
+        }
       }
     }
   }
@@ -163,7 +172,6 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       showingHeader = true
     }
     .scrollIndicators(.hidden)
-    .animation(.default, value: showingHeader)
     .allowsHitTesting(!isRefresh)
     .clipped()
   }
