@@ -30,6 +30,8 @@ def version_weight(current) :
         return [0, 1, 0]
     elif current == "p":
         return [0, 0, 1]
+    elif current == "B" or current == "b" :
+        return [0, 0, 0]
     else :
         raise TypeError
 
@@ -109,6 +111,6 @@ if __name__ == "__main__":
     
     
     if is_new_version == "y":
-        versionString = input("메이저 버전(M), 마이너 버전(m), 패치 버전(p): ")
+        versionString = input("메이저 버전(M), 마이너 버전(m), 패치 버전(p), Only Build Version(b/B): ")
         set_version(versionString)
         print_current_version()
