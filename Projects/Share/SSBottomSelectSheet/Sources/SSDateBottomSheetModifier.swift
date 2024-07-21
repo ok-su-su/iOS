@@ -70,8 +70,9 @@ public extension View {
 
 private extension View {
   func addBottomSheetSettings() -> some View {
-    presentationDetents([.height(282), .medium, .large])
+    presentationDetents([.height(343), .medium, .large])
       .presentationContentInteraction(.scrolls)
       .presentationDragIndicator(.automatic)
+      .presentationDragIndicator(.hidden)
   }
 }
