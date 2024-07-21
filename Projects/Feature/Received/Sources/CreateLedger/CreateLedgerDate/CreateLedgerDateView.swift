@@ -131,22 +131,13 @@ struct CreateLedgerDateView: View {
     }
   }
 
-  @ViewBuilder
-  private func makeDatePickerNextButtonView() -> some View {
-    let buttonText: String = switch store.displayType {
+  var datePickerBottomButtonText: String {
+    switch store.displayType {
     case .startAndEndDate:
       store.isInitialStateOfStartDate ? "다음" : "완료"
     case .startDate:
       "완료"
     }
-    Button {
-      store.sendViewAction(.tappedDatePickerNextButton)
-    } label: {
-      Text(buttonText)
-        .foregroundStyle(SSColor.gray10)
-        .frame(maxWidth: .infinity, maxHeight: 60)
-    }
-    .background(SSColor.gray100)
   }
 
   var body: some View {
@@ -161,10 +152,12 @@ struct CreateLedgerDateView: View {
     }
     .navigationBarBackButtonHidden()
     .showDatePickerWithBottomView(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
-      makeDatePickerNextButtonView()
+      NextButtonView(isPushable: true) {
+        store.sendViewAction(.tappedDatePickerNextButton)
+      }
     }
     .safeAreaInset(edge: .bottom) {
-      NextButtonView(isPushable: true, buttonText: "완료") {
+      NextButtonView(isPushable: true, buttonText: datePickerBottomButtonText) {
         store.sendViewAction(.tappedNextButton)
       }
     }

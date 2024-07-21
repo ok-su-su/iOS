@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+// MARK: - BottomNextButtonView
+
 public struct BottomNextButtonView: View {
   private let titleText: String
   private let action: () -> Void
@@ -33,9 +35,8 @@ public struct BottomNextButtonView: View {
 
 public extension View {
   func addNextView(title: String, isActive: Bool, action: @escaping () -> Void) -> some View {
-    self
-      .safeAreaInset(edge: .bottom) {
-        BottomNextButtonView(titleText: title, isActive: isActive, action: action)
-      }
+    safeAreaInset(edge: .bottom) {
+      BottomNextButtonView(titleText: title, isActive: isActive, action: action)
+    }
   }
 }
