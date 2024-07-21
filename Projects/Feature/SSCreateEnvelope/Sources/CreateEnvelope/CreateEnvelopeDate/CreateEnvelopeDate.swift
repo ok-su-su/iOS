@@ -66,6 +66,7 @@ struct CreateEnvelopeDate {
     case onAppear(Bool)
     case tappedNextButton
     case tappedDateSheet
+    case tappedDatePickerNextButton
   }
 
   enum InnerAction: Equatable {
@@ -91,10 +92,14 @@ struct CreateEnvelopeDate {
         return .none
 
       case .view(.tappedNextButton):
-        return .run { send in
-          await send(.inner(.push))
-        }
+        return .send(.inner(.push))
 
+      case .view(.tappedDatePickerNextButton):
+        return .concatenate(
+          .send(.scope(.datePicker(.presented(.didTapConfirmButton)))),
+          .send(.scope(.datePicker(.dismiss))),
+          .send(.inner(.push))
+        )
       case .inner(.push):
         CreateEnvelopeRequestShared.setDate(state.selectedDate)
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(state.$createEnvelopeProperty)))
