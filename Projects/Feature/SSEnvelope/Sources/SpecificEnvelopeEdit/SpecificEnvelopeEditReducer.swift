@@ -70,6 +70,7 @@ public struct SpecificEnvelopeEditReducer {
     case changeMemoTextField(String)
     case tappedSaveButton
     case tappedDatePickerSection
+    case tappedDatePickerSaveButton
   }
 
   public enum InnerAction: Equatable {
@@ -196,6 +197,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         isInitialStateOfDate: state.$editHelper.dateEditProperty.isInitialState
       )
       return .none
+
+    case .tappedDatePickerSaveButton:
+      return .send(.scope(.datePicker(.dismiss)))
     }
   }
 

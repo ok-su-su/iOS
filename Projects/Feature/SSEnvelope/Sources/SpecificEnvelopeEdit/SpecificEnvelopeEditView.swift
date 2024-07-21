@@ -248,16 +248,9 @@ public struct SpecificEnvelopeEditView: View {
       store.send(.view(.onAppear(true)))
     }
     .showDatePickerWithBottomView(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
-      Button {
-        store.send(.scope(.datePicker(.dismiss)))
-      } label: {
-        Text("저장")
-          .modifier(SSTypoModifier(.title_xs))
-          .foregroundStyle(SSColor.gray10)
-          .frame(maxWidth: .infinity, maxHeight: 60)
-          .background(SSColor.gray100)
+      BottomNextButtonView(titleText: "저장", isActive: true) {
+        store.sendViewAction(.tappedDatePickerSaveButton)
       }
-      .disabled(true)
     }
   }
 

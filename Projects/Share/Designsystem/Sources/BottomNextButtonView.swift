@@ -27,6 +27,7 @@ public struct BottomNextButtonView: View {
     } label: {
       Text(titleText)
         .foregroundStyle(SSColor.gray10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .frame(maxWidth: .infinity, maxHeight: 60)
     .background(isActive ? SSColor.gray100 : SSColor.gray30)
