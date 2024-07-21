@@ -94,6 +94,15 @@ public struct SSDateSelectBottomSheetView: View {
   }
 
   @ViewBuilder
+  private func makeHandleView() -> some View {
+    RoundedRectangle(cornerRadius: 100)
+      .frame(width: 56, height: 6)
+      .foregroundStyle(SSColor.gray20)
+      .frame(maxWidth: .infinity, maxHeight: 38)
+      .background(SSColor.gray10)
+  }
+
+  @ViewBuilder
   private func makeFilterContentView() -> some View {
     HStack {
       ZStack {
@@ -105,6 +114,7 @@ public struct SSDateSelectBottomSheetView: View {
         store.send(.reset)
       }
       .frame(width: 44, height: 44)
+
       SSButton(.init(size: .sh48, status: .active, style: .filled, color: .black, buttonText: "필터 적용하기", frame: .init(maxWidth: .infinity))) {
         store.send(.didTapConfirmButton)
       }
@@ -114,89 +124,36 @@ public struct SSDateSelectBottomSheetView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    GeometryReader { geometry in
-      VStack(alignment: .leading) {
-        DatePicker(
-          "",
-          selection: $store.selectedDate.sending(\.didSelectedStartDate),
-          in: store.initialStartDate ... store.initialEndDate,
-          displayedComponents: [.date]
-        )
-        .clipped()
-        .frame(maxWidth: .infinity)
-        .datePickerStyle(.wheel)
-        .labelsHidden()
-        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
-        .padding()
-        .colorMultiply(SSColor.gray100)
-        .font(.custom(.title_xxs))
-        .preferredColorScheme(.light)
-
-      }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
-    }.edgesIgnoringSafeArea(.all)
+    DatePicker(
+      "",
+      selection: $store.selectedDate.sending(\.didSelectedStartDate),
+      in: store.initialStartDate ... store.initialEndDate,
+      displayedComponents: [.date]
+    )
+    .clipped()
+    .frame(maxWidth: .infinity)
+    .datePickerStyle(.wheel)
+    .labelsHidden()
+    .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
+    .padding()
+    .colorMultiply(SSColor.gray100)
+    .font(.custom(.title_xxs))
+    .preferredColorScheme(.light)
+    .frame(maxWidth: .infinity)
   }
 
   public var body: some View {
     ZStack(alignment: .center) {
       SSColor.gray10
-      VStack {
+      VStack(spacing: 0) {
         makeContentView()
         if isShowBottomFilterSectionView {
           makeFilterContentView()
         }
       }
     }
-  }
-}
-
-// MARK: - SSDateSelectBottomSheetWithNextButtonView
-
-public struct SSDateSelectBottomSheetWithNextButtonView: View {
-  var nextButtonTappedAction: () -> Void
-  @Bindable
-  var store: StoreOf<SSDateSelectBottomSheetReducer>
-  public init(store: StoreOf<SSDateSelectBottomSheetReducer>, completion: @escaping () -> Void) {
-    self.store = store
-    nextButtonTappedAction = completion
-  }
-
-  @ViewBuilder
-  private func makeContentView() -> some View {
-    GeometryReader { geometry in
-      VStack(alignment: .leading) {
-        DatePicker(
-          "",
-          selection: $store.selectedDate.sending(\.didSelectedStartDate),
-          in: store.initialStartDate ... store.initialEndDate,
-          displayedComponents: [.date]
-        )
-        .clipped()
-        .frame(maxWidth: .infinity)
-        .datePickerStyle(.wheel)
-        .labelsHidden()
-        .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
-        .padding()
-        .colorMultiply(SSColor.gray100)
-        .font(.custom(.title_xxs))
-        .preferredColorScheme(.light)
-
-      }.frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
-    }.edgesIgnoringSafeArea(.all)
-  }
-
-  public var body: some View {
-    ZStack {
-      SSColor.gray10
-      VStack(spacing: 0) {
-        makeContentView()
-          .padding(.bottom, 5)
-      }
-    }
-    .safeAreaInset(edge: .bottom) {
-      NextButtonView(isAbleToPush: true) {
-        store.send(.didTapConfirmButton)
-        nextButtonTappedAction()
-      }
+    .safeAreaInset(edge: .top) {
+      makeHandleView()
     }
   }
 }

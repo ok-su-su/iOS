@@ -183,7 +183,7 @@ struct ReceivedFilterView: View {
       store.sendViewAction(.onAppear(true))
     }
     .navigationBarBackButtonHidden()
-    .modifier(SSDateBottomSheetModifier(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)))
+    .showDatePicker(store: $store.scope(state: \.datePicker, action: \.scope.datePicker))
   }
 
   private enum Constants {
