@@ -137,13 +137,11 @@ struct SentMainView: View {
   @ViewBuilder
   private func makeFilterAndEnvelopesContentView() -> some View {
     ZStack {
-      ScrollViewWithFilterItems(
-        isLoading: store.isLoading,
-        isRefresh: store.isRefresh
-      ) {
+      ScrollViewWithFilterItems {
         makeFilterSection()
       } content: {
         makeEnvelope()
+          .ssLoading(store.isLoading)
       } refreshAction: {
         store.send(.view(.pullRefreshButton))
       }

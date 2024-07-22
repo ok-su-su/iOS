@@ -162,11 +162,9 @@ struct ReceivedMainView: View {
         makeEmptyLedgersView()
       }
 
-      ScrollViewWithFilterItems(
-        isLoading: store.isLoading,
-        isRefresh: store.isRefresh
-      ) {
+      ScrollViewWithFilterItems {
         makeFilterSection()
+          .ssLoading(store.isLoading)
       } content: {
         makeLedgersView()
       } refreshAction: {
