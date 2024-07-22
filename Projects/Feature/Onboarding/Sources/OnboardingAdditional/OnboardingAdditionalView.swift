@@ -127,7 +127,7 @@ struct OnboardingAdditionalView: View {
     }
     .selectableBottomSheetWithBottomView(
       store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet),
-      sheetHeight: 342
+      cellCount: 5
     ) {
       makeNextScreenButton()
     }

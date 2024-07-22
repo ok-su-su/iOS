@@ -200,7 +200,7 @@ struct ReceivedMainView: View {
     .fullScreenCover(item: $store.scope(state: \.createLedger, action: \.scope.createLedger)) { store in
       CreateLedgerRouterView(store: store)
     }
-    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
+    .selectableBottomSheet(store: $store.scope(state: \.sort, action: \.scope.sort), cellCount: 4)
     .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
       ReceivedFilterView(store: store)
     }

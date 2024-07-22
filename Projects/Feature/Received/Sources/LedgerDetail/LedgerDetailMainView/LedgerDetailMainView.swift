@@ -227,7 +227,7 @@ struct LedgerDetailMainView: View {
     .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
       LedgerDetailFilterView(store: store)
     }
-    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.sort, action: \.scope.sort)))
+    .selectableBottomSheet(store: $store.scope(state: \.sort, action: \.scope.sort), cellCount: 4)
     .navigationBarBackButtonHidden()
   }
 

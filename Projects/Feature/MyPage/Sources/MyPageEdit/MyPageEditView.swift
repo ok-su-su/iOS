@@ -133,7 +133,7 @@ struct MyPageEditView: View {
       store.send(.view(.onAppear(true)))
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
-    .modifier(SSSelectableBottomSheetModifier(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet)))
+    .selectableBottomSheet(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet), cellCount: 5)
   }
 
   private enum Metrics {

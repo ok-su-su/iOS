@@ -12,16 +12,17 @@ import SwiftUI
 // MARK: - SSSelectableBottomSheetModifier
 
 public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyItemable>: ViewModifier {
-  var sheetHeight: CGFloat
+  @State var sheetHeight: CGFloat = 0
+  var cellCount: Int
   var bottomView: (() -> any View)?
   public init(
     store: Binding<StoreOf<SSSelectableBottomSheetReducer<Item>>?>,
-    sheetHeight: CGFloat = 230,
+    cellCount: Int = 0,
     bottomView: (() -> any View)? = nil
   ) {
     _store = store
-    self.sheetHeight = sheetHeight
     self.bottomView = bottomView
+    self.cellCount = cellCount
   }
 
   @Binding var store: StoreOf<SSSelectableBottomSheetReducer<Item>>?
@@ -38,22 +39,33 @@ public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyI
               AnyView(bottomView())
             }
           }
+          .task {
+            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            let window = windowScene?.windows.first
+
+            let handleHeight: CGFloat = 40
+            let bottom = window?.safeAreaInsets.bottom ?? 0
+            let cellHeight = CGFloat(cellCount) * 48
+
+            sheetHeight = handleHeight + bottom + cellHeight
+          }
       }
   }
 }
 
 public extension View {
   func selectableBottomSheet(
-    store: Binding<StoreOf<SSSelectableBottomSheetReducer<some SSSelectBottomSheetPropertyItemable>>?>
+    store: Binding<StoreOf<SSSelectableBottomSheetReducer<some SSSelectBottomSheetPropertyItemable>>?>,
+    cellCount: Int = 4
   ) -> some View {
-    modifier(SSSelectableBottomSheetModifier(store: store))
+    modifier(SSSelectableBottomSheetModifier(store: store, cellCount: cellCount))
   }
 
   func selectableBottomSheetWithBottomView(
     store: Binding<StoreOf<SSSelectableBottomSheetReducer<some SSSelectBottomSheetPropertyItemable>>?>,
-    sheetHeight: CGFloat,
+    cellCount: Int = 4,
     @ViewBuilder content: @escaping () -> some View
   ) -> some View {
-    modifier(SSSelectableBottomSheetModifier(store: store, sheetHeight: sheetHeight, bottomView: content))
+    modifier(SSSelectableBottomSheetModifier(store: store, cellCount: cellCount, bottomView: content))
   }
 }
