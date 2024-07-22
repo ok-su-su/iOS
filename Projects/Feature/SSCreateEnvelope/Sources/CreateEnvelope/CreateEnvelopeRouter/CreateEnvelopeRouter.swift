@@ -35,8 +35,6 @@ struct CreateEnvelopeRouter {
       self.type = type
       _createEnvelopeProperty = Shared(.init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
-
-      CreateEnvelopeRequestShared.setCreateType(type)
     }
   }
 
