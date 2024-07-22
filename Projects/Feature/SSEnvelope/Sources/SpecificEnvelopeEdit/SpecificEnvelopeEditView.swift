@@ -64,6 +64,7 @@ public struct SpecificEnvelopeEditView: View {
           .foregroundStyle(store.editHelper.priceProperty.priceText.isEmpty ? SSColor.gray30 : SSColor.gray100)
         Spacer()
       }
+      .contentShape(Rectangle())
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray10)
       .onTapGesture {
