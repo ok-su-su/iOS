@@ -94,7 +94,7 @@ public enum CreateEnvelopeRequestShared {
   }
 
   static func getCreateType() -> CreateType {
-    let typeString: String? = SharedContainer.getValue(key: String(describing: CreateType.self))
+    let typeString = SharedContainer.getValue(CreateEnvelopeRequestBody.self)?.type
     let currentCreateType = CreateType.getTypeBy(typeString)
     if let currentCreateType {
       return currentCreateType

@@ -57,7 +57,7 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
     RoundedRectangle(cornerRadius: 100)
       .frame(width: 56, height: 6)
       .foregroundStyle(SSColor.gray20)
-      .frame(maxWidth: .infinity, maxHeight: 38)
+      .frame(height: 38)
       .background(SSColor.gray10)
   }
 

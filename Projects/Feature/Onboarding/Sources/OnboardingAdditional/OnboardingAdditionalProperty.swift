@@ -13,23 +13,23 @@ import SSBottomSelectSheet
 // MARK: - OnboardingAdditionalProperty
 
 struct OnboardingAdditionalProperty: Equatable {
-  var genderItems: GenderButtonItems
-  var selectedGenderItem: GenderButtonProperty?
+  var genderItems: [GenderType]
+  var selectedGenderItem: GenderType?
   @Shared var selectedBirth: BottomSheetYearItem?
 
-  mutating func selectItem(_ item: GenderButtonProperty) {
+  mutating func selectItem(_ item: GenderType) {
     selectedGenderItem = selectedGenderItem == item ? nil : item
   }
 
-  func selectedGenderItemToBodyString() -> String? {
+  func selectedGenderItemToBodyString() -> GenderType? {
     guard let selectedGenderItem else {
       return nil
     }
     switch selectedGenderItem.id {
     case 0:
-      return "남성"
+      return .man
     case 1:
-      return "여성"
+      return .woman
     default:
       return nil
     }
@@ -45,28 +45,39 @@ struct OnboardingAdditionalProperty: Equatable {
   }
 
   init() {
-    genderItems = .makeInitialData()
+    genderItems = GenderType.allCases
     _selectedBirth = .init(nil)
     selectedGenderItem = nil
   }
 }
 
-typealias GenderButtonItems = [GenderButtonProperty]
+// MARK: - GenderType
 
-extension GenderButtonItems {
-  static func makeInitialData() -> Self {
-    return [
-      .init(id: 0, title: "남성"),
-      .init(id: 1, title: "여성"),
-    ]
+enum GenderType: Int, Encodable, Equatable, Identifiable, CaseIterable {
+  case man = 0
+  case woman
+
+  var id: Int {
+    rawValue
   }
-}
 
-// MARK: - GenderButtonProperty
+  var title: String {
+    switch self {
+    case .man:
+      "남성"
+    case .woman:
+      "여성"
+    }
+  }
 
-struct GenderButtonProperty: Equatable, Identifiable {
-  var id: Int
-  var title: String
+  var jsonValue: String {
+    switch self {
+    case .man:
+      "M"
+    case .woman:
+      "F"
+    }
+  }
 }
 
 // MARK: - BottomSheetYearItem

@@ -190,10 +190,7 @@ struct SentMainView: View {
     .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
       SentSearchView(store: store)
     }
-    .modifier(
-      SSSelectableBottomSheetModifier(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet)
-      )
-    )
+    .selectableBottomSheet(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet), cellCount: 4)
     .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
       SpecificEnvelopeHistoryRouterView(store: store)
     }

@@ -38,9 +38,9 @@ public struct SpecificEnvelopeEditView: View {
 
         makeSubContents()
       }
-      .contentShape(Rectangle())
-      .whenTapDismissKeyboard()
     }
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
     .scrollIndicators(.hidden)
   }
 

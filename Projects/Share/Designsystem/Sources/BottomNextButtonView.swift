@@ -22,14 +22,18 @@ public struct BottomNextButtonView: View {
   }
 
   public var body: some View {
-    Button {
+    SSButtonWithState(
+      .init(
+        size: .mh60,
+        status: isActive ? .active : .inactive,
+        style: .filled,
+        color: .black,
+        buttonText: "다음",
+        frame: .init(maxWidth: .infinity)
+      )
+    ) {
       action()
-    } label: {
-      Text(titleText)
-        .foregroundStyle(SSColor.gray10)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .frame(maxWidth: .infinity, maxHeight: 60)
     .background(isActive ? SSColor.gray100 : SSColor.gray30)
   }
 }

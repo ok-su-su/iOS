@@ -17,12 +17,21 @@ public struct SSDateBottomSheetModifier: ViewModifier {
   }
 
   @Binding var store: StoreOf<SSDateSelectBottomSheetReducer>?
+  @State var sheetContentHeight: CGFloat = 0
 
   public func body(content: Content) -> some View {
     content
       .sheet(item: $store) { store in
         SSDateSelectBottomSheetView(store: store)
-          .addBottomSheetSettings()
+          .background(
+            GeometryReader { proxy in
+              Color.clear
+                .task {
+                  sheetContentHeight = proxy.size.height
+                }
+            }
+          )
+          .addBottomSheetSettings(contentHeight: sheetContentHeight)
       }
   }
 }
@@ -31,6 +40,7 @@ public struct SSDateBottomSheetModifier: ViewModifier {
 
 public struct showDatePickerWithBottomViewModifier<BottomView: View>: ViewModifier {
   var bottomView: BottomView
+  @State var sheetContentHeight: CGFloat = 0
   public init(
     store: Binding<StoreOf<SSDateSelectBottomSheetReducer>?>,
     @ViewBuilder bottomView: () -> BottomView
@@ -44,11 +54,18 @@ public struct showDatePickerWithBottomViewModifier<BottomView: View>: ViewModifi
   public func body(content: Content) -> some View {
     content
       .sheet(item: $store) { store in
-        SSDateSelectBottomSheetView(store: store, isShowBottomFilterSectionView: false)
-          .addBottomSheetSettings()
-          .safeAreaInset(edge: .bottom) {
-            bottomView
+        SSDateSelectBottomSheetView(store: store) {
+          AnyView(bottomView)
+        }
+        .background(
+          GeometryReader { proxy in
+            Color.clear
+              .task {
+                sheetContentHeight = proxy.size.height
+              }
           }
+        )
+        .addBottomSheetSettings(contentHeight: sheetContentHeight)
       }
   }
 }
@@ -69,8 +86,8 @@ public extension View {
 }
 
 private extension View {
-  func addBottomSheetSettings() -> some View {
-    presentationDetents([.height(343), .medium, .large])
+  func addBottomSheetSettings(contentHeight: CGFloat = 343) -> some View {
+    presentationDetents([.height(contentHeight), .medium, .large])
       .presentationContentInteraction(.scrolls)
       .presentationDragIndicator(.automatic)
       .presentationDragIndicator(.hidden)
