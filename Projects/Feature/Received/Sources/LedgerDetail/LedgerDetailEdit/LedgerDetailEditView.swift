@@ -152,7 +152,7 @@ struct LedgerDetailEditView: View {
   var body: some View {
     ZStack(alignment: .top) {
       SSColor
-        .gray15
+        .gray10
         .ignoresSafeArea()
         .whenTapDismissKeyboard()
 
