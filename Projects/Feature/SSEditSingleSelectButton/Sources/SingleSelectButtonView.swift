@@ -129,7 +129,6 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
   public var body: some View {
     makeContentView()
-      .background(Color.clear)
       .onAppear {
         store.send(.onAppear(true))
       }
