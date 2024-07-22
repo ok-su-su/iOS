@@ -50,8 +50,6 @@ struct ScrollBottomOffsetPreferenceKey: PreferenceKey {
 
 public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
   @State private var showingHeader = false
-  private var isLoading: Bool
-  private var isRefresh: Bool
   @State private var scrollOffset: CGFloat = 0
   @State private var showingTopHeader = true
   @State private var headerSize: CGFloat = 0
@@ -61,14 +59,10 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
   var refreshAction: () -> Void
 
   public init(
-    isLoading: Bool,
-    isRefresh: Bool,
     @ViewBuilder header: () -> Header,
     @ViewBuilder content: () -> Content,
     refreshAction: @escaping () -> Void
   ) {
-    self.isLoading = isLoading
-    self.isRefresh = isRefresh
     self.header = header()
     self.content = content()
     self.refreshAction = refreshAction
@@ -117,7 +111,6 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
                 }
               }
             content
-              .modifier(SSLoadingModifier(isLoading: isLoading))
           }
         }
       }
@@ -164,21 +157,8 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
         refreshAction()
         showingHeader = true
       }
-      do {
-        try await waitForRefreshToEnd()
-      } catch {
-        os_log(.fault, "waitForRefreshToEnd가 비정상적으로 종료되었습니다.")
-      }
-      showingHeader = true
     }
     .scrollIndicators(.hidden)
-    .allowsHitTesting(!isRefresh)
     .clipped()
-  }
-
-  private func waitForRefreshToEnd() async throws {
-    while isRefresh {
-      try await Task.sleep(nanoseconds: 1_000_000_000) // 10 milliseconds
-    }
   }
 }

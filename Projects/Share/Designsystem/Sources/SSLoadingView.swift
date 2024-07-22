@@ -42,6 +42,12 @@ public struct SSLoadingModifier: ViewModifier {
   }
 }
 
+public extension View {
+  func ssLoading(_ isLoading: Bool) -> some View {
+    modifier(SSLoadingModifier(isLoading: isLoading))
+  }
+}
+
 // MARK: - SSLoadingModifierWithOverlay
 
 public struct SSLoadingModifierWithOverlay: ViewModifier {

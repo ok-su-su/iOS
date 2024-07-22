@@ -175,14 +175,12 @@ struct LedgerDetailMainView: View {
         .frame(height: 8)
 
       // BottomSection
-      ScrollViewWithFilterItems(
-        isLoading: store.isLoading,
-        isRefresh: store.isRefresh
-      ) {
+      ScrollViewWithFilterItems {
         makeFilterSection()
           .padding(.bottom, 16)
       } content: {
         makeEnvelopesView()
+          .ssLoading(store.isLoading)
       } refreshAction: {
         store.sendViewAction(.pullRefreshButton)
       }
