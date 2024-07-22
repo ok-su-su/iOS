@@ -156,7 +156,11 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     (priceProperty.isValid) &&
       (eventSectionButtonHelper.isValid()) &&
       (nameEditProperty.isValid) &&
-      (relationSectionButtonHelper.isValid())
+      (relationSectionButtonHelper.isValid()) &&
+      (memoEditProperty.isValid) &&
+      (contactEditProperty.isValid) &&
+      (giftEditProperty.isValid) &&
+      (visitedEditProperty.isValid)
     // 데이트는 항상 참이니까 제외
   }
 }
@@ -202,7 +206,7 @@ struct GiftEditProperty: Equatable {
   }
 
   var isValid: Bool {
-    RegexManager.isValidGift(gift)
+    RegexManager.isValidGift(gift) || gift.isEmpty
   }
 
   var isShowToast: Bool {
@@ -220,7 +224,7 @@ struct ContactEditProperty: Equatable {
   }
 
   var isValid: Bool {
-    RegexManager.isValidContacts(contact)
+    RegexManager.isValidContacts(contact) || contact.isEmpty
   }
 
   var isShowToast: Bool {
@@ -237,7 +241,7 @@ struct MemoEditProperty: Equatable {
   }
 
   var isValid: Bool {
-    RegexManager.isValidMemo(memo)
+    RegexManager.isValidMemo(memo) || memo.isEmpty
   }
 
   var isShowToast: Bool {
@@ -252,6 +256,10 @@ struct VisitedEditProperty: Equatable {
 
   init(isVisited: Bool) {
     self.isVisited = isVisited
+  }
+
+  var isValid: Bool {
+    return true
   }
 }
 
