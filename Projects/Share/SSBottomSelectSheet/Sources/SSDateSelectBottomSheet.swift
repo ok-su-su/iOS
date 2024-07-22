@@ -85,12 +85,23 @@ public struct SSDateSelectBottomSheetView: View {
   @Bindable
   var store: StoreOf<SSDateSelectBottomSheetReducer>
   var isShowBottomFilterSectionView: Bool
+  var bottomContent: AnyView?
   public init(
     store: StoreOf<SSDateSelectBottomSheetReducer>,
     isShowBottomFilterSectionView: Bool = true
   ) {
     self.store = store
     self.isShowBottomFilterSectionView = isShowBottomFilterSectionView
+    bottomContent = nil
+  }
+
+  public init(
+    store: StoreOf<SSDateSelectBottomSheetReducer>,
+    @ViewBuilder bottomContent: () -> AnyView
+  ) {
+    self.store = store
+    isShowBottomFilterSectionView = false
+    self.bottomContent = bottomContent()
   }
 
   @ViewBuilder
@@ -98,8 +109,7 @@ public struct SSDateSelectBottomSheetView: View {
     RoundedRectangle(cornerRadius: 100)
       .frame(width: 56, height: 6)
       .foregroundStyle(SSColor.gray20)
-      .frame(maxWidth: .infinity, maxHeight: 38)
-      .background(SSColor.gray10)
+      .frame(height: 38)
   }
 
   @ViewBuilder
@@ -130,30 +140,30 @@ public struct SSDateSelectBottomSheetView: View {
       in: store.initialStartDate ... store.initialEndDate,
       displayedComponents: [.date]
     )
-    .clipped()
-    .frame(maxWidth: .infinity)
     .datePickerStyle(.wheel)
     .labelsHidden()
     .environment(\.locale, Locale(identifier: Locale.current.language.languageCode?.identifier ?? "ko_kr"))
-    .padding()
     .colorMultiply(SSColor.gray100)
-    .font(.custom(.title_xxs))
+    .applySSFont(.title_xxs)
     .preferredColorScheme(.light)
-    .frame(maxWidth: .infinity)
   }
 
   public var body: some View {
     ZStack(alignment: .center) {
       SSColor.gray10
       VStack(spacing: 0) {
+        makeHandleView()
+        Spacer()
         makeContentView()
+        Spacer()
         if isShowBottomFilterSectionView {
           makeFilterContentView()
         }
+        if let bottomContent {
+          bottomContent
+            .ignoresSafeArea()
+        }
       }
-    }
-    .safeAreaInset(edge: .top) {
-      makeHandleView()
     }
   }
 }
