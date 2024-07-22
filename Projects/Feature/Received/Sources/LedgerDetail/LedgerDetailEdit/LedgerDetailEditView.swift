@@ -26,13 +26,17 @@ struct LedgerDetailEditView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      makeNameEditableSection()
+    ScrollView(.vertical) {
+      LazyVStack(spacing: 0) {
+        makeNameEditableSection()
 
-      makeEventEditableSection()
+        makeEventEditableSection()
 
-      makeDateEditableSection()
+        makeDateEditableSection()
+      }
     }
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
   }
 
   @ViewBuilder
