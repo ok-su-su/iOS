@@ -39,7 +39,7 @@ struct OnboardingAdditional {
 
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case tappedGenderButton(GenderButtonProperty)
+    case tappedGenderButton(GenderType)
     case tappedBirthButton
     case tappedNextButton
   }
@@ -86,7 +86,7 @@ struct OnboardingAdditional {
         guard let body = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
           return .none
         }
-        body.setGender(state.helper.selectedGenderItemToBodyString())
+        body.setGender(state.helper.selectedGenderItem)
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
         return .run { [helper = state.networkHelper] _ in

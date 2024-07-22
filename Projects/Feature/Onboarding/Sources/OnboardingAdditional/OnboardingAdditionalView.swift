@@ -59,7 +59,7 @@ struct OnboardingAdditionalView: View {
   }
 
   @ViewBuilder
-  private func makeGenderSectionItem(_ item: GenderButtonProperty) -> some View {
+  private func makeGenderSectionItem(_ item: GenderType) -> some View {
     SSButton(
       .init(
         size: .mh60,

@@ -11,19 +11,15 @@ import Foundation
 
 // MARK: - SignUpBodyProperty
 
-final class SignUpBodyProperty: CustomStringConvertible, Equatable, Encodable {
+final class SignUpBodyProperty: Equatable, Encodable {
   static func == (lhs: SignUpBodyProperty, rhs: SignUpBodyProperty) -> Bool {
     return lhs === rhs
-  }
-
-  var description: String {
-    return " name: \(name ?? " ") \n loginType: \(loginType?.rawValue ?? " ")\ngender=\(gender ?? "none")\n termAgreement=\(termAgreement), birth=\(birth?.description ?? " ")"
   }
 
   private var loginType: LoginType? = nil
   private var name: String? = nil
   private var termAgreement: [Int] = []
-  private var gender: String? = nil
+  private var gender: GenderType? = nil
   private var birth: Int? = nil
 
   init() {}
@@ -36,7 +32,7 @@ final class SignUpBodyProperty: CustomStringConvertible, Equatable, Encodable {
     name = val
   }
 
-  func setGender(_ val: String?) {
+  func setGender(_ val: GenderType?) {
     gender = val
   }
 
@@ -58,7 +54,7 @@ extension SignUpBodyProperty {
     return .init(
       name: name ?? "",
       termAgreement: termAgreement,
-      gender: gender,
+      gender: gender?.jsonValue,
       birth: birth
     )
   }
