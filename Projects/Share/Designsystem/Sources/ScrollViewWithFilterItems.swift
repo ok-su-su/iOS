@@ -110,7 +110,6 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
                   return EmptyView()
                 }
               }
-              .background(SSColor.red60)
             content
           }
         }

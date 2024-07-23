@@ -49,7 +49,6 @@ struct SentMainView: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
     }
-    .padding(.top, 16)
   }
 
   @ViewBuilder
@@ -64,6 +63,8 @@ struct SentMainView: View {
         makeFilteredPeopleView()
       }
     }
+    .padding(.bottom, 16)
+    .background(SSColor.gray15)
     .scrollIndicators(.hidden)
   }
 
