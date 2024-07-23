@@ -42,7 +42,7 @@ struct CreateLedgerCategoryView: View {
 
   @ViewBuilder
   private func nextButton() -> some View {
-    NextButtonView(isPushable: store.isPushable) {
+    BottomNextButtonView(titleText: "다음", isActive: store.isPushable) {
       store.sendViewAction(.tappedNextButton)
     }
   }

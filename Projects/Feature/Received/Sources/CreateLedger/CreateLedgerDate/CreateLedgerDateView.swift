@@ -152,13 +152,13 @@ struct CreateLedgerDateView: View {
     }
     .navigationBarBackButtonHidden()
     .showDatePickerWithBottomView(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
-      NextButtonView(isPushable: true) {
+      BottomNextButtonView(titleText: "다음", isActive: true) {
         store.sendViewAction(.tappedDatePickerNextButton)
       }
     }
     .safeAreaInset(edge: .bottom) {
-      NextButtonView(isPushable: true, buttonText: datePickerBottomButtonText) {
-        store.sendViewAction(.tappedNextButton)
+      BottomNextButtonView(titleText: datePickerBottomButtonText, isActive: true) {
+        store.sendViewAction(.tappedDatePickerNextButton)
       }
     }
     .onAppear {

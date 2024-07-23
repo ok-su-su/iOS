@@ -62,6 +62,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case tappedEndDatePickerButton
     case tappedDateToggleButton
     case tappedSaveButton
+    case tappedDatePickerCompleteButton
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -98,6 +99,9 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
 
     case .tappedSaveButton:
       return .send(.async(.saveLedger))
+
+    case .tappedDatePickerCompleteButton:
+      return .send(.scope(.datePicker(.dismiss)))
     }
   }
 

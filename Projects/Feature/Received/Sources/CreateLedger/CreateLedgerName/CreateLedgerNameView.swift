@@ -65,7 +65,7 @@ struct CreateLedgerNameView: View {
     }
     .navigationBarBackButtonHidden()
     .safeAreaInset(edge: .bottom) {
-      NextButtonView(isPushable: store.pushable) {
+      BottomNextButtonView(titleText: "다음", isActive: store.pushable) {
         store.sendViewAction(.tappedNextButton)
       }
     }

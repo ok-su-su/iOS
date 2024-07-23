@@ -49,7 +49,6 @@ struct SentMainView: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
     }
-    .padding(.top, 16)
   }
 
   @ViewBuilder
@@ -57,81 +56,95 @@ struct SentMainView: View {
     // MARK: - 필터 버튼
 
     ScrollView(.horizontal) {
-      HStack(spacing: Constants.topButtonsSpacing) {
-        SSButton(.init(
+      HStack(alignment: .center, spacing: Constants.topButtonsSpacing) {
+        makeSortButton()
+        makeFilterButtonView()
+        makeAmountRangeButtonView()
+        makeFilteredPeopleView()
+      }
+    }
+    .padding(.bottom, 16)
+    .background(SSColor.gray15)
+    .scrollIndicators(.hidden)
+  }
+
+  @ViewBuilder
+  private func makeFilterButtonView() -> some View {
+    // 정렬된 사람이 없을 때
+    if !store.state.isFilteredHeaderButtonItem {
+      SSButton(Constants.notSelectedFilterButtonProperty) {
+        store.send(.view(.tappedFilterButton))
+      }
+    } else {
+      // 정렬된 사람이 있을 때
+      Button {
+        store.send(.view(.tappedFilterButton))
+      } label: {
+        SSImage.commonFilterWhite
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .frame(height: 32, alignment: .center)
+          .background(SSColor.gray100)
+          .cornerRadius(4)
+      }
+    }
+  }
+
+  // MARK: - 정렬 버튼
+
+  @ViewBuilder
+  private func makeSortButton() -> some View {
+    SSButton(.init(
+      size: .sh32,
+      status: .active,
+      style: .ghost,
+      color: .black,
+      leftIcon: .icon(SSImage.commonFilter),
+      buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
+    )) {
+      store.sendViewAction(.tappedSortButton)
+    }
+  }
+
+  @ViewBuilder // amount Range Button
+  private func makeAmountRangeButtonView() -> some View {
+    if let amountRangeBadgeText = store.sentMainProperty.sentPeopleFilterHelper.amountFilterBadgeText {
+      SSButton(
+        .init(
           size: .sh32,
           status: .active,
-          style: .ghost,
+          style: .filled,
           color: .black,
-          leftIcon: .icon(SSImage.commonFilter),
-          buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
-        )) {
-          store.sendViewAction(.tappedSortButton)
-        }
+          rightIcon: .icon(SSImage.commonDeleteWhite),
+          buttonText: amountRangeBadgeText
+        )
+      ) {
+        store.sendViewAction(.tappedFilteredAmountButton)
+      }
+    }
+  }
 
-        // MARK: - 정렬 버튼
-
-        // 정렬된 사람이 없을 때
-        if !store.state.isFilteredHeaderButtonItem {
-          SSButton(Constants.notSelectedFilterButtonProperty) {
-            store.send(.view(.tappedFilterButton))
-          }
-        } else {
-          // 정렬된 사람이 있을 때
-
-          Button {
-            store.send(.view(.tappedFilterButton))
-          } label: {
-            SSImage.commonFilterWhite
-              .padding(.horizontal, 8)
-              .padding(.vertical, 4)
-              .frame(height: 32, alignment: .center)
-              .background(SSColor.gray100)
-              .cornerRadius(4)
-          }
-
-          // amount Range Button
-          if let amountRangeBadgeText = store.sentMainProperty.sentPeopleFilterHelper.amountFilterBadgeText {
-            SSButton(
-              .init(
-                size: .sh32,
-                status: .active,
-                style: .filled,
-                color: .black,
-                rightIcon: .icon(SSImage.commonDeleteWhite),
-                buttonText: amountRangeBadgeText
-              )
-            ) {
-              store.sendViewAction(.tappedFilteredAmountButton)
-            }
-          }
-
-          // 사람 버튼에 대한 표시
-          let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
-          ForEach(0 ..< filtered.count, id: \.self) { index in
-            if index < filtered.count {
-              let person = filtered[index]
-              SSButton(
-                .init(
-                  size: .sh32,
-                  status: .active,
-                  style: .filled,
-                  color: .black,
-                  rightIcon: .icon(SSImage.commonDeleteWhite),
-                  buttonText: person.name
-                )
-              ) {
-                store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
-              }
-            }
-          }
+  @ViewBuilder
+  private func makeFilteredPeopleView() -> some View {
+    // 사람 버튼에 대한 표시
+    let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
+    ForEach(0 ..< filtered.count, id: \.self) { index in
+      if index < filtered.count {
+        let person = filtered[index]
+        SSButton(
+          .init(
+            size: .sh32,
+            status: .active,
+            style: .filled,
+            color: .black,
+            rightIcon: .icon(SSImage.commonDeleteWhite),
+            buttonText: person.name
+          )
+        ) {
+          store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
         }
       }
     }
-    .scrollIndicators(.hidden)
-    .frame(maxWidth: .infinity, alignment: .topLeading)
-    .padding(.bottom, Constants.topButtonsSpacing)
-    .background(SSColor.gray15)
   }
 
   @ViewBuilder

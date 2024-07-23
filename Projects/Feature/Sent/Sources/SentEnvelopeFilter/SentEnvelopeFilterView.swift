@@ -110,7 +110,9 @@ struct SentEnvelopeFilterView: View {
       makeResetButton()
       makeConfirmButton()
     }
+    .padding(.horizontal, 16)
     .padding(.vertical, 8)
+    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -172,7 +174,7 @@ struct SentEnvelopeFilterView: View {
 
   @ViewBuilder
   func makeContentView() -> some View {
-    VStack {
+    VStack(spacing: 48) {
       makeSendTap()
       Spacer()
         .frame(height: 48)
@@ -181,7 +183,6 @@ struct SentEnvelopeFilterView: View {
       VStack(alignment: .leading, spacing: 8) {
         makeBottomButtonOfDeselectable()
       }
-      makeBottom()
     }
   }
 
@@ -195,11 +196,20 @@ struct SentEnvelopeFilterView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
           .padding(.bottom, 24)
-        makeContentView()
-          .padding(.horizontal, 16)
+        ScrollView {
+          makeContentView()
+        }
+        .padding(.horizontal, 16)
+        .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+        .scrollIndicators(.hidden)
+        .contentShape(Rectangle())
+        .whenTapDismissKeyboard()
       }
     }
     .navigationBarBackButtonHidden()
+    .safeAreaInset(edge: .bottom) {
+      makeBottom()
+    }
     .onAppear {
       store.send(.onAppear(true))
     }
