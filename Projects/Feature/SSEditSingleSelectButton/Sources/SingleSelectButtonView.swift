@@ -97,7 +97,7 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
 
         } else { // + add Button
           SSImage
-            .inventoryAdd
+            .commonEditAdd
             .frame(width: 32, height: 32)
             .background(SSColor.gray25)
             .clipShape(RoundedRectangle(cornerRadius: 4))
