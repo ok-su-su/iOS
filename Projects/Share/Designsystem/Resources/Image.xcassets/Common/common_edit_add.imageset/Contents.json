@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "common_edit_add.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
