@@ -169,7 +169,11 @@ struct LedgerDetailEditView: View {
     .safeAreaInset(edge: .bottom) {
       makeSaveButton()
     }
-    .showDatePicker(store: $store.scope(state: \.datePicker, action: \.scope.datePicker))
+    .showDatePickerWithBottomView(store: $store.scope(state: \.datePicker, action: \.scope.datePicker)) {
+      BottomNextButtonView(titleText: "완료", isActive: true) {
+        store.sendViewAction(.tappedDatePickerCompleteButton)
+      }
+    }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
