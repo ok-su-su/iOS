@@ -58,6 +58,7 @@ public struct SSLoadingModifierWithOverlay: ViewModifier {
   }
 
   public func body(content: Content) -> some View {
+
     content
       .allowsHitTesting(!isLoading)
       .overlay {
