@@ -59,13 +59,9 @@ struct SentMainView: View {
     ScrollView(.horizontal) {
       HStack(alignment: .center, spacing: Constants.topButtonsSpacing) {
         makeSortButton()
-          .background(SSColor.gray30)
         makeFilterButtonView()
-          .background(SSColor.gray50)
         makeAmountRangeButtonView()
-          .background(SSColor.gray70)
         makeFilteredPeopleView()
-          .background(SSColor.red60)
       }
     }
     .scrollIndicators(.hidden)
