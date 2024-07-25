@@ -17,6 +17,8 @@ public enum ThirdParty: String, CaseIterable {
   case Realm
   case KakaoSDK
   case Lottie
+  case FirebaseAnalytics
+  case FirebaseCrashlytics
   public var targetName: String {
     switch self {
     default:

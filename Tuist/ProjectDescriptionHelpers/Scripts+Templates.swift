@@ -51,4 +51,17 @@ public extension TargetScript {
     name: "SwiftLint Run Script",
     basedOnDependencyAnalysis: false
   )
+  static let firebase: Self = .post(
+    script: """
+      ROOT_DIR=\(ProcessInfo.processInfo.environment["TUIST_ROOT_DIR"] ?? "")
+      "${ROOT_DIR}/Tuist/Dependencies/SwiftPackageManager/.build/checkouts/firebase-ios-sdk/Crashlytics/run"
+
+      """,
+    name: "Firebase Crashlytics",
+    inputPaths: [
+      "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+      "$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)"
+    ],
+    basedOnDependencyAnalysis: false
+  )
 }
