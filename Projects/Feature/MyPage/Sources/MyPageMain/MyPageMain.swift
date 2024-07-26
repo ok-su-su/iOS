@@ -34,7 +34,7 @@ struct MyPageMain {
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
     var middleSectionList: IdentifiedArrayOf<MyPageMainItemListCell<MiddlePageSection>.State>
-      = .init(uniqueElements: MiddlePageSection.allCases.map { MyPageMainItemListCell<MiddlePageSection>.State(property: $0) })
+      = .init(uniqueElements: MiddlePageSection.default.map { MyPageMainItemListCell<MiddlePageSection>.State(property: $0) })
     var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
@@ -66,7 +66,7 @@ struct MyPageMain {
 
   enum InnerAction: Equatable {
     case topSection(TopPageListSection)
-    case middleSection(MiddlePageSection)
+    case middleSection(MiddlePageSectionType)
     case bottomSection(BottomPageSection)
     case updateMyInformation(UserInfoResponseDTO)
     case isLoading(Bool)
@@ -146,7 +146,7 @@ struct MyPageMain {
         return .none
 
       case let .scope(.middleSectionList(.element(id: id, action: .tapped))):
-        if let currentSection = MiddlePageSection(rawValue: id) {
+        if let currentSection = MiddlePageSectionType(rawValue: id) {
           return .send(.inner(.middleSection(currentSection)))
         }
         return .none
@@ -267,7 +267,17 @@ struct MyPageMain {
         return .send(.async(.resign))
 
       case let .inner(.updateIsShowUpdateSUSUVersion(version)):
+        os_log("현재 앱스토어 버전: \(version?.description ?? "")")
         state.isShowUpdate = !(version == state.currentVersionText)
+        if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
+          if state.isShowUpdate {
+            let updateString = "업데이트 하기"
+            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(updateString)))))
+          } else {
+            let currentVersionString = state.currentVersionText
+            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(currentVersionString)))))
+          }
+        }
         return .none
 
       case let .view(.showResignAlert(val)):
@@ -316,28 +326,6 @@ extension MyPageMain {
     var subTitle: String? { nil }
   }
 
-  enum MiddlePageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    case appVersion = 0
-
-    var id: Int {
-      return rawValue
-    }
-
-    var title: String {
-      switch self {
-      case .appVersion:
-        "앱 버전"
-      }
-    }
-
-    var subTitle: String? {
-      switch self {
-      case .appVersion:
-        return "최신 버전 1.0.0"
-      }
-    }
-  }
-
   enum BottomPageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
     case logout
     case resign
@@ -357,4 +345,44 @@ extension MyPageMain {
 
     var subTitle: String? { nil }
   }
+}
+
+// MARK: - MiddlePageSection
+
+struct MiddlePageSection: Identifiable, Equatable, MyPageMainItemListCellItemable {
+  var id: Int { type.id }
+  var title: String { type.title }
+  var subTitle: String?
+  let type: MiddlePageSectionType
+
+  init(type: MiddlePageSectionType, subTitle: String) {
+    self.type = type
+    self.subTitle = subTitle
+  }
+
+  mutating func updateSubtitle(_ val: String) {
+    subTitle = val
+  }
+}
+
+extension MiddlePageSection {
+  static var `default`: [Self] {
+    [
+      .init(type: .appVersion, subTitle: ""),
+    ]
+  }
+}
+
+// MARK: - MiddlePageSectionType
+
+enum MiddlePageSectionType: Int {
+  case appVersion = 0
+  var title: String {
+    switch self {
+    case .appVersion:
+      "앱 버전"
+    }
+  }
+
+  var id: Int { rawValue }
 }

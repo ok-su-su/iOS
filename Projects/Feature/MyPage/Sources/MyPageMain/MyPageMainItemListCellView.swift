@@ -17,13 +17,13 @@ struct MyPageMainItemListCellView<Item: MyPageMainItemListCellItemable>: View {
 
   var body: some View {
     HStack(alignment: .center, spacing: 0) {
-      Text(store.property.title)
+      Text(store.title)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray90)
 
       Spacer()
 
-      if let subTitle = store.property.subTitle {
+      if let subTitle = store.subTitle {
         Text(subTitle)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(SSColor.gray60)

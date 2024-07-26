@@ -17,6 +17,7 @@ import SSNetwork
 
 final class MyPageMainNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private let networkProvider = MoyaProvider<AppstoreNetwork>()
 
   func getMyInformation() async throws -> UserInfoResponseDTO {
     return try await provider.request(.myPageInformation)
@@ -35,7 +36,7 @@ final class MyPageMainNetwork {
   }
 
   func getAppstoreVersion() async throws -> String? {
-    let data = try await provider.request(.getSUSUAppstoreVersion)
+    let data = try await networkProvider.request(.getSUSUAppstoreVersion)
     let jsonObject = try JSONSerialization.jsonObject(with: data)
     guard let json = jsonObject as? [String: Any],
           let results = json["results"] as? [[String: Any]],
@@ -66,13 +67,32 @@ extension DependencyValues {
 
 extension MyPageMainNetwork: DependencyKey {
   static var liveValue: MyPageMainNetwork = .init()
+
+  private enum AppstoreNetwork: TargetType {
+    case getSUSUAppstoreVersion
+    var baseURL: URL {
+      .init(string: "https://itunes.apple.com/lookup?bundleId=com.oksusu.susu.app")!
+    }
+
+    var path: String { "" }
+
+    var method: Moya.Method {
+      .get
+    }
+
+    var task: Moya.Task {
+      .requestPlain
+    }
+
+    var headers: [String: String]? { nil }
+  }
+
   private enum Network: SSNetworkTargetType {
     case myPageInformation
     case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)
     case logout
     case withdraw
     case withdrawApple(identityToken: String)
-    case getSUSUAppstoreVersion
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -86,8 +106,6 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         "auth/withdraw"
-      case .getSUSUAppstoreVersion:
-        "https://itunes.apple.com/lookup?bundleId=com.oksusu.susu.app"
       }
     }
 
@@ -102,8 +120,6 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         .post
-      case .getSUSUAppstoreVersion:
-        .get
       }
     }
 
@@ -118,8 +134,6 @@ extension MyPageMainNetwork: DependencyKey {
         .requestPlain
       case let .withdrawApple(token):
         .requestParameters(parameters: ["appleAccessToken": token], encoding: URLEncoding.queryString)
-      case .getSUSUAppstoreVersion:
-        .requestPlain
       }
     }
   }
