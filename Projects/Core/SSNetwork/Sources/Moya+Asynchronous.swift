@@ -98,7 +98,7 @@ public extension MoyaProvider {
         case let .success(response):
           // statusCode 검사
           if 200 ..< 300 ~= response.statusCode {
-            continuation.resume(returning: (response.data))
+            continuation.resume(returning: response.data)
             return
           }
           continuation.resume(with: .failure(MoyaError.statusCode(response)))

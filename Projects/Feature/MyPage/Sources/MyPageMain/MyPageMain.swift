@@ -28,6 +28,8 @@ struct MyPageMain {
     var isLoading: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
     var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
+    var currentVersionText = MyPageSharedState.shared.getVersion()
+    var isShowUpdate: Bool = false
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -69,6 +71,7 @@ struct MyPageMain {
     case updateMyInformation(UserInfoResponseDTO)
     case isLoading(Bool)
     case pushOnboarding
+    case updateIsShowUpdateSUSUVersion(String?)
   }
 
   enum AsyncAction: Equatable {
@@ -202,9 +205,16 @@ struct MyPageMain {
         }
         return .run { send in
           await send(.inner(.isLoading(true)))
+
+          // UpdateMyPageInformation
           let dto = try await network.getMyInformation()
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.inner(.updateMyInformation(dto)))
+
+          // GetAppVersion
+          let version = try await network.getAppstoreVersion()
+          await send(.inner(.updateIsShowUpdateSUSUVersion(version)))
+
           await send(.inner(.isLoading(false)))
         }
 
@@ -255,6 +265,10 @@ struct MyPageMain {
 
       case .view(.tappedResignButton):
         return .send(.async(.resign))
+
+      case let .inner(.updateIsShowUpdateSUSUVersion(version)):
+        state.isShowUpdate = !(version == state.currentVersionText)
+        return .none
 
       case let .view(.showResignAlert(val)):
         state.showResignAlert = val
