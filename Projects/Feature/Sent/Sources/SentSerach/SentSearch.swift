@@ -34,7 +34,7 @@ struct SentSearch {
           textFieldText: "",
           iconType: .sent,
           noSearchResultTitle: "원하는 검색 결과가 없나요?",
-          noSearchResultDescription: "사람 이름, 보낸 금액, 경조사 명 등을\n검색해볼 수 있어요"
+          noSearchResultDescription: "사람 이름, 보낸 금액 등을\n검색해볼 수 있어요"
         )
       )
       search = .init(helper: _property)
