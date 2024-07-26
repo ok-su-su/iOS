@@ -133,8 +133,8 @@ struct MyPageMain {
       // TopSection Routing
       case let .inner(.topSection(section)):
         switch section {
-        case .connectedSocialAccount:
-          routingPublisher.send(.connectedSocialAccount)
+//        case .connectedSocialAccount:
+//          routingPublisher.send(.connectedSocialAccount)
 //        case .exportExcel:
 //          routingPublisher.send(.exportExcel)
         case .privacyPolicy:
@@ -280,8 +280,8 @@ extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
 
 extension MyPageMain {
   enum TopPageListSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-//    case connectedSocialAccount = 0
-//        case exportExcel
+    ///    case connectedSocialAccount = 0
+    ///        case exportExcel
     case privacyPolicy
 
     var id: Int {
