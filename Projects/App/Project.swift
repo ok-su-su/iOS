@@ -51,6 +51,7 @@ let project = Project.makeModule(
           ]),
         ]),
       "NATIVE_APP_KEY": "${NATIVE_APP_KEY}",
-    ]
+    ],
+    additionalScripts: [.firebase]
   )
 )

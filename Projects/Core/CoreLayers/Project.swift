@@ -14,7 +14,7 @@ let project = Project.makeModule(
       .core(.sSInterceptor),
       .core(.featureAction),
       .core(.sSRegexManager),
-      .core(.sSFirebase)
+      .core(.sSFirebase),
     ]
   )
 )

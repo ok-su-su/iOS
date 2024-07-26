@@ -6,12 +6,11 @@ let project = Project.makeModule(
   name: "SSFirebase",
   targets: .custom(
     name: "SSFirebase",
-    product: .framework,
+    product: .staticLibrary,
     dependencies: [
-//      .thirdParty(.FirebaseAnalytics),
-//      .thirdParty(.FirebaseCrashlytics)
-    ],
-    resources: "Resources/**"
+      .external(name: "FirebaseAnalytics"),
+      .external(name: "FirebaseCrashlytics"),
+    ]
+//    additionalScripts: [.firebase]
   )
 )
-

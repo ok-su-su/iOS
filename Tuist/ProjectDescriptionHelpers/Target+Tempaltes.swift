@@ -28,7 +28,8 @@ public extension [Target] {
     entitlements: Entitlements? = nil,
     dependencies: [TargetDependency] = [],
     testDependencies: [TargetDependency] = [],
-    infoPlist: [String: Plist.Value] = [:]
+    infoPlist: [String: Plist.Value] = [:],
+    additionalScripts: [TargetScript] = []
   ) -> [Target] {
     
     // 에셋 리소스를 코드로 자동완성 해주는 옵션 활성화
@@ -37,7 +38,10 @@ public extension [Target] {
         "DEVELOPMENT_TEAM": "2G5Z92682P",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
         "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No",
+        "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym", // For Firebase
+        "OTHER_LDFLAGS": "-ObjC", // For Firebase ,
+        "SOME_BASE_FLAG": .string("value"),
 //        "CLANG_ENABLE_MODULES": "Yes"
       ],
       configurations: [
@@ -74,9 +78,9 @@ public extension [Target] {
         sources: "Sources/**",
         resources: "Resources/**",
         entitlements: entitlements,
-        scripts: [.swiftFormat, .swiftLint],
+        scripts: [.swiftFormat, .swiftLint] + additionalScripts,
         dependencies: dependencies,
-        settings: settings,
+        settings: .default,
         environmentVariables: ["IDEPreferLogStreaming": "YES"]
       ),
     ]
@@ -91,9 +95,9 @@ public extension [Target] {
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           infoPlist: .default,
           sources: "Tests/**",
-          scripts: [.swiftLint, .swiftFormat],
+          scripts: [.swiftLint, .swiftFormat] + additionalScripts,
           dependencies: testDependencies + [.target(name: name)],
-          settings: settings
+          settings: .default
         )
       )
     }
@@ -107,9 +111,9 @@ public extension [Target] {
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           infoPlist: .default,
           sources: "UITests/**",
-          scripts: [.swiftLint, .swiftFormat],
+          scripts: [.swiftLint, .swiftFormat] + additionalScripts,
           dependencies: testDependencies + [.target(name: name)],
-          settings: settings
+          settings: .default
         )
       )
     }
@@ -133,6 +137,7 @@ public extension [Target] {
     dependencies: [TargetDependency] = [],
     testDependencies: [TargetDependency] = [],
     infoPlist: [String: Plist.Value] = [:],
+    additionalScripts: [TargetScript] = [],
     resources: ResourceFileElements? = nil
   ) -> [Target] {
     let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)"].merging(infoPlist) { _, new in
@@ -145,7 +150,9 @@ public extension [Target] {
         "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
         "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No",
+        "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym", // For Firebase
+        "OTHER_LDFLAGS": "-ObjC" // For Firebase
 //        "CLANG_ENABLE_MODULES": "Yes"
 //        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
       ],
@@ -165,9 +172,9 @@ public extension [Target] {
         infoPlist: .extendingDefault(with: mergedInfoPlist),
         sources: "Sources/**",
         resources: resources,
-        scripts: [.swiftFormat, .swiftLint],
+        scripts: [.swiftFormat, .swiftLint] + additionalScripts,
         dependencies: dependencies,
-        settings: settings
+        settings: .default
       ),
     ]
 
@@ -180,9 +187,9 @@ public extension [Target] {
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureTests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "Tests/**",
-          scripts: [.swiftLint, .swiftFormat],
+          scripts: [.swiftLint, .swiftFormat] + additionalScripts,
           dependencies: testDependencies + [.target(name: "\(feature.targetName)")],
-          settings: settings
+          settings: .default
         )
       )
     }
@@ -196,8 +203,9 @@ public extension [Target] {
           bundleId: "\(ProjectEnvironment.default.prefixBundleID).\(feature.targetName)FeatureUITests",
           deploymentTargets: ProjectEnvironment.default.deploymentTargets,
           sources: "UITests/**",
-          scripts: [.swiftLint, .swiftFormat],
-          dependencies: testDependencies + [.target(name: "\(feature.targetName)")]
+          scripts: [.swiftLint, .swiftFormat] + additionalScripts,
+          dependencies: testDependencies + [.target(name: "\(feature.targetName)")],
+          settings: .default
         )
       )
     }
@@ -225,27 +233,13 @@ public extension [Target] {
     testDependencies: [TargetDependency] = [],
     infoPlist: [String: Plist.Value] = [:],
     resources: ResourceFileElements? = nil,
-    settings: Settings? = nil
+    additionalScripts: [TargetScript] = [],
+    settings: Settings? = nil,
+    additionalFiles: [FileElement] = []
   ) -> [Target] {
     let mergedInfoPlist: [String: Plist.Value] = ["BaseURL": "$(BASE_URL)"].merging(infoPlist) { _, new in
       new
     }
-    
-    let settings: Settings = settings == nil ?
-    .settings(
-      base: [
-        "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
-        "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
-        "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No"
-//        "CLANG_ENABLE_MODULES": "Yes"
-//        "BUILD_LIBRARY_FOR_DISTRIBUTION": "No" // Enable module Verifier
-      ],
-      configurations: [
-        .debug(name: .debug),
-        .release(name: .release),
-      ]
-    )
-    : settings!
 
     var targets: [Target] = [
       Target.target(
@@ -257,9 +251,10 @@ public extension [Target] {
         infoPlist: .extendingDefault(with: mergedInfoPlist),
         sources: "Sources/**",
         resources: resources,
-        scripts: [.swiftFormat, .swiftLint],
+        scripts: [.swiftFormat, .swiftLint] + additionalScripts,
         dependencies: dependencies,
-        settings: settings
+        settings: .default,
+        additionalFiles: additionalFiles
       ),
     ]
 
@@ -274,7 +269,7 @@ public extension [Target] {
           sources: "Tests/**",
           scripts: [],
           dependencies: testDependencies + [.target(name: name)],
-          settings: settings
+          settings: .default
         )
       )
     }
@@ -290,7 +285,7 @@ public extension [Target] {
           sources: "UITests/**",
           scripts: [],
           dependencies: testDependencies + [.target(name: name)],
-          settings: settings
+          settings: .default
         )
       )
     }
