@@ -34,6 +34,19 @@ final class MyPageMainNetwork {
     try await provider.request(.withdraw)
   }
 
+  func getAppstoreVersion() async throws -> String? {
+    let data = try await provider.request(.getSUSUAppstoreVersion)
+    let jsonObject = try JSONSerialization.jsonObject(with: data)
+    guard let json = jsonObject as? [String: Any],
+          let results = json["results"] as? [[String: Any]],
+          let firstResult = results.first,
+          let currentVersion = firstResult["version"] as? String
+    else {
+      return nil
+    }
+    return currentVersion
+  }
+
   func resignWithApple(identity: String?) async throws {
     guard let identity else {
       throw NSError(domain: "No apple IdentityToken its fatal error", code: 30)
@@ -59,6 +72,7 @@ extension MyPageMainNetwork: DependencyKey {
     case logout
     case withdraw
     case withdrawApple(identityToken: String)
+    case getSUSUAppstoreVersion
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -72,6 +86,8 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         "auth/withdraw"
+      case .getSUSUAppstoreVersion:
+        "https://itunes.apple.com/lookup?bundleId=com.oksusu.susu.app"
       }
     }
 
@@ -86,6 +102,8 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         .post
+      case .getSUSUAppstoreVersion:
+        .get
       }
     }
 
@@ -100,6 +118,8 @@ extension MyPageMainNetwork: DependencyKey {
         .requestPlain
       case let .withdrawApple(token):
         .requestParameters(parameters: ["appleAccessToken": token], encoding: URLEncoding.queryString)
+      case .getSUSUAppstoreVersion:
+        .requestPlain
       }
     }
   }

@@ -90,14 +90,15 @@ public extension MoyaProvider {
   }
 
   /// async방식으로 비동기 요청을 진행합니다. 서버의 response를 따로 mapping하지 않습니다.
-  func request(_ target: Target) async throws {
+  @discardableResult
+  func request(_ target: Target) async throws -> Data {
     return try await withCheckedThrowingContinuation { continuation in
       self.request(target) { result in
         switch result {
         case let .success(response):
           // statusCode 검사
           if 200 ..< 300 ~= response.statusCode {
-            continuation.resume(returning: ())
+            continuation.resume(returning: (response.data))
             return
           }
           continuation.resume(with: .failure(MoyaError.statusCode(response)))
