@@ -17,6 +17,7 @@ import SSNetwork
 
 final class MyPageMainNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private let networkProvider = MoyaProvider<AppstoreNetwork>()
 
   func getMyInformation() async throws -> UserInfoResponseDTO {
     return try await provider.request(.myPageInformation)
@@ -32,6 +33,19 @@ final class MyPageMainNetwork {
 
   func resign() async throws {
     try await provider.request(.withdraw)
+  }
+
+  func getAppstoreVersion() async throws -> String? {
+    let data = try await networkProvider.request(.getSUSUAppstoreVersion)
+    let jsonObject = try JSONSerialization.jsonObject(with: data)
+    guard let json = jsonObject as? [String: Any],
+          let results = json["results"] as? [[String: Any]],
+          let firstResult = results.first,
+          let currentVersion = firstResult["version"] as? String
+    else {
+      return nil
+    }
+    return currentVersion
   }
 
   func resignWithApple(identity: String?) async throws {
@@ -53,6 +67,26 @@ extension DependencyValues {
 
 extension MyPageMainNetwork: DependencyKey {
   static var liveValue: MyPageMainNetwork = .init()
+
+  private enum AppstoreNetwork: TargetType {
+    case getSUSUAppstoreVersion
+    var baseURL: URL {
+      .init(string: "https://itunes.apple.com/lookup?bundleId=com.oksusu.susu.app")!
+    }
+
+    var path: String { "" }
+
+    var method: Moya.Method {
+      .get
+    }
+
+    var task: Moya.Task {
+      .requestPlain
+    }
+
+    var headers: [String: String]? { nil }
+  }
+
   private enum Network: SSNetworkTargetType {
     case myPageInformation
     case updateMyProfile(userID: Int64, body: UpdateUserProfileRequestBody)

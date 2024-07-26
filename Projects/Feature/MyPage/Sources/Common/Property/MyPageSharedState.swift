@@ -23,4 +23,8 @@ final class MyPageSharedState {
   }
 
   private var info: UserInfoResponseDTO?
+
+  func getVersion() -> String {
+    return (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0.0"
+  }
 }

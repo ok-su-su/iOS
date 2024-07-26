@@ -20,17 +20,18 @@ let project = Project.makeModule(
       .feature(.onboarding),
       .feature(.sSLaunchScreen),
       .core(.kakaoLogin),
+      .feature(.appleLogin),
     ],
     testDependencies: [],
     infoPlist: [
       "CFBundleDisplayName": "수수",
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
-      "CFBundleShortVersionString": "1.0.0",
+      "CFBundleShortVersionString": "1.0.1",
       "CFBundleVersion": "2024072313",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
-      "GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED" : "No", // FireBaseAnalytics settings
+      "GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED": "No", // FireBaseAnalytics settings
       "UISupportedInterfaceOrientations": .array([
         "UIInterfaceOrientationPortrait",
       ]),

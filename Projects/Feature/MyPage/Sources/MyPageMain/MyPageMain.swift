@@ -28,11 +28,13 @@ struct MyPageMain {
     var isLoading: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
     var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
+    var currentVersionText = MyPageSharedState.shared.getVersion()
+    var isShowUpdate: Bool = false
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
     var middleSectionList: IdentifiedArrayOf<MyPageMainItemListCell<MiddlePageSection>.State>
-      = .init(uniqueElements: MiddlePageSection.allCases.map { MyPageMainItemListCell<MiddlePageSection>.State(property: $0) })
+      = .init(uniqueElements: MiddlePageSection.default.map { MyPageMainItemListCell<MiddlePageSection>.State(property: $0) })
     var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
@@ -64,11 +66,12 @@ struct MyPageMain {
 
   enum InnerAction: Equatable {
     case topSection(TopPageListSection)
-    case middleSection(MiddlePageSection)
+    case middleSection(MiddlePageSectionType)
     case bottomSection(BottomPageSection)
     case updateMyInformation(UserInfoResponseDTO)
     case isLoading(Bool)
     case pushOnboarding
+    case updateIsShowUpdateSUSUVersion(String?)
   }
 
   enum AsyncAction: Equatable {
@@ -133,8 +136,8 @@ struct MyPageMain {
       // TopSection Routing
       case let .inner(.topSection(section)):
         switch section {
-        case .connectedSocialAccount:
-          routingPublisher.send(.connectedSocialAccount)
+//        case .connectedSocialAccount:
+//          routingPublisher.send(.connectedSocialAccount)
 //        case .exportExcel:
 //          routingPublisher.send(.exportExcel)
         case .privacyPolicy:
@@ -143,7 +146,7 @@ struct MyPageMain {
         return .none
 
       case let .scope(.middleSectionList(.element(id: id, action: .tapped))):
-        if let currentSection = MiddlePageSection(rawValue: id) {
+        if let currentSection = MiddlePageSectionType(rawValue: id) {
           return .send(.inner(.middleSection(currentSection)))
         }
         return .none
@@ -202,9 +205,16 @@ struct MyPageMain {
         }
         return .run { send in
           await send(.inner(.isLoading(true)))
+
+          // UpdateMyPageInformation
           let dto = try await network.getMyInformation()
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.inner(.updateMyInformation(dto)))
+
+          // GetAppVersion
+          let version = try await network.getAppstoreVersion()
+          await send(.inner(.updateIsShowUpdateSUSUVersion(version)))
+
           await send(.inner(.isLoading(false)))
         }
 
@@ -256,6 +266,20 @@ struct MyPageMain {
       case .view(.tappedResignButton):
         return .send(.async(.resign))
 
+      case let .inner(.updateIsShowUpdateSUSUVersion(version)):
+        os_log("현재 앱스토어 버전: \(version?.description ?? "")")
+        state.isShowUpdate = !(version == state.currentVersionText)
+        if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
+          if state.isShowUpdate {
+            let updateString = "업데이트 하기"
+            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(updateString)))))
+          } else {
+            let currentVersionString = state.currentVersionText
+            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(currentVersionString)))))
+          }
+        }
+        return .none
+
       case let .view(.showResignAlert(val)):
         state.showResignAlert = val
         return .none
@@ -280,8 +304,8 @@ extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
 
 extension MyPageMain {
   enum TopPageListSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    case connectedSocialAccount = 0
-    ///    case exportExcel
+    ///    case connectedSocialAccount = 0
+    ///        case exportExcel
     case privacyPolicy
 
     var id: Int {
@@ -290,8 +314,8 @@ extension MyPageMain {
 
     var title: String {
       switch self {
-      case .connectedSocialAccount:
-        "연결된 소셜 계정"
+//      case .connectedSocialAccount:
+//        "연결된 소셜 계정"
 //      case .exportExcel:
 //        "엑셀 파일 내보내기"
       case .privacyPolicy:
@@ -300,28 +324,6 @@ extension MyPageMain {
     }
 
     var subTitle: String? { nil }
-  }
-
-  enum MiddlePageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    case appVersion = 0
-
-    var id: Int {
-      return rawValue
-    }
-
-    var title: String {
-      switch self {
-      case .appVersion:
-        "앱 버전"
-      }
-    }
-
-    var subTitle: String? {
-      switch self {
-      case .appVersion:
-        return "최신 버전 1.0.0"
-      }
-    }
   }
 
   enum BottomPageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
@@ -343,4 +345,44 @@ extension MyPageMain {
 
     var subTitle: String? { nil }
   }
+}
+
+// MARK: - MiddlePageSection
+
+struct MiddlePageSection: Identifiable, Equatable, MyPageMainItemListCellItemable {
+  var id: Int { type.id }
+  var title: String { type.title }
+  var subTitle: String?
+  let type: MiddlePageSectionType
+
+  init(type: MiddlePageSectionType, subTitle: String) {
+    self.type = type
+    self.subTitle = subTitle
+  }
+
+  mutating func updateSubtitle(_ val: String) {
+    subTitle = val
+  }
+}
+
+extension MiddlePageSection {
+  static var `default`: [Self] {
+    [
+      .init(type: .appVersion, subTitle: ""),
+    ]
+  }
+}
+
+// MARK: - MiddlePageSectionType
+
+enum MiddlePageSectionType: Int {
+  case appVersion = 0
+  var title: String {
+    switch self {
+    case .appVersion:
+      "앱 버전"
+    }
+  }
+
+  var id: Int { rawValue }
 }

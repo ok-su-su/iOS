@@ -35,6 +35,7 @@ struct MyPageMainView: View {
         makeFeedbackButton()
       }
     }
+    .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
   }
 
   @ViewBuilder
@@ -68,7 +69,8 @@ struct MyPageMainView: View {
   private func makeAppVersionText() -> some View {
     // TODO: Some Logic
     HStack {
-      Text("앱 버전 1.0.0")
+      let appVersion = store.currentVersionText
+      Text("앱 버전 \(appVersion)")
         .modifier(SSTypoModifier(.title_xxxs))
         .foregroundStyle(SSColor.gray50)
       Spacer()

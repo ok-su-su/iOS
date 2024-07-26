@@ -200,6 +200,7 @@ struct SentEnvelopeFilterView: View {
           makeContentView()
         }
         .padding(.horizontal, 16)
+        // 스크롤 할 수 없다면 스크롤 스크롤을 불가하게 만듬
         .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
         .scrollIndicators(.hidden)
         .contentShape(Rectangle())
