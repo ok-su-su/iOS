@@ -40,6 +40,7 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
           let vc = SFSafariViewController(url: url)
           self?.present(vc, animated: true)
         case .appVersion:
+          self?.openAppStore()
           return
         case .logout:
           return
@@ -73,6 +74,16 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   private enum Constants {
     static let privateURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["PRIVACY_POLICY_URL"] as? String
     static let feedBackURLString: String? = Bundle(for: BundleFinder.self).infoDictionary?["SUSU_GOOGLE_FROM_URL"] as? String
+  }
+
+  func openAppStore() {
+    guard let appID = Bundle.main.infoDictionary?["AppstoreAPPID"] as? String,
+          let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)"),
+          UIApplication.shared.canOpenURL(appStoreURL)
+    else {
+      return
+    }
+    UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
   }
 }
 

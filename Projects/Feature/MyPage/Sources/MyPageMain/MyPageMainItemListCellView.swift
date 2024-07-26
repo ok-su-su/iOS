@@ -36,6 +36,7 @@ struct MyPageMainItemListCellView<Item: MyPageMainItemListCellItemable>: View {
     .onAppear {
       store.send(.onAppear(true))
     }
+    .contentShape(Rectangle())
     .onTapGesture {
       store.send(.tapped)
     }
