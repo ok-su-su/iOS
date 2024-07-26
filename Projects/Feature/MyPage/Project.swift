@@ -12,6 +12,8 @@ let project = Project.makeModule(
       .share(.sSLayout),
       .core(.coreLayers),
       .feature(.sSEditSingleSelectButton),
+      .feature(.appleLogin),
+      .core(.kakaoLogin),
     ],
     testDependencies: [],
     infoPlist: [

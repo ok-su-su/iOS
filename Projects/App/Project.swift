@@ -20,6 +20,7 @@ let project = Project.makeModule(
       .feature(.onboarding),
       .feature(.sSLaunchScreen),
       .core(.kakaoLogin),
+      .feature(.appleLogin),
     ],
     testDependencies: [],
     infoPlist: [
