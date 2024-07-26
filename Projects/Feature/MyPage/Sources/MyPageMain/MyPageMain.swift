@@ -29,7 +29,7 @@ struct MyPageMain {
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
     var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
     var currentVersionText = MyPageSharedState.shared.getVersion()
-    var isShowUpdate: Bool = false
+    var isLatestVersion: Bool = false
 
     var topSectionList: IdentifiedArrayOf<MyPageMainItemListCell<TopPageListSection>.State>
       = .init(uniqueElements: TopPageListSection.allCases.map { MyPageMainItemListCell<TopPageListSection>.State(property: $0) })
@@ -158,7 +158,9 @@ struct MyPageMain {
       case let .inner(.middleSection(currentSection)):
         switch currentSection {
         case .appVersion: // NavigationSomeSection
-          routingPublisher.send(.appVersion)
+          if !state.isLatestVersion {
+            routingPublisher.send(.appVersion)
+          }
           return .none
         }
 
@@ -268,9 +270,9 @@ struct MyPageMain {
 
       case let .inner(.updateIsShowUpdateSUSUVersion(version)):
         os_log("현재 앱스토어 버전: \(version?.description ?? "")")
-        state.isShowUpdate = !(version == state.currentVersionText)
+        state.isLatestVersion = (version == state.currentVersionText)
         if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
-          if state.isShowUpdate {
+          if !state.isLatestVersion {
             let updateString = "업데이트 하기"
             return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(updateString)))))
           } else {
