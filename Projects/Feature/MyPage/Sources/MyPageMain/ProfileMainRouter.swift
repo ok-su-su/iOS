@@ -77,7 +77,6 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   }
 
   func openAppStore() {
-    #func
     guard let appID = Bundle.main.infoDictionary?["AppstoreAPPID"] as? String,
           let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)"),
           UIApplication.shared.canOpenURL(appStoreURL)
