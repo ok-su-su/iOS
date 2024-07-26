@@ -280,8 +280,8 @@ extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
 
 extension MyPageMain {
   enum TopPageListSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    case connectedSocialAccount = 0
-    ///    case exportExcel
+//    case connectedSocialAccount = 0
+//        case exportExcel
     case privacyPolicy
 
     var id: Int {
@@ -290,8 +290,8 @@ extension MyPageMain {
 
     var title: String {
       switch self {
-      case .connectedSocialAccount:
-        "연결된 소셜 계정"
+//      case .connectedSocialAccount:
+//        "연결된 소셜 계정"
 //      case .exportExcel:
 //        "엑셀 파일 내보내기"
       case .privacyPolicy:

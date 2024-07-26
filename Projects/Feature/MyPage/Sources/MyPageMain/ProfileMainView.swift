@@ -35,6 +35,7 @@ struct MyPageMainView: View {
         makeFeedbackButton()
       }
     }
+    .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
   }
 
   @ViewBuilder
