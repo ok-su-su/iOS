@@ -107,19 +107,25 @@ public struct MessageAlert: View {
   @ViewBuilder
   func titleView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(messageAlertProperty.titleText)
-        .foregroundStyle(SSColor.gray100)
-        .multilineTextAlignment(.center)
-        .modifier(SSTypoModifier(.title_xs))
-        .bold()
-        .tint(SSColor.gray100)
-        .frame(maxWidth: .infinity)
+      let titleText = messageAlertProperty.titleText
+      let contentText = messageAlertProperty.contentText
+      if !titleText.isEmpty {
+        Text(titleText)
+          .foregroundStyle(SSColor.gray100)
+          .multilineTextAlignment(.center)
+          .modifier(SSTypoModifier(.title_xs))
+          .bold()
+          .tint(SSColor.gray100)
+          .frame(maxWidth: .infinity)
+      }
 
-      Text(messageAlertProperty.contentText)
-        .foregroundStyle(SSColor.gray80)
-        .multilineTextAlignment(.center)
-        .modifier(SSTypoModifier(.text_xxs))
-        .frame(maxWidth: .infinity)
+      if !contentText.isEmpty {
+        Text(contentText)
+          .foregroundStyle(SSColor.gray80)
+          .multilineTextAlignment(.center)
+          .modifier(SSTypoModifier(.text_xxs))
+          .frame(maxWidth: .infinity)
+      }
     }
   }
 
@@ -142,38 +148,30 @@ public struct MessageAlert: View {
   }
 
   @ViewBuilder
-  func doubleButtonView(_ leftButtonText: String, _ rightButtonText: String) -> some View {
+  func doubleButtonView(_ leftButtonText: String, _: String) -> some View {
     HStack(spacing: 8) {
-      SSButton(
-        .init(
-          size: .sh40,
-          status: .active,
-          style: .ghost,
-          color: .black,
-          buttonText: leftButtonText,
-          frame: .init(maxWidth: .infinity)
-        ),
-        onTap: {
-          dismiss()
-        }
-      )
-      .frame(maxWidth: .infinity)
+      Button {
+        dismiss()
+      } label: {
+        Text(leftButtonText)
+          .applySSFont(.title_xxs)
+          .foregroundStyle(SSColor.gray100)
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+      }
+      .frame(maxWidth: .infinity, maxHeight: 40)
 
-      SSButton(
-        .init(
-          size: .sh40,
-          status: .active,
-          style: .filled,
-          color: .orange,
-          buttonText: rightButtonText,
-          frame: .init(maxWidth: .infinity)
-        ),
-        onTap: {
-          dismiss()
-          messageAlertProperty.didTapCompletionButton(checkedCheckBox)
-        }
-      )
-      .frame(maxWidth: .infinity)
+      Button {
+        messageAlertProperty.didTapCompletionButton(checkedCheckBox)
+        dismiss()
+      } label: {
+        Text(leftButtonText)
+          .applySSFont(.title_xxs)
+          .foregroundStyle(SSColor.gray10)
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+          .background(SSColor.orange60)
+      }
+      .frame(maxWidth: .infinity, maxHeight: 40)
+      .clipShape(RoundedRectangle(cornerRadius: 4))
     }
   }
 
