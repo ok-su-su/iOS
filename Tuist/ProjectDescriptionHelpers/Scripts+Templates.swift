@@ -53,8 +53,10 @@ public extension TargetScript {
   )
   static let firebase: Self = .post(
     script: """
+      if [ "${CONFIGURATION}" != "Debug" ]; then
       ROOT_DIR=\(ProcessInfo.processInfo.environment["TUIST_ROOT_DIR"] ?? "")
       "${ROOT_DIR}/Tuist/.build/checkouts/firebase-ios-sdk/Crashlytics/run"
+      fi
       """,
     name: "Firebase Crashlytics",
     inputPaths: [
