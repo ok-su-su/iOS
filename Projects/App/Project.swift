@@ -30,6 +30,7 @@ let project = Project.makeModule(
       "CFBundleVersion": "2024072313",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
+      "GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED" : "No", // FireBaseAnalytics settings
       "UISupportedInterfaceOrientations": .array([
         "UIInterfaceOrientationPortrait",
       ]),
