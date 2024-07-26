@@ -347,9 +347,9 @@ enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
   var sortString: String {
     switch self {
     case .latest:
-      "createdAt,desc"
+      "handedOverAt,desc"
     case .oldest:
-      "createdAt,asc"
+      "handedOverAt,asc"
     case .highestAmount:
       "amount,desc"
     case .lowestAmount:
