@@ -20,6 +20,7 @@ public enum Core: String {
   case sSInterceptor
   case featureAction
   case sSRegexManager
+  case sSFirebase
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

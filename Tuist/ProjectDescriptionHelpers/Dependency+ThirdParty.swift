@@ -27,7 +27,7 @@ public enum ThirdParty: String, CaseIterable {
   private var productType: Product {
     switch self {
     default:
-      return .framework
+      .framework
     }
   }
 

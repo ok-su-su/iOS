@@ -7,6 +7,7 @@
 //
 
 import Designsystem
+import FirebaseCore
 import SwiftUI
 import UIKit
 
@@ -16,6 +17,7 @@ class MyAppDelegate: NSObject, UIApplicationDelegate {
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     Font.registerFont()
+    FirebaseApp.configure()
     return true
   }
 

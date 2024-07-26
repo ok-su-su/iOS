@@ -1,6 +1,6 @@
 generate:
 	tuist install
-	TUIST_ROOT_DIR=${PWD} TUIST_SCHEME=DEBUG tuist generate
+	TUIST_ROOT_DIR=${PWD} FIREBASE_TARGET_NAME={SSFirebase} TUIST_SCHEME=DEBUG tuist generate
 
 feature:
 	python3 Scripts/TuistScript.py feature

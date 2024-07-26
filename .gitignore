@@ -210,3 +210,4 @@ iOSInjectionProject/
 # Custom
 XCConfig/**
 **FakeToken**
+**/GoogleService-Info.plist
