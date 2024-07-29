@@ -19,7 +19,7 @@ public struct SSDateSelectBottomSheetReducer {
   public struct State: Equatable {
     @Shared var selectedDate: Date
     @Shared var isInitialStateOfDate: Bool
-    var initialStartDate = Date(timeIntervalSince1970: -1_230_768_000)
+    var initialStartDate = Date(timeIntervalSince1970: -1_230_886_800)
     var initialEndDate = Date(timeIntervalSince1970: 1_924_905_600)
     var isOnAppear: Bool = false
 
