@@ -1,5 +1,5 @@
 //
-//  LedgerDetailMainUpdatablePublisher.swift
+//  LedgerDetailUpdateObserver.swift
 //  Received
 //
 //  Created by MaraMincho on 7/29/24.
@@ -18,6 +18,11 @@ final class LedgerDetailUpdateObserver {
   }
 
   func updateEnvelopes() {
+    updateEnvelopesPublisher.send()
+  }
+
+  func updateAllProperty() {
+    updateLedgerDetailPublisher.send()
     updateEnvelopesPublisher.send()
   }
 
