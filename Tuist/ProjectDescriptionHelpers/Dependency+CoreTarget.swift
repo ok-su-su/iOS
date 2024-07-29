@@ -14,7 +14,6 @@ public enum Core: String {
   case sSNetwork
   case sSDataBase
   case sSRoot
-  case kakaoLogin
   case sSPersistancy
   case coreLayers
   case sSInterceptor

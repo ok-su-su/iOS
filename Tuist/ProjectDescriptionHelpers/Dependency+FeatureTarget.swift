@@ -20,10 +20,12 @@ public enum Feature: String {
   case onboarding
   case sSLaunchScreen
   case appleLogin
+  case kakaoLogin
   case sSSelectableItems
   case sSCreateEnvelope
   case sSEnvelope
   case sSEditSingleSelectButton
+  case sSLogin
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }
