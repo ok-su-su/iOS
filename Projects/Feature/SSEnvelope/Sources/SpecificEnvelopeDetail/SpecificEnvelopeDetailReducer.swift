@@ -111,8 +111,8 @@ public struct SpecificEnvelopeDetailReducer {
     switch action {
     case .deleteEnvelope:
       return .run { [id = state.envelopeDetailProperty.id] send in
-        await send(.delegate(.tappedDeleteConfirmButton(id: id)))
         try await network.deleteEnvelope(id: id)
+        await send(.delegate(.tappedDeleteConfirmButton(id: id)))
         await dismiss()
       }
     case .pushEditing:

@@ -94,7 +94,9 @@ public struct SpecificEnvelopeEditReducer {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {
+    case tappedSaveButton
+  }
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -124,6 +126,8 @@ public struct SpecificEnvelopeEditReducer {
         return scopeAction(&state, currentAction)
       case let .async(currentAction):
         return asyncAction(&state, currentAction)
+      case let .delegate(currentAction):
+        return delegateAction(&state, currentAction)
       }
     }
     .addFeatures()
@@ -132,9 +136,13 @@ public struct SpecificEnvelopeEditReducer {
   public init() {}
 }
 
-// MARK: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction
+// MARK: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction, FeatureDelegateAction
 
-extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction {
+extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction, FeatureDelegateAction {
+  public func delegateAction(_: inout State, _: DelegateAction) -> Effect<Action> {
+    return .none
+  }
+
   public func scopeAction(_: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .header:
@@ -273,6 +281,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         let envelopeProperty = try await network.editEnvelopes(id: envelopesID, body: envelopeRequestBody)
         UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
         await send(.inner(.isLoading(false)))
+        await send(.delegate(.tappedSaveButton))
         await dismiss()
       }
     }

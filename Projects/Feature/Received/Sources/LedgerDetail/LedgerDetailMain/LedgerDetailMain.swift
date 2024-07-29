@@ -59,6 +59,8 @@ struct LedgerDetailMain {
 
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerPublisher
+  @Dependency(\.ledgerDetailObserver) var updateObserver
+  @Dependency(\.receivedMainObserver) var receivedMainObserver
 
   @CasePathable
   enum Action: Equatable, FeatureAction {
@@ -106,12 +108,26 @@ struct LedgerDetailMain {
       return .concatenate(
         .send(.async(.getLedgerDetailProperty)),
         .send(.inner(.getEnvelopesInitialPage)),
-        .publisher {
-          updateLedgerPublisher
-            .publisher()
-            .receive(on: RunLoop.main)
-            .map { .inner(.updateLedgerDetailPropertyByLedgerID($0)) }
-        }
+        .merge(
+          .publisher {
+            updateLedgerPublisher
+              .publisher()
+              .receive(on: RunLoop.main)
+              .map { .inner(.updateLedgerDetailPropertyByLedgerID($0)) }
+          },
+          .publisher {
+            updateObserver
+              .updateLedgerDetailPublisher
+              .receive(on: RunLoop.main)
+              .map { _ in .async(.getLedgerDetailProperty) }
+          },
+          .publisher {
+            updateObserver
+              .updateEnvelopesPublisher
+              .receive(on: RunLoop.main)
+              .map { _ in .inner(.getEnvelopesInitialPage) }
+          }
+        )
       )
 
     case .tappedFloatingButton:
@@ -134,7 +150,10 @@ struct LedgerDetailMain {
           gift: dto.envelope.gift,
           amount: dto.envelope.amount
         )
-        return .send(.inner(.appendEnvelope(property)))
+        return .run { send in
+          await send(.inner(.appendEnvelope(property)))
+          updateObserver.updateLedgerDetail()
+        }
       }
       return .none
 
@@ -148,6 +167,7 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(true)))
         try await network.deleteLedger(id: id)
         await send(.inner(.isLoading(false)))
+        receivedMainObserver.updateLedgers()
         await dismiss()
       }
 
@@ -302,6 +322,9 @@ struct LedgerDetailMain {
       state.showMessageAlert = true
       return .none
 
+    case .header(.tappedDismissButton):
+      receivedMainObserver.updateLedgers()
+      return .none
     case .header:
       return .none
 
