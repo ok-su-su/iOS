@@ -148,7 +148,7 @@ public struct MessageAlert: View {
   }
 
   @ViewBuilder
-  func doubleButtonView(_ leftButtonText: String, _: String) -> some View {
+  func doubleButtonView(_ leftButtonText: String, _ rightButtonText: String) -> some View {
     HStack(spacing: 8) {
       Button {
         dismiss()
@@ -164,7 +164,7 @@ public struct MessageAlert: View {
         messageAlertProperty.didTapCompletionButton(checkedCheckBox)
         dismiss()
       } label: {
-        Text(leftButtonText)
+        Text(rightButtonText)
           .applySSFont(.title_xxs)
           .foregroundStyle(SSColor.gray10)
           .frame(maxWidth: .infinity, maxHeight: .infinity)
