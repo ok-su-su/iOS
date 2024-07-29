@@ -26,7 +26,7 @@ struct EnvelopeNetwork {
       type: data.envelope.type,
       ledgerID: nil,
       price: data.envelope.amount,
-      eventName: data.category.customCategory != nil ? data.category.customCategory! : data.category.category,
+      eventName: data.category.customCategory ?? data.category.category,
       friendID: data.friend.id,
       name: data.friend.name,
       relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
@@ -80,7 +80,7 @@ struct EnvelopeNetwork {
       type: dto.envelope.type,
       ledgerID: nil,
       price: dto.envelope.amount,
-      eventName: "이벤트 네임", // TODO: Category 수정
+      eventName: dto.category.customCategory ?? dto.category.category,
       friendID: dto.friend.id,
       name: dto.friend.name,
       relation: dto.friendRelationship.customRelation ?? dto.relationship.relation,

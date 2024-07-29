@@ -15,12 +15,14 @@ struct CreateAndUpdateEnvelopeResponse: Decodable {
   var friend: FriendModel
   var friendRelationship: FriendRelationshipModel
   var relationship: RelationshipModel
+  var category: CategoryWithCustomModel
 
   enum CodingKeys: CodingKey {
     case envelope
     case friend
     case friendRelationship
     case relationship
+    case category
   }
 }
 
