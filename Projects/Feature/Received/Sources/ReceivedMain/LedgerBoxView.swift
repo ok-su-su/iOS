@@ -83,7 +83,7 @@ public struct LedgerBoxView: View {
     guard let currentAmount = CustomNumberFormatter.formattedByThreeZero(property.totalAmount, subFixString: "원") else {
       return ""
     }
-    return "전체" + currentAmount
+    return "전체" + " " + currentAmount
   }
 
   private var totalAmountEnvelopeCountText: String {
