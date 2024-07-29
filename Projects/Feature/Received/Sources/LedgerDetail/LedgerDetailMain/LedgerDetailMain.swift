@@ -59,6 +59,7 @@ struct LedgerDetailMain {
 
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerPublisher
+  @Dependency(\.ledgerDetailObserver) var updateObserver
 
   @CasePathable
   enum Action: Equatable, FeatureAction {
@@ -110,7 +111,13 @@ struct LedgerDetailMain {
           updateLedgerPublisher
             .publisher()
             .receive(on: RunLoop.main)
-            .map { val in return .inner(.updateLedgerDetailPropertyByLedgerID(val)) }
+            .map { .inner(.updateLedgerDetailPropertyByLedgerID($0)) }
+        },
+        .publisher {
+          updateObserver
+            .updateEnvelopesPublisher
+            .receive(on: RunLoop.main)
+            .map { .async(.getLedgerDetailProperty) }
         }
       )
 
