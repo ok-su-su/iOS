@@ -19,8 +19,7 @@ let project = Project.makeModule(
       .feature(.statistics),
       .feature(.onboarding),
       .feature(.sSLaunchScreen),
-      .core(.kakaoLogin),
-      .feature(.appleLogin),
+      .feature(.sSLogin),
     ],
     testDependencies: [],
     infoPlist: [
