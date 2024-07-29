@@ -55,6 +55,7 @@ struct ReceivedMain {
   public init() {}
 
   @Dependency(\.receivedMainNetwork) var network
+  @Dependency(\.receivedMainObserver) var receivedMainObserver
 
   @CasePathable
   enum Action: FeatureAction, Equatable {
@@ -103,7 +104,7 @@ struct ReceivedMain {
 
   enum DelegateAction: Equatable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -113,12 +114,14 @@ struct ReceivedMain {
 
       return .merge(
         .send(.async(.getLedgersInitialPage)),
-        .publisher {
-          ReceivedMainRefreshPublisher
-            .publisher()
-            .receive(on: RunLoop.main)
-            .map { _ in .async(.getLedgersInitialPage) }
-        }
+        .merge(
+          .publisher {
+            receivedMainObserver
+              .updateLedgerPublisher
+              .receive(on: RunLoop.main)
+              .map { _ in .async(.getLedgersInitialPage) }
+          }
+        )
       )
 
     case .tappedAddLedgerButton:

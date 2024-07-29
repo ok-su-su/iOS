@@ -99,8 +99,9 @@ struct SentMain {
         return .none
       }
       state.isOnAppear = appear
-      return .send(.async(.updateEnvelopesByFilter))
-        .throttle(id: ThrottleID.getFriendThrottleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
+      return .concatenate(
+        .send(.async(.updateEnvelopesByFilter))
+      )
 
     case let .tappedFilteredPersonButton(id):
       state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
