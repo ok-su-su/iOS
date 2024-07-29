@@ -159,6 +159,5 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       }
     }
     .scrollIndicators(.hidden)
-    .clipped()
   }
 }
