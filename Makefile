@@ -17,3 +17,6 @@ core:
 archive:
 	python3 Scripts/EditArchiveVersion.py
 	TUIST_ROOT_DIR=${PWD} TUIST_SCHEME=DEBUG tuist generate
+
+graph:
+	tuist graph -d
