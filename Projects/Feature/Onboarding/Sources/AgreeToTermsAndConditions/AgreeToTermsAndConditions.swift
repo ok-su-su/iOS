@@ -98,7 +98,7 @@ struct AgreeToTermsAndConditions {
         }
 
       case let .async(.getRequestTermsInformationDetail(id)):
-        guard let item = state.helper.$termItems[id: id] else {
+        guard let item = Shared(state.helper.$termItems[id: id]) else {
           return .none
         }
 
@@ -122,7 +122,7 @@ struct AgreeToTermsAndConditions {
         return .none
 
       case let .inner(.showDetailTerms(id: id, description: description)):
-        guard let item = state.helper.$termItems[id: id] else {
+        guard let item = Shared(state.helper.$termItems[id: id]) else {
           return .none
         }
 

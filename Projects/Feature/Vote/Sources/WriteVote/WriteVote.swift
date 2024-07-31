@@ -28,7 +28,7 @@ struct WriteVote {
     mutating func setSelectableItemsState() {
       selectableItems = []
       helper.selectableItem.forEach { property in
-        guard let sharedProperty = helper.$selectableItem[id: property.id] else {
+        guard let sharedProperty = Shared(helper.$selectableItem[id: property.id]) else {
           return
         }
         selectableItems.append(.init(sharedItem: sharedProperty))
