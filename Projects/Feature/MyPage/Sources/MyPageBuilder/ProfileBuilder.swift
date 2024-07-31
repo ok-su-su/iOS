@@ -4,9 +4,10 @@ import SwiftUI
 // MARK: - MyPageNavigationController
 
 public final class MyPageNavigationController: UINavigationController {
+  let vc = MyPageMainRouter()
   override public func viewDidLoad() {
     super.viewDidLoad()
-    let vc = MyPageMainRouter()
+
     vc.safeAreaRegions = .container
     setViewControllers([vc], animated: false)
   }
@@ -16,7 +17,7 @@ public final class MyPageNavigationController: UINavigationController {
 
 public struct ProfileNavigationView: UIViewControllerRepresentable {
   public init() {}
-  private var vc = MyPageNavigationController()
+  @State private var vc = MyPageNavigationController()
   public func makeUIViewController(context _: Context) -> MyPageNavigationController {
     return vc
   }

@@ -6,10 +6,19 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Designsystem
 import Foundation
 
 final class MyPageSharedState {
-  private init() {}
+  private init() {
+    addObserver()
+  }
+
+  func addObserver() {
+    NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
+      self.info = nil
+    }
+  }
 
   static let shared = MyPageSharedState()
 

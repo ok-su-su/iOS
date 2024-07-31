@@ -91,7 +91,7 @@ public struct ContentView: View {
       .store(in: &subscriptions)
   }
 
-  var sectionViews: [SSTabType: AnyView] = [
+  @State var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
     .received: AnyView(ReceivedBuilderView()),
     .vote: AnyView(VoteBuilder()),
@@ -100,10 +100,19 @@ public struct ContentView: View {
   ]
 
   public var body: some View {
-    VStack(spacing: 0) {
-      contentView()
-    }
-    .onAppear {}
+    contentView()
+      .onChange(of: contentViewObject.nowScreenType) { oldValue, newValue in
+        if oldValue == .loginAndRegister, newValue == .main {
+          sectionViews = [
+            .envelope: AnyView(SentBuilderView()),
+            .received: AnyView(ReceivedBuilderView()),
+            .vote: AnyView(VoteBuilder()),
+            .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
+            .statistics: AnyView(StatisticsBuilderView()),
+          ]
+          contentViewObject.type = .envelope
+        }
+      }
   }
 
   @ViewBuilder
