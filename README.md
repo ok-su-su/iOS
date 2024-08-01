@@ -54,7 +54,7 @@
 
 ## Navigation 
 
-### MyPage
+### MyPage(use NavigationController)
 ![image](https://github.com/user-attachments/assets/9f38f52d-67fa-45f2-a9a8-1f74be493d30)
 
 <br/><br/>
