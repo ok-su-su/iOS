@@ -31,7 +31,6 @@ struct SentEnvelopeFilter {
     var textFieldText: String = ""
     var sliderStartValue: Int64 = 0
     var sliderEndValue: Int64 = 0
-    var curVoid: Void?
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper

@@ -19,7 +19,7 @@ struct SentSearchPersistence {
 
   func setSearchItems(_ item: SentSearchItem?) {
     guard let item else { return }
-    var prevItems: [SentSearchItem] = SSUserDefaultsManager.shared.getValue(key: key) ?? []
+    let prevItems: [SentSearchItem] = SSUserDefaultsManager.shared.getValue(key: key) ?? []
     let uniqueSetItems = Array((prevItems + [item]).uniqued().prefix(5))
     setItems(uniqueSetItems)
   }

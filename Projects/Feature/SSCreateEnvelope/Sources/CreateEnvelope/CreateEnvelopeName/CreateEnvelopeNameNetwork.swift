@@ -88,8 +88,7 @@ struct CreateEnvelopeNameNetwork: Equatable, DependencyKey {
   func searchFriendBy(name: String) async throws -> [SearchItem] {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: name))
     return data.data.compactMap { dto -> SearchItem? in
-      guard let recentEnvelope = dto.recentEnvelope,
-            let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
+      guard let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
       else {
         return nil
       }

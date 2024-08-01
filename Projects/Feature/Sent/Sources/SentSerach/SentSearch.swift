@@ -148,8 +148,6 @@ struct SentSearch {
         }
 
       case let .updateSearchResult(results):
-        let count = state.property.nowSearchedItem.count
-        let text = state.property.textFieldText
         state.property.nowSearchedItem = results
         return .none
 

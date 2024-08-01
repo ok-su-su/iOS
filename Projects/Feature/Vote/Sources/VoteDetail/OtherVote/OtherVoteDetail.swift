@@ -25,7 +25,7 @@ struct OtherVoteDetail {
 
     init() {
       helper.voteProgress.forEach { property in
-        guard let sharedProperty = helper.$voteProgress[id: property.id] else {
+        guard let sharedProperty = Shared(helper.$voteProgress[id: property.id]) else {
           return
         }
         voteProgressBar.append(.init(property: sharedProperty))
