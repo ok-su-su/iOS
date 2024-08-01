@@ -32,14 +32,13 @@
 
 | Tech Stack    |                                                     |
 |:--------------|:----------------------------------------------------|
-| Architecture  | TCA                                                 |
 | UI            | SwiftUI                                             |
-| DI            | Swift-Dependencies                                  |
+| Architecture  | TCA                                                 |
 | Asynchronous  | Combine                                             |
 | Network       | Moya, Alamofire                                     |
-| ETC           | Kakao SDK, Firebase Crashlytics, Firebase Analytics |
 | Prjoect Manage| Tuist                                               |
-
+| Minimum iOS Version   | 17.0                                        |
+| ETC           | Apple Login, Kakao SDK, Firebase Crashlytics, Firebase Analytics, Swift-Dependencies |
 
 
 <br/><br/>
@@ -79,4 +78,10 @@
 ![Image](https://github.com/ok-su-su/iOS/blob/feature/384/graph.png?raw=true)
 
 <br/><br/>
+
+## Developer
+|iOS|
+|:-:|
+| <img src="https://github.com/MaraMincho.png" width=400px alt="정다함"/>|
+|[정다함](https://github.com/MaraMincho)|
 
