@@ -153,7 +153,8 @@ public struct SSTabbar: View {
     if store.state.isAppear {
       HStack(alignment: .center, spacing: 0) {
         // 1차 배포 탭바
-        ForEach([SSTabType.envelope, SSTabType.received, SSTabType.mypage], id: \.self) { tabbarType in
+        let items = [SSTabType.envelope, SSTabType.received, SSTabType.statistics, SSTabType.mypage]
+        ForEach(items, id: \.self) { tabbarType in
           makeItem(type: tabbarType)
             .frame(maxWidth: .infinity, maxHeight: 56)
             .onTapGesture {
