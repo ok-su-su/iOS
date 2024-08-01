@@ -28,8 +28,27 @@
 
 ## Architcture
 
-### MyPage Module
+### TCA + With SUSU (View and Reducer)
 
+![image](https://github.com/user-attachments/assets/f82105a6-f2fb-421d-95ae-c30d8f08e26d)
+
+<br/><br/>
+
+## Navigation 
+
+### MyPage
+![image](https://github.com/user-attachments/assets/9f38f52d-67fa-45f2-a9a8-1f74be493d30)
+
+<br/><br/>
+
+### Others(use Combine and Navigation Rreducer)
+
+![image](https://github.com/user-attachments/assets/60dd5bea-a9c1-4ee8-b8e2-c0b0da033427)
+
+
+### [This article descripe SUSU Navigation](https://velog.io/@seemaster300/SUSU-수수앱에서-Navigation-방식을-정의하기-TCA-With-Navigation)
+ 
+## Dependency Graph
 
 
 
