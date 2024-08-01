@@ -75,7 +75,7 @@
 
 ### Use Tuist 
 
-![Image](https://github.com/ok-su-su/iOS/blob/feature/384/graph.png?raw=true)
+![Image](https://raw.githubusercontent.com/ok-su-su/iOS/Develop/graph.png)
 
 <br/><br/>
 
