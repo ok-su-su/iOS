@@ -177,7 +177,6 @@ struct SentMainView: View {
       // Content
       VStack(spacing: 16) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-
         makeFilterAndEnvelopesContentView()
       }
     }
@@ -186,16 +185,21 @@ struct SentMainView: View {
     }
     .navigationBarBackButtonHidden()
     .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
-    .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
+    .onAppear {
+      store.send(.view(.onAppear(true)))
+    }
+    .connectDestinations()
+  }
+
+  @ViewBuilder
+  private func connectDestinations() -> some View {
+    fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(
         currentType: .sent,
         initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
       ) { data in
         store.sendViewAction(.finishedCreateEnvelopes(data))
       }
-    }
-    .onAppear {
-      store.send(.view(.onAppear(true)))
     }
     .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
       SentEnvelopeFilterView(store: store)
