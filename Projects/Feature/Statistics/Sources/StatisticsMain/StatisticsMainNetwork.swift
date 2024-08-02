@@ -23,6 +23,10 @@ struct StatisticsMainNetwork {
   func getSUSUStatistics(_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse {
     try await provider.request(.getSUSUStatistics(val))
   }
+  func getRelationAndCategory() async throws -> ([RelationBottomSheetItem], [CategoryBottomSheetItem]) {
+    let data: CreateEnvelopesConfigResponse = try await provider.request(.getRelationAndCategory)
+    return (data.relationships.map{.init(description: $0.relation, id: $0.id)}, data.categories.map{.init(description: $0.name, id: $0.id)})
+  }
 }
 
 // MARK: StatisticsMainNetwork.Network
@@ -31,6 +35,7 @@ extension StatisticsMainNetwork {
   private enum Network: SSNetworkTargetType {
     case getMyStatistics
     case getSUSUStatistics(SUSUStatisticsRequestProperty)
+    case getRelationAndCategory
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
@@ -38,6 +43,8 @@ extension StatisticsMainNetwork {
         "statistics/mine/envelope"
       case .getSUSUStatistics:
         "statistics/susu/envelope"
+      case .getRelationAndCategory:
+        "envelopes/configs/create-envelopes"
       }
     }
 
@@ -51,6 +58,8 @@ extension StatisticsMainNetwork {
         .requestPlain
       case let .getSUSUStatistics(paramProperty):
         .requestParameters(parameters: paramProperty.getQueryString(), encoding: URLEncoding.queryString)
+      case .getRelationAndCategory:
+          .requestPlain
       }
     }
   }

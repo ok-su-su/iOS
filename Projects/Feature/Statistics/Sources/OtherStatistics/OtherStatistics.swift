@@ -18,6 +18,7 @@ struct OtherStatistics {
   struct State: Equatable {
     var isOnAppear = false
     var price: Int = 3000
+    var isLoading: Bool = false
     @Shared var helper: OtherStatisticsProperty
     @Presents var agedBottomSheet: SSSelectableBottomSheetReducer<Age>.State? = nil
     @Presents var relationBottomSheet: SSSelectableBottomSheetReducer<RelationBottomSheetItem>.State? = nil
@@ -47,11 +48,11 @@ struct OtherStatistics {
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
-      state.isOnAppear = isAppear
-      return .run { send in
-        await send(.inner(.setInitialHistoryData))
-        await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
+      if state.isOnAppear {
+        return .none
       }
+      state.isOnAppear = isAppear
+      return .send(.async(.getRelationAndCategoryItems))
     case .tappedButton:
       let nextValue = (5000 ... 50000).randomElement()!
       state.price = nextValue
@@ -78,10 +79,16 @@ struct OtherStatistics {
   enum InnerAction: Equatable {
     case setInitialHistoryData
     case setHistoryData
+    case updateRelationItems([RelationBottomSheetItem])
+    case updateCategoryItems([CategoryBottomSheetItem])
+    case isLoading(Bool)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
     switch action {
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
     case .setInitialHistoryData:
       state.helper.setHistoryData()
       return .none
@@ -89,11 +96,21 @@ struct OtherStatistics {
     case .setHistoryData:
       state.helper.setInitialHistoryData()
       return .none
+
+    case let .updateRelationItems(val):
+      state.helper.relationItems = val
+      return .none
+
+    case let .updateCategoryItems(val):
+      state.helper.categoryItems = val
+      return .none
     }
   }
 
   enum AsyncAction: Equatable {
     case updateSUSUStatistics
+    case getRelationAndCategoryItems
+    case getAged
   }
 
   @Dependency(\.statisticsMainNetwork) var network
@@ -114,6 +131,20 @@ struct OtherStatistics {
       return .run { _ in
         let response = try await network.getSUSUStatistics(param)
       }
+
+    case .getRelationAndCategoryItems:
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+
+        let (relationItems, categoryItems) = try await network.getRelationAndCategory()
+        await send(.inner(.updateRelationItems(relationItems)))
+        await send(.inner(.updateCategoryItems(categoryItems)))
+
+        await send(.inner(.isLoading(false)))
+      }
+
+    case .getAged:
+      return .none
     }
   }
 
