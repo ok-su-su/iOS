@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSAlert
 
 @Reducer
 struct MyStatistics {
@@ -16,6 +17,7 @@ struct MyStatistics {
     var isOnAppear = false
     var helper: MyStatisticsProperty = .init()
     var isLoading: Bool = true
+    var isAlert: Bool = false
     init() {}
   }
 
@@ -27,8 +29,12 @@ struct MyStatistics {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
+    case isAlert(Bool)
+    case tappedAlertCreateEnvelopeButton
+    case tappedScrollView
   }
 
   enum InnerAction: Equatable {
@@ -44,16 +50,26 @@ struct MyStatistics {
   @CasePathable
   enum ScopeAction: Equatable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable {
+    case routeSentView
+  }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
+    case .tappedAlertCreateEnvelopeButton:
+      return .send(.delegate(.routeSentView))
+    case let .isAlert(val):
+      state.isAlert = val
+      return .none
     case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
       state.isOnAppear = isAppear
       return .send(.inner(.updateMyStatistics))
+    case .tappedScrollView:
+      state.isAlert = state.helper.isEmptyState
+      return .none
     }
   }
 
@@ -97,6 +113,9 @@ struct MyStatistics {
 
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
+
+      case .delegate:
+        return .none
       }
     }
   }

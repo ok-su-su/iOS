@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import SwiftUI
 
 struct MyStatisticsView: View {
@@ -28,6 +29,10 @@ struct MyStatisticsView: View {
         makeMostSentPriceCard()
       }
       .padding(.horizontal, 16)
+    }
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.sendViewAction(.tappedScrollView)
     }
   }
 
@@ -56,7 +61,7 @@ struct MyStatisticsView: View {
         let targetMonth = store.helper.mostSpentMonth?.description ?? "?"
         Text(targetMonth + "월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(store.helper.isEmptyState ? SSColor.blue60 : SSColor.gray40)
+          .foregroundColor(store.helper.isEmptyState ? SSColor.gray40 : SSColor.blue60)
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -130,6 +135,21 @@ struct MyStatisticsView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .sSAlert(
+      isPresented: $store.isAlert.sending(\.view.isAlert),
+      messageAlertProperty: .init(
+        titleText: " 아직 볼 수 있는 통계가 없어요",
+        contentText: "작성된 봉투 혹은 장부가 있는 경우\n 수수가 데이터를 분석해드려요",
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(
+          left: "닫기",
+          right: "봉투 작성하기"
+        ),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedAlertCreateEnvelopeButton)
+        }
+      )
+    )
   }
 
   private enum Metrics {}

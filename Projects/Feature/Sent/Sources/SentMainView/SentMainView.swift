@@ -188,29 +188,7 @@ struct SentMainView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .connectDestinations()
-  }
-
-  @ViewBuilder
-  private func connectDestinations() -> some View {
-    fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
-      CreateEnvelopeRouterBuilder(
-        currentType: .sent,
-        initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
-      ) { data in
-        store.sendViewAction(.finishedCreateEnvelopes(data))
-      }
-    }
-    .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
-      SentEnvelopeFilterView(store: store)
-    }
-    .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
-      SentSearchView(store: store)
-    }
-    .selectableBottomSheet(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet), cellCount: 4)
-    .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
-      SpecificEnvelopeHistoryRouterView(store: store)
-    }
+    .modifier(DestinationsModifier(store: store))
   }
 
   private enum Constants {
@@ -236,5 +214,33 @@ struct SentMainView: View {
       color: .black,
       buttonText: addNewEnvelopeButtonText
     )
+  }
+}
+
+// MARK: - DestinationsModifier
+
+private struct DestinationsModifier: ViewModifier {
+  @Bindable var store: StoreOf<SentMain> // StoreType은 실제 store의 타입으로 교체해야 합니다
+
+  func body(content: Content) -> some View {
+    content
+      .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
+        CreateEnvelopeRouterBuilder(
+          currentType: .sent,
+          initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
+        ) { data in
+          store.sendViewAction(.finishedCreateEnvelopes(data))
+        }
+      }
+      .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
+        SentEnvelopeFilterView(store: store)
+      }
+      .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
+        SentSearchView(store: store)
+      }
+      .selectableBottomSheet(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet), cellCount: 4)
+      .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
+        SpecificEnvelopeHistoryRouterView(store: store)
+      }
   }
 }
