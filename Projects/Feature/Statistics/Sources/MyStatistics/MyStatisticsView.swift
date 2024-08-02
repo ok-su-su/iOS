@@ -82,7 +82,7 @@ struct MyStatisticsView: View {
         property: .init(
           title: Constants.mostSpentRelationshipTitleLabel,
           description: helper.mostRelationshipText ?? "?",
-          caption: "총 \(helper.mostRelationshipFrequency ?? 0) 번",
+          caption: "총 \(helper.mostRelationshipFrequency ?? "0") 번",
           isEmptyState: helper.isEmptyState
         )
       )
@@ -91,7 +91,7 @@ struct MyStatisticsView: View {
         property: .init(
           title: Constants.mostSpentCategoryTitleLabel,
           description: helper.mostEventText ?? "?",
-          caption: "총 \(helper.mostEventFrequency ?? 0) 번",
+          caption: "총 \(helper.mostEventFrequency ?? "0") 번",
           isEmptyState: helper.isEmptyState
         )
       )
@@ -108,7 +108,7 @@ struct MyStatisticsView: View {
         type: .twoLine(
           title: Constants.mostReceivedTitleLabel,
           leadingDescription: helper.mostReceivedPersonName ?? "?",
-          trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원"
+          trailingDescription: "\(helper.mostReceivedPrice ?? "?") 원"
         )
       )
     )
@@ -123,7 +123,7 @@ struct MyStatisticsView: View {
         type: .twoLine(
           title: Constants.mostSentTitleLabel,
           leadingDescription: helper.mostSentPersonName ?? "?",
-          trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원"
+          trailingDescription: "\(helper.mostSentPrices ?? "?") 원"
         )
       )
     )

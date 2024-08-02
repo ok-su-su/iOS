@@ -9,18 +9,23 @@
 import Foundation
 
 struct MyStatisticsProperty: Equatable {
-  var mostSpentMonth: Int64? { myStatisticsResponse?.mostSpentMonth }
+  var toDecimal: (Int64?) -> String? {
+    CustomNumberFormatter.toDecimal
+  }
+
+  var mostSpentMonth: String? { myStatisticsResponse?.mostSpentMonth?.description }
+
   var mostRelationshipText: String? { myStatisticsResponse?.mostRelationship?.title }
-  var mostRelationshipFrequency: Int64? { myStatisticsResponse?.mostRelationship?.value }
+  var mostRelationshipFrequency: String? { toDecimal(myStatisticsResponse?.mostRelationship?.value) }
 
   var mostEventText: String? { myStatisticsResponse?.mostCategory?.title }
-  var mostEventFrequency: Int64? { myStatisticsResponse?.mostCategory?.value }
+  var mostEventFrequency: String? { toDecimal(myStatisticsResponse?.mostCategory?.value) }
 
   var mostReceivedPersonName: String? { myStatisticsResponse?.highestAmountReceived?.title }
-  var mostReceivedPrice: Int64? { myStatisticsResponse?.highestAmountReceived?.value }
+  var mostReceivedPrice: String? { toDecimal(myStatisticsResponse?.highestAmountReceived?.value) }
 
   var mostSentPersonName: String? { myStatisticsResponse?.highestAmountSent?.title }
-  var mostSentPrices: Int64? { myStatisticsResponse?.highestAmountSent?.value }
+  var mostSentPrices: String? { toDecimal(myStatisticsResponse?.highestAmountSent?.value) }
 
   var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
   var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
