@@ -9,24 +9,37 @@
 import Foundation
 
 struct MyStatisticsProperty: Equatable {
-  var mostRelationshipText: String?
-  var mostRelationshipFrequency: Int?
+  var mostSpentMonth: Int64? { myStatisticsResponse?.mostSpentMonth }
+  var mostRelationshipText: String? { myStatisticsResponse?.mostRelationship?.title }
+  var mostRelationshipFrequency: Int64? { myStatisticsResponse?.mostRelationship?.value }
 
-  var mostEventText: String?
-  var mostEventFrequency: Int?
+  var mostEventText: String? { myStatisticsResponse?.mostCategory?.title }
+  var mostEventFrequency: Int64? { myStatisticsResponse?.mostCategory?.value }
 
-  var mostReceivedPersonName: String?
-  var mostReceivedPrice: Int?
+  var mostReceivedPersonName: String? { myStatisticsResponse?.highestAmountReceived?.title }
+  var mostReceivedPrice: Int64? { myStatisticsResponse?.highestAmountReceived?.value }
 
-  var mostSentPersonName: String?
-  var mostSentPrices: Int?
+  var mostSentPersonName: String? { myStatisticsResponse?.highestAmountSent?.title }
+  var mostSentPrices: Int64? { myStatisticsResponse?.highestAmountSent?.value }
 
   var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
   var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
   var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
 
+  var myStatisticsResponse: UserEnvelopeStatisticResponse? = nil
+
+  var emptyStatisticsResponse: UserEnvelopeStatisticResponse = .emptyState
+
+  var isEmptyState: Bool {
+    myStatisticsResponse == emptyStatisticsResponse
+  }
+
   mutating func setHistoryData() {
     historyData = fakeHistoryData
+  }
+
+  mutating func updateUserEnvelopeStatistics(_ value: UserEnvelopeStatisticResponse) {
+    myStatisticsResponse = value
   }
 
   // TODO: Some 로직
@@ -34,35 +47,5 @@ struct MyStatisticsProperty: Equatable {
     historyData = initialData
   }
 
-  init() {
-    mostRelationshipText = "친구"
-    mostRelationshipFrequency = 12
-    mostEventText = "결혼식"
-    mostEventFrequency = 3
-    mostReceivedPersonName = "김민지"
-    mostReceivedPrice = 300_000
-
-    mostSentPersonName = "최지환"
-    mostSentPrices = 1_000_000
-  }
-
-  init(
-    mostRelationshipText: String?,
-    mostRelationshipFrequency: Int?,
-    mostEventText: String?,
-    mostEventFrequency: Int?,
-    mostReceivedPersonName: String?,
-    mostReceivedPrice: Int?,
-    mostSentPersonName: String?,
-    mostSentPrices: Int?
-  ) {
-    self.mostRelationshipText = mostRelationshipText
-    self.mostRelationshipFrequency = mostRelationshipFrequency
-    self.mostEventText = mostEventText
-    self.mostEventFrequency = mostEventFrequency
-    self.mostReceivedPersonName = mostReceivedPersonName
-    self.mostReceivedPrice = mostReceivedPrice
-    self.mostSentPersonName = mostSentPersonName
-    self.mostSentPrices = mostSentPrices
-  }
+  init() {}
 }

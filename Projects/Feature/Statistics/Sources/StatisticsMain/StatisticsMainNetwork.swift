@@ -6,24 +6,28 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
-import SSNetwork
 import Dependencies
+import Foundation
 import Moya
 import SSInterceptor
+import SSNetwork
+
+// MARK: - StatisticsMainNetwork
 
 struct StatisticsMainNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func getMyStatistics() async throws -> UserEnvelopeStatisticResponse{
-     try await provider.request(.getMyStatistics)
+  func getMyStatistics() async throws -> UserEnvelopeStatisticResponse {
+    try await provider.request(.getMyStatistics)
   }
 }
+
+// MARK: StatisticsMainNetwork.Network
 
 extension StatisticsMainNetwork {
   private enum Network: SSNetworkTargetType {
     case getMyStatistics
     case getSUSUStatistics(SUSUStatisticsRequestProperty)
-    var additionalHeader: [String : String]? { nil}
+    var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
       case .getMyStatistics:
@@ -40,11 +44,23 @@ extension StatisticsMainNetwork {
     var task: Moya.Task {
       switch self {
       case .getMyStatistics:
-          .requestPlain
+        .requestPlain
       case let .getSUSUStatistics(paramProperty):
-          .requestParameters(parameters: paramProperty.getQueryString(), encoding: URLEncoding.queryString)
+        .requestParameters(parameters: paramProperty.getQueryString(), encoding: URLEncoding.queryString)
       }
     }
+  }
+}
 
+// MARK: DependencyKey
+
+extension StatisticsMainNetwork: DependencyKey {
+  static var liveValue: StatisticsMainNetwork = .init()
+}
+
+extension DependencyValues {
+  var statisticsMainNetwork: StatisticsMainNetwork {
+    get { self[StatisticsMainNetwork.self] }
+    set { self[StatisticsMainNetwork.self] = newValue }
   }
 }

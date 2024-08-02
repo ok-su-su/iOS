@@ -39,7 +39,7 @@ struct MyStatisticsView: View {
         .historyData
         .enumerated()
         .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
-      chartTitle: "최근 8개월간 쓴 금액",
+      chartTitle: Constants.verticalChartSpentMonthTitleLabel,
       chartTopTrailingDescription: "0만원"
     )
   }
@@ -48,15 +48,15 @@ struct MyStatisticsView: View {
   private func makeMostSpendMonth() -> some View {
     VStack(spacing: 16) {
       HStack(spacing: 0) {
-        Text("경조사비를 가장 많이 쓴 달")
+        Text(Constants.mostSpentMonthTitleLabel)
           .modifier(SSTypoModifier(.title_xs))
           .foregroundStyle(SSColor.gray100)
 
         Spacer()
-
-        Text("?월")
+        let targetMonth = store.helper.mostSpentMonth?.description ?? "?"
+        Text(targetMonth + "월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(store.helper.mostEventText != nil ? SSColor.blue60 : SSColor.gray40)
+          .foregroundColor(store.helper.isEmptyState ? SSColor.blue60 : SSColor.gray40)
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -72,19 +72,19 @@ struct MyStatisticsView: View {
       // 최다 친구 관계
       StatisticsType1Card(
         property: .init(
-          title: "최다 친구 관계",
+          title: Constants.mostSpentRelationshipTitleLabel,
           description: helper.mostRelationshipText ?? "?",
-          caption: "총 \(helper.mostRelationshipFrequency ?? 0)번",
-          isEmptyState: helper.mostRelationshipText == nil || helper.mostRelationshipFrequency == nil
+          caption: "총 \(helper.mostRelationshipFrequency ?? 0) 번",
+          isEmptyState: helper.isEmptyState
         )
       )
       // 최다 경조사
       StatisticsType1Card(
         property: .init(
-          title: "최다 수수 경조사",
+          title: Constants.mostSpentCategoryTitleLabel,
           description: helper.mostEventText ?? "?",
-          caption: "총 \(helper.mostEventFrequency ?? 0)번",
-          isEmptyState: helper.mostEventText == nil || helper.mostEventFrequency == nil
+          caption: "총 \(helper.mostEventFrequency ?? 0) 번",
+          isEmptyState: helper.isEmptyState
         )
       )
     }
@@ -96,9 +96,9 @@ struct MyStatisticsView: View {
     StatisticsType2Card(
       property:
       .init(
-        isEmptyState: helper.mostReceivedPrice == nil,
+        isEmptyState: helper.isEmptyState,
         type: .twoLine(
-          title: "가장 많이 받은 금액",
+          title: Constants.mostReceivedTitleLabel,
           leadingDescription: helper.mostReceivedPersonName ?? "?",
           trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원"
         )
@@ -111,9 +111,9 @@ struct MyStatisticsView: View {
     let helper = store.helper
     StatisticsType2Card(
       property: .init(
-        isEmptyState: helper.mostSentPersonName == nil || helper.mostSentPrices == nil,
+        isEmptyState: helper.isEmptyState,
         type: .twoLine(
-          title: "가장 많이 보낸 금액",
+          title: Constants.mostSentTitleLabel,
           leadingDescription: helper.mostSentPersonName ?? "?",
           trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원"
         )
@@ -126,6 +126,7 @@ struct MyStatisticsView: View {
       makeContentView()
     }
     .navigationBarBackButtonHidden()
+    .ssLoading(store.isLoading)
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -133,5 +134,12 @@ struct MyStatisticsView: View {
 
   private enum Metrics {}
 
-  private enum Constants {}
+  private enum Constants {
+    static let verticalChartSpentMonthTitleLabel: String = "최근 8개월간 쓴 금액"
+    static let mostSpentMonthTitleLabel: String = "경조사비를 가장 많이 쓴 달"
+    static let mostSpentRelationshipTitleLabel: String = "최다 수수 관계"
+    static let mostSpentCategoryTitleLabel: String = "최다 수수 경조사"
+    static let mostReceivedTitleLabel: String = "가장 많이 받은 금액"
+    static let mostSentTitleLabel: String = "가장 많이 보낸 금액"
+  }
 }

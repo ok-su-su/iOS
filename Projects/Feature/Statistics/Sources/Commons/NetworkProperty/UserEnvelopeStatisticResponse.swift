@@ -8,23 +8,37 @@
 
 import Foundation
 
-struct UserEnvelopeStatisticResponse: Decodable {
+// MARK: - UserEnvelopeStatisticResponse
+
+struct UserEnvelopeStatisticResponse: Equatable, Decodable {
   /// 최근 사용 금액
-  let recentSpent: TitleValueModelLong
+  let recentSpent: [TitleValueModelLong]?
   /// 경조사를 가장 많이 쓴 달
   let mostSpentMonth: Int64?
   /// 가장 많이 쓴 관계
-  let mostRelationship: TitleValueModelLong
+  let mostRelationship: TitleValueModelLong?
   /// 가장 많이 쓴 경조사
-  let mostCategory: TitleValueModelLong
+  let mostCategory: TitleValueModelLong?
   /// 가장 많이 받은 금액
-  let highestAmountReceived: TitleValueModelLong
+  let highestAmountReceived: TitleValueModelLong?
   /// 가장 많이 보낸 금액
-  let titleValueModelLong: TitleValueModelLong
+  let highestAmountSent: TitleValueModelLong?
 }
 
+extension UserEnvelopeStatisticResponse {
+  static var emptyState: Self = .init(
+    recentSpent: nil,
+    mostSpentMonth: nil,
+    mostRelationship: nil,
+    mostCategory: nil,
+    highestAmountReceived: nil,
+    highestAmountSent: nil
+  )
+}
 
-struct TitleValueModelLong: Decodable {
+// MARK: - TitleValueModelLong
+
+struct TitleValueModelLong: Equatable, Decodable {
   let title: String
   let value: Int64
 

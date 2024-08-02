@@ -8,12 +8,20 @@
 
 import Foundation
 
+// MARK: - SUSUStatisticsRequestProperty
+
 struct SUSUStatisticsRequestProperty {
   var age: Age?
   var relationshipId: Int64?
   var categoryId: Int64?
   enum Age: String {
-    case TEN, TWENTY, THIRTY, FOURTY, FIFTY, SIXTY, SEVENTY
+    case TEN
+    case TWENTY
+    case THIRTY
+    case FOURTY
+    case FIFTY
+    case SIXTY
+    case SEVENTY
   }
 }
 
