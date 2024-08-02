@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSBottomSelectSheet
 import SwiftUI
 
 // MARK: - OtherStatisticsView
@@ -194,12 +195,18 @@ struct OtherStatisticsView: View {
         }
       }
     }
-    .sheet(item: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet)) { store in
-      SelectBottomSheetView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationContentInteraction(.scrolls)
-        .presentationDragIndicator(.automatic)
-    }
+    .selectableBottomSheet(
+      store: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet),
+      cellCount: Age.allCases.count
+    )
+    .selectableBottomSheet(
+      store: $store.scope(state: \.categoryBottomSheet, action: \.scope.categoryBottomSheet),
+      cellCount: store.state.helper.categoryItems.count
+    )
+    .selectableBottomSheet(
+      store: $store.scope(state: \.relationBottomSheet, action: \.scope.relationBottomSheet),
+      cellCount: store.state.helper.relationItems.count
+    )
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

@@ -7,6 +7,9 @@
 //
 
 import Foundation
+import SSBottomSelectSheet
+
+// MARK: - OtherStatisticsProperty
 
 struct OtherStatisticsProperty: Equatable {
   var eventName: String
@@ -17,13 +20,15 @@ struct OtherStatisticsProperty: Equatable {
   var eventProperty: StatisticsType2CardWithAnimationProperty
   var mostSpentMonthText: String = "3월"
 
-  var agedBottomSheetProperty: SelectBottomSheetProperty<AgedBottomSheetProperty> = .init(items: [
-    .init(description: "20대", id: 0),
-    .init(description: "30대", id: 1),
-    .init(description: "40대", id: 2),
-    .init(description: "50대", id: 3),
-    .init(description: "60대", id: 4),
-  ])
+  var selectedAgeItem: Age? = .TWENTY
+
+  var relationItems: [RelationBottomSheetItem] = []
+  var selectedRelationItem: RelationBottomSheetItem? = nil
+  var selectedRelationshipID: Int? { selectedRelationItem?.id }
+
+  var categoryItems: [CategoryBottomSheetItem] = []
+  var selectedCategoryItem: CategoryBottomSheetItem? = nil
+  var selectedCategoryID: Int? { selectedCategoryItem?.id }
 
   // HistoryProperty
   var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -101,4 +106,18 @@ struct OtherStatisticsProperty: Equatable {
   mutating func setInitialHistoryData() {
     historyData = initialData
   }
+}
+
+// MARK: - RelationBottomSheetItem
+
+struct RelationBottomSheetItem: SSSelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
+}
+
+// MARK: - CategoryBottomSheetItem
+
+struct CategoryBottomSheetItem: SSSelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
 }

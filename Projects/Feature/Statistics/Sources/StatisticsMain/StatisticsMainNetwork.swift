@@ -19,6 +19,10 @@ struct StatisticsMainNetwork {
   func getMyStatistics() async throws -> UserEnvelopeStatisticResponse {
     try await provider.request(.getMyStatistics)
   }
+
+  func getSUSUStatistics(_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse {
+    try await provider.request(.getSUSUStatistics(val))
+  }
 }
 
 // MARK: StatisticsMainNetwork.Network

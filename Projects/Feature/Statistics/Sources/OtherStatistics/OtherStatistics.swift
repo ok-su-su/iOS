@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSBottomSelectSheet
 
 // MARK: - OtherStatistics
 
@@ -18,7 +19,9 @@ struct OtherStatistics {
     var isOnAppear = false
     var price: Int = 3000
     @Shared var helper: OtherStatisticsProperty
-    @Presents var agedBottomSheet: SelectBottomSheet<AgedBottomSheetProperty>.State? = nil
+    @Presents var agedBottomSheet: SSSelectableBottomSheetReducer<Age>.State? = nil
+    @Presents var relationBottomSheet: SSSelectableBottomSheetReducer<RelationBottomSheetItem>.State? = nil
+    @Presents var categoryBottomSheet: SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.State? = nil
     init() {
       _helper = .init(.init())
     }
@@ -38,6 +41,38 @@ struct OtherStatistics {
     case tappedButton
     case tappedAgedButton
     case tappedRelationshipButton
+    case tappedCategoryButton
+  }
+
+  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .run { send in
+        await send(.inner(.setInitialHistoryData))
+        await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
+      }
+    case .tappedButton:
+      let nextValue = (5000 ... 50000).randomElement()!
+      state.price = nextValue
+      return .none
+
+    case .tappedAgedButton:
+      state.agedBottomSheet = .init(items: Age.allCases, selectedItem: state.$helper.selectedAgeItem)
+      return .none
+
+    case .tappedRelationshipButton:
+      let items = state.helper.relationItems
+      let selectedItem = state.$helper.selectedRelationItem
+      state.relationBottomSheet = .init(items: items, selectedItem: selectedItem)
+      return .none
+
+    case .tappedCategoryButton:
+      let items = state.helper.categoryItems
+      let selectedItem = state.$helper.selectedCategoryItem
+      state.categoryBottomSheet = .init(items: items, selectedItem: selectedItem)
+      return .none
+    }
   }
 
   enum InnerAction: Equatable {
@@ -45,49 +80,88 @@ struct OtherStatistics {
     case setHistoryData
   }
 
-  enum AsyncAction: Equatable {}
+  func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
+    switch action {
+    case .setInitialHistoryData:
+      state.helper.setHistoryData()
+      return .none
+
+    case .setHistoryData:
+      state.helper.setInitialHistoryData()
+      return .none
+    }
+  }
+
+  enum AsyncAction: Equatable {
+    case updateSUSUStatistics
+  }
+
+  @Dependency(\.statisticsMainNetwork) var network
+  func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
+    switch action {
+    case .updateSUSUStatistics:
+      guard let age = state.helper.selectedAgeItem,
+            let category = state.helper.selectedCategoryID,
+            let relationship = state.helper.selectedRelationshipID
+      else {
+        return .none
+      }
+      let param: SUSUStatisticsRequestProperty = .init(
+        age: age,
+        relationshipId: .init(relationship),
+        categoryId: .init(category)
+      )
+      return .run { _ in
+        let response = try await network.getSUSUStatistics(param)
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case agedBottomSheet(PresentationAction<SelectBottomSheet<AgedBottomSheetProperty>.Action>)
+    case agedBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<Age>.Action>)
+    case relationBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<RelationBottomSheetItem>.Action>)
+    case categoryBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.Action>)
   }
 
-  enum DelegateAction: Equatable {}
+  func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
+    switch action {
+    case .agedBottomSheet:
+      return .none
+    case .categoryBottomSheet:
+      return .none
+    case .relationBottomSheet:
+      return .none
+    }
+  }
+
+  enum DelegateAction: Equatable {
+    case routeMyPage
+  }
+
+  func delegateAction(_: inout State, _: DelegateAction) -> Effect<Action> {
+    return .none
+  }
 
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .run { send in
-          await send(.inner(.setInitialHistoryData))
-          await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
-        }
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
 
-      case .inner(.setHistoryData):
-        state.helper.setHistoryData()
-        return .none
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
 
-      case .inner(.setInitialHistoryData):
-        state.helper.setInitialHistoryData()
-        return .none
+      case let .delegate(currentAction):
+        return delegateAction(&state, currentAction)
 
-      case .view(.tappedButton):
-        let nextValue = (5000 ... 50000).randomElement()!
-        state.price = nextValue
-        return .none
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
 
-      case .view(.tappedRelationshipButton):
-        state.helper.fakeSetRelationship()
-        return .none
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
 
       case .binding:
-        return .none
-
-      case .view(.tappedAgedButton):
-        state.agedBottomSheet = .init(property: state.$helper.agedBottomSheetProperty)
-        return .none
-      case .scope(.agedBottomSheet):
         return .none
       }
     }
@@ -98,14 +172,13 @@ struct OtherStatistics {
 extension Reducer where State == OtherStatistics.State, Action == OtherStatistics.Action {
   func addFeatures0() -> some ReducerOf<Self> {
     ifLet(\.$agedBottomSheet, action: \.scope.agedBottomSheet) {
-      SelectBottomSheet()
+      SSSelectableBottomSheetReducer()
+    }
+    .ifLet(\.$categoryBottomSheet, action: \.scope.categoryBottomSheet) {
+      SSSelectableBottomSheetReducer()
+    }
+    .ifLet(\.$relationBottomSheet, action: \.scope.relationBottomSheet) {
+      SSSelectableBottomSheetReducer()
     }
   }
-}
-
-// MARK: - AgedBottomSheetProperty
-
-struct AgedBottomSheetProperty: SelectBottomSheetPropertyItemable {
-  var description: String
-  var id: Int
 }
