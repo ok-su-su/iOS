@@ -22,6 +22,8 @@ struct MyStatisticsView: View {
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
       VStack(spacing: 8) {
+        Spacer()
+          .frame(maxWidth: .infinity, maxHeight: 0.5)
         makeHistoryView()
         makeMostSpendMonth()
         makeHalfCardView()
@@ -30,6 +32,7 @@ struct MyStatisticsView: View {
       }
       .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
     .contentShape(Rectangle())
     .onTapGesture {
       store.sendViewAction(.tappedScrollView)
