@@ -42,9 +42,40 @@ public struct SSLoadingModifier: ViewModifier {
   }
 }
 
+// MARK: - SSLoadingModifierWithBinding
+
+public struct SSLoadingModifierWithBinding: ViewModifier {
+  @Binding var isLoading: Bool
+
+  public init(isLoading: Binding<Bool>) {
+    _isLoading = isLoading
+  }
+
+  public func body(content: Content) -> some View {
+    let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
+
+    ZStack(alignment: .center) {
+      content
+        .opacity(isLoading ? 0 : 1)
+      if isLoading {
+        LottieView(animation: .filepath(filePath))
+          .looping()
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 72, height: 72)
+          .clipped()
+      }
+    }
+  }
+}
+
 public extension View {
   func ssLoading(_ isLoading: Bool) -> some View {
     modifier(SSLoadingModifier(isLoading: isLoading))
+  }
+
+  func ssLoadingWithBinding(_ isLoading: Binding<Bool>) -> some View {
+    modifier(SSLoadingModifierWithBinding(isLoading: isLoading))
   }
 }
 

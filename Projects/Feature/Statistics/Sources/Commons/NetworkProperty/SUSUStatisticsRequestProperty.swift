@@ -43,20 +43,20 @@ enum Age: String, SSSelectBottomSheetPropertyItemable, CaseIterable {
     let currentYear = Calendar.current.component(.year, from: Date())
     let age = currentYear - birthYear
     return switch age {
-    case 0..<20:
-        .TEN
-    case 20..<30:
-        .TWENTY
-    case 30..<40:
-        .THIRTY
-    case 40..<50:
-        .FOURTY
-    case 50..<60:
-        .FIFTY
-    case 60..<70:
-        .SIXTY
+    case 0 ..< 20:
+      .TEN
+    case 20 ..< 30:
+      .TWENTY
+    case 30 ..< 40:
+      .THIRTY
+    case 40 ..< 50:
+      .FOURTY
+    case 50 ..< 60:
+      .FIFTY
+    case 60 ..< 70:
+      .SIXTY
     default:
-        .SEVENTY
+      .SEVENTY
     }
   }
 

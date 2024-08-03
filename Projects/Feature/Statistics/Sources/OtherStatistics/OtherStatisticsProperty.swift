@@ -12,24 +12,42 @@ import SSBottomSelectSheet
 // MARK: - OtherStatisticsProperty
 
 struct OtherStatisticsProperty: Equatable {
-
   var toDecimal: (Int64) -> String? { CustomNumberFormatter.toDecimal }
 
   var relationProperty: StatisticsType2CardWithAnimationProperty
   var categoryProperty: StatisticsType2CardWithAnimationProperty
 
   var susuStatistics: SUSUEnvelopeStatisticResponse = .emptyState
+
+  var nowSentPrice: String = ""
+  var nowSentPriceSlice: [String] = []
+
+  mutating func updateSentText(_ value: String) {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+
+    nowSentPrice = value
+    let num = Int(String(nowSentPrice.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
+    nowSentPriceSlice = formatter.string(from: .init(value: num))!.map { String($0) }
+  }
+
   mutating func updateSUSUStatistics(_ val: SUSUEnvelopeStatisticResponse) {
     susuStatistics = val
 
-    if let relation = val.mostRelationship {
-      relationProperty.leadingDescription = relation.title
-      relationProperty.trailingDescription = toDecimal(relation.value) ?? "50,000원"
+    if let nowSentPrice = val.averageSent {
+      updateSentText(nowSentPrice.description)
     }
 
-    if let category = val.mostCategory {
+    if let relation = val.averageRelationship {
+      relationProperty.leadingDescription = relation.title
+      let trailingText = toDecimal(relation.value) ?? ""
+      relationProperty.updateTrailingText(trailingText)
+    }
+
+    if let category = val.averageCategory {
       categoryProperty.leadingDescription = category.title
-      categoryProperty.trailingDescription = toDecimal(category.value) ?? "100,000원"
+      let trailingText = toDecimal(category.value) ?? ""
+      categoryProperty.updateTrailingText(trailingText)
     }
   }
 
@@ -39,7 +57,7 @@ struct OtherStatisticsProperty: Equatable {
   var selectedRelationItem: RelationBottomSheetItem? = nil
   var selectedRelationshipID: Int? { selectedRelationItem?.id }
 
-  mutating func updateRelationItem(_ items: [RelationBottomSheetItem] ) {
+  mutating func updateRelationItem(_ items: [RelationBottomSheetItem]) {
     relationItems = items
     selectedRelationItem = relationItems.first
   }
@@ -58,19 +76,17 @@ struct OtherStatisticsProperty: Equatable {
   var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
   var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
 
-
   init() {
-
     relationProperty = .init(
       title: "관계별 평균 수수",
       leadingDescription: "친구",
-      trailingDescription: "50,000원",
+      trailingDescription: "",
       isEmptyState: false
     )
     categoryProperty = .init(
       title: "경조사 카테고리별 수수",
       leadingDescription: "결혼식",
-      trailingDescription: "300,000원",
+      trailingDescription: "",
       isEmptyState: false
     )
   }

@@ -112,7 +112,9 @@ struct OtherStatistics {
     case let .updateAged(val):
       state.helper.selectedAgeItem = .aged(birthYear: val)
       return .none
+
       // MARK: - ㅍshowUpdateAgeAle
+
     case .showUpdateAgeAlert:
       return .none
     case let .updateSUSUStatistics(val):
@@ -179,6 +181,10 @@ struct OtherStatistics {
 
   func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
     switch action {
+    case .agedBottomSheet(.presented(.tapped(item: _))),
+         .categoryBottomSheet(.presented(.tapped(item: _))),
+         .relationBottomSheet(.presented(.tapped(item: _))):
+      return .send(.async(.updateSUSUStatistics))
     case .agedBottomSheet:
       return .none
     case .categoryBottomSheet:

@@ -46,9 +46,8 @@ extension SUSUEnvelopeStatisticResponse {
   }
 }
 
-
 extension SUSUEnvelopeStatisticResponse {
   var averageSentLabel: String {
-    CustomNumberFormatter.toDecimal(averageSent) ?? "50,000원"
+    CustomNumberFormatter.toDecimal(averageSent) ?? "50,000" + "원"
   }
 }

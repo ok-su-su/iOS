@@ -85,7 +85,7 @@ struct OtherStatisticsView: View {
               rightIcon: .icon(SSImage.envelopeDownArrow),
               buttonText: store.helper.selectedCategoryItem?.description ?? "결혼식"
             )) {
-              // 경조사 클릭했을 떄 Some Touch logic
+              store.sendViewAction(.tappedCategoryButton)
             }
             .contentMargins(.trailing, 4)
 
@@ -96,9 +96,11 @@ struct OtherStatisticsView: View {
 
         // BottomSection
         HStack(spacing: 8) {
-          Text(statisticsProperty.averageSentLabel)
-            .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(SSColor.orange60)
+          CustomNumericNumberView(
+            descriptionSlice: $store.helper.nowSentPriceSlice,
+            isEmptyState: false,
+            height: 30
+          )
 
           Text("보내고 있어요")
             .modifier(SSTypoModifier(.title_xxs))
@@ -164,7 +166,6 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeHalfCardView() -> some View {
     HStack(spacing: 8) {
-      let helper = store.helper
       // 최다 수수 관계
       let relationTitle = statisticsProperty.mostRelationship?.title ?? "친구"
       let relationCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "12"
@@ -178,7 +179,7 @@ struct OtherStatisticsView: View {
       )
       // 최다 경조사
       let categoryTitle = statisticsProperty.mostCategory?.title ?? "결혼식"
-      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "12"
+      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostCategory?.value) ?? "12"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 경조사",
