@@ -27,6 +27,10 @@ struct StatisticsMainNetwork {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getRelationAndCategory)
     return (data.relationships.map{.init(description: $0.relation, id: $0.id)}, data.categories.map{.init(description: $0.name, id: $0.id)})
   }
+  func getMyBirth() async throws -> Int? {
+    let dto: UserInfoResponseDTO = try await provider.request(.getMyBirth)
+    return dto.birth
+  }
 }
 
 // MARK: StatisticsMainNetwork.Network
@@ -36,6 +40,7 @@ extension StatisticsMainNetwork {
     case getMyStatistics
     case getSUSUStatistics(SUSUStatisticsRequestProperty)
     case getRelationAndCategory
+    case getMyBirth
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
@@ -45,6 +50,8 @@ extension StatisticsMainNetwork {
         "statistics/susu/envelope"
       case .getRelationAndCategory:
         "envelopes/configs/create-envelopes"
+      case .getMyBirth:
+        "users/my-info"
       }
     }
 
@@ -55,10 +62,12 @@ extension StatisticsMainNetwork {
     var task: Moya.Task {
       switch self {
       case .getMyStatistics:
-        .requestPlain
+          .requestPlain
       case let .getSUSUStatistics(paramProperty):
-        .requestParameters(parameters: paramProperty.getQueryString(), encoding: URLEncoding.queryString)
+          .requestParameters(parameters: paramProperty.getQueryString(), encoding: URLEncoding.queryString)
       case .getRelationAndCategory:
+          .requestPlain
+      case .getMyBirth:
           .requestPlain
       }
     }

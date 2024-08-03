@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SUSUEnvelopeStatisticResponse
 
-struct SUSUEnvelopeStatisticResponse: Decodable {
+struct SUSUEnvelopeStatisticResponse: Decodable, Equatable {
   /// 평균 보낸 비용
   let averageSent: Int64?
 
@@ -43,5 +43,12 @@ extension SUSUEnvelopeStatisticResponse {
       mostRelationship: nil,
       mostCategory: nil
     )
+  }
+}
+
+
+extension SUSUEnvelopeStatisticResponse {
+  var averageSentLabel: String {
+    CustomNumberFormatter.toDecimal(averageSent) ?? "50,000원"
   }
 }

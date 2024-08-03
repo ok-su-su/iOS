@@ -18,6 +18,8 @@ struct OtherStatisticsView: View {
   @Bindable
   var store: StoreOf<OtherStatistics>
 
+  var statisticsProperty: SUSUEnvelopeStatisticResponse { store.helper.susuStatistics }
+
   // MARK: Content
 
   @ViewBuilder
@@ -36,7 +38,7 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeAverageTopSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text("평균 수수 보기")
+      Text(Constants.nowSUSUStatisticsLabel)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray50)
 
@@ -50,7 +52,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: "20대"
+              buttonText: store.helper.selectedAgeItem?.description ?? "20 대"
             )) {
               store.send(.view(.tappedAgedButton))
             }
@@ -68,7 +70,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: store.helper.relationship
+              buttonText: store.helper.selectedRelationItem?.description ?? "친구"
             )) {
               store.send(.view(.tappedRelationshipButton))
             }
@@ -81,7 +83,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: "결혼식"
+              buttonText: store.helper.selectedCategoryItem?.description ?? "결혼식"
             )) {
               // 경조사 클릭했을 떄 Some Touch logic
             }
@@ -94,7 +96,7 @@ struct OtherStatisticsView: View {
 
         // BottomSection
         HStack(spacing: 8) {
-          Text("50,000원")
+          Text(statisticsProperty.averageSentLabel)
             .modifier(SSTypoModifier(.title_s))
             .foregroundStyle(SSColor.orange60)
 
@@ -122,7 +124,7 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.eventProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty)
   }
 
   @ViewBuilder
@@ -148,7 +150,7 @@ struct OtherStatisticsView: View {
 
         Spacer()
 
-        Text(store.helper.mostSpentMonthText)
+        Text(statisticsProperty.mostSpentMonth?.description ?? "3" + "월")
           .modifier(SSTypoModifier(.title_xs))
           .foregroundColor(SSColor.blue60)
       }
@@ -163,21 +165,25 @@ struct OtherStatisticsView: View {
   private func makeHalfCardView() -> some View {
     HStack(spacing: 8) {
       let helper = store.helper
-      // 최다 친구 관계
+      // 최다 수수 관계
+      let relationTitle = statisticsProperty.mostRelationship?.title ?? "친구"
+      let relationCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "12"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 관계",
-          description: "친구",
-          caption: "평균 12번",
+          description: relationTitle,
+          caption: "평균 " + relationCount + " 번",
           isEmptyState: false
         )
       )
       // 최다 경조사
+      let categoryTitle = statisticsProperty.mostCategory?.title ?? "결혼식"
+      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "12"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 경조사",
-          description: "결혼식",
-          caption: "평균 3번",
+          description: categoryTitle,
+          caption: "평균 " + categoryCount + " 번",
           isEmptyState: false
         )
       )
@@ -215,5 +221,7 @@ struct OtherStatisticsView: View {
 
   private enum Metrics {}
 
-  private enum Constants {}
+  private enum Constants {
+    static let nowSUSUStatisticsLabel: String = "지금 평균 수수 보기"
+  }
 }

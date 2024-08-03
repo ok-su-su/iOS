@@ -39,6 +39,27 @@ enum Age: String, SSSelectBottomSheetPropertyItemable, CaseIterable {
     }
   }
 
+  static func aged(birthYear: Int) -> Self {
+    let currentYear = Calendar.current.component(.year, from: Date())
+    let age = currentYear - birthYear
+    return switch age {
+    case 0..<20:
+        .TEN
+    case 20..<30:
+        .TWENTY
+    case 30..<40:
+        .THIRTY
+    case 40..<50:
+        .FOURTY
+    case 50..<60:
+        .FIFTY
+    case 60..<70:
+        .SIXTY
+    default:
+        .SEVENTY
+    }
+  }
+
   var id: Int {
     let allCases = Age.allCases.enumerated()
     return (allCases.first(where: { $0.element == self })?.offset) ?? 0
