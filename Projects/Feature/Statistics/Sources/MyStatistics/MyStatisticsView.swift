@@ -123,6 +123,14 @@ struct MyStatisticsView: View {
     )
   }
 
+  private var emptyStateDragGesture: some Gesture {
+    DragGesture()
+      .onChanged { _ in
+        store.sendViewAction(.tappedScrollView)
+      }
+  }
+
+
   var body: some View {
     ZStack(alignment: .center) {
       makeContentView()
@@ -132,6 +140,7 @@ struct MyStatisticsView: View {
         .onTapGesture {
           store.sendViewAction(.tappedScrollView)
         }
+        .gesture(emptyStateDragGesture)
     }
     .navigationBarBackButtonHidden()
     .ssLoadingForInitialAnimation(store.isLoading)

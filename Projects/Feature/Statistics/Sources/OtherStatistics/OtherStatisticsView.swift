@@ -188,7 +188,7 @@ struct OtherStatisticsView: View {
     }
   }
 
-  var emptyStateDragGesture: some Gesture {
+  private var emptyStateDragGesture: some Gesture {
     DragGesture()
       .onChanged { _ in
         store.sendViewAction(.tappedScrollView)
