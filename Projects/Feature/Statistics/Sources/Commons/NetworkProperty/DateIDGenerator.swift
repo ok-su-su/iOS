@@ -9,7 +9,7 @@
 import Foundation
 
 enum DateIDGenerator {
-  static func generateLatestSixMontDateIDAndMonth() -> [(id: Int64, month: Int)] {
+  static func generateLatestMonthDateIDAndMonth(_ latestMonth: Int = 6) -> [(id: Int64, month: Int)] {
     let currentDate = Date()
     var latestSixMonths: [(Int64, Int)] = []
 
@@ -17,7 +17,7 @@ enum DateIDGenerator {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyyMM"
 
-    for i in 0 ..< 6 {
+    for i in 0 ..< latestMonth {
       if let pastDate = calendar.date(byAdding: .month, value: -i, to: currentDate) {
         let formattedDate = dateFormatter.string(from: pastDate)
         if let dateInt = Int64(formattedDate) {

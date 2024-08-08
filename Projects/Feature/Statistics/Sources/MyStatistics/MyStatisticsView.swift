@@ -43,8 +43,8 @@ struct MyStatisticsView: View {
   private func makeHistoryView() -> some View {
     HistoryVerticalChartView(
       property: store.helper.historyVerticalChartProperty,
-      chartLeadingLabel: "애니메이션!",
-      chartTrailingLabel: "0만원"
+      chartLeadingLabel: Constants.verticalChartSpentMonthTitleLabel,
+      chartTrailingLabel: store.helper.historyVerticalChartTotalPrice.description + "만원"
     )
   }
 
@@ -154,7 +154,7 @@ struct MyStatisticsView: View {
   private enum Metrics {}
 
   private enum Constants {
-    static let verticalChartSpentMonthTitleLabel: String = "최근 8개월간 쓴 금액"
+    static let verticalChartSpentMonthTitleLabel: String = "최근 6개월간 쓴 금액"
     static let mostSpentMonthTitleLabel: String = "경조사비를 가장 많이 쓴 달"
     static let mostSpentRelationshipTitleLabel: String = "최다 수수 관계"
     static let mostSpentCategoryTitleLabel: String = "최다 수수 경조사"

@@ -7,25 +7,61 @@
 //
 
 import Designsystem
+import OSLog
 import SwiftUI
 
 // MARK: - HistoryVerticalChartViewProperty
 
 struct HistoryVerticalChartViewProperty: Equatable {
   var items: [HistoryVerticalChartItem]
+  var totalPrice: Int64 {
+    items.reduce(0) { $0 + $1.value }
+  }
 
   init(items: [HistoryVerticalChartItem]) {
     self.items = items
     updateChartItems()
   }
 
-  mutating func updateChartItems() {
-    // prevent devide by zero
-    if
-      items.isEmpty == false {
+  init(emptyStateItems: [HistoryVerticalChartItem]) {
+    items = emptyStateItems
+  }
+
+  mutating func updateItems(_ curItems: [TitleValueModelLong]?) {
+    guard let receivedItems = curItems,
+          receivedItems.isEmpty == false
+    else {
       return
     }
-    let maxValue = items.max(by: { $0.value > $1.value })?.value ?? 1
+
+    var leftInd = 0
+    var rightInd = 0
+    while leftInd < items.count, rightInd < receivedItems.count {
+      guard let rightItemID = Int64(receivedItems[rightInd].title) else {
+        os_log("API Error")
+        break
+      }
+
+      let leftItemsID = items[leftInd].id
+      if leftItemsID == rightItemID {
+        items[leftInd].value = receivedItems[rightInd].value
+        leftInd += 1
+        rightInd += 1
+      } else if leftItemsID > rightItemID {
+        rightInd += 1
+      } else if leftItemsID < rightItemID {
+        leftInd += 1
+      }
+    }
+    updateChartItems()
+  }
+
+  private mutating func updateChartItems() {
+    // prevent devide by zero
+    if items.isEmpty {
+      return
+    }
+    let maxValue = items.max(by: { $0.value < $1.value })?.value ?? 1
     items = items.map { item in
       var item = item
       let portion = Double(item.value) / Double(maxValue)
@@ -36,10 +72,10 @@ struct HistoryVerticalChartViewProperty: Equatable {
 }
 
 extension HistoryVerticalChartViewProperty {
-  static var `default`: Self {
+  static var emptyState: Self {
     HistoryVerticalChartViewProperty(
-      items: DateIDGenerator
-        .generateLatestSixMontDateIDAndMonth()
+      emptyStateItems: DateIDGenerator
+        .generateLatestMonthDateIDAndMonth()
         .map { .init(bottomTitle: $0.month.description + "월", value: 0, id: $0.id, portion: 0) }
     )
   }
@@ -49,15 +85,15 @@ extension HistoryVerticalChartViewProperty {
 
 struct HistoryVerticalChartItem: Identifiable, Equatable {
   var bottomTitle: String
-  var value: Int
+  var value: Int64
   var id: Int64
-  init(bottomTitle: String, value: Int, id: Int64) {
+  init(bottomTitle: String, value: Int64, id: Int64) {
     self.bottomTitle = bottomTitle
     self.value = value
     self.id = id
   }
 
-  fileprivate init(bottomTitle: String, value: Int, id: Int64, portion: Double) {
+  fileprivate init(bottomTitle: String, value: Int64, id: Int64, portion: Double) {
     self.bottomTitle = bottomTitle
     self.value = value
     self.id = id
@@ -90,6 +126,8 @@ struct HistoryVerticalChartView: View {
   }
 
   var body: some View {
+    let isEmptyState = HistoryVerticalChartViewProperty.emptyState == property
+
     VStack(spacing: 16) {
       HStack(spacing: 0) {
         Text(chartLeadingLabel)
@@ -124,6 +162,7 @@ struct HistoryVerticalChartView: View {
           .frame(maxWidth: 24, minHeight: 104)
         }
       }
+      .opacity(isEmptyState ? 0 : 1)
     }
     .padding(16)
     .background(SSColor.gray10)
