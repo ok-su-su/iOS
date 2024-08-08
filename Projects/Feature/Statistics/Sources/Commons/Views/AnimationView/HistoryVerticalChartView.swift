@@ -133,8 +133,8 @@ struct HistoryVerticalChartView: View {
         let isLastMonth = item == property.items.last
         VStack(spacing: 4) {
           Spacer()
-          SSColor
-            .orange30
+          Rectangle()
+            .fill(isLastMonth ? SSColor.orange60 : SSColor.orange30)
             .frame(maxWidth: Metrics.chartMaximumWidth, maxHeight: isAnimation ? curHeight : 0)
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .animation(.easeIn(duration: 0.8), value: isAnimation)

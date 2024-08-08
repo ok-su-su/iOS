@@ -78,8 +78,6 @@ struct OtherStatistics {
   }
 
   enum InnerAction: Equatable {
-    case setInitialHistoryData
-    case setHistoryData
     case updateRelationItems([RelationBottomSheetItem])
     case updateCategoryItems([CategoryBottomSheetItem])
     case isLoading(Bool)
@@ -92,13 +90,6 @@ struct OtherStatistics {
     switch action {
     case let .isLoading(val):
       state.isLoading = val
-      return .none
-    case .setInitialHistoryData:
-      state.helper.setHistoryData()
-      return .none
-
-    case .setHistoryData:
-      state.helper.setInitialHistoryData()
       return .none
 
     case let .updateRelationItems(val):

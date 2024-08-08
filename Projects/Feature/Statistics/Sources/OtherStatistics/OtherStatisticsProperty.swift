@@ -49,6 +49,8 @@ struct OtherStatisticsProperty: Equatable {
       let trailingText = toDecimal(category.value) ?? ""
       categoryProperty.updateTrailingText(trailingText)
     }
+
+    chartProperty.updateItems(val.recentSpent)
   }
 
   var selectedAgeItem: Age? = .TWENTY
@@ -71,10 +73,8 @@ struct OtherStatisticsProperty: Equatable {
     selectedCategoryItem = categoryItems.first
   }
 
-  // HistoryProperty
-  var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
-  var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
-  var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
+  var chartProperty: HistoryVerticalChartViewProperty = .emptyState
+  var chartTotalPrice: Int64 { chartProperty.totalPrice / 10000 }
 
   init() {
     relationProperty = .init(
@@ -89,14 +89,6 @@ struct OtherStatisticsProperty: Equatable {
       trailingDescription: "",
       isEmptyState: false
     )
-  }
-
-  mutating func setHistoryData() {
-    historyData = fakeHistoryData
-  }
-
-  mutating func setInitialHistoryData() {
-    historyData = initialData
   }
 }
 
