@@ -42,13 +42,9 @@ struct MyStatisticsView: View {
   @ViewBuilder
   private func makeHistoryView() -> some View {
     HistoryVerticalChartView(
-      historyHeights: store
-        .helper
-        .historyData
-        .enumerated()
-        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
-      chartTitle: Constants.verticalChartSpentMonthTitleLabel,
-      chartTopTrailingDescription: "0만원"
+      property: store.helper.historyVerticalChartProperty,
+      chartLeadingLabel: "애니메이션!",
+      chartTrailingLabel: "0만원"
     )
   }
 
@@ -134,7 +130,7 @@ struct MyStatisticsView: View {
       makeContentView()
     }
     .navigationBarBackButtonHidden()
-    .ssLoading(store.isLoading)
+    .ssLoadingForInitialAnimation(store.isLoading)
     .onAppear {
       store.send(.view(.onAppear(true)))
     }

@@ -42,6 +42,34 @@ public struct SSLoadingModifier: ViewModifier {
   }
 }
 
+// MARK: - SSLoadingModifierForAnimation
+
+/// Using for initial animation
+public struct SSLoadingModifierForAnimation: ViewModifier {
+  var isLoading: Bool
+
+  public init(isLoading: Bool) {
+    self.isLoading = isLoading
+  }
+
+  public func body(content: Content) -> some View {
+    let filePath = Bundle(for: ForBundleFinderClass.self).path(forResource: "SSLoading", ofType: "json")!
+
+    ZStack(alignment: .center) {
+      content
+        .opacity(isLoading ? 0 : 1)
+      if isLoading {
+        LottieView(animation: .filepath(filePath))
+          .looping()
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 72, height: 72)
+          .clipped()
+      }
+    }
+  }
+}
+
 // MARK: - SSLoadingModifierWithBinding
 
 public struct SSLoadingModifierWithBinding: ViewModifier {
@@ -76,6 +104,10 @@ public extension View {
 
   func ssLoadingWithBinding(_ isLoading: Binding<Bool>) -> some View {
     modifier(SSLoadingModifierWithBinding(isLoading: isLoading))
+  }
+
+  func ssLoadingForInitialAnimation(_ isLoading: Bool) -> some View {
+    modifier(SSLoadingModifierForAnimation(isLoading: isLoading))
   }
 }
 

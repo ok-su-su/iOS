@@ -27,9 +27,7 @@ struct MyStatisticsProperty: Equatable {
   var mostSentPersonName: String? { myStatisticsResponse?.highestAmountSent?.title }
   var mostSentPrices: String? { toDecimal(myStatisticsResponse?.highestAmountSent?.value) }
 
-  var historyData = [0, 0, 0, 0, 0, 0, 0, 0]
-  var initialData = [0, 0, 0, 0, 0, 0, 0, 0]
-  var fakeHistoryData = [40, 40, 30, 20, 10, 50, 60, 20]
+  var historyVerticalChartProperty: HistoryVerticalChartViewProperty = .default
 
   var myStatisticsResponse: UserEnvelopeStatisticResponse? = nil
 
@@ -39,17 +37,14 @@ struct MyStatisticsProperty: Equatable {
     myStatisticsResponse == emptyStatisticsResponse
   }
 
-  mutating func setHistoryData() {
-    historyData = fakeHistoryData
-  }
-
   mutating func updateUserEnvelopeStatistics(_ value: UserEnvelopeStatisticResponse) {
     myStatisticsResponse = value
-  }
 
-  // TODO: Some 로직
-  mutating func setInitialHistoryData() {
-    historyData = initialData
+    // TODO: UPdateChart 로직
+    if var item = historyVerticalChartProperty.items.last {
+      item.updatePortion(0.6)
+      historyVerticalChartProperty.items[5] = item
+    }
   }
 
   init() {}

@@ -131,15 +131,15 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeHistoryView() -> some View {
-    HistoryVerticalChartView(
-      historyHeights: store
-        .helper
-        .historyData
-        .enumerated()
-        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
-      chartTitle: "최근 8개월간 쓴 금액",
-      chartTopTrailingDescription: "0만원"
-    )
+//    HistoryVerticalChartView(
+//      historyHeights: store
+//        .helper
+//        .historyData
+//        .enumerated()
+//        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
+//      chartTitle: "최근 8개월간 쓴 금액",
+//      chartTopTrailingDescription: "0만원"
+//    )
   }
 
   @ViewBuilder
