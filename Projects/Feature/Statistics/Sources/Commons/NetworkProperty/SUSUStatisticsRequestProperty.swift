@@ -35,7 +35,7 @@ enum Age: String, SSSelectBottomSheetPropertyItemable, CaseIterable {
     case .SIXTY:
       "60대"
     case .SEVENTY:
-      "70대"
+      "70대 +"
     }
   }
 
