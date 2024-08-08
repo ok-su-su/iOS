@@ -35,7 +35,7 @@ struct MyStatisticsProperty: Equatable {
   var emptyStatisticsResponse: UserEnvelopeStatisticResponse = .emptyState
 
   var isEmptyState: Bool {
-    myStatisticsResponse == emptyStatisticsResponse
+    return myStatisticsResponse == emptyStatisticsResponse
   }
 
   mutating func updateUserEnvelopeStatistics(_ value: UserEnvelopeStatisticResponse) {

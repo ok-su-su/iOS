@@ -125,44 +125,56 @@ struct HistoryVerticalChartView: View {
     self.chartTrailingLabel = chartTrailingLabel
   }
 
+  @ViewBuilder
+  private func makeChartView() -> some View {
+    HStack(spacing: 12) {
+      ForEach(property.items, id: \.id) { item in
+        let curHeight = CGFloat(item.portion) * Metrics.chartMaximumHeight
+        let isLastMonth = item == property.items.last
+        VStack(spacing: 4) {
+          Spacer()
+          SSColor
+            .orange30
+            .frame(maxWidth: Metrics.chartMaximumWidth, maxHeight: isAnimation ? curHeight : 0)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .animation(.easeIn(duration: 0.8), value: isAnimation)
+            .animation(.easeIn(duration: 0.8), value: item.portion)
+
+          Text(item.bottomTitle)
+            .modifier(SSTypoModifier(.title_xxxs))
+            .foregroundStyle(isLastMonth ? SSColor.gray90 : SSColor.gray40)
+            .lineLimit(1)
+        }
+        .frame(maxWidth: 24, minHeight: 104)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeTitleView() -> some View {
+    let isEmptyState = HistoryVerticalChartViewProperty.emptyState == property
+    HStack(spacing: 0) {
+      Text(chartLeadingLabel)
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundStyle(SSColor.gray100)
+
+      Spacer()
+
+      Text(chartTrailingLabel)
+        .modifier(SSTypoModifier(.title_xs))
+        .foregroundColor(isEmptyState ? SSColor.gray40 : SSColor.blue60)
+    }
+  }
+
   var body: some View {
     let isEmptyState = HistoryVerticalChartViewProperty.emptyState == property
 
     VStack(spacing: 16) {
-      HStack(spacing: 0) {
-        Text(chartLeadingLabel)
-          .modifier(SSTypoModifier(.title_xs))
-          .foregroundStyle(SSColor.gray100)
+      makeTitleView()
 
-        Spacer()
-
-        Text(chartTrailingLabel)
-          .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(SSColor.blue60)
+      if !isEmptyState {
+        makeChartView()
       }
-
-      HStack(spacing: 12) {
-        ForEach(property.items, id: \.id) { item in
-          let curHeight = CGFloat(item.portion) * Metrics.chartMaximumHeight
-          let isLastMonth = item == property.items.last
-          VStack(spacing: 4) {
-            Spacer()
-            SSColor
-              .orange30
-              .frame(maxWidth: Metrics.chartMaximumWidth, maxHeight: isAnimation ? curHeight : 0)
-              .clipShape(RoundedRectangle(cornerRadius: 4))
-              .animation(.easeIn(duration: 0.8), value: isAnimation)
-              .animation(.easeIn(duration: 0.8), value: item.portion)
-
-            Text(item.bottomTitle)
-              .modifier(SSTypoModifier(.title_xxxs))
-              .foregroundStyle(isLastMonth ? SSColor.gray90 : SSColor.gray40)
-              .lineLimit(1)
-          }
-          .frame(maxWidth: 24, minHeight: 104)
-        }
-      }
-      .opacity(isEmptyState ? 0 : 1)
     }
     .padding(16)
     .background(SSColor.gray10)
