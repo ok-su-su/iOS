@@ -130,7 +130,6 @@ struct MyStatisticsView: View {
       }
   }
 
-
   var body: some View {
     ZStack(alignment: .center) {
       makeContentView()

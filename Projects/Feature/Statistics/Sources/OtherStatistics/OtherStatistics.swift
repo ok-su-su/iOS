@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import FeatureAction
 import Foundation
 import SSAlert
@@ -87,7 +88,7 @@ struct OtherStatistics {
       return .none
 
     case .tappedAlertButton:
-//      NotificationCenter.default.post(name: <#T##NSNotification.Name#>, object: <#T##Any?#>)
+      NotificationCenter.default.post(name: SSNotificationName.goMyPageEditMyProfile, object: nil)
       return .none
 
     case .tappedScrollView:
