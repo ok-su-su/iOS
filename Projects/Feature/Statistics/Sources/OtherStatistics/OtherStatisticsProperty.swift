@@ -17,6 +17,10 @@ struct OtherStatisticsProperty: Equatable {
   var relationProperty: StatisticsType2CardWithAnimationProperty
   var categoryProperty: StatisticsType2CardWithAnimationProperty
 
+  var isEmptyState: Bool {
+    susuStatistics == .emptyState
+  }
+
   var susuStatistics: SUSUEnvelopeStatisticResponse = .emptyState
 
   var nowSentPrice: String = ""

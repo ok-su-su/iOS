@@ -34,9 +34,7 @@ struct MyStatisticsView: View {
     }
     .scrollIndicators(.hidden)
     .contentShape(Rectangle())
-    .onTapGesture {
-      store.sendViewAction(.tappedScrollView)
-    }
+    .scrollDisabled(store.helper.isEmptyState)
   }
 
   @ViewBuilder
@@ -126,8 +124,14 @@ struct MyStatisticsView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
+    ZStack(alignment: .center) {
       makeContentView()
+
+      Color.clear
+        .contentShape(Rectangle())
+        .onTapGesture {
+          store.sendViewAction(.tappedScrollView)
+        }
     }
     .navigationBarBackButtonHidden()
     .ssLoadingForInitialAnimation(store.isLoading)

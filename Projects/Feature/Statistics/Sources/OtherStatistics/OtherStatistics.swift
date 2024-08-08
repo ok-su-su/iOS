@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSAlert
 import SSBottomSelectSheet
 
 // MARK: - OtherStatistics
@@ -26,6 +27,8 @@ struct OtherStatistics {
     init() {
       _helper = .init(.init())
     }
+
+    var presentMyPageEditAlert: Bool = false
   }
 
   enum Action: BindableAction, Equatable, FeatureAction {
@@ -37,12 +40,16 @@ struct OtherStatistics {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedButton
     case tappedAgedButton
     case tappedRelationshipButton
     case tappedCategoryButton
+    case presentMyPageEditAlert(Bool)
+    case tappedAlertButton
+    case tappedScrollView
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
@@ -74,6 +81,21 @@ struct OtherStatistics {
       let selectedItem = state.$helper.selectedCategoryItem
       state.categoryBottomSheet = .init(items: items, selectedItem: selectedItem)
       return .none
+
+    case let .presentMyPageEditAlert(val):
+      state.presentMyPageEditAlert = val
+      return .none
+
+    case .tappedAlertButton:
+      NotificationCenter.default.post(name: <#T##NSNotification.Name#>, object: <#T##Any?#>)
+      return .none
+
+    case .tappedScrollView:
+      if state.helper.isEmptyState {
+        state.presentMyPageEditAlert = true
+      }
+
+      return .none
     }
   }
 
@@ -82,7 +104,6 @@ struct OtherStatistics {
     case updateCategoryItems([CategoryBottomSheetItem])
     case isLoading(Bool)
     case updateAged(Int)
-    case showUpdateAgeAlert
     case updateSUSUStatistics(SUSUEnvelopeStatisticResponse)
   }
 
@@ -104,10 +125,6 @@ struct OtherStatistics {
       state.helper.selectedAgeItem = .aged(birthYear: val)
       return .none
 
-      // MARK: - ㅍshowUpdateAgeAle
-
-    case .showUpdateAgeAlert:
-      return .none
     case let .updateSUSUStatistics(val):
       state.helper.updateSUSUStatistics(val)
       return .none
@@ -147,7 +164,6 @@ struct OtherStatistics {
       return .run { send in
         // update Value
         guard let birth = try await network.getMyBirth() else {
-          await send(.inner(.showUpdateAgeAlert))
           return
         }
         await send(.inner(.updateAged(birth)))

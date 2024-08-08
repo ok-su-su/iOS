@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
 import SSBottomSelectSheet
 import SwiftUI
 
@@ -187,6 +188,13 @@ struct OtherStatisticsView: View {
     }
   }
 
+  var emptyStateDragGesture: some Gesture {
+    DragGesture()
+      .onChanged { _ in
+        store.sendViewAction(.tappedScrollView)
+      }
+  }
+
   var body: some View {
     ZStack {
       SSColor
@@ -196,6 +204,16 @@ struct OtherStatisticsView: View {
         VStack(spacing: 0) {
           makeContentView()
         }
+      }
+      .disabled(store.helper.isEmptyState)
+
+      if store.helper.isEmptyState {
+        Color.clear
+          .contentShape(Rectangle())
+          .onTapGesture {
+            store.sendViewAction(.tappedScrollView)
+          }
+          .gesture(emptyStateDragGesture)
       }
     }
     .selectableBottomSheet(
@@ -210,6 +228,21 @@ struct OtherStatisticsView: View {
       store: $store.scope(state: \.relationBottomSheet, action: \.scope.relationBottomSheet),
       cellCount: store.state.helper.relationItems.count
     )
+    .sSAlert(
+      isPresented: $store.presentMyPageEditAlert.sending(\.view.presentMyPageEditAlert), messageAlertProperty:
+      .init(
+        titleText: Constants.myPageEditAlertTitle,
+        contentText: Constants.myPageEditAlertDescription,
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(
+          left: Constants.myPageLeadingButtonLabel,
+          right: Constants.myPageTrailingButtonLabel
+        ),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedAlertButton)
+        }
+      )
+    )
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -220,5 +253,10 @@ struct OtherStatisticsView: View {
 
   private enum Constants {
     static let nowSUSUStatisticsLabel: String = "지금 평균 수수 보기"
+
+    static let myPageEditAlertTitle: String = "통계를 위한 정보를 알려주세요"
+    static let myPageEditAlertDescription: String = "나의 평균 거래 상황을 분석하기 위해\n필요한 정보가 있어요"
+    static let myPageLeadingButtonLabel: String = "닫기"
+    static let myPageTrailingButtonLabel: String = "정보 입력하기"
   }
 }
