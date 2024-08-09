@@ -42,7 +42,7 @@ struct StatisticsType1Card: View {
 
         // Caption
         Text(property.caption)
-          .modifier(SSTypoModifier(.text_xxxxs))
+          .modifier(SSTypoModifier(.text_xxxs))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray60)
       }
     }

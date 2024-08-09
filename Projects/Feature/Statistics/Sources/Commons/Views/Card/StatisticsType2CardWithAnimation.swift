@@ -15,7 +15,7 @@ import SwiftUI
 struct StatisticsType2CardWithAnimationProperty: Equatable {
   var title: String
   var leadingDescription: String
-  var trailingDescription: String
+  private var trailingDescription: String
   var isEmptyState: Bool
   var trailingDescriptionSlice: [String]
   var formatter = NumberFormatter()
@@ -29,10 +29,12 @@ struct StatisticsType2CardWithAnimationProperty: Equatable {
 
     trailingDescriptionSlice = []
     updateTrailingText(trailingDescription)
-    // TODO: force unwrapping 제거
   }
 
   mutating func updateTrailingText(_ value: String) {
+    if value.isEmpty {
+      return
+    }
     trailingDescription = value
     let num = Int(String(trailingDescription.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
     trailingDescriptionSlice = formatter.string(from: .init(value: num))!.map { String($0) }

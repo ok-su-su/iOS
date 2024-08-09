@@ -17,4 +17,7 @@ public enum SSNotificationName {
   public static let goMainScene = Notification.Name("goMainScene")
 
   public static let logout = Notification.Name("logout")
+
+  public static let goMyPageEditMyProfile = Notification.Name("goMyPageEditMyProfile")
+  public static let goEditProfile = Notification.Name("goEditProfile")
 }
