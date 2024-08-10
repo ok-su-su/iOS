@@ -10,12 +10,11 @@ import ComposableArchitecture
 import SwiftUI
 
 public struct StatisticsBuilderView: View {
-  @State private var store: StoreOf<StatisticsMain> = .init(initialState: .init()) {
+  private var store: StoreOf<StatisticsMain> = .init(initialState: .init()) {
     StatisticsMain()
   }
 
   public init() {}
-
   public var body: some View {
     StatisticsMainView(store: store)
   }

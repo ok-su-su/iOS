@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import FeatureAction
 import Foundation
 import SSAlert
@@ -66,7 +67,13 @@ struct MyStatistics {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.inner(.updateMyStatistics))
+      return .merge(
+        .send(.inner(.updateMyStatistics)),
+        .publisher {
+          NotificationCenter.default.publisher(for: SSNotificationName.tappedStatistics)
+            .map { _ in return .inner(.updateMyStatistics) }
+        }
+      )
     case .tappedScrollView:
       state.isAlert = state.helper.isEmptyState
       return .none
