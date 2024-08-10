@@ -96,12 +96,21 @@ struct OtherStatisticsView: View {
         }
 
         // BottomSection
+
         HStack(spacing: 8) {
-          CustomNumericNumberView(
-            descriptionSlice: $store.helper.nowSentPriceSlice,
-            isEmptyState: false,
-            height: 30
-          )
+          if store.helper.isNowSentPriceEmpty {
+            Text("?원")
+              .foregroundStyle(SSColor.orange60)
+              .applySSFont(.title_s)
+          } else {
+            CustomNumericNumberView(
+              descriptionSlice: $store.helper.nowSentPriceSlice,
+              isEmptyState: false,
+              height: 30,
+              subFixString: "원",
+              textColor: SSColor.orange60
+            )
+          }
 
           Text("보내고 있어요")
             .modifier(SSTypoModifier(.title_xxs))

@@ -23,23 +23,27 @@ struct OtherStatisticsProperty: Equatable {
 
   var susuStatistics: SUSUEnvelopeStatisticResponse = .emptyState
 
-  var nowSentPrice: String = ""
+  var isNowSentPriceEmpty: Bool = false
   var nowSentPriceSlice: [String] = []
 
   mutating func updateSentText(_ value: String) {
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
 
-    nowSentPrice = value
-    let num = Int(String(nowSentPrice.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
+    let num = Int(String(value.compactMap(\.wholeNumberValue).map { String($0) }.joined()))!
     nowSentPriceSlice = formatter.string(from: .init(value: num))!.map { String($0) }
   }
 
   mutating func updateSUSUStatistics(_ val: SUSUEnvelopeStatisticResponse) {
     susuStatistics = val
 
+    // 평균 가격이 존재 할 떄
     if let nowSentPrice = val.averageSent {
+      isNowSentPriceEmpty = false
       updateSentText(nowSentPrice.description)
+    } else {
+      isNowSentPriceEmpty = true
+      updateSentText("0")
     }
 
     if let relation = val.averageRelationship {
