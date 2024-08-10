@@ -26,7 +26,7 @@ let project = Project.makeModule(
       "CFBundleDisplayName": "수수",
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
-      "CFBundleShortVersionString": "1.1.0",
+      "CFBundleShortVersionString": "1.0.2",
       "CFBundleVersion": "2024081014",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
