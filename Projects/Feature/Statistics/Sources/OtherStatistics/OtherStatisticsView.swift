@@ -153,6 +153,7 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeMostSpendMonth() -> some View {
+    let mostSpentMonthLabel = (statisticsProperty.mostSpentMonth?.description ?? "?") + "월"
     VStack(spacing: 16) {
       HStack(spacing: 0) {
         Text("경조사비를 가장 많이 쓴 달")
@@ -161,7 +162,7 @@ struct OtherStatisticsView: View {
 
         Spacer()
 
-        Text(statisticsProperty.mostSpentMonth?.description ?? "?" + "월")
+        Text(mostSpentMonthLabel)
           .modifier(SSTypoModifier(.title_xs))
           .foregroundColor(statisticsProperty.mostSpentMonth != nil ? SSColor.blue60 : SSColor.gray40)
       }
