@@ -7,7 +7,6 @@
 //
 
 import Designsystem
-import SSPersistancy
 import Statistics
 import SwiftUI
 
@@ -15,7 +14,6 @@ import SwiftUI
 struct StatisticsPreviewMain: App {
   init() {
     Font.registerFont()
-    FakeTokenManager.saveFakeToken(fakeToken: .uid5)
   }
 
   var body: some Scene {

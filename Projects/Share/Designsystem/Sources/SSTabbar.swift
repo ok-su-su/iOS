@@ -149,38 +149,28 @@ public struct SSTabbar: View {
     }
   }
 
-  @ViewBuilder
-  private func makeContentView() -> some View {
-    HStack(alignment: .center, spacing: 0) {
-      // 1차 배포 탭바
-      let items = [SSTabType.envelope, SSTabType.received, SSTabType.statistics, SSTabType.mypage]
-      ForEach(items, id: \.self) { tabbarType in
-        makeItem(type: tabbarType)
-          .frame(maxWidth: .infinity, maxHeight: 56)
-          .onTapGesture {
-            store.send(.tappedSection(tabbarType))
-          }
-      }
-      // 전체 탭바
-      //        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
-      //          makeItem(type: tabbarType)
-      //            .frame(maxWidth: .infinity, maxHeight: 56)
-      //            .onTapGesture {
-      //              store.send(.tappedSection(tabbarType))
-      //            }
-      //        }
-    }
-  }
-
   public var body: some View {
-    VStack(spacing: 0) {
-      SSColor
-        .gray20
-        .frame(maxWidth: .infinity, maxHeight: 1)
-      makeContentView()
+    if store.state.isAppear {
+      HStack(alignment: .center, spacing: 0) {
+        // 1차 배포 탭바
+        ForEach([SSTabType.envelope, SSTabType.received, SSTabType.mypage], id: \.self) { tabbarType in
+          makeItem(type: tabbarType)
+            .frame(maxWidth: .infinity, maxHeight: 56)
+            .onTapGesture {
+              store.send(.tappedSection(tabbarType))
+            }
+        }
+        // 전체 탭바
+//        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
+//          makeItem(type: tabbarType)
+//            .frame(maxWidth: .infinity, maxHeight: 56)
+//            .onTapGesture {
+//              store.send(.tappedSection(tabbarType))
+//            }
+//        }
+      }
+      .background(SSColor.gray10)
     }
-
-    .background(SSColor.gray10)
   }
 }
 

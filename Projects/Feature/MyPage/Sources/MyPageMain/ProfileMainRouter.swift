@@ -7,7 +7,6 @@
 //
 
 import Combine
-import Designsystem
 import OSLog
 import SafariServices
 import SwiftUI
@@ -17,18 +16,12 @@ import SwiftUI
 final class MyPageMainRouter: UIHostingController<MyPageMainView> {
   var subscription: AnyCancellable? = nil
 
-  @State var reducer: MyPageMain
+  let reducer: MyPageMain
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    // TODO: 트러블 슈팅 작성
     navigationController?.setNavigationBarHidden(true, animated: false)
-  }
-
-  func subscribeNotificationAndRouterPublisher() {
-    NotificationCenter.default.addObserver(forName: SSNotificationName.goEditProfile, object: nil, queue: .main) { [weak self] _ in
-      self?.reducer.routingPublisher.send(.myPageInformation)
-    }
-
     subscription = reducer.routingPublisher
       .sink { [weak self] path in
         switch path {
@@ -71,7 +64,6 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
     super.init(rootView: MyPageMainView(store: .init(initialState: MyPageMain.State()) {
       reducer
     }))
-    subscribeNotificationAndRouterPublisher()
   }
 
   @available(*, unavailable)

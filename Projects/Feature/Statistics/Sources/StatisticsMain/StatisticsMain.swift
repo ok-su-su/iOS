@@ -50,13 +50,6 @@ struct StatisticsMain {
 
   enum DelegateAction: Equatable {}
 
-  func myStatisticsDelegateAction(_: inout State, _ action: MyStatistics.DelegateAction) -> Effect<Action> {
-    switch action {
-    case .routeSentView:
-      return .send(.scope(.tabBar(.tappedSection(.envelope))))
-    }
-  }
-
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -86,9 +79,6 @@ struct StatisticsMain {
         return .none
       case .scope(.tabBar):
         return .none
-
-      case let .scope(.myStatistics(.delegate(currentAction))):
-        return myStatisticsDelegateAction(&state, currentAction)
 
       case .scope(.myStatistics):
         return .none
