@@ -148,6 +148,9 @@ struct HistoryVerticalChartView: View {
         .frame(maxWidth: 24, minHeight: 104)
       }
     }
+    .onAppear {
+      isAnimation = true
+    }
   }
 
   @ViewBuilder
@@ -179,9 +182,6 @@ struct HistoryVerticalChartView: View {
     .padding(16)
     .background(SSColor.gray10)
     .clipShape(RoundedRectangle(cornerRadius: 4))
-    .onAppear {
-      isAnimation = true
-    }
   }
 
   enum Metrics {
