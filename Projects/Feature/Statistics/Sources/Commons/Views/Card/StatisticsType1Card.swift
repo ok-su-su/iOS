@@ -42,13 +42,12 @@ struct StatisticsType1Card: View {
 
         // Caption
         Text(property.caption)
-          .modifier(SSTypoModifier(.text_xxxs))
+          .modifier(SSTypoModifier(.text_xxxxs))
           .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray60)
       }
     }
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
-    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 }

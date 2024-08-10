@@ -79,7 +79,6 @@ struct StatisticsType2Card: View {
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
-    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 
   var body: some View {

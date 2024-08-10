@@ -47,7 +47,6 @@ struct StatisticsMainView: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(isSelected ? SSColor.gray20 : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
       }
     }
     .frame(maxWidth: .infinity)

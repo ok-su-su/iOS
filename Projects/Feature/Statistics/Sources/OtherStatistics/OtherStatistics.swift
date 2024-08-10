@@ -6,12 +6,8 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
-import Designsystem
 import FeatureAction
 import Foundation
-import SSAlert
-import SSBottomSelectSheet
-import SSToast
 
 // MARK: - OtherStatistics
 
@@ -21,17 +17,11 @@ struct OtherStatistics {
   struct State: Equatable {
     var isOnAppear = false
     var price: Int = 3000
-    var isLoading: Bool = true
     @Shared var helper: OtherStatisticsProperty
-    @Presents var agedBottomSheet: SSSelectableBottomSheetReducer<Age>.State? = nil
-    @Presents var relationBottomSheet: SSSelectableBottomSheetReducer<RelationBottomSheetItem>.State? = nil
-    @Presents var categoryBottomSheet: SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.State? = nil
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "통계로 보여줄만한 데이터가 충분하지 않습니다.", trailingType: .none))
+    @Presents var agedBottomSheet: SelectBottomSheet<AgedBottomSheetProperty>.State? = nil
     init() {
       _helper = .init(.init())
     }
-
-    var presentMyPageEditAlert: Bool = false
   }
 
   enum Action: BindableAction, Equatable, FeatureAction {
@@ -43,203 +33,61 @@ struct OtherStatistics {
     case delegate(DelegateAction)
   }
 
-  @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedButton
     case tappedAgedButton
     case tappedRelationshipButton
-    case tappedCategoryButton
-    case presentMyPageEditAlert(Bool)
-    case tappedAlertButton
-    case tappedScrollView
-  }
-
-  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
-    switch action {
-    case let .onAppear(isAppear):
-      if state.isOnAppear {
-        return .none
-      }
-      state.isOnAppear = isAppear
-      return .send(.async(.initialUpdateSUSUStatistics))
-
-    case .tappedButton:
-      let nextValue = (5000 ... 50000).randomElement()!
-      state.price = nextValue
-      return .none
-
-    case .tappedAgedButton:
-      state.agedBottomSheet = .init(items: Age.allCases, selectedItem: state.$helper.selectedAgeItem)
-      return .none
-
-    case .tappedRelationshipButton:
-      let items = state.helper.relationItems
-      let selectedItem = state.$helper.selectedRelationItem
-      state.relationBottomSheet = .init(items: items, selectedItem: selectedItem)
-      return .none
-
-    case .tappedCategoryButton:
-      let items = state.helper.categoryItems
-      let selectedItem = state.$helper.selectedCategoryItem
-      state.categoryBottomSheet = .init(items: items, selectedItem: selectedItem)
-      return .none
-
-    case let .presentMyPageEditAlert(val):
-      state.presentMyPageEditAlert = val
-      return .none
-
-    case .tappedAlertButton:
-      NotificationCenter.default.post(name: SSNotificationName.goMyPageEditMyProfile, object: nil)
-      return .none
-
-    case .tappedScrollView:
-      if state.helper.isEmptyState {
-        state.presentMyPageEditAlert = true
-      }
-
-      return .none
-    }
   }
 
   enum InnerAction: Equatable {
-    case updateRelationItems([RelationBottomSheetItem])
-    case updateCategoryItems([CategoryBottomSheetItem])
-    case isLoading(Bool)
-    case updateAged(Int)
-    case updateSUSUStatistics(SUSUEnvelopeStatisticResponse)
+    case setInitialHistoryData
+    case setHistoryData
   }
 
-  func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
-    switch action {
-    case let .isLoading(val):
-      state.isLoading = val
-      return .none
-
-    case let .updateRelationItems(val):
-      state.helper.updateRelationItem(val)
-      return .none
-
-    case let .updateCategoryItems(val):
-      state.helper.updateCategoryItem(val)
-      return .none
-
-    case let .updateAged(val):
-      state.helper.selectedAgeItem = .aged(birthYear: val)
-      return .none
-
-    case let .updateSUSUStatistics(val):
-      state.helper.updateSUSUStatistics(val)
-      if state.helper.isNowSentPriceEmpty {
-        return .send(.scope(.toast(.onAppear(true))))
-      }
-      return .none
-    }
-  }
-
-  enum AsyncAction: Equatable {
-    case initialUpdateSUSUStatistics
-    case updateSUSUStatistics
-  }
-
-  @Dependency(\.statisticsMainNetwork) var network
-  func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
-    switch action {
-    case .updateSUSUStatistics:
-      guard let age = state.helper.selectedAgeItem,
-            let category = state.helper.selectedCategoryID,
-            let relationship = state.helper.selectedRelationshipID
-      else {
-        return .none
-      }
-      let param: SUSUStatisticsRequestProperty = .init(
-        age: age,
-        relationshipId: .init(relationship),
-        categoryId: .init(category)
-      )
-      return .run { send in
-        await send(.inner(.isLoading(true)))
-
-        let response = try await network.getSUSUStatistics(param)
-        await send(.inner(.updateSUSUStatistics(response)))
-
-        await send(.inner(.isLoading(false)))
-      }
-
-    case .initialUpdateSUSUStatistics:
-      return .run { send in
-        // update Value
-        guard let birth = try await network.getMyBirth() else {
-          return
-        }
-        await send(.inner(.updateAged(birth)))
-
-        // update Items
-        let (relationItems, categoryItems) = try await network.getRelationAndCategory()
-        await send(.inner(.updateRelationItems(relationItems)))
-        await send(.inner(.updateCategoryItems(categoryItems)))
-
-        // update SUSU statistics
-        await send(.async(.updateSUSUStatistics))
-      }
-    }
-  }
+  enum AsyncAction: Equatable {}
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case agedBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<Age>.Action>)
-    case relationBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<RelationBottomSheetItem>.Action>)
-    case categoryBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.Action>)
-    case toast(SSToastReducer.Action)
+    case agedBottomSheet(PresentationAction<SelectBottomSheet<AgedBottomSheetProperty>.Action>)
   }
 
-  func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
-    switch action {
-    case .agedBottomSheet(.presented(.tapped(item: _))),
-         .categoryBottomSheet(.presented(.tapped(item: _))),
-         .relationBottomSheet(.presented(.tapped(item: _))):
-      return .send(.async(.updateSUSUStatistics))
-    case .agedBottomSheet:
-      return .none
-    case .categoryBottomSheet:
-      return .none
-    case .relationBottomSheet:
-      return .none
-    case .toast:
-      return .none
-    }
-  }
-
-  enum DelegateAction: Equatable {
-    case routeMyPage
-  }
-
-  func delegateAction(_: inout State, _: DelegateAction) -> Effect<Action> {
-    return .none
-  }
+  enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.toast, action: \.scope.toast) {
-      SSToastReducer()
-    }
     Reduce { state, action in
       switch action {
-      case let .view(currentAction):
-        return viewAction(&state, currentAction)
+      case let .view(.onAppear(isAppear)):
+        state.isOnAppear = isAppear
+        return .run { send in
+          await send(.inner(.setInitialHistoryData))
+          await send(.inner(.setHistoryData), animation: .linear(duration: 0.8))
+        }
 
-      case let .inner(currentAction):
-        return innerAction(&state, currentAction)
+      case .inner(.setHistoryData):
+        state.helper.setHistoryData()
+        return .none
 
-      case let .delegate(currentAction):
-        return delegateAction(&state, currentAction)
+      case .inner(.setInitialHistoryData):
+        state.helper.setInitialHistoryData()
+        return .none
 
-      case let .scope(currentAction):
-        return scopeAction(&state, currentAction)
+      case .view(.tappedButton):
+        let nextValue = (5000 ... 50000).randomElement()!
+        state.price = nextValue
+        return .none
 
-      case let .async(currentAction):
-        return asyncAction(&state, currentAction)
+      case .view(.tappedRelationshipButton):
+        state.helper.fakeSetRelationship()
+        return .none
 
       case .binding:
+        return .none
+
+      case .view(.tappedAgedButton):
+        state.agedBottomSheet = .init(property: state.$helper.agedBottomSheetProperty)
+        return .none
+      case .scope(.agedBottomSheet):
         return .none
       }
     }
@@ -250,13 +98,14 @@ struct OtherStatistics {
 extension Reducer where State == OtherStatistics.State, Action == OtherStatistics.Action {
   func addFeatures0() -> some ReducerOf<Self> {
     ifLet(\.$agedBottomSheet, action: \.scope.agedBottomSheet) {
-      SSSelectableBottomSheetReducer()
-    }
-    .ifLet(\.$categoryBottomSheet, action: \.scope.categoryBottomSheet) {
-      SSSelectableBottomSheetReducer()
-    }
-    .ifLet(\.$relationBottomSheet, action: \.scope.relationBottomSheet) {
-      SSSelectableBottomSheetReducer()
+      SelectBottomSheet()
     }
   }
+}
+
+// MARK: - AgedBottomSheetProperty
+
+struct AgedBottomSheetProperty: SelectBottomSheetPropertyItemable {
+  var description: String
+  var id: Int
 }

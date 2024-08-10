@@ -7,7 +7,6 @@
 //
 import ComposableArchitecture
 import Designsystem
-import SSAlert
 import SwiftUI
 
 struct MyStatisticsView: View {
@@ -22,8 +21,6 @@ struct MyStatisticsView: View {
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
       VStack(spacing: 8) {
-        Spacer()
-          .frame(maxWidth: .infinity, maxHeight: 0.5)
         makeHistoryView()
         makeMostSpendMonth()
         makeHalfCardView()
@@ -32,17 +29,18 @@ struct MyStatisticsView: View {
       }
       .padding(.horizontal, 16)
     }
-    .scrollIndicators(.hidden)
-    .contentShape(Rectangle())
-    .scrollDisabled(store.helper.isEmptyState)
   }
 
   @ViewBuilder
   private func makeHistoryView() -> some View {
     HistoryVerticalChartView(
-      property: store.helper.historyVerticalChartProperty,
-      chartLeadingLabel: Constants.verticalChartSpentMonthTitleLabel,
-      chartTrailingLabel: store.helper.historyVerticalChartTotalPrice.description + "만원"
+      historyHeights: store
+        .helper
+        .historyData
+        .enumerated()
+        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
+      chartTitle: "최근 8개월간 쓴 금액",
+      chartTopTrailingDescription: "0만원"
     )
   }
 
@@ -50,15 +48,15 @@ struct MyStatisticsView: View {
   private func makeMostSpendMonth() -> some View {
     VStack(spacing: 16) {
       HStack(spacing: 0) {
-        Text(Constants.mostSpentMonthTitleLabel)
+        Text("경조사비를 가장 많이 쓴 달")
           .modifier(SSTypoModifier(.title_xs))
           .foregroundStyle(SSColor.gray100)
 
         Spacer()
-        let targetMonth = store.helper.mostSpentMonth?.description ?? "?"
-        Text(targetMonth + "월")
+
+        Text("?월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(store.helper.isEmptyState ? SSColor.gray40 : SSColor.blue60)
+          .foregroundColor(store.helper.mostEventText != nil ? SSColor.blue60 : SSColor.gray40)
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -74,19 +72,19 @@ struct MyStatisticsView: View {
       // 최다 친구 관계
       StatisticsType1Card(
         property: .init(
-          title: Constants.mostSpentRelationshipTitleLabel,
+          title: "최다 친구 관계",
           description: helper.mostRelationshipText ?? "?",
-          caption: "총 \(helper.mostRelationshipFrequency ?? "0") 번",
-          isEmptyState: helper.isEmptyState
+          caption: "총 \(helper.mostRelationshipFrequency ?? 0)번",
+          isEmptyState: helper.mostRelationshipText == nil || helper.mostRelationshipFrequency == nil
         )
       )
       // 최다 경조사
       StatisticsType1Card(
         property: .init(
-          title: Constants.mostSpentCategoryTitleLabel,
+          title: "최다 수수 경조사",
           description: helper.mostEventText ?? "?",
-          caption: "총 \(helper.mostEventFrequency ?? "0") 번",
-          isEmptyState: helper.isEmptyState
+          caption: "총 \(helper.mostEventFrequency ?? 0)번",
+          isEmptyState: helper.mostEventText == nil || helper.mostEventFrequency == nil
         )
       )
     }
@@ -98,11 +96,11 @@ struct MyStatisticsView: View {
     StatisticsType2Card(
       property:
       .init(
-        isEmptyState: helper.isEmptyState,
+        isEmptyState: helper.mostReceivedPrice == nil,
         type: .twoLine(
-          title: Constants.mostReceivedTitleLabel,
+          title: "가장 많이 받은 금액",
           leadingDescription: helper.mostReceivedPersonName ?? "?",
-          trailingDescription: "\(helper.mostReceivedPrice ?? "?") 원"
+          trailingDescription: "\(helper.mostReceivedPrice?.description ?? "?") 원"
         )
       )
     )
@@ -113,64 +111,27 @@ struct MyStatisticsView: View {
     let helper = store.helper
     StatisticsType2Card(
       property: .init(
-        isEmptyState: helper.isEmptyState,
+        isEmptyState: helper.mostSentPersonName == nil || helper.mostSentPrices == nil,
         type: .twoLine(
-          title: Constants.mostSentTitleLabel,
+          title: "가장 많이 보낸 금액",
           leadingDescription: helper.mostSentPersonName ?? "?",
-          trailingDescription: "\(helper.mostSentPrices ?? "?") 원"
+          trailingDescription: "\(helper.mostSentPrices?.description ?? "?") 원"
         )
       )
     )
   }
 
-  private var emptyStateDragGesture: some Gesture {
-    DragGesture()
-      .onChanged { _ in
-        store.sendViewAction(.tappedScrollView)
-      }
-  }
-
   var body: some View {
-    ZStack(alignment: .center) {
+    VStack(spacing: 0) {
       makeContentView()
-
-      Color.clear
-        .contentShape(Rectangle())
-        .onTapGesture {
-          store.sendViewAction(.tappedScrollView)
-        }
-        .gesture(emptyStateDragGesture)
     }
     .navigationBarBackButtonHidden()
-    .ssLoadingForInitialAnimation(store.isLoading)
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .sSAlert(
-      isPresented: $store.isAlert.sending(\.view.isAlert),
-      messageAlertProperty: .init(
-        titleText: " 아직 볼 수 있는 통계가 없어요",
-        contentText: "작성된 봉투 혹은 장부가 있는 경우\n 수수가 데이터를 분석해드려요",
-        checkBoxMessage: .none,
-        buttonMessage: .doubleButton(
-          left: "닫기",
-          right: "봉투 작성하기"
-        ),
-        didTapCompletionButton: { _ in
-          store.sendViewAction(.tappedAlertCreateEnvelopeButton)
-        }
-      )
-    )
   }
 
   private enum Metrics {}
 
-  private enum Constants {
-    static let verticalChartSpentMonthTitleLabel: String = "최근 6개월간 쓴 금액"
-    static let mostSpentMonthTitleLabel: String = "경조사비를 가장 많이 쓴 달"
-    static let mostSpentRelationshipTitleLabel: String = "최다 수수 관계"
-    static let mostSpentCategoryTitleLabel: String = "최다 수수 경조사"
-    static let mostReceivedTitleLabel: String = "가장 많이 받은 금액"
-    static let mostSentTitleLabel: String = "가장 많이 보낸 금액"
-  }
+  private enum Constants {}
 }

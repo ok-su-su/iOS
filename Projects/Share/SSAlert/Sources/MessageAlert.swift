@@ -87,7 +87,6 @@ public struct MessageAlert: View {
   @State private var isAnimating = false
   @State private var checkedCheckBox = false
   @State private var opacity = 0.16
-  @State private var isTouchable = false
   public init(_ messageAlertProperty: MessageAlertProperty, isPresented: Binding<Bool>) {
     self.messageAlertProperty = messageAlertProperty
     _isPresented = isPresented
@@ -97,15 +96,11 @@ public struct MessageAlert: View {
     opacity = 0
     isAnimating = false
     isPresented = false
-    isTouchable = false
   }
 
   func show() {
     withAnimation(.easeInOut(duration: messageAlertProperty.animationDuration)) {
       isAnimating = true
-      isTouchable = false
-    } completion: {
-      isTouchable = true
     }
   }
 
@@ -164,7 +159,6 @@ public struct MessageAlert: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
       .frame(maxWidth: .infinity, maxHeight: 40)
-      .disabled(!isTouchable)
 
       Button {
         messageAlertProperty.didTapCompletionButton(checkedCheckBox)
@@ -178,7 +172,6 @@ public struct MessageAlert: View {
       }
       .frame(maxWidth: .infinity, maxHeight: 40)
       .clipShape(RoundedRectangle(cornerRadius: 4))
-      .disabled(!isTouchable)
     }
   }
 
