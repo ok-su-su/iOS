@@ -49,5 +49,6 @@ struct StatisticsType1Card: View {
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 }

@@ -96,6 +96,7 @@ struct StatisticsType2CardWithAnimation: View {
     .frame(maxWidth: .infinity)
     .padding(16)
     .background(SSColor.gray10)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
     .onChange(of: property) { oldValue, newValue in
       newLeadingTitle = newValue.leadingDescription
       oldLeadingTitle = oldValue.leadingDescription

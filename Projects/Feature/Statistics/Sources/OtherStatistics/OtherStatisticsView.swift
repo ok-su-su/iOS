@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import SSAlert
 import SSBottomSelectSheet
+import SSToast
 import SwiftUI
 
 // MARK: - OtherStatisticsView
@@ -225,6 +226,7 @@ struct OtherStatisticsView: View {
           .gesture(emptyStateDragGesture)
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .selectableBottomSheet(
       store: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet),
       cellCount: Age.allCases.count

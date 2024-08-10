@@ -11,6 +11,7 @@ import FeatureAction
 import Foundation
 import SSAlert
 import SSBottomSelectSheet
+import SSToast
 
 // MARK: - OtherStatistics
 
@@ -25,6 +26,7 @@ struct OtherStatistics {
     @Presents var agedBottomSheet: SSSelectableBottomSheetReducer<Age>.State? = nil
     @Presents var relationBottomSheet: SSSelectableBottomSheetReducer<RelationBottomSheetItem>.State? = nil
     @Presents var categoryBottomSheet: SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.State? = nil
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "통계로 보여줄만한 데이터가 충분하지 않습니다.", trailingType: .none))
     init() {
       _helper = .init(.init())
     }
@@ -128,6 +130,9 @@ struct OtherStatistics {
 
     case let .updateSUSUStatistics(val):
       state.helper.updateSUSUStatistics(val)
+      if state.helper.isNowSentPriceEmpty {
+        return .send(.scope(.toast(.onAppear(true))))
+      }
       return .none
     }
   }
@@ -185,6 +190,7 @@ struct OtherStatistics {
     case agedBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<Age>.Action>)
     case relationBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<RelationBottomSheetItem>.Action>)
     case categoryBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.Action>)
+    case toast(SSToastReducer.Action)
   }
 
   func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
@@ -199,6 +205,8 @@ struct OtherStatistics {
       return .none
     case .relationBottomSheet:
       return .none
+    case .toast:
+      return .none
     }
   }
 
@@ -211,6 +219,9 @@ struct OtherStatistics {
   }
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
