@@ -23,7 +23,7 @@ struct OtherStatisticsProperty: Equatable {
 
   var susuStatistics: SUSUEnvelopeStatisticResponse = .emptyState
 
-  var isNowSentPriceEmpty: Bool = false
+  var isNowSentPriceEmpty: Bool = true
   var nowSentPriceSlice: [String] = []
 
   mutating func updateSentText(_ value: String) {

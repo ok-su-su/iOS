@@ -158,9 +158,9 @@ struct OtherStatisticsView: View {
 
         Spacer()
 
-        Text(statisticsProperty.mostSpentMonth?.description ?? "3" + "월")
+        Text(statisticsProperty.mostSpentMonth?.description ?? "?" + "월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(SSColor.blue60)
+          .foregroundColor(statisticsProperty.mostSpentMonth != nil ? SSColor.blue60 : SSColor.gray40)
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -174,24 +174,24 @@ struct OtherStatisticsView: View {
     HStack(spacing: 8) {
       // 최다 수수 관계
       let relationTitle = statisticsProperty.mostRelationship?.title ?? "친구"
-      let relationCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "12"
+      let relationCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "?"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 관계",
           description: relationTitle,
           caption: "평균 " + relationCount + " 번",
-          isEmptyState: false
+          isEmptyState: store.helper.isEmptyState
         )
       )
       // 최다 경조사
       let categoryTitle = statisticsProperty.mostCategory?.title ?? "결혼식"
-      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostCategory?.value) ?? "12"
+      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostCategory?.value) ?? "?"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 경조사",
           description: categoryTitle,
           caption: "평균 " + categoryCount + " 번",
-          isEmptyState: false
+          isEmptyState: store.helper.isEmptyState
         )
       )
     }
