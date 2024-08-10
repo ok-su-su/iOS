@@ -42,6 +42,12 @@ final class ContentViewObject: ObservableObject {
     NotificationCenter.default.addObserver(forName: SSNotificationName.logout, object: nil, queue: .main) { _ in
       self.nowScreenType = .loginAndRegister
     }
+    NotificationCenter.default.addObserver(forName: SSNotificationName.goMyPageEditMyProfile, object: nil, queue: .main) { _ in
+      self.type = .mypage
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        NotificationCenter.default.post(name: SSNotificationName.goEditProfile, object: nil)
+      }
+    }
   }
 
   init() {
