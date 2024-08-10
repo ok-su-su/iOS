@@ -9,6 +9,8 @@
 import Designsystem
 import SwiftUI
 
+// MARK: - CustomNumericNumberView
+
 struct CustomNumericNumberView: View {
   @Binding var descriptionSlice: [String]
   @State private var oldTrailingTitle: [String] = []
@@ -16,11 +18,24 @@ struct CustomNumericNumberView: View {
 
   var isEmptyState: Bool
   var height: CGFloat
+  var textColor: Color
+  var emptyStateTextColor: Color
+  var subFixString: String
 
-  init(descriptionSlice: Binding<[String]>, isEmptyState: Bool, height: CGFloat) {
+  init(
+    descriptionSlice: Binding<[String]>,
+    isEmptyState: Bool,
+    height: CGFloat,
+    subFixString: String = "",
+    textColor: Color = SSColor.gray80,
+    emptyStateTextColor: Color = SSColor.gray40
+  ) {
     _descriptionSlice = descriptionSlice
     self.isEmptyState = isEmptyState
     self.height = height
+    self.textColor = textColor
+    self.emptyStateTextColor = emptyStateTextColor
+    self.subFixString = subFixString
   }
 
   var body: some View {
@@ -34,12 +49,17 @@ struct CustomNumericNumberView: View {
         ) {
           Text(newContentText == "," ? "" : oldContentText)
             .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(isEmptyState ? SSColor.gray40 : SSColor.gray80)
+            .foregroundStyle(isEmptyState ? emptyStateTextColor : textColor)
         } newContent: {
           Text(newContentText)
             .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(isEmptyState ? SSColor.gray40 : SSColor.gray80)
+            .foregroundStyle(isEmptyState ? emptyStateTextColor : textColor)
         }
+      }
+      if !subFixString.isEmpty {
+        Text(subFixString)
+          .modifier(SSTypoModifier(.title_s))
+          .foregroundStyle(isEmptyState ? emptyStateTextColor : textColor)
       }
     }
     .onAppear {

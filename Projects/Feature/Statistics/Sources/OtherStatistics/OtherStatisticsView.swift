@@ -7,6 +7,9 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSAlert
+import SSBottomSelectSheet
+import SSToast
 import SwiftUI
 
 // MARK: - OtherStatisticsView
@@ -17,11 +20,15 @@ struct OtherStatisticsView: View {
   @Bindable
   var store: StoreOf<OtherStatistics>
 
+  var statisticsProperty: SUSUEnvelopeStatisticResponse { store.helper.susuStatistics }
+
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 8) {
+      Spacer()
+        .frame(maxWidth: .infinity, maxHeight: 0.5)
       makeAverageTopSection()
       makeRelationAverage()
       makeEventAverage()
@@ -35,7 +42,7 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeAverageTopSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text("평균 수수 보기")
+      Text(Constants.nowSUSUStatisticsLabel)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray50)
 
@@ -49,7 +56,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: "20대"
+              buttonText: store.helper.selectedAgeItem?.description ?? "20 대"
             )) {
               store.send(.view(.tappedAgedButton))
             }
@@ -67,7 +74,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: store.helper.relationship
+              buttonText: store.helper.selectedRelationItem?.description ?? "친구"
             )) {
               store.send(.view(.tappedRelationshipButton))
             }
@@ -80,9 +87,9 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: "결혼식"
+              buttonText: store.helper.selectedCategoryItem?.description ?? "결혼식"
             )) {
-              // 경조사 클릭했을 떄 Some Touch logic
+              store.sendViewAction(.tappedCategoryButton)
             }
             .contentMargins(.trailing, 4)
 
@@ -92,10 +99,21 @@ struct OtherStatisticsView: View {
         }
 
         // BottomSection
+
         HStack(spacing: 8) {
-          Text("50,000원")
-            .modifier(SSTypoModifier(.title_s))
-            .foregroundStyle(SSColor.orange60)
+          if store.helper.isNowSentPriceEmpty {
+            Text("?원")
+              .foregroundStyle(SSColor.orange60)
+              .applySSFont(.title_s)
+          } else {
+            CustomNumericNumberView(
+              descriptionSlice: $store.helper.nowSentPriceSlice,
+              isEmptyState: false,
+              height: 30,
+              subFixString: "원",
+              textColor: SSColor.orange60
+            )
+          }
 
           Text("보내고 있어요")
             .modifier(SSTypoModifier(.title_xxs))
@@ -121,19 +139,15 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.eventProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty)
   }
 
   @ViewBuilder
   private func makeHistoryView() -> some View {
     HistoryVerticalChartView(
-      historyHeights: store
-        .helper
-        .historyData
-        .enumerated()
-        .map { .init(id: $0.offset, height: CGFloat($0.element), caption: "\($0.offset + 1)월") },
-      chartTitle: "최근 8개월간 쓴 금액",
-      chartTopTrailingDescription: "0만원"
+      property: store.helper.chartProperty,
+      chartLeadingLabel: "올해 쓴 금액",
+      chartTrailingLabel: store.helper.chartTotalPrice.description + "만원"
     )
   }
 
@@ -147,9 +161,9 @@ struct OtherStatisticsView: View {
 
         Spacer()
 
-        Text(store.helper.mostSpentMonthText)
+        Text(statisticsProperty.mostSpentMonth?.description ?? "?" + "월")
           .modifier(SSTypoModifier(.title_xs))
-          .foregroundColor(SSColor.blue60)
+          .foregroundColor(statisticsProperty.mostSpentMonth != nil ? SSColor.blue60 : SSColor.gray40)
       }
       .frame(maxWidth: .infinity)
       .padding(16)
@@ -161,26 +175,36 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeHalfCardView() -> some View {
     HStack(spacing: 8) {
-      let helper = store.helper
-      // 최다 친구 관계
+      // 최다 수수 관계
+      let relationTitle = statisticsProperty.mostRelationship?.title ?? "친구"
+      let relationCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostRelationship?.value) ?? "?"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 관계",
-          description: "친구",
-          caption: "평균 12번",
-          isEmptyState: false
+          description: relationTitle,
+          caption: "평균 " + relationCount + " 번",
+          isEmptyState: store.helper.isEmptyState
         )
       )
       // 최다 경조사
+      let categoryTitle = statisticsProperty.mostCategory?.title ?? "결혼식"
+      let categoryCount = CustomNumberFormatter.toDecimal(statisticsProperty.mostCategory?.value) ?? "?"
       StatisticsType1Card(
         property: .init(
           title: "최다 수수 경조사",
-          description: "결혼식",
-          caption: "평균 3번",
-          isEmptyState: false
+          description: categoryTitle,
+          caption: "평균 " + categoryCount + " 번",
+          isEmptyState: store.helper.isEmptyState
         )
       )
     }
+  }
+
+  private var emptyStateDragGesture: some Gesture {
+    DragGesture()
+      .onChanged { _ in
+        store.sendViewAction(.tappedScrollView)
+      }
   }
 
   var body: some View {
@@ -193,13 +217,45 @@ struct OtherStatisticsView: View {
           makeContentView()
         }
       }
+      .disabled(store.helper.isEmptyState)
+
+      if store.helper.isEmptyState {
+        Color.clear
+          .contentShape(Rectangle())
+          .onTapGesture {
+            store.sendViewAction(.tappedScrollView)
+          }
+          .gesture(emptyStateDragGesture)
+      }
     }
-    .sheet(item: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet)) { store in
-      SelectBottomSheetView(store: store)
-        .presentationDetents([.height(240), .medium, .large])
-        .presentationContentInteraction(.scrolls)
-        .presentationDragIndicator(.automatic)
-    }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
+    .selectableBottomSheet(
+      store: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet),
+      cellCount: Age.allCases.count
+    )
+    .selectableBottomSheet(
+      store: $store.scope(state: \.categoryBottomSheet, action: \.scope.categoryBottomSheet),
+      cellCount: store.state.helper.categoryItems.count
+    )
+    .selectableBottomSheet(
+      store: $store.scope(state: \.relationBottomSheet, action: \.scope.relationBottomSheet),
+      cellCount: store.state.helper.relationItems.count
+    )
+    .sSAlert(
+      isPresented: $store.presentMyPageEditAlert.sending(\.view.presentMyPageEditAlert), messageAlertProperty:
+      .init(
+        titleText: Constants.myPageEditAlertTitle,
+        contentText: Constants.myPageEditAlertDescription,
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(
+          left: Constants.myPageLeadingButtonLabel,
+          right: Constants.myPageTrailingButtonLabel
+        ),
+        didTapCompletionButton: { _ in
+          store.sendViewAction(.tappedAlertButton)
+        }
+      )
+    )
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -208,5 +264,12 @@ struct OtherStatisticsView: View {
 
   private enum Metrics {}
 
-  private enum Constants {}
+  private enum Constants {
+    static let nowSUSUStatisticsLabel: String = "지금 평균 수수 보기"
+
+    static let myPageEditAlertTitle: String = "통계를 위한 정보를 알려주세요"
+    static let myPageEditAlertDescription: String = "나의 평균 거래 상황을 분석하기 위해\n필요한 정보가 있어요"
+    static let myPageLeadingButtonLabel: String = "닫기"
+    static let myPageTrailingButtonLabel: String = "정보 입력하기"
+  }
 }
