@@ -62,7 +62,13 @@ struct OtherStatistics {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.initialUpdateSUSUStatistics))
+      return .merge(
+        .send(.async(.initialUpdateSUSUStatistics)),
+        .publisher {
+          NotificationCenter.default.publisher(for: SSNotificationName.tappedStatistics)
+            .map { _ in return .async(.initialUpdateSUSUStatistics) }
+        }
+      )
 
     case .tappedButton:
       let nextValue = (5000 ... 50000).randomElement()!
