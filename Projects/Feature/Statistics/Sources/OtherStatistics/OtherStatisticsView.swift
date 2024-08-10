@@ -27,6 +27,8 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     VStack(spacing: 8) {
+      Spacer()
+        .frame(maxWidth: .infinity, maxHeight: 0.5)
       makeAverageTopSection()
       makeRelationAverage()
       makeEventAverage()
