@@ -26,7 +26,7 @@ struct OtherStatistics {
     @Presents var agedBottomSheet: SSSelectableBottomSheetReducer<Age>.State? = nil
     @Presents var relationBottomSheet: SSSelectableBottomSheetReducer<RelationBottomSheetItem>.State? = nil
     @Presents var categoryBottomSheet: SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.State? = nil
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "통계로 보여줄만한 데이터가 충분하지 않습니다.", trailingType: .none))
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "아직 데이터가 충분하지 않아 금액을 표시할 수 없어요", trailingType: .none))
     init() {
       _helper = .init(.init())
     }
