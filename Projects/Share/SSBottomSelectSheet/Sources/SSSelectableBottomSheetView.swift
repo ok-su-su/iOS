@@ -36,18 +36,21 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      ScrollViewReader { value in
-        ScrollView(showsIndicators: false) {
-          VStack(spacing: 0) {
+    ScrollViewReader { value in
+      ScrollView(showsIndicators: false) {
+        ZStack {
+          Spacer().containerRelativeFrame([.horizontal, .vertical])
+
+          VStack(alignment: .center, spacing: 0) {
             makeCellContentView()
           }
           .scrollTargetLayout()
         }
-        .scrollTargetBehavior(.viewAligned)
-        .onAppear {
-          value.scrollTo(store.selectedItem?.id, anchor: .center)
-        }
+      }
+      .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+      .scrollTargetBehavior(.viewAligned)
+      .onAppear {
+        value.scrollTo(store.selectedItem?.id, anchor: .center)
       }
     }
   }
@@ -59,6 +62,8 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
       .foregroundStyle(SSColor.gray20)
       .frame(height: 38)
       .background(SSColor.gray10)
+      .frame(maxWidth: .infinity)
+      .contentShape(Rectangle())
   }
 
   public var body: some View {
@@ -66,11 +71,10 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
       SSColor
         .gray10
         .ignoresSafeArea()
-
-      makeContentView()
-    }
-    .safeAreaInset(edge: .top) {
-      makeHandleView()
+      VStack(spacing: 0) {
+        makeHandleView()
+        makeContentView()
+      }
     }
     .navigationBarBackButtonHidden()
     .onAppear {

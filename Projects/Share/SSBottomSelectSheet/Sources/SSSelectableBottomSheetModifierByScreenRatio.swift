@@ -13,7 +13,6 @@ import SwiftUI
 // MARK: - SSSelectableBottomSheetModifierByScreenRatio
 
 public struct SSSelectableBottomSheetModifierByScreenRatio<Item: SSSelectBottomSheetPropertyItemable>: ViewModifier {
-  @State var sheetHeight: CGFloat = 0
   var screenRatio: Double
   var bottomView: (() -> any View)?
   public init(
@@ -30,12 +29,9 @@ public struct SSSelectableBottomSheetModifierByScreenRatio<Item: SSSelectBottomS
 
   public func body(content: Content) -> some View {
     content
-      .getSize { size in
-        sheetHeight = size.height * screenRatio
-      }
       .sheet(item: $store) { store in
         SSSelectableBottomSheetView<Item>(store: store)
-          .presentationDetents([.height(sheetHeight), .medium, .large])
+          .presentationDetents([.fraction(screenRatio), .medium, .large])
           .presentationContentInteraction(.scrolls)
           .presentationDragIndicator(.hidden)
           .safeAreaInset(edge: .bottom) {

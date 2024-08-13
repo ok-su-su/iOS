@@ -232,7 +232,7 @@ struct OtherStatisticsView: View {
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .selectableBottomSheet(
       store: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet),
-      cellCount: Age.allCases.count
+      screenRatio: 0.5
     )
     .selectableBottomSheet(
       store: $store.scope(state: \.categoryBottomSheet, action: \.scope.categoryBottomSheet),
