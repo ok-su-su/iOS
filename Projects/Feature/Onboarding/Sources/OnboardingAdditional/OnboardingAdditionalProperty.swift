@@ -87,17 +87,32 @@ public struct BottomSheetYearItem: SSSelectBottomSheetPropertyItemable {
   public var id: Int
 }
 
-extension BottomSheetYearItem {
-  static func makeDefaultItems() -> [Self] {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy"
-    let nowYear = dateFormatter.string(from: Date.now)
-    guard let nowYearToInt = Int(nowYear) else {
-      return []
-    }
-    let items: [Self] = (1950 ... nowYearToInt).map { val in
-      return .init(description: val.description + "년", id: val)
-    }
-    return items.reversed()
+extension [BottomSheetYearItem] {
+  static var `default`: Self {
+    BottomSheetYearItem.default
   }
+}
+
+extension BottomSheetYearItem {
+  static var `default`: [Self] {
+    let defaultItems: [Self] = (1930 ... Int(getYear(from: .now))!)
+      .map { .init(description: $0.description + "년", id: $0) }
+      .reversed()
+    return [.deselectItem] + defaultItems
+  }
+
+  static var deselectItem: Self {
+    let notSelectedID = Int(getYear(from: .now))! + 1
+    return .init(description: "미선택", id: notSelectedID)
+  }
+
+  private static func getYear(from date: Date) -> String {
+    dateFormatter.string(from: date)
+  }
+
+  private static let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy"
+    return formatter
+  }()
 }

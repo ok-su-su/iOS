@@ -74,8 +74,9 @@ struct OnboardingAdditional {
       case .view(.tappedBirthButton):
         state.bottomSheet =
           .init(
-            items: BottomSheetYearItem.makeDefaultItems(),
-            selectedItem: state.helper.$selectedBirth
+            items: .default,
+            selectedItem: state.helper.$selectedBirth,
+            deselectItem: .deselectItem
           )
         return .none
 
