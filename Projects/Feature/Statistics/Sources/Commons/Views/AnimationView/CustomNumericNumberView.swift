@@ -21,9 +21,11 @@ struct CustomNumericNumberView: View {
   var textColor: Color
   var emptyStateTextColor: Color
   var subFixString: String
+  private var animationDuration: Double
 
   init(
     descriptionSlice: Binding<[String]>,
+    animationDuration: Double = 0.6,
     isEmptyState: Bool,
     height: CGFloat,
     subFixString: String = "",
@@ -36,6 +38,7 @@ struct CustomNumericNumberView: View {
     self.textColor = textColor
     self.emptyStateTextColor = emptyStateTextColor
     self.subFixString = subFixString
+    self.animationDuration = animationDuration
   }
 
   var body: some View {
@@ -45,7 +48,8 @@ struct CustomNumericNumberView: View {
         let newContentText = ind < newTrailingTitle.count ? newTrailingTitle[ind] : ""
         CustomNumericNumberAnimation(
           height: height,
-          item: $descriptionSlice[ind]
+          item: $descriptionSlice[ind],
+          duration: animationDuration
         ) {
           Text(newContentText == "," ? "" : oldContentText)
             .modifier(SSTypoModifier(.title_s))

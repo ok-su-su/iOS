@@ -49,7 +49,7 @@ struct CustomNumericAnimationView<Item, OldContent, NewContent>: View where OldC
   init(
     height: CGFloat,
     item: Binding<Item>,
-    direction: CustomNumericAnimationDirection = .upper(duration: 0.8),
+    direction: CustomNumericAnimationDirection = .upper(duration: 0.3),
     @ViewBuilder oldContent: () -> OldContent,
     @ViewBuilder newContent: () -> NewContent
   ) {
@@ -74,7 +74,7 @@ struct CustomNumericAnimationView<Item, OldContent, NewContent>: View where OldC
     .onChange(of: item) { _, _ in
       oldOffset = 0
       newOffset = moveHeightOffset * direction.directionWeight
-      withAnimation(.linear(duration: direction.duration)) {
+      withAnimation(.easeInOut(duration: direction.duration)) {
         oldOffset = -moveHeightOffset * direction.directionWeight
         newOffset = 0
       }
