@@ -16,7 +16,7 @@ struct StatisticsMain {
   struct State: Equatable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .statistics)
-    var header: HeaderViewFeature.State = .init(.init(title: "통계", type: .defaultType))
+    var header: HeaderViewFeature.State = .init(.init(title: "통계", type: .defaultNonIconType))
     var helper: StatisticsMainProperty = .init()
     var myStatistics: MyStatistics.State = .init()
     var otherStatistics: OtherStatistics.State = .init()

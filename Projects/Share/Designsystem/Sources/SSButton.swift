@@ -28,11 +28,8 @@ public struct SSButton: View {
     Button {
       onTap()
     } label: {
-      HStack(spacing: 6) {
-        switch property.leftIcon {
-        case .none:
-          EmptyView()
-        case let .icon(image):
+      HStack(spacing: property.size.hStackSpacing) {
+        if case let .icon(image) = property.leftIcon {
           image
         }
 
@@ -40,10 +37,7 @@ public struct SSButton: View {
           .modifier(SSTypoModifier(property.font))
           .foregroundStyle(property.textColor)
 
-        switch property.rightIcon {
-        case .none:
-          EmptyView()
-        case let .icon(image):
+        if case let .icon(image) = property.rightIcon {
           image
         }
       }

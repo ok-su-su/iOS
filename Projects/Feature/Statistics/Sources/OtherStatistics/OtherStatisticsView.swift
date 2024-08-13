@@ -55,8 +55,8 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
-              buttonText: store.helper.selectedAgeItem?.description ?? "20 대"
+              rightIcon: .icon(SSImage.statisticsArrow),
+              buttonText: store.helper.selectedAgeItem?.topSectionDescriptionLabel ?? "20 대"
             )) {
               store.send(.view(.tappedAgedButton))
             }
@@ -73,7 +73,7 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
+              rightIcon: .icon(SSImage.statisticsArrow),
               buttonText: store.helper.selectedRelationItem?.description ?? "친구"
             )) {
               store.send(.view(.tappedRelationshipButton))
@@ -86,7 +86,7 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
+              rightIcon: .icon(SSImage.statisticsArrow),
               buttonText: store.helper.selectedCategoryItem?.description ?? "결혼식"
             )) {
               store.sendViewAction(.tappedCategoryButton)
@@ -134,12 +134,12 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeRelationAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
   }
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
   }
 
   @ViewBuilder
@@ -183,7 +183,7 @@ struct OtherStatisticsView: View {
         property: .init(
           title: "최다 수수 관계",
           description: relationTitle,
-          caption: "평균 " + relationCount + " 번",
+          caption: "평균 " + relationCount + "번",
           isEmptyState: store.helper.isEmptyState
         )
       )
@@ -194,7 +194,7 @@ struct OtherStatisticsView: View {
         property: .init(
           title: "최다 수수 경조사",
           description: categoryTitle,
-          caption: "평균 " + categoryCount + " 번",
+          caption: "평균 " + categoryCount + "번",
           isEmptyState: store.helper.isEmptyState
         )
       )
@@ -232,7 +232,7 @@ struct OtherStatisticsView: View {
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .selectableBottomSheet(
       store: $store.scope(state: \.agedBottomSheet, action: \.scope.agedBottomSheet),
-      cellCount: Age.allCases.count
+      screenRatio: 0.5
     )
     .selectableBottomSheet(
       store: $store.scope(state: \.categoryBottomSheet, action: \.scope.categoryBottomSheet),

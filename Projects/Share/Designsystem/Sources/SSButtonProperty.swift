@@ -206,6 +206,26 @@ public extension SSButtonProperty {
         4
       }
     }
+
+    var hStackSpacing: CGFloat {
+      switch self {
+      case .lh62,
+           .mh60,
+           .sh48,
+           .xsh44:
+        8
+      case .lh54,
+           .mh52,
+           .sh40,
+           .xsh36:
+        6
+      case .lh46,
+           .mh44,
+           .sh32,
+           .xsh28:
+        4
+      }
+    }
   }
 
   enum Status {

@@ -89,13 +89,15 @@ struct OtherStatisticsProperty: Equatable {
       title: "관계별 평균 수수",
       leadingDescription: "친구",
       trailingDescription: "",
-      isEmptyState: false
+      isEmptyState: false,
+      subfixString: "원"
     )
     categoryProperty = .init(
       title: "경조사 카테고리별 수수",
       leadingDescription: "결혼식",
       trailingDescription: "",
-      isEmptyState: false
+      isEmptyState: false,
+      subfixString: "원"
     )
   }
 }
