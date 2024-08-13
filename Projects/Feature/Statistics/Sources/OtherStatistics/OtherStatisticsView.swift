@@ -183,7 +183,7 @@ struct OtherStatisticsView: View {
         property: .init(
           title: "최다 수수 관계",
           description: relationTitle,
-          caption: "평균 " + relationCount + " 번",
+          caption: "평균 " + relationCount + "번",
           isEmptyState: store.helper.isEmptyState
         )
       )
@@ -194,7 +194,7 @@ struct OtherStatisticsView: View {
         property: .init(
           title: "최다 수수 경조사",
           description: categoryTitle,
-          caption: "평균 " + categoryCount + " 번",
+          caption: "평균 " + categoryCount + "번",
           isEmptyState: store.helper.isEmptyState
         )
       )
