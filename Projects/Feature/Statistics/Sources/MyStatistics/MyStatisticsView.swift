@@ -102,7 +102,7 @@ struct MyStatisticsView: View {
         type: .twoLine(
           title: Constants.mostReceivedTitleLabel,
           leadingDescription: helper.mostReceivedPersonName ?? "?",
-          trailingDescription: "\(helper.mostReceivedPrice ?? "?") 원"
+          trailingDescription: "\(helper.mostReceivedPrice ?? "?")원"
         )
       )
     )
@@ -117,7 +117,7 @@ struct MyStatisticsView: View {
         type: .twoLine(
           title: Constants.mostSentTitleLabel,
           leadingDescription: helper.mostSentPersonName ?? "?",
-          trailingDescription: "\(helper.mostSentPrices ?? "?") 원"
+          trailingDescription: "\(helper.mostSentPrices ?? "?")원"
         )
       )
     )
