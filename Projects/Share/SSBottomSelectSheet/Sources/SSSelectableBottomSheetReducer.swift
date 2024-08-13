@@ -18,9 +18,11 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
 
     var items: [Item]
     @Shared var selectedItem: Item?
-    public init(items: [Item], selectedItem: Shared<Item?>) {
+    var deselectItem: Item? = nil
+    public init(items: [Item], selectedItem: Shared<Item?>, deselectItem: Item? = nil) {
       self.items = items
       _selectedItem = selectedItem
+      self.deselectItem = deselectItem
     }
   }
 
@@ -40,7 +42,7 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
         return .none
       case let .tapped(item: item):
         let isChanged = item != state.selectedItem
-        state.selectedItem = item
+        state.selectedItem = state.deselectItem == item ? nil : item
         return .run { send in
           if isChanged {
             await send(.changedItem(item))
