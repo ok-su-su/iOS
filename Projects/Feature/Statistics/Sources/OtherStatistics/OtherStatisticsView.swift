@@ -134,12 +134,12 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeRelationAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
   }
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty)
+    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40))
   }
 
   @ViewBuilder

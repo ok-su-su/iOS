@@ -52,8 +52,14 @@ struct StatisticsType2CardWithAnimation: View {
   @State private var oldTrailingTitle: [String] = []
   @State private var newTrailingTitle: [String] = []
 
-  init(property: Binding<StatisticsType2CardWithAnimationProperty>) {
+  let textColor: Color
+  let emptyStateTextColor: Color
+
+  init(property: Binding<StatisticsType2CardWithAnimationProperty>, textColor: Color = SSColor.gray80,
+       emptyStateTextColor: Color = SSColor.gray40) {
     _property = property
+    self.textColor = textColor
+    self.emptyStateTextColor = emptyStateTextColor
   }
 
   @ViewBuilder
@@ -62,7 +68,9 @@ struct StatisticsType2CardWithAnimation: View {
       descriptionSlice: $property.trailingDescriptionSlice,
       isEmptyState: false,
       height: 30,
-      subFixString: property.subfixString
+      subFixString: property.subfixString,
+      textColor: textColor,
+      emptyStateTextColor: emptyStateTextColor
     )
   }
 
