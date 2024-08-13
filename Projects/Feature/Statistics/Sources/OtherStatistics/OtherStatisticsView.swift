@@ -55,7 +55,7 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
+              rightIcon: .icon(SSImage.statisticsArrow),
               buttonText: store.helper.selectedAgeItem?.description ?? "20 대"
             )) {
               store.send(.view(.tappedAgedButton))
@@ -73,7 +73,7 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
+              rightIcon: .icon(SSImage.statisticsArrow),
               buttonText: store.helper.selectedRelationItem?.description ?? "친구"
             )) {
               store.send(.view(.tappedRelationshipButton))
@@ -86,7 +86,7 @@ struct OtherStatisticsView: View {
               status: .active,
               style: .ghost,
               color: .orange,
-              rightIcon: .icon(SSImage.envelopeDownArrow),
+              rightIcon: .icon(SSImage.statisticsArrow),
               buttonText: store.helper.selectedCategoryItem?.description ?? "결혼식"
             )) {
               store.sendViewAction(.tappedCategoryButton)
