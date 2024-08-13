@@ -38,20 +38,22 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
   private func makeContentView() -> some View {
     ScrollViewReader { value in
       ScrollView(showsIndicators: false) {
-        ZStack {
+        ZStack(alignment: .center) {
           Spacer().containerRelativeFrame([.horizontal, .vertical])
 
           VStack(alignment: .center, spacing: 0) {
             makeCellContentView()
+              .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) {
+                  value.scrollTo(store.selectedItem?.id, anchor: .center)
+                }
+              }
           }
           .scrollTargetLayout()
         }
       }
-      .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
       .scrollTargetBehavior(.viewAligned)
-      .onAppear {
-        value.scrollTo(store.selectedItem?.id, anchor: .center)
-      }
+      .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
     }
   }
 
