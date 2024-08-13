@@ -76,7 +76,7 @@ struct MyStatisticsView: View {
         property: .init(
           title: Constants.mostSpentRelationshipTitleLabel,
           description: helper.mostRelationshipText ?? "?",
-          caption: "총 \(helper.mostRelationshipFrequency ?? "0") 번",
+          caption: "총 \(helper.mostRelationshipFrequency ?? "0")번",
           isEmptyState: helper.isEmptyState
         )
       )
@@ -85,7 +85,7 @@ struct MyStatisticsView: View {
         property: .init(
           title: Constants.mostSpentCategoryTitleLabel,
           description: helper.mostEventText ?? "?",
-          caption: "총 \(helper.mostEventFrequency ?? "0") 번",
+          caption: "총 \(helper.mostEventFrequency ?? "0")번",
           isEmptyState: helper.isEmptyState
         )
       )
