@@ -49,7 +49,7 @@ struct CustomNumericAnimationView<Item, OldContent, NewContent>: View where OldC
   init(
     height: CGFloat,
     item: Binding<Item>,
-    direction: CustomNumericAnimationDirection = .upper(duration: 0.07),
+    direction: CustomNumericAnimationDirection = .upper(duration: 0.8),
     @ViewBuilder oldContent: () -> OldContent,
     @ViewBuilder newContent: () -> NewContent
   ) {

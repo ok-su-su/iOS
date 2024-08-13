@@ -24,7 +24,7 @@ struct CustomNumericNumberAnimation<OldContent, NewContent>: View where OldConte
   init(
     height: CGFloat,
     item: Binding<String>,
-    duration: Double = 0.07,
+    duration: Double = 0.8,
     @ViewBuilder oldContent: () -> OldContent,
     @ViewBuilder newContent: () -> NewContent
   ) {
