@@ -149,9 +149,11 @@ struct MyPageEdit {
     case .selectedYearItem:
       state.bottomSheet = .init(
         items: .default,
-        selectedItem: state.$selectedBottomSheetItem
+        selectedItem: state.$selectedBottomSheetItem,
+        deselectItem: .notSelectedItem
       )
       return .none
+
     case .tappedEditConfirmButton:
       return .send(.inner(.updateUserInformation))
     }
@@ -191,6 +193,12 @@ struct MyPageEdit {
       case .scope(.toast):
         return .none
 
+      case let .scope(.bottomSheet(.presented(.changedItem(item)))):
+        if item == .notSelectedItem {
+          state.selectedBottomSheetItem = nil
+        }
+        return .none
+
       case .scope(.bottomSheet(_)):
         return .none
 
@@ -223,6 +231,7 @@ struct MyPageEdit {
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.route(.dismiss))
         }
+
       case .scope(.genderSection(_)):
         return .none
       }
@@ -244,9 +253,17 @@ extension Reducer where Self.State == MyPageEdit.State, Self.Action == MyPageEdi
 
 extension [SelectYearBottomSheetItem] {
   static var `default`: Self {
-    return (1930 ... Int(CustomDateFormatter.getYear(from: .now))!)
+    let defaultItems: [SelectYearBottomSheetItem] = (1930 ... Int(CustomDateFormatter.getYear(from: .now))!)
       .map { .init(description: $0.description + "년", id: $0) }
       .reversed()
+    return [SelectYearBottomSheetItem.notSelectedItem] + defaultItems
+  }
+}
+
+extension SelectYearBottomSheetItem {
+  static var notSelectedItem: Self {
+    let notSelectedID = Int(CustomDateFormatter.getYear(from: .now))! + 1
+    return SelectYearBottomSheetItem(description: "미선택", id: notSelectedID)
   }
 }
 
