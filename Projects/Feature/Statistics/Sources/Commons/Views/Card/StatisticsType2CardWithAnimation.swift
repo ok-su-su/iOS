@@ -19,11 +19,13 @@ struct StatisticsType2CardWithAnimationProperty: Equatable {
   var isEmptyState: Bool
   var trailingDescriptionSlice: [String]
   var formatter = NumberFormatter()
-  init(title: String, leadingDescription: String, trailingDescription: String, isEmptyState: Bool) {
+  var subfixString: String
+  init(title: String, leadingDescription: String, trailingDescription: String, isEmptyState: Bool, subfixString: String = "") {
     self.title = title
     self.leadingDescription = leadingDescription
     self.trailingDescription = trailingDescription
     self.isEmptyState = isEmptyState
+    self.subfixString = subfixString
 
     formatter.numberStyle = .decimal
 
@@ -59,7 +61,8 @@ struct StatisticsType2CardWithAnimation: View {
     CustomNumericNumberView(
       descriptionSlice: $property.trailingDescriptionSlice,
       isEmptyState: false,
-      height: 30
+      height: 30,
+      subFixString: property.subfixString
     )
   }
 
