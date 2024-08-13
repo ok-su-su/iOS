@@ -73,7 +73,7 @@ struct StatisticsType2Card: View {
         // TrailingItem
         Text(trailingDescription)
           .modifier(SSTypoModifier(.title_s))
-          .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray80)
+          .foregroundStyle(property.isEmptyState ? SSColor.gray40 : SSColor.gray100)
       }
     }
     .frame(maxWidth: .infinity)

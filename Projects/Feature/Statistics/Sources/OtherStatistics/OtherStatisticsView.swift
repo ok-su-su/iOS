@@ -139,7 +139,7 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40))
+    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
   }
 
   @ViewBuilder
