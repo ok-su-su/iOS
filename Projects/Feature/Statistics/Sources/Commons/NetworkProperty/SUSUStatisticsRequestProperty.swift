@@ -35,7 +35,16 @@ enum Age: String, SSSelectBottomSheetPropertyItemable, CaseIterable {
     case .SIXTY:
       "60대"
     case .SEVENTY:
+      "70대 이상"
+    }
+  }
+
+  var topSectionDescriptionLabel: String {
+    switch self {
+    case .SEVENTY:
       "70대 +"
+    default:
+      description
     }
   }
 

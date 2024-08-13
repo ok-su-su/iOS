@@ -56,7 +56,7 @@ struct OtherStatisticsView: View {
               style: .ghost,
               color: .orange,
               rightIcon: .icon(SSImage.statisticsArrow),
-              buttonText: store.helper.selectedAgeItem?.description ?? "20 대"
+              buttonText: store.helper.selectedAgeItem?.topSectionDescriptionLabel ?? "20 대"
             )) {
               store.send(.view(.tappedAgedButton))
             }
