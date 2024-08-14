@@ -45,11 +45,14 @@ struct CustomNumericAnimationView<Item, OldContent, NewContent>: View where OldC
   @State private var newOffset = 0.0
 
   private var moveHeightOffset: CGFloat
-  var height: CGFloat
+  private var height: CGFloat
+  private var alignment: Alignment
+
   init(
     height: CGFloat,
     item: Binding<Item>,
     direction: CustomNumericAnimationDirection = .upper(duration: 0.3),
+    alignment: Alignment = .leading,
     @ViewBuilder oldContent: () -> OldContent,
     @ViewBuilder newContent: () -> NewContent
   ) {
@@ -57,13 +60,14 @@ struct CustomNumericAnimationView<Item, OldContent, NewContent>: View where OldC
     self.oldContent = oldContent()
     self.newContent = newContent()
     self.direction = direction
+    self.alignment = alignment
     _item = item
     newOffset = height
     moveHeightOffset = height
   }
 
   var body: some View {
-    ZStack {
+    ZStack(alignment: .leading) {
       oldContent
         .offset(y: oldOffset)
       newContent
