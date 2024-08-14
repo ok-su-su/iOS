@@ -156,8 +156,7 @@ struct EnvelopeView: View {
 
       VStack(spacing: Metrics.topAndMiddleSpacing) {
         makeHeaderView()
-
-        EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.envelopePRiceProgress))
+        EnvelopePriceProgressView(envelopePriceProgressProperty: store.envelopePriceProgressProperty)
       }
       .padding(Metrics.contentSpacing)
     }

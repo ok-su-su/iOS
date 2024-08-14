@@ -13,10 +13,14 @@ import Foundation
 struct Envelope {
   @ObservableState
   struct State: Identifiable {
-    var id: UUID = .init()
+    var id: Int64 { envelopeProperty.id }
     var envelopeProperty: EnvelopeProperty
     var showDetail: Bool = false
-    var envelopePriceProgress: EnvelopePriceProgress.State = .init(envelopePriceProgressProperty: .makeFakeData())
+    var envelopePriceProgressProperty: EnvelopePriceProgressProperty { .init(
+      leadingPriceValue: envelopeProperty.totalSentPrice,
+      trailingPriceValue: envelopeProperty.totalReceivedPrice
+    ) }
+
     var isLoading: Bool = false
     var isAppear: Bool = false
 
@@ -26,13 +30,6 @@ struct Envelope {
 
     init(envelopeProperty: EnvelopeProperty) {
       self.envelopeProperty = envelopeProperty
-      envelopePriceProgress = .init(
-        envelopePriceProgressProperty:
-        .init(
-          leadingPriceValue: envelopeProperty.totalSentPrice,
-          trailingPriceValue: envelopeProperty.totalReceivedPrice
-        )
-      )
     }
   }
 
@@ -41,7 +38,6 @@ struct Envelope {
   enum Action: Equatable {
     case tappedDetailButton
     case tappedFullContentOfEnvelopeButton
-    case envelopePRiceProgress(EnvelopePriceProgress.Action)
     case getEnvelopeDetail
     case isLoading(Bool)
     case updateEnvelopeContent([EnvelopeContent])
@@ -50,9 +46,6 @@ struct Envelope {
   }
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.envelopePriceProgress, action: \.envelopePRiceProgress) {
-      EnvelopePriceProgress()
-    }
     Reduce { state, action in
       switch action {
       case .tappedDetailButton:
@@ -65,8 +58,6 @@ struct Envelope {
       case .tappedFullContentOfEnvelopeButton:
         return .send(.pushEnvelopeDetail(state.envelopeProperty))
 
-      case .envelopePRiceProgress:
-        return .none
       case .getEnvelopeDetail:
         return .run { [id = state.envelopeProperty.id] send in
           await send(.isLoading(true))
