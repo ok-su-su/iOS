@@ -13,6 +13,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSAlert
+import SSNotification
 import SSPersistancy
 
 // MARK: - MyPageMain

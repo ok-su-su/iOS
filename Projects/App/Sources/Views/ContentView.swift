@@ -9,6 +9,7 @@ import Received
 import Sent
 import SSAlert
 import SSLaunchScreen
+import SSNotification
 import SSRoot
 import Statistics
 import SwiftUI

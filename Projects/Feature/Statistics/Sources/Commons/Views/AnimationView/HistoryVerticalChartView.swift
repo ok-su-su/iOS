@@ -124,7 +124,7 @@ struct HistoryVerticalChartView: View {
   ) {
     self.property = property
     self.chartLeadingLabel = chartLeadingLabel
-    self.chartTrailingLabel = chartTrailingLabelt:
+    self.chartTrailingLabel = chartTrailingLabel
     self.animationDuration = animationDuration
   }
 

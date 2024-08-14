@@ -10,6 +10,7 @@ import Combine
 import Designsystem
 import OSLog
 import SafariServices
+import SSNotification
 import SwiftUI
 
 // MARK: - MyPageMainRouter

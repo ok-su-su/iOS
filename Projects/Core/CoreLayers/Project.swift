@@ -15,6 +15,7 @@ let project = Project.makeModule(
       .core(.featureAction),
       .core(.sSRegexManager),
       .core(.sSFirebase),
+      .core(.sSNotification),
     ]
   )
 )
