@@ -62,13 +62,6 @@ struct SpecificEnvelopeHistoryListView: View {
     LazyVStack {
       ForEach(store.envelopeContents) { property in
         makeDetailContentView(property)
-          .onAppear {
-            store.sendViewAction(.onAppearDetail(property))
-          }
-          .contentShape(Rectangle())
-          .onTapGesture {
-            store.sendViewAction(.tappedSpecificEnvelope(property))
-          }
       }
     }
   }
@@ -76,7 +69,7 @@ struct SpecificEnvelopeHistoryListView: View {
   @ViewBuilder
   private func makeDetailContentView(_ property: EnvelopeContent) -> some View {
     let textColor = property.envelopeType == .sent ? SSColor.gray90 : SSColor.gray40
-    HStack {
+    HStack(spacing: 0) {
       HStack(spacing: 12) {
         property.envelopeType == .sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
         SSBadge(property:
@@ -98,7 +91,11 @@ struct SpecificEnvelopeHistoryListView: View {
     }
     .padding(.vertical, 12)
     .onAppear {
-      // TODO: 무한 스크롤 로직 작성
+      store.sendViewAction(.onAppearDetail(property))
+    }
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.sendViewAction(.tappedSpecificEnvelope(property))
     }
   }
 

@@ -161,17 +161,15 @@ public struct HeaderView: View {
   @Environment(\.dismiss) var dismiss
   @Bindable var store: StoreOf<HeaderViewFeature>
   public var body: some View {
-    VStack {
-      ZStack {
-        makeCenterItem(type: store.state.property.centerItem)
+    ZStack {
+      makeCenterItem(type: store.state.property.centerItem)
 
-        HStack {
-          makeLeadingItem(isImage: store.state.property.isLogoImage)
-          Spacer()
-          makeTrailingItem(type: store.state.property.trailingItem)
-        }
-        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
+      HStack {
+        makeLeadingItem(isImage: store.state.property.isLogoImage)
+        Spacer()
+        makeTrailingItem(type: store.state.property.trailingItem)
       }
+      .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
     }
     .onAppear {
       store.send(.onAppear)

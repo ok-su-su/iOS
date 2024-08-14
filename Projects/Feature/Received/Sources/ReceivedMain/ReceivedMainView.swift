@@ -88,7 +88,7 @@ struct ReceivedMainView: View {
           status: .active,
           style: .ghost,
           color: .black,
-          leftIcon: .icon(SSImage.commonFilter),
+          leftIcon: .icon(SSImage.commonOrder),
           buttonText: store.sortProperty.selectedFilterDial?.description ?? ""
         )) {
           store.sendViewAction(.tappedSortButton)

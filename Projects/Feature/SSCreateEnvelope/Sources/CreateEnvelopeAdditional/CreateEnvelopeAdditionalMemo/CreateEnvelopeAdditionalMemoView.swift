@@ -25,12 +25,12 @@ struct CreateEnvelopeAdditionalMemoView: View {
       // TODO: change Property
       Text(Constants.titleText)
         .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray60)
+        .foregroundStyle(SSColor.gray100)
 
       TextField(
         "",
         text: $store.memoHelper.textFieldText.sending(\.view.textFieldChange),
-        prompt: Text("추가로 남기실 내용이 있나요").foregroundStyle(SSColor.gray30),
+        prompt: Text("입력해주세요").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
       .onReturnKeyPressed(textFieldText: store.memoHelper.textFieldText) { text in
