@@ -13,6 +13,7 @@ import Foundation
 import OSLog
 import SSBottomSelectSheet
 import SSCreateEnvelope
+import SSNotification
 
 // MARK: - SentMain
 
@@ -58,6 +59,7 @@ struct SentMain {
   }
 
   @Dependency(\.sentMainNetwork) var network
+  @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
 
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
@@ -81,6 +83,26 @@ struct SentMain {
     case pullRefreshButton
   }
 
+  func sinkSentUpdatePublisher() -> Effect<Action> {
+    return .merge(
+      .publisher {
+        sentUpdatePublisher
+          .deleteFriendPublisher
+          .map { friendID in return .inner(.deleteEnvelopes(friendID: friendID)) }
+      },
+      .publisher{
+        sentUpdatePublisher
+          .editedFriendPublisher
+          .map{friendID in return .async(.updateEnvelopes(friendID: friendID))}
+      },
+      .publisher{
+        sentUpdatePublisher
+          .updatePublisher
+          .map{_ in return .async(.updateEnvelopesByFilterInitialPage)}
+      }
+    )
+  }
+
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case .tappedSortButton:
@@ -99,8 +121,9 @@ struct SentMain {
         return .none
       }
       state.isOnAppear = appear
-      return .concatenate(
-        .send(.async(.updateEnvelopesByFilter))
+      return .merge(
+        .send(.async(.updateEnvelopesByFilter)),
+        sinkSentUpdatePublisher()
       )
 
     case let .tappedFilteredPersonButton(id):
@@ -135,8 +158,10 @@ struct SentMain {
   enum InnerAction: Equatable {
     case showCreateEnvelopRouter
     case updateEnvelopes([EnvelopeProperty])
+    case overwriteEnvelopes([EnvelopeProperty])
     case isLoading(Bool)
     case isRefresh(Bool)
+    case deleteEnvelopes(friendID: Int64)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
@@ -162,6 +187,18 @@ struct SentMain {
     case let .isRefresh(val):
       state.isRefresh = val
       return .none
+
+    case let .deleteEnvelopes(friendID):
+      state.envelopes = state.envelopes.filter { $0.envelopeProperty.id != friendID }
+      return .none
+
+    case let .overwriteEnvelopes(envelopes):
+      envelopes.forEach { property in
+        if let firstIndex = state.envelopes.firstIndex(where: {$0.envelopeProperty.id == property.id}) {
+          state.envelopes.update(.init(envelopeProperty: property), at: firstIndex)
+        }
+      }
+      return .none
     }
   }
 
@@ -169,6 +206,7 @@ struct SentMain {
   enum AsyncAction: Equatable {
     case updateEnvelopesByFilter
     case updateEnvelopesByFilterInitialPage
+    case updateEnvelopes(friendID: Int64)
   }
 
   func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
@@ -207,6 +245,15 @@ struct SentMain {
         await send(.inner(.isLoading(true)))
         let envelopeProperties = try await network.requestSearchFriends(urlParameter)
         await send(.inner(.updateEnvelopes(envelopeProperties)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case let .updateEnvelopes(friendID):
+      let urlParameter = SearchFriendsParameter(friendIds: [friendID])
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let envelopeProperties = try await network.requestSearchFriends(urlParameter)
+        await send(.inner(.overwriteEnvelopes(envelopeProperties)))
         await send(.inner(.isLoading(false)))
       }
     }
