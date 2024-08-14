@@ -66,7 +66,7 @@ struct EnvelopeContent: Equatable, Hashable, Identifiable {
   let price: Int64
 
   var priceText: String {
-    return CustomNumberFormatter.formattedByThreeZero(price) ?? "0원"
+    return CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? "0원"
   }
 
   var isSentView: Bool {
