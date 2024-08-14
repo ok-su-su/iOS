@@ -13,8 +13,6 @@ import OSLog
 import SSInterceptor
 import SSNetwork
 
-
-
 // MARK: - EnvelopeNetwork
 
 struct EnvelopeNetwork: Equatable, DependencyKey {
@@ -77,7 +75,7 @@ extension EnvelopeNetwork {
     var path: String {
       switch self {
       case .searchEnvelope,
-          .searchLatestOfThreeEnvelope:
+           .searchLatestOfThreeEnvelope:
         "envelopes"
       case .deleteFriend:
         "friends"
@@ -85,7 +83,7 @@ extension EnvelopeNetwork {
         "envelopes/\(id)"
       case let .deleteEnvelope(envelopeID: id):
         "envelopes/\(id)"
-      case let .getEnvelopeProperty(friendID: id) :
+      case let .getEnvelopeProperty(friendID: id):
         "envelopes/friend-statistics"
       }
     }
@@ -93,7 +91,7 @@ extension EnvelopeNetwork {
     var method: Moya.Method {
       switch self {
       case .deleteEnvelope,
-          .deleteFriend:
+           .deleteFriend:
         return .delete
       default:
         return .get
@@ -103,36 +101,36 @@ extension EnvelopeNetwork {
     var task: Moya.Task {
       switch self {
       case let .searchLatestOfThreeEnvelope(friendID):
-          .requestParameters(
-            parameters: [
-              "friendIds": friendID,
-              "size": 3,
-              "include": "FRIEND,RELATIONSHIP,CATEGORY",
-            ],
-            encoding: URLEncoding.queryString
-          )
+        .requestParameters(
+          parameters: [
+            "friendIds": friendID,
+            "size": 3,
+            "include": "FRIEND,RELATIONSHIP,CATEGORY",
+          ],
+          encoding: URLEncoding.queryString
+        )
 
       case let .searchEnvelope(friendID: friendID, page: page):
-          .requestParameters(
-            parameters: [
-              "friendIds": friendID,
-              "size": 15,
-              "include": "FRIEND,RELATIONSHIP,CATEGORY",
-              "page": page,
-            ],
-            encoding: URLEncoding.queryString
-          )
+        .requestParameters(
+          parameters: [
+            "friendIds": friendID,
+            "size": 15,
+            "include": "FRIEND,RELATIONSHIP,CATEGORY",
+            "page": page,
+          ],
+          encoding: URLEncoding.queryString
+        )
       case let .deleteFriend(friendID: friendID):
-          .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
 
       case .searchEnvelopeByID:
-          .requestPlain
+        .requestPlain
 
       case .deleteEnvelope:
-          .requestPlain
+        .requestPlain
 
       case let .getEnvelopeProperty(friendID):
-          .requestParameters(parameters: ["friendIds": [friendID]], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["friendIds": [friendID]], encoding: URLEncoding.queryString)
       }
     }
   }
@@ -177,7 +175,4 @@ extension SearchLatestOfThreeEnvelopeDataResponseDTO {
   }
 }
 
-
-fileprivate extension SearchLatestOfThreeEnvelopeDataResponseDTO {
-
-}
+private extension SearchLatestOfThreeEnvelopeDataResponseDTO {}

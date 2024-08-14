@@ -65,7 +65,10 @@ struct SpecificEnvelopeHistoryList {
         return .none
       }
       state.isOnAppear = isAppear
-      return .send(.async(.getEnvelopeDetail))
+      return .merge(
+        .send(.async(.getEnvelopeDetail)),
+        sinkSpecificEnvelopePublisher()
+      )
 
     case let .presentAlert(present):
       state.isDeleteAlertPresent = present
@@ -116,8 +119,8 @@ struct SpecificEnvelopeHistoryList {
       return .none
 
     case let .overwriteEnvelopeContents(envelopesContent):
-      envelopesContent.forEach{ envelopeContent in
-        if let index = state.envelopeContents.firstIndex(where: {$0.id == envelopeContent.id}) {
+      envelopesContent.forEach { envelopeContent in
+        if let index = state.envelopeContents.firstIndex(where: { $0.id == envelopeContent.id }) {
           state.envelopeContents[index] = envelopeContent
         }
       }
@@ -229,18 +232,19 @@ struct SpecificEnvelopeHistoryList {
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction
 
 extension SpecificEnvelopeHistoryList: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction {
-
   func sinkSpecificEnvelopePublisher() -> Effect<Action> {
     .merge(
-      .publisher{
+      .publisher {
         specificEnvelopePublisher
           .deleteEnvelopePublisher
-          .map{ id in .inner(.deleteEnvelope(id: id))}
+          .subscribe(on: RunLoop.main)
+          .map { id in .inner(.deleteEnvelope(id: id)) }
       },
-      .publisher{
+      .publisher {
         specificEnvelopePublisher
           .updateEnvelopeIDPublisher
-          .map{ id in .async(.updateEnvelope(id: id))}
+          .subscribe(on: RunLoop.main)
+          .map { id in .async(.updateEnvelope(id: id)) }
       }
     )
   }

@@ -55,9 +55,6 @@ struct SpecificEnvelopeHistoryRouter {
         let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
         SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
       }
-    case let .tappedDeleteConfirmButton(id):
-      SpecificEnvelopeSharedState.shared.setDeleteEnvelopeID(id)
-      return .send(.envelopeHistory(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope)))
     }
   }
 
