@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import OSLog
+import SSNotification
 import SwiftUI
 
 // MARK: - SSTabType

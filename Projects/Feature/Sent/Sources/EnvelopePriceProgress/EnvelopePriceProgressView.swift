@@ -12,19 +12,18 @@ import SwiftUI
 struct EnvelopePriceProgressView: View {
   // MARK: Reducer
 
-  @Bindable
-  var store: StoreOf<EnvelopePriceProgress>
+  var envelopePriceProgressProperty: EnvelopePriceProgressProperty
 
   @ViewBuilder
   private func makeMiddleView() -> some View {
     HStack {
-      Text(store.envelopePriceProgressProperty.leadingDescriptionText)
+      Text(envelopePriceProgressProperty.leadingDescriptionText)
         .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
-      Text(store.envelopePriceProgressProperty.trailingDescriptionText)
+      Text(envelopePriceProgressProperty.trailingDescriptionText)
         .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray60)
     }
@@ -38,7 +37,7 @@ struct EnvelopePriceProgressView: View {
           .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
         SSColor.orange60
           .frame(
-            maxWidth: geometry.size.width * store.envelopePriceProgressProperty.progressValue,
+            maxWidth: geometry.size.width * envelopePriceProgressProperty.progressValue,
             maxHeight: geometry.size.height,
             alignment: .leading
           )
@@ -51,13 +50,13 @@ struct EnvelopePriceProgressView: View {
   @ViewBuilder
   private func makeBottomView() -> some View {
     HStack {
-      Text(store.envelopePriceProgressProperty.leadingPriceText)
+      Text(envelopePriceProgressProperty.leadingPriceText)
         .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray90)
 
       Spacer()
 
-      Text(store.envelopePriceProgressProperty.trailingPriceText)
+      Text(envelopePriceProgressProperty.trailingPriceText)
         .applySSFont(.title_xxxs)
         .foregroundColor(SSColor.gray60)
     }
@@ -76,9 +75,6 @@ struct EnvelopePriceProgressView: View {
 
   var body: some View {
     makeContentView()
-      .onAppear {
-        store.send(.onAppear(true))
-      }
   }
 
   private enum Metrics {

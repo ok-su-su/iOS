@@ -1,9 +1,9 @@
 //
 //  SSNotificationName.swift
-//  Designsystem
+//  SSNotification
 //
-//  Created by MaraMincho on 4/29/24.
-//  Copyright © 2024 com.susu. All rights reserved.
+//  Created by MaraMincho on 8/14/24.
+//  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation

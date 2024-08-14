@@ -10,6 +10,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSNetwork
+import SSNotification
 
 // MARK: - SpecificEnvelopeDetailReducer
 
@@ -23,6 +25,7 @@ public struct SpecificEnvelopeDetailReducer {
     var header: HeaderViewFeature.State = .init(.init(type: .depth2DoubleText("편집", "삭제")))
     var envelopeDetailProperty: EnvelopeDetailProperty
     var envelopeID: Int64
+    var isUpdateEnvelope: Bool = false
     public init(envelopeID: Int64) {
       self.envelopeID = envelopeID
       envelopeDetailProperty = .init(
@@ -92,6 +95,7 @@ public struct SpecificEnvelopeDetailReducer {
       return .none
 
     case let .updateEnvelopeDetailProperty(property):
+      state.isUpdateEnvelope = true
       state.envelopeDetailProperty = property
       return .none
 
@@ -107,12 +111,13 @@ public struct SpecificEnvelopeDetailReducer {
     case getEnvelopeDetailProperty
   }
 
+  @Dependency(\.specificEnvelopePublisher) var specificEnvelopePublisher
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .deleteEnvelope:
-      return .run { [id = state.envelopeDetailProperty.id] send in
+      return .run { [id = state.envelopeDetailProperty.id] _ in
         try await network.deleteEnvelope(id: id)
-        await send(.delegate(.tappedDeleteConfirmButton(id: id)))
+        specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
       }
     case .pushEditing:
@@ -136,6 +141,11 @@ public struct SpecificEnvelopeDetailReducer {
 
   public func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
+    case .header(.tappedDismissButton):
+      if state.isUpdateEnvelope {
+        specificEnvelopePublisher.sendUpdateEnvelopeBy(ID: state.envelopeID)
+      }
+      return .none
     case let .header(.tappedDoubleTextButton(buttonPosition)):
       switch buttonPosition {
       case .leading:
@@ -152,7 +162,6 @@ public struct SpecificEnvelopeDetailReducer {
 
   public enum DelegateAction: Equatable {
     case tappedEnvelopeEditButton(EnvelopeDetailProperty)
-    case tappedDeleteConfirmButton(id: Int64)
   }
 
   public func delegateAction(_: inout State, _: DelegateAction) -> ComposableArchitecture.Effect<Action> {

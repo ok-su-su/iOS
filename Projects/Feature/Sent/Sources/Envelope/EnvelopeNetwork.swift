@@ -13,16 +13,51 @@ import OSLog
 import SSInterceptor
 import SSNetwork
 
-extension DependencyValues {
-  var envelopeNetwork: EnvelopeNetwork {
-    get { self[EnvelopeNetwork.self] }
-    set { self[EnvelopeNetwork.self] = newValue }
-  }
-}
-
 // MARK: - EnvelopeNetwork
 
 struct EnvelopeNetwork: Equatable, DependencyKey {
+  private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+
+  func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
+    os_log("요청한 Page \(page)")
+    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
+    return data.data.map { $0.toEnvelopeContent() }
+  }
+
+  func getEnvelope(friendID: Int64) async throws -> [EnvelopeContent] {
+    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
+    return data.data.map { $0.toEnvelopeContent() }
+  }
+
+  func getEnvelope(envelopeID: Int64) async throws -> EnvelopeContent {
+    let data: SearchLatestOfThreeEnvelopeDataResponseDTO = try await provider.request(.searchEnvelopeByID(envelopeID))
+
+    return data.toEnvelopeContent()
+  }
+
+  func deleteFriend(id: Int64) async throws {
+    try await provider.request(.deleteFriend(friendID: id))
+  }
+
+  func deleteEnvelope(id: Int64) async throws {
+    try await provider.request(.deleteEnvelope(envelopeID: id))
+  }
+
+  func getEnvelopeProperty(ID: Int64) async throws -> EnvelopeProperty? {
+    let data: SearchFriendsResponseDTO = try await provider.request(.getEnvelopeProperty(friendID: ID))
+    return data.data.map { dto -> EnvelopeProperty in
+      return EnvelopeProperty(
+        id: dto.friend.id,
+        envelopeTargetUserName: dto.friend.name,
+        totalPrice: dto.totalAmounts,
+        totalSentPrice: dto.sentAmounts,
+        totalReceivedPrice: dto.receivedAmounts
+      )
+    }.first
+  }
+}
+
+extension EnvelopeNetwork {
   static var liveValue: EnvelopeNetwork = .init()
   static func == (_: EnvelopeNetwork, _: EnvelopeNetwork) -> Bool {
     return true
@@ -34,6 +69,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
     case deleteFriend(friendID: Int64)
     case deleteEnvelope(envelopeID: Int64)
     case searchEnvelopeByID(Int64)
+    case getEnvelopeProperty(friendID: Int64)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -47,6 +83,8 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
         "envelopes/\(id)"
       case let .deleteEnvelope(envelopeID: id):
         "envelopes/\(id)"
+      case let .getEnvelopeProperty(friendID: id):
+        "envelopes/friend-statistics"
       }
     }
 
@@ -63,7 +101,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
     var task: Moya.Task {
       switch self {
       case let .searchLatestOfThreeEnvelope(friendID):
-        return .requestParameters(
+        .requestParameters(
           parameters: [
             "friendIds": friendID,
             "size": 3,
@@ -73,7 +111,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
         )
 
       case let .searchEnvelope(friendID: friendID, page: page):
-        return .requestParameters(
+        .requestParameters(
           parameters: [
             "friendIds": friendID,
             "size": 15,
@@ -83,36 +121,25 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
           encoding: URLEncoding.queryString
         )
       case let .deleteFriend(friendID: friendID):
-        return .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
 
       case .searchEnvelopeByID:
-        return .requestPlain
+        .requestPlain
 
       case .deleteEnvelope:
-        return .requestPlain
+        .requestPlain
+
+      case let .getEnvelopeProperty(friendID):
+        .requestParameters(parameters: ["friendIds": [friendID]], encoding: URLEncoding.queryString)
       }
     }
   }
+}
 
-  private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
-    os_log("요청한 Page \(page)")
-    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
-    return data.data.map { $0.toEnvelopeContent() }
-  }
-
-  func getEnvelope(id: Int64) async throws -> [EnvelopeContent] {
-    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: id))
-    return data.data.map { $0.toEnvelopeContent() }
-  }
-
-  func deleteFriend(id: Int64) async throws {
-    try await provider.request(.deleteFriend(friendID: id))
-  }
-
-  func deleteEnvelope(id: Int64) async throws {
-    try await provider.request(.deleteEnvelope(envelopeID: id))
+extension DependencyValues {
+  var envelopeNetwork: EnvelopeNetwork {
+    get { self[EnvelopeNetwork.self] }
+    set { self[EnvelopeNetwork.self] = newValue }
   }
 }
 
@@ -147,3 +174,5 @@ extension SearchLatestOfThreeEnvelopeDataResponseDTO {
     )
   }
 }
+
+private extension SearchLatestOfThreeEnvelopeDataResponseDTO {}

@@ -5,9 +5,8 @@
 //  Created by MaraMincho on 6/28/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-
-import Designsystem
 import Foundation
+import SSNotification
 
 final class MyPageSharedState {
   private init() {
