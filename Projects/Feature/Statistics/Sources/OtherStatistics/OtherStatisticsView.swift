@@ -22,6 +22,8 @@ struct OtherStatisticsView: View {
 
   var statisticsProperty: SUSUEnvelopeStatisticResponse { store.helper.susuStatistics }
 
+  let animationDuration = 0.3
+
   // MARK: Content
 
   @ViewBuilder
@@ -108,6 +110,7 @@ struct OtherStatisticsView: View {
           } else {
             CustomNumericNumberView(
               descriptionSlice: $store.helper.nowSentPriceSlice,
+              animationDuration: animationDuration,
               isEmptyState: false,
               height: 30,
               subFixString: "원",
@@ -134,12 +137,21 @@ struct OtherStatisticsView: View {
 
   @ViewBuilder
   private func makeRelationAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.relationProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
+    StatisticsType2CardWithAnimation(
+      property: $store.helper.relationProperty,
+      textColor: SSColor.gray100,
+      emptyStateTextColor: SSColor.gray40
+    )
   }
 
   @ViewBuilder
   private func makeEventAverage() -> some View {
-    StatisticsType2CardWithAnimation(property: $store.helper.categoryProperty, textColor: SSColor.gray100, emptyStateTextColor: SSColor.gray40)
+    StatisticsType2CardWithAnimation(
+      property: $store.helper.categoryProperty,
+      animationDuration: animationDuration,
+      textColor: SSColor.gray100,
+      emptyStateTextColor: SSColor.gray40
+    )
   }
 
   @ViewBuilder
@@ -147,7 +159,8 @@ struct OtherStatisticsView: View {
     HistoryVerticalChartView(
       property: store.helper.chartProperty,
       chartLeadingLabel: "올해 쓴 금액",
-      chartTrailingLabel: store.helper.chartTotalPrice.description + "만원"
+      chartTrailingLabel: store.helper.chartTotalPrice.description + "만원",
+      animationDuration: animationDuration
     )
   }
 

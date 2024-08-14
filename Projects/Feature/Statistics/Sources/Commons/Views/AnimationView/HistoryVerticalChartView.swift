@@ -113,16 +113,19 @@ struct HistoryVerticalChartView: View {
   private var property: HistoryVerticalChartViewProperty
   private var chartLeadingLabel: String
   private var chartTrailingLabel: String
+  private var animationDuration: Double = 0.3
 
   @State private var isAnimation: Bool = false
   init(
     property: HistoryVerticalChartViewProperty,
     chartLeadingLabel: String,
-    chartTrailingLabel: String
+    chartTrailingLabel: String,
+    animationDuration: Double = 0.3
   ) {
     self.property = property
     self.chartLeadingLabel = chartLeadingLabel
-    self.chartTrailingLabel = chartTrailingLabel
+    self.chartTrailingLabel = chartTrailingLabelt:
+    self.animationDuration = animationDuration
   }
 
   @ViewBuilder
@@ -137,8 +140,8 @@ struct HistoryVerticalChartView: View {
             .fill(isLastMonth ? SSColor.orange60 : SSColor.orange30)
             .frame(maxWidth: Metrics.chartMaximumWidth, maxHeight: isAnimation ? curHeight : 0)
             .clipShape(RoundedRectangle(cornerRadius: 4))
-            .animation(.easeIn(duration: 0.8), value: isAnimation)
-            .animation(.easeIn(duration: 0.8), value: item.portion)
+            .animation(.easeIn(duration: animationDuration), value: isAnimation)
+            .animation(.easeIn(duration: animationDuration), value: item.portion)
 
           Text(item.bottomTitle)
             .modifier(SSTypoModifier(.title_xxxs))

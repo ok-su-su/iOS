@@ -54,11 +54,13 @@ struct StatisticsType2CardWithAnimation: View {
 
   let textColor: Color
   let emptyStateTextColor: Color
+  var animationDuration: Double
 
-  init(property: Binding<StatisticsType2CardWithAnimationProperty>, textColor: Color = SSColor.gray80,
+  init(property: Binding<StatisticsType2CardWithAnimationProperty>, animationDuration: Double = 0.3, textColor: Color = SSColor.gray80,
        emptyStateTextColor: Color = SSColor.gray40) {
     _property = property
     self.textColor = textColor
+    self.animationDuration = animationDuration
     self.emptyStateTextColor = emptyStateTextColor
   }
 
@@ -66,6 +68,7 @@ struct StatisticsType2CardWithAnimation: View {
   func makeTrailingItem() -> some View {
     CustomNumericNumberView(
       descriptionSlice: $property.trailingDescriptionSlice,
+      animationDuration: animationDuration,
       isEmptyState: false,
       height: 30,
       subFixString: property.subfixString,
@@ -87,7 +90,8 @@ struct StatisticsType2CardWithAnimation: View {
 
         CustomNumericAnimationView(
           height: 30,
-          item: $property
+          item: $property,
+          direction: .upper(duration: animationDuration)
         ) {
           Text(oldLeadingTitle)
             .modifier(SSTypoModifier(.title_s))
