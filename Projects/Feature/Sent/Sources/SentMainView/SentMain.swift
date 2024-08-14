@@ -83,26 +83,6 @@ struct SentMain {
     case pullRefreshButton
   }
 
-  func sinkSentUpdatePublisher() -> Effect<Action> {
-    return .merge(
-      .publisher {
-        sentUpdatePublisher
-          .deleteFriendPublisher
-          .map { friendID in return .inner(.deleteEnvelopes(friendID: friendID)) }
-      },
-      .publisher {
-        sentUpdatePublisher
-          .editedFriendPublisher
-          .map { friendID in return .async(.updateEnvelopes(friendID: friendID)) }
-      },
-      .publisher {
-        sentUpdatePublisher
-          .updatePublisher
-          .map { _ in return .async(.updateEnvelopesByFilterInitialPage) }
-      }
-    )
-  }
-
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case .tappedSortButton:
@@ -194,8 +174,8 @@ struct SentMain {
 
     case let .overwriteEnvelopes(envelopes):
       envelopes.forEach { property in
-        if let firstIndex = state.envelopes.firstIndex(where: { $0.envelopeProperty.id == property.id }) {
-          state.envelopes.update(.init(envelopeProperty: property), at: firstIndex)
+        if let envelopeID = state.envelopes.first(where: { $0.envelopeProperty.id == property.id })?.id {
+          state.envelopes[id: envelopeID]?.envelopeProperty = property
         }
       }
       return .none
@@ -250,10 +230,14 @@ struct SentMain {
 
     case let .updateEnvelopes(friendID):
       let urlParameter = SearchFriendsParameter(friendIds: [friendID])
+      let targetEnvelopeID = state.envelopes.first(where: { $0.envelopeProperty.id == friendID })?.id
       return .run { send in
         await send(.inner(.isLoading(true)))
         let envelopeProperties = try await network.requestSearchFriends(urlParameter)
         await send(.inner(.overwriteEnvelopes(envelopeProperties)))
+        if let targetEnvelopeID {
+          await send(.scope(.envelopes(.element(id: targetEnvelopeID, action: .getEnvelopeDetail))))
+        }
         await send(.inner(.isLoading(false)))
       }
     }
@@ -423,4 +407,27 @@ extension [FilterDialItem] {
 
 // MARK: - SentMain + FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, FeatureScopeAction
 
-extension SentMain: FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, FeatureScopeAction {}
+extension SentMain: FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, FeatureScopeAction {
+  func sinkSentUpdatePublisher() -> Effect<Action> {
+    return .merge(
+      .publisher {
+        sentUpdatePublisher
+          .deleteFriendPublisher
+          .receive(on: RunLoop.main)
+          .map { friendID in return .inner(.deleteEnvelopes(friendID: friendID)) }
+      },
+      .publisher {
+        sentUpdatePublisher
+          .editedFriendPublisher
+          .receive(on: RunLoop.main)
+          .map { friendID in return .async(.updateEnvelopes(friendID: friendID)) }
+      },
+      .publisher {
+        sentUpdatePublisher
+          .updatePublisher
+          .receive(on: RunLoop.main)
+          .map { _ in return .async(.updateEnvelopesByFilterInitialPage) }
+      }
+    )
+  }
+}

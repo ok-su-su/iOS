@@ -37,7 +37,7 @@ struct SpecificEnvelopeHistoryListView: View {
 
         // MARK: ProgressView
 
-        EnvelopePriceProgressView(store: store.scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress))
+        EnvelopePriceProgressView(envelopePriceProgressProperty: store.envelopePriceProgressProperty)
           .padding(.vertical, 24)
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
@@ -53,6 +53,7 @@ struct SpecificEnvelopeHistoryListView: View {
         Spacer()
           .frame(height: 50)
       }
+      .scrollBounceBehavior(.basedOnSize, axes: .vertical)
     }
   }
 

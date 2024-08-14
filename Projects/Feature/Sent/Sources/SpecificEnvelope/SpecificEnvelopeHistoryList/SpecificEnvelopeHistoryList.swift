@@ -20,7 +20,13 @@ struct SpecificEnvelopeHistoryList {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var envelopePriceProgress: EnvelopePriceProgress.State
+    var envelopePriceProgressProperty: EnvelopePriceProgressProperty {
+      .init(
+        leadingPriceValue: envelopeProperty.totalSentPrice,
+        trailingPriceValue: envelopeProperty.totalReceivedPrice
+      )
+    }
+
     var isDeleteAlertPresent = false
     var header: HeaderViewFeature.State
     var envelopeProperty: EnvelopeProperty
@@ -29,15 +35,13 @@ struct SpecificEnvelopeHistoryList {
     var page = 0
     var isEndOfPage: Bool = false
 
+    /// This is a variable that decides whether or not to perform \
+    /// an envelope update when the view is dismissed.
+    var isUpdateEnvelopePropertyAtMain: Bool = false
+
     init(envelopeProperty: EnvelopeProperty) {
       self.envelopeProperty = envelopeProperty
       header = .init(.init(title: envelopeProperty.envelopeTargetUserNameText, type: .depth2Text("삭제")))
-      envelopePriceProgress = .init(
-        envelopePriceProgressProperty: .init(
-          leadingPriceValue: envelopeProperty.totalSentPrice,
-          trailingPriceValue: envelopeProperty.totalReceivedPrice
-        )
-      )
     }
   }
 
@@ -163,13 +167,14 @@ struct SpecificEnvelopeHistoryList {
       }
 
     case let .updateEnvelope(id: id):
-      return .run { [] send in
+      return .run { send in
         let envelope = try await network.getEnvelope(envelopeID: id)
         await send(.inner(.overwriteEnvelopeContents([envelope])))
         await send(.async(.updateEnvelopeProperty))
       }
 
     case .updateEnvelopeProperty:
+      state.isUpdateEnvelopePropertyAtMain = true
       return .run { [envelopeID = state.envelopeProperty.id] send in
         if let envelopeProperty = try await network.getEnvelopeProperty(ID: envelopeID) {
           await send(.inner(.updateEnvelopeProperty(envelopeProperty)))
@@ -181,7 +186,6 @@ struct SpecificEnvelopeHistoryList {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
-    case envelopePriceProgress(EnvelopePriceProgress.Action)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
@@ -190,10 +194,14 @@ struct SpecificEnvelopeHistoryList {
       state.isDeleteAlertPresent = true
       return .none
 
-    case .header:
+    case .header(.tappedDismissButton):
+      if state.isUpdateEnvelopePropertyAtMain {
+        sentUpdatePublisher
+          .editEnvelopes(friendID: state.envelopeProperty.id)
+      }
       return .none
 
-    case .envelopePriceProgress:
+    case .header:
       return .none
     }
   }
@@ -210,10 +218,9 @@ struct SpecificEnvelopeHistoryList {
   }
 
   var body: some Reducer<State, Action> {
-    Scope(state: \.envelopePriceProgress, action: \.scope.envelopePriceProgress) {
-      EnvelopePriceProgress()
+    Scope(state: \.header, action: \.scope.header) {
+      HeaderViewFeature()
     }
-
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
