@@ -126,7 +126,7 @@ struct CreateEnvelopeRelation {
 
     case let .createEnvelopeSelectionItems(.delegate(.invalidText(text))):
       return ToastRegexManager.isShowToastByName(text) ?
-        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none
 
     case .createEnvelopeSelectionItems:
       return .none

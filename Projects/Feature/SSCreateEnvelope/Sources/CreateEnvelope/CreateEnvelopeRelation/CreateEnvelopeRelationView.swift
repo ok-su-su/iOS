@@ -16,34 +16,31 @@ struct CreateEnvelopeRelationView: View {
   @Bindable
   var store: StoreOf<CreateEnvelopeRelation>
 
+  @State var keyBoardShow: Bool = false
+
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 0) {
       Spacer()
-        .frame(height: 34)
-
-      // MARK: - TextFieldTitleView
-
-      Text(Constants.titleText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray100)
-
-      Spacer()
-        .frame(height: 34)
+        .frame(height: 24)
 
       // MARK: - Buttons
 
-      makeRelationButton()
+      makeTitleAndRelationButton()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
+    .padding(.bottom, Metrics.bottomSpacing)
   }
 
   @ViewBuilder
-  private func makeRelationButton() -> some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 8) {
+  private func makeTitleAndRelationButton() -> some View {
+    ScrollView(.vertical) {
+      VStack(alignment: .leading, spacing: 34) {
+        Text(Constants.titleText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.gray100)
         makeDefaultRelationButton()
       }
     }
@@ -65,17 +62,21 @@ struct CreateEnvelopeRelationView: View {
       makeContentView()
         .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
-    .nextButton(store.isPushable) {
+    .navigationBarBackButtonHidden()
+    .nextButton(store.isPushable, isShow: !keyBoardShow) {
       store.sendViewAction(.tappedNextButton)
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .navigationBarBackButtonHidden()
+    .onReceive(KeyBoardReadablePublisher.shared.keyboardPublisher) { newIsKeyboardVisible in
+      keyBoardShow = newIsKeyboardVisible
+    }
   }
 
   private enum Metrics {
     static let horizontalSpacing: CGFloat = 16
+    static let bottomSpacing: CGFloat = 32
   }
 
   private enum Constants {

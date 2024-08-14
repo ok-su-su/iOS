@@ -21,9 +21,6 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
 
   // MARK: Content
 
-  @ViewBuilder
-  private func makeContentView() -> some View {}
-
   public var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       makeDefaultItems()
