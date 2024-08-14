@@ -60,9 +60,6 @@ struct LedgerDetailRouter {
         let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
         LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
       }
-    case let .tappedDeleteConfirmButton(id):
-      ledgerMainObserver.updateAllProperty()
-      return .send(.ledgerDetailMain(.inner(.deleteEnvelope(id: id))))
     }
   }
 
