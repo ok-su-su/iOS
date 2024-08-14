@@ -90,15 +90,15 @@ struct SentMain {
           .deleteFriendPublisher
           .map { friendID in return .inner(.deleteEnvelopes(friendID: friendID)) }
       },
-      .publisher{
+      .publisher {
         sentUpdatePublisher
           .editedFriendPublisher
-          .map{friendID in return .async(.updateEnvelopes(friendID: friendID))}
+          .map { friendID in return .async(.updateEnvelopes(friendID: friendID)) }
       },
-      .publisher{
+      .publisher {
         sentUpdatePublisher
           .updatePublisher
-          .map{_ in return .async(.updateEnvelopesByFilterInitialPage)}
+          .map { _ in return .async(.updateEnvelopesByFilterInitialPage) }
       }
     )
   }
@@ -194,7 +194,7 @@ struct SentMain {
 
     case let .overwriteEnvelopes(envelopes):
       envelopes.forEach { property in
-        if let firstIndex = state.envelopes.firstIndex(where: {$0.envelopeProperty.id == property.id}) {
+        if let firstIndex = state.envelopes.firstIndex(where: { $0.envelopeProperty.id == property.id }) {
           state.envelopes.update(.init(envelopeProperty: property), at: firstIndex)
         }
       }

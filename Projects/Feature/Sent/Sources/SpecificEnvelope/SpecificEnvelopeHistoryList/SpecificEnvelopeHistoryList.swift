@@ -11,6 +11,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSAlert
+import SSNotification
 
 // MARK: - SpecificEnvelopeHistoryList
 
@@ -61,7 +62,7 @@ struct SpecificEnvelopeHistoryList {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
-        return .send(.inner(.updateEnvelopeDetailIfUserDeleteEnvelope))
+        return .none
       }
       state.isOnAppear = isAppear
       return .send(.async(.getEnvelopeDetail))
@@ -89,8 +90,10 @@ struct SpecificEnvelopeHistoryList {
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
+    case overwriteEnvelopeContents([EnvelopeContent])
     case pushEnvelopeDetail(id: Int64)
-    case updateEnvelopeDetailIfUserDeleteEnvelope
+    case deleteEnvelope(id: Int64)
+    case updateEnvelopeProperty(EnvelopeProperty)
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -112,10 +115,20 @@ struct SpecificEnvelopeHistoryList {
         .push(.specificEnvelopeHistoryDetail(.init(envelopeID: id)))
       return .none
 
-    case .updateEnvelopeDetailIfUserDeleteEnvelope:
-      if let id = SpecificEnvelopeSharedState.shared.getDeletedEnvelopeID() {
-        state.envelopeContents.removeAll(where: { $0.id == id })
+    case let .overwriteEnvelopeContents(envelopesContent):
+      envelopesContent.forEach{ envelopeContent in
+        if let index = state.envelopeContents.firstIndex(where: {$0.id == envelopeContent.id}) {
+          state.envelopeContents[index] = envelopeContent
+        }
       }
+      return .none
+
+    case let .deleteEnvelope(id):
+      state.envelopeContents.removeAll(where: { $0.id == id })
+      return .send(.async(.updateEnvelopeProperty))
+
+    case let .updateEnvelopeProperty(envelopeProperty):
+      state.envelopeProperty = envelopeProperty
       return .none
     }
   }
@@ -123,6 +136,8 @@ struct SpecificEnvelopeHistoryList {
   enum AsyncAction: Equatable {
     case getEnvelopeDetail
     case deleteFriend
+    case updateEnvelope(id: Int64)
+    case updateEnvelopeProperty
   }
 
   func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
@@ -140,7 +155,22 @@ struct SpecificEnvelopeHistoryList {
     case .deleteFriend:
       return .run { [id = state.envelopeProperty.id] _ in
         try await network.deleteFriend(id: id)
+        sentUpdatePublisher.deleteEnvelopes(friendID: id)
         await dismiss()
+      }
+
+    case let .updateEnvelope(id: id):
+      return .run { [] send in
+        let envelope = try await network.getEnvelope(envelopeID: id)
+        await send(.inner(.overwriteEnvelopeContents([envelope])))
+        await send(.async(.updateEnvelopeProperty))
+      }
+
+    case .updateEnvelopeProperty:
+      return .run { [envelopeID = state.envelopeProperty.id] send in
+        if let envelopeProperty = try await network.getEnvelopeProperty(ID: envelopeID) {
+          await send(.inner(.updateEnvelopeProperty(envelopeProperty)))
+        }
       }
     }
   }
@@ -167,6 +197,8 @@ struct SpecificEnvelopeHistoryList {
 
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.envelopeNetwork) var network
+  @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
+  @Dependency(\.specificEnvelopePublisher) var specificEnvelopePublisher
 
   enum DelegateAction: Equatable {}
 
@@ -196,4 +228,20 @@ struct SpecificEnvelopeHistoryList {
 
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction
 
-extension SpecificEnvelopeHistoryList: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction {}
+extension SpecificEnvelopeHistoryList: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction {
+
+  func sinkSpecificEnvelopePublisher() -> Effect<Action> {
+    .merge(
+      .publisher{
+        specificEnvelopePublisher
+          .deleteEnvelopePublisher
+          .map{ id in .inner(.deleteEnvelope(id: id))}
+      },
+      .publisher{
+        specificEnvelopePublisher
+          .updateEnvelopeIDPublisher
+          .map{ id in .async(.updateEnvelope(id: id))}
+      }
+    )
+  }
+}
