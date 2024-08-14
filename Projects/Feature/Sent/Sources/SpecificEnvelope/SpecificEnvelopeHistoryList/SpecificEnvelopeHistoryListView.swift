@@ -64,6 +64,7 @@ struct SpecificEnvelopeHistoryListView: View {
           .onAppear {
             store.sendViewAction(.onAppearDetail(property))
           }
+          .contentShape(Rectangle())
           .onTapGesture {
             store.sendViewAction(.tappedSpecificEnvelope(property))
           }
