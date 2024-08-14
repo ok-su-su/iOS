@@ -111,7 +111,6 @@ extension HeaderView {
         Text(leadingText)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(SSColor.gray100)
-          .padding(Constants.imagePadding)
           .frame(alignment: .trailing)
           .onTapGesture {
             store.send(.tappedDoubleTextButton(.leading))
@@ -119,13 +118,12 @@ extension HeaderView {
         Text(trailingText)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(SSColor.gray100)
-          .padding(Constants.imagePadding)
           .frame(alignment: .trailing)
           .onTapGesture {
             store.send(.tappedDoubleTextButton(.trailing))
           }
-          .padding(.trailing, 16)
       }
+      .padding(.trailing, 16)
     }
   }
 }
