@@ -63,11 +63,11 @@ struct CreateEnvelopeRelationView: View {
         .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
     .navigationBarBackButtonHidden()
-    .nextButton(store.isPushable, isShow: !keyBoardShow) {
-      store.sendViewAction(.tappedNextButton)
-    }
     .onAppear {
       store.send(.view(.onAppear(true)))
+    }
+    .nextButton(store.isPushable, isShow: !keyBoardShow) {
+      store.sendViewAction(.tappedNextButton)
     }
     .onReceive(KeyBoardReadablePublisher.shared.keyboardPublisher) { newIsKeyboardVisible in
       keyBoardShow = newIsKeyboardVisible
