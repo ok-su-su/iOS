@@ -26,19 +26,16 @@ struct CreateEnvelopeEventView: View {
       VStack(alignment: .leading, spacing: 34) {
         Spacer()
           .frame(height: 1)
+
         // MARK: - TextFieldTitleView
 
         Text(Constants.titleText)
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray100)
 
-        Spacer()
-          .frame(height: 34)
-
         // MARK: - Buttons
 
         makeItem()
-        Spacer()
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
       .padding(.bottom, Metrics.bottomSpacing)
