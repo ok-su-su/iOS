@@ -227,9 +227,7 @@ struct OtherStatisticsView: View {
         .gray15
         .ignoresSafeArea()
       ScrollView {
-        VStack(spacing: 0) {
-          makeContentView()
-        }
+        makeContentView()
       }
       .disabled(store.helper.isEmptyState)
 

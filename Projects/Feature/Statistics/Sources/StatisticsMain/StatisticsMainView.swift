@@ -19,7 +19,7 @@ struct StatisticsMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 8) {
+    VStack(spacing: 0) {
       makeTopStepper()
       switch store.helper.selectedStepperType {
       case .my:
