@@ -16,39 +16,37 @@ struct CreateEnvelopeEventView: View {
   @Bindable
   var store: StoreOf<CreateEnvelopeEvent>
 
+  @State var keyBoardShow: Bool = false
+
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Spacer()
-        .frame(height: 34)
+    ScrollView(.vertical) {
+      VStack(alignment: .leading, spacing: 34) {
+        Spacer()
+          .frame(height: 1)
 
-      // MARK: - TextFieldTitleView
+        // MARK: - TextFieldTitleView
 
-      Text(Constants.titleText)
-        .modifier(SSTypoModifier(.title_m))
-        .foregroundStyle(SSColor.gray100)
+        Text(Constants.titleText)
+          .modifier(SSTypoModifier(.title_m))
+          .foregroundStyle(SSColor.gray100)
 
-      Spacer()
-        .frame(height: 34)
+        // MARK: - Buttons
 
-      // MARK: - Buttons
-
-      makeItem()
-      Spacer()
+        makeItem()
+      }
+      .padding(.horizontal, Metrics.horizontalSpacing)
+      .padding(.bottom, Metrics.bottomSpacing)
     }
-    .padding(.horizontal, Metrics.horizontalSpacing)
+    .scrollBounceBehavior(.basedOnSize)
   }
 
   @ViewBuilder
   private func makeItem() -> some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 8) {
-        CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
-          .modifier(SSLoadingModifier(isLoading: store.isLoading))
-      }
-    }
+    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+      .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
   @ViewBuilder
@@ -64,8 +62,11 @@ struct CreateEnvelopeEventView: View {
       makeContentView()
         .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
-    .nextButton(store.pushable) {
+    .nextButton(store.pushable, isShow: !keyBoardShow) {
       store.sendViewAction(.tappedNextButton)
+    }
+    .onReceive(KeyBoardReadablePublisher.shared.keyboardPublisher) { newIsKeyboardVisible in
+      keyBoardShow = newIsKeyboardVisible
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -75,6 +76,7 @@ struct CreateEnvelopeEventView: View {
 
   private enum Metrics {
     static let horizontalSpacing: CGFloat = 16
+    static let bottomSpacing: CGFloat = 32
   }
 
   private enum Constants {

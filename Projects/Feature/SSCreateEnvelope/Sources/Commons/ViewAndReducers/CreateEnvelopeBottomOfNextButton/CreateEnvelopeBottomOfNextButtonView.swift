@@ -82,4 +82,12 @@ extension View {
       NextButtonView(isAbleToPush: isAbleToPush, tapAction: tapAction)
     }
   }
+
+  func nextButton(_ isAbleToPush: Bool, isShow: Bool, tapAction: @escaping () -> Void) -> some View {
+    safeAreaInset(edge: .bottom) {
+      if isShow {
+        NextButtonView(isAbleToPush: isAbleToPush, tapAction: tapAction)
+      }
+    }
+  }
 }

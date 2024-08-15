@@ -27,7 +27,8 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
     let eventNameText = store.eventName ?? ""
     VStack(alignment: .leading) {
       HStack(spacing: 4) {
-        Text(eventNameText)
+        // 돌잔치에, ~~경조사에...
+        Text(eventNameText + "에")
           .modifier(SSTypoModifier(.title_m))
           .foregroundStyle(SSColor.gray60)
 
