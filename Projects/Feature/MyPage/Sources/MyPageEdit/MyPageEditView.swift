@@ -59,6 +59,7 @@ struct MyPageEditView: View {
             .red60
             .clipShape(Circle())
             .frame(width: 4, height: 4)
+            .opacity(store.isNameValid ? 0 : 1)
         }
       }
 

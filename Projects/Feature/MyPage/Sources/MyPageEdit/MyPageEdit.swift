@@ -34,10 +34,10 @@ struct MyPageEdit {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isPushable: Bool {
-      isValid && isChanged
+      isNameValid && isChanged
     }
 
-    var isValid: Bool {
+    var isNameValid: Bool {
       RegexManager.isValidName(nameTextFieldText)
     }
 
@@ -143,7 +143,9 @@ struct MyPageEdit {
 
     case let .nameEdited(text):
       state.nameTextFieldText = text
-      return ToastRegexManager.isShowToastByName(text) ?
+
+//      return ToastRegexManager.isShowToastByName(text) ?
+      return !RegexManager.isValidName(text) ?
         .send(.scope(.toast(.showToastMessage("이름은 한글 또는 영문 10글자 이내로 입력해주세요")))) : .none
 
     case .selectedYearItem:
