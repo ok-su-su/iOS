@@ -35,14 +35,14 @@ struct LedgerDetailRouter {
     case routePublisherID
   }
 
-  @Dependency(\.ledgerDetailObserver) var ledgerMainObserver
+  @Dependency(\.updateLedgerDetailPublisher) var updateLedgerDetailPublisher
 
   func handlePath(state: inout State, action: StackActionOf<LedgerDetailPath>) -> Effect<Action> {
     switch action {
     case let .element(id: _, action: .envelopeDetail(.delegate(currentAction))):
       return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
-    case .element(id: _, action: .envelopeEdit(.delegate(.tappedSaveButton))):
-      ledgerMainObserver.updateAllProperty()
+    case let .element(id: _, action: .envelopeEdit(.delegate(.tappedSaveButton(envelopeID)))):
+      updateLedgerDetailPublisher.updateEnvelope(id: envelopeID)
       return .none
     case .element(id: _, action: _):
       return .none

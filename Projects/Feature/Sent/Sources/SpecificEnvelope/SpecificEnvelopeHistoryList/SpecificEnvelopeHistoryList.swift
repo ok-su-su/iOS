@@ -244,13 +244,11 @@ extension SpecificEnvelopeHistoryList: FeatureViewAction, FeatureScopeAction, Fe
       .publisher {
         specificEnvelopePublisher
           .deleteEnvelopePublisher
-          .subscribe(on: RunLoop.main)
           .map { id in .inner(.deleteEnvelope(id: id)) }
       },
       .publisher {
         specificEnvelopePublisher
           .updateEnvelopeIDPublisher
-          .subscribe(on: RunLoop.main)
           .map { id in .async(.updateEnvelope(id: id)) }
       }
     )

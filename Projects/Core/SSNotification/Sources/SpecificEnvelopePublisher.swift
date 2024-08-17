@@ -16,13 +16,19 @@ public final class SpecificEnvelopePublisher {
   private init() {}
 
   private let _updatePublisher: PassthroughSubject<Int64, Never> = .init()
-  public var updateEnvelopeIDPublisher: AnyPublisher<Int64, Never> { _updatePublisher.eraseToAnyPublisher() }
+  public var updateEnvelopeIDPublisher: AnyPublisher<Int64, Never> {
+    _updatePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
+  }
+
   public func sendUpdateEnvelopeBy(ID: Int64) {
     _updatePublisher.send(ID)
   }
 
   private var _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
-  public var deleteEnvelopePublisher: AnyPublisher<Int64, Never> { _deleteEnvelopePublisher.eraseToAnyPublisher() }
+  public var deleteEnvelopePublisher: AnyPublisher<Int64, Never> {
+    _deleteEnvelopePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
+  }
+
   public func sendDeleteEnvelopeBy(ID: Int64) {
     _deleteEnvelopePublisher.send(ID)
   }
