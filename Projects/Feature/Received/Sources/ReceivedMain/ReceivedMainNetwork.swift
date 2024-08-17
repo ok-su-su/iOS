@@ -21,6 +21,11 @@ struct ReceivedMainNetwork {
     let dto: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgers(param))
     return dto.data.map { .init($0) }
   }
+
+  func getLedger(id: Int64) async throws -> LedgerBoxProperty {
+    let dto: LedgerDetailResponse = try await provider.request(.searchLedger(ledgerID: id))
+    return .init(ledgerDetailResponse: dto)
+  }
 }
 
 extension DependencyValues {
@@ -37,19 +42,24 @@ extension ReceivedMainNetwork: DependencyKey {
 
   private enum Network: SSNetworkTargetType {
     case searchLedgers(SearchLedgersRequestParameter)
+    case searchLedger(ledgerID: Int64)
 
     var additionalHeader: [String: String]? { nil }
 
     var path: String {
       switch self {
-      case .searchLedgers:
+      case .searchLedgers,
+          .searchLedger
+        :
         "ledgers"
       }
     }
 
     var method: Moya.Method {
       switch self {
-      case .searchLedgers:
+      case .searchLedgers,
+          .searchLedger
+        :
         .get
       }
     }
@@ -58,6 +68,8 @@ extension ReceivedMainNetwork: DependencyKey {
       switch self {
       case let .searchLedgers(param):
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
+      case let .searchLedger(ledgerID: id):
+          .requestParameters(parameters: ["id": id], encoding: URLEncoding.queryString)
       }
     }
   }
@@ -107,5 +119,17 @@ extension SearchLedgersRequestParameter {
     res["size"] = size
 
     return res
+  }
+}
+
+fileprivate extension LedgerBoxProperty {
+  init(ledgerDetailResponse response : LedgerDetailResponse) {
+    self.id = response.ledger.id
+    self.categoryName = response.category.category
+    self.style = response.category.style
+    self.isMiscCategory = response.category.customCategory != nil
+    self.categoryDescription = response.ledger.description ?? ""
+    self.totalAmount = response.totalAmounts
+    self.envelopesCount = response.totalCounts
   }
 }
