@@ -46,7 +46,6 @@ struct CreateLedgerRouter {
   func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
     case .date:
-
       return .run { _ in
         let requestData = try CreateLedgerSharedState.getRequestBodyData()
         try await network.createLedgers(requestData)

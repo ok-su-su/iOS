@@ -34,6 +34,8 @@ struct LedgerDetailMain {
     var page = 0
     var isEndOfPage = false
 
+    fileprivate var isUpdateLedgerDetail: Bool = false
+    /// EnvelopeItems
     var envelopeItems: [EnvelopeViewForLedgerMainProperty] = []
 
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
@@ -160,6 +162,7 @@ struct LedgerDetailMain {
     case let .showAlert(val):
       state.showMessageAlert = val
       return .none
+
     // 장부 삭제 플로우
     case .tappedDeleteLedgerButton:
       let id = state.ledgerID
@@ -167,7 +170,7 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(true)))
         try await network.deleteLedger(id: id)
         await send(.inner(.isLoading(false)))
-        receivedMainUpdatePublisher.sendUpdatePage()
+        receivedMainUpdatePublisher.deleteLedger(ledgerID: id)
         await dismiss()
       }
 
