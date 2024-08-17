@@ -48,10 +48,10 @@ extension ReceivedMainNetwork: DependencyKey {
 
     var path: String {
       switch self {
-      case .searchLedger,
-           .searchLedgers
-           :
+      case .searchLedgers:
         "ledgers"
+      case let .searchLedger(id):
+        "ledgers/\(id)"
       }
     }
 
@@ -69,7 +69,7 @@ extension ReceivedMainNetwork: DependencyKey {
       case let .searchLedgers(param):
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       case let .searchLedger(ledgerID: id):
-        .requestParameters(parameters: ["id": id], encoding: URLEncoding.queryString)
+        .requestPlain
       }
     }
   }
@@ -128,7 +128,7 @@ private extension LedgerBoxProperty {
     categoryName = response.category.category
     style = response.category.style
     isMiscCategory = response.category.customCategory != nil
-    categoryDescription = response.ledger.description ?? ""
+    categoryDescription = response.ledger.title
     totalAmount = response.totalAmounts
     envelopesCount = response.totalCounts
   }

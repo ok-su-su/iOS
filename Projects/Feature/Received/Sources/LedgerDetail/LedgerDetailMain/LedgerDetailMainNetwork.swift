@@ -58,6 +58,18 @@ struct LedgerDetailMainNetwork {
     }
   }
 
+  func getEnvelope(_ envelopeID: Int64) async throws -> EnvelopeViewForLedgerMainProperty {
+    let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
+    return .init(
+      id: data.envelope.id,
+      name: data.friend.name,
+      relationship: data.relationship.relation,
+      isVisited: data.envelope.hasVisited,
+      gift: data.envelope.gift,
+      amount: data.envelope.amount
+    )
+  }
+
   func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
     var res: [FilterSelectableItemProperty] = data.categories.map { .init(id: $0.id, title: $0.name) }
@@ -76,6 +88,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
     case deletedLedger(ID: Int64)
     case getFilterItems
     case getCategoriesAndRelationships
+    case searchEnvelopeByID(Int64)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -84,6 +97,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
         "envelopes"
       case let .searchLedgerDetail(ledgerID):
         "ledgers/\(ledgerID)"
+      case let .searchEnvelopeByID(id):
+        "envelopes/\(id)"
       case .deletedLedger:
         "ledgers"
       case .getCategoriesAndRelationships,
@@ -101,7 +116,8 @@ extension LedgerDetailMainNetwork: DependencyKey {
       case .deletedLedger:
         .delete
       case .getCategoriesAndRelationships,
-           .getFilterItems:
+           .getFilterItems,
+           .searchEnvelopeByID:
         .get
       }
     }
@@ -115,7 +131,9 @@ extension LedgerDetailMainNetwork: DependencyKey {
       case let .deletedLedger(ID: ledgerID):
         .requestParameters(parameters: ["ids": ledgerID], encoding: URLEncoding.queryString)
       case .getCategoriesAndRelationships,
-           .getFilterItems:
+           .getFilterItems,
+           .searchEnvelopeByID
+           :
         .requestPlain
       }
     }

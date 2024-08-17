@@ -18,7 +18,7 @@ public struct UpdateLedgerDetailPublisher: DependencyKey {
 
   private var _updateLedgerDetailPublisher: PassthroughSubject<Void, Never> = .init()
   public var updateLedgerDetailPublisher: AnyPublisher<Void, Never> {
-    _updateLedgerDetailPublisher.subscribe(on: RunLoop.main).eraseToAnyPublisher()
+    _updateLedgerDetailPublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   public func updateLedgerDetail() {
@@ -27,7 +27,7 @@ public struct UpdateLedgerDetailPublisher: DependencyKey {
 
   private var _updateEnvelopesPublisher: PassthroughSubject<Void, Never> = .init()
   public var updateEnvelopesPublisher: AnyPublisher<Void, Never> {
-    _updateEnvelopesPublisher.subscribe(on: RunLoop.main).eraseToAnyPublisher()
+    _updateEnvelopesPublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   public func updateEnvelopes() {
@@ -36,7 +36,7 @@ public struct UpdateLedgerDetailPublisher: DependencyKey {
 
   private var _updateEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
   public var updateEnvelopePublisher: AnyPublisher<Int64, Never> {
-    _updateEnvelopePublisher.subscribe(on: RunLoop.main).eraseToAnyPublisher()
+    _updateEnvelopePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   public func updateEnvelope(id: Int64) {
@@ -45,7 +45,7 @@ public struct UpdateLedgerDetailPublisher: DependencyKey {
 
   private var _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
   public var deleteEnvelopePublisher: AnyPublisher<Int64, Never> {
-    _deleteEnvelopePublisher.subscribe(on: RunLoop.main).eraseToAnyPublisher()
+    _deleteEnvelopePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   public func deleteEnvelope(id: Int64) {

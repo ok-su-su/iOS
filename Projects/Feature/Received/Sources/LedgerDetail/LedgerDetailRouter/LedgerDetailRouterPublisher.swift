@@ -15,7 +15,7 @@ final class LedgerDetailRouterPublisher {
   private var _publisher = PassthroughSubject<LedgerDetailPath.State, Never>()
 
   static func publisher() -> AnyPublisher<LedgerDetailPath.State, Never> {
-    return shared._publisher.eraseToAnyPublisher()
+    return shared._publisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   static func send(_ state: LedgerDetailPath.State) {

@@ -62,6 +62,7 @@ struct LedgerDetailMain {
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.updateLedgerDetailPublisher) var updateLedgerPublisher
   @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
+  @Dependency(\.specificEnvelopePublisher) var specificEnvelopePublisher
 
   @CasePathable
   enum Action: Equatable, FeatureAction {
@@ -134,7 +135,7 @@ struct LedgerDetailMain {
         amount: dto.envelope.amount
       )
       state.envelopeItems.insert(property, at: 0)
-      return .send(.async(.getLedgerDetailProperty))
+      return .send(.async(.updateLedgerDetailProperty))
 
     case let .showAlert(val):
       state.showMessageAlert = val
@@ -180,7 +181,6 @@ struct LedgerDetailMain {
   }
 
   enum InnerAction: Equatable {
-    case updateLedgerDetailPropertyByLedgerID(Int64)
     case updateLedgerDetailProperty(LedgerDetailProperty)
     case updateEnvelopes([EnvelopeViewForLedgerMainProperty])
     case overwriteEnvelopes([EnvelopeViewForLedgerMainProperty])
@@ -231,11 +231,7 @@ struct LedgerDetailMain {
 
     case let .deleteEnvelope(id):
       state.envelopeItems.removeAll(where: { $0.id == id })
-      return .none
-
-    case let .updateLedgerDetailPropertyByLedgerID(ledgerID):
-      state.ledgerID = ledgerID
-      return .send(.async(.getLedgerDetailProperty))
+      return .send(.async(.updateLedgerDetailProperty))
 
     case let .isRefresh(val):
       state.isRefresh = val
@@ -246,6 +242,7 @@ struct LedgerDetailMain {
   @Dependency(\.ledgerDetailMainNetwork) var network
   enum AsyncAction: Equatable {
     case getLedgerDetailProperty
+    case updateLedgerDetailProperty
     case getEnvelopes
     case updateEnvelope(Int64)
   }
@@ -259,7 +256,9 @@ struct LedgerDetailMain {
         await send(.inner(.updateLedgerDetailProperty(ledgerProperty)))
         await send(.inner(.isLoading(false)))
       }
-
+    case .updateLedgerDetailProperty:
+      state.isUpdateLedgerDetail = true
+      return .send(.async(.getLedgerDetailProperty))
     case .getEnvelopes:
       let parameter = GetEnvelopesRequestParameter(
         friendIds: state.filterProperty.selectedItems.map(\.id),
@@ -278,7 +277,12 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(false)))
       }
     case let .updateEnvelope(envelopeID):
-      return .none
+      state.isUpdateLedgerDetail = true
+      return .run { send in
+        let envelope = try await network.getEnvelope(envelopeID)
+        await send(.inner(.overwriteEnvelopes([envelope])))
+        await send(.async(.getLedgerDetailProperty))
+      }
     }
   }
 
@@ -317,7 +321,6 @@ struct LedgerDetailMain {
       }
       return .none
     case .header:
-
       return .none
 
     case let .presentCreateEnvelope(present):
@@ -369,7 +372,7 @@ extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerA
       .publisher {
         updateLedgerPublisher
           .updateLedgerDetailPublisher
-          .map { _ in return .async(.getLedgerDetailProperty) }
+          .map { _ in return .async(.updateLedgerDetailProperty) }
       },
       .publisher {
         updateLedgerPublisher
@@ -380,6 +383,16 @@ extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerA
         updateLedgerPublisher
           .updateEnvelopePublisher
           .map { _ in .inner(.getEnvelopesInitialPage) }
+      },
+      .publisher {
+        specificEnvelopePublisher
+          .deleteEnvelopePublisher
+          .map { .inner(.deleteEnvelope(id: $0)) }
+      },
+      .publisher {
+        specificEnvelopePublisher
+          .updateEnvelopeIDPublisher
+          .map { .async(.updateEnvelope($0)) }
       }
     )
   }
