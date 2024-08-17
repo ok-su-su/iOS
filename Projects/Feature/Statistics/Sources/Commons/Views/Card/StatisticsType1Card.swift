@@ -33,6 +33,7 @@ struct StatisticsType1Card: View {
       Text(property.title)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray100)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
       VStack(spacing: 0) {
         // Description
