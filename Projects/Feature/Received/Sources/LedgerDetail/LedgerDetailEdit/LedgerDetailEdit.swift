@@ -11,6 +11,7 @@ import FeatureAction
 import Foundation
 import SSBottomSelectSheet
 import SSEditSingleSelectButton
+import SSNotification
 
 // MARK: - LedgerDetailEdit
 
@@ -44,7 +45,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   }
 
   @Dependency(\.ledgerDetailEditNetwork) var network
-  @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerDetailPublisher
+  @Dependency(\.updateLedgerDetailPublisher) var updateLedgerDetailPublisher
   @Dependency(\.dismiss) var dismiss
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
@@ -143,7 +144,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       return .run { _ in
         let response = try await network.saveLedger(id: id, body: body)
         let updatedLedgerID = response.ledger.id
-        updateLedgerDetailPublisher.send(ledgerID: updatedLedgerID)
+        updateLedgerDetailPublisher.updateLedgerDetail()
         await dismiss()
       }
     }

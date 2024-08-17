@@ -95,7 +95,7 @@ public struct SpecificEnvelopeEditReducer {
   }
 
   public enum DelegateAction: Equatable {
-    case tappedSaveButton
+    case tappedSaveButton(envelopeID: Int64)
   }
 
   public var body: some Reducer<State, Action> {
@@ -275,13 +275,13 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
       )
 
-      let envelopesID = state.editHelper.envelopeDetailProperty.id
+      let envelopeID = state.editHelper.envelopeDetailProperty.id
       return .run { send in
         await send(.inner(.isLoading(true)))
-        let envelopeProperty = try await network.editEnvelopes(id: envelopesID, body: envelopeRequestBody)
+        let envelopeProperty = try await network.editEnvelopes(id: envelopeID, body: envelopeRequestBody)
         UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
         await send(.inner(.isLoading(false)))
-        await send(.delegate(.tappedSaveButton))
+        await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
         await dismiss()
       }
     }
