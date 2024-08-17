@@ -48,18 +48,18 @@ extension ReceivedMainNetwork: DependencyKey {
 
     var path: String {
       switch self {
-      case .searchLedgers,
-          .searchLedger
-        :
+      case .searchLedger,
+           .searchLedgers
+           :
         "ledgers"
       }
     }
 
     var method: Moya.Method {
       switch self {
-      case .searchLedgers,
-          .searchLedger
-        :
+      case .searchLedger,
+           .searchLedgers
+           :
         .get
       }
     }
@@ -69,7 +69,7 @@ extension ReceivedMainNetwork: DependencyKey {
       case let .searchLedgers(param):
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
       case let .searchLedger(ledgerID: id):
-          .requestParameters(parameters: ["id": id], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["id": id], encoding: URLEncoding.queryString)
       }
     }
   }
@@ -122,14 +122,14 @@ extension SearchLedgersRequestParameter {
   }
 }
 
-fileprivate extension LedgerBoxProperty {
-  init(ledgerDetailResponse response : LedgerDetailResponse) {
-    self.id = response.ledger.id
-    self.categoryName = response.category.category
-    self.style = response.category.style
-    self.isMiscCategory = response.category.customCategory != nil
-    self.categoryDescription = response.ledger.description ?? ""
-    self.totalAmount = response.totalAmounts
-    self.envelopesCount = response.totalCounts
+private extension LedgerBoxProperty {
+  init(ledgerDetailResponse response: LedgerDetailResponse) {
+    id = response.ledger.id
+    categoryName = response.category.category
+    style = response.category.style
+    isMiscCategory = response.category.customCategory != nil
+    categoryDescription = response.ledger.description ?? ""
+    totalAmount = response.totalAmounts
+    envelopesCount = response.totalCounts
   }
 }

@@ -60,7 +60,7 @@ struct LedgerDetailMain {
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.updateLedgerDetailPropertyPublisher) var updateLedgerPublisher
   @Dependency(\.ledgerDetailObserver) var updateObserver
-  @Dependency(\.receivedMainObserver) var receivedMainObserver
+  @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
 
   @CasePathable
   enum Action: Equatable, FeatureAction {
@@ -167,7 +167,7 @@ struct LedgerDetailMain {
         await send(.inner(.isLoading(true)))
         try await network.deleteLedger(id: id)
         await send(.inner(.isLoading(false)))
-        receivedMainObserver.updateLedgers()
+        receivedMainUpdatePublisher.sendUpdatePage()
         await dismiss()
       }
 
@@ -323,7 +323,7 @@ struct LedgerDetailMain {
       return .none
 
     case .header(.tappedDismissButton):
-      receivedMainObserver.updateLedgers()
+//      receivedMainObserver.updateLedgers()
       return .none
     case .header:
       return .none

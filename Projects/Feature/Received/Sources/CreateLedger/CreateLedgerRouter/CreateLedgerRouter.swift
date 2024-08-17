@@ -10,6 +10,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import OSLog
+import SSNotification
 
 // MARK: - CreateLedgerRouter
 
@@ -40,7 +41,8 @@ struct CreateLedgerRouter {
   }
 
   @Dependency(\.createLedgerNetwork) var network
-  @Dependency(\.receivedMainObserver) var receivedMainObserver
+  @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
+
   func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
     case .date:
@@ -48,7 +50,7 @@ struct CreateLedgerRouter {
       return .run { _ in
         let requestData = try CreateLedgerSharedState.getRequestBodyData()
         try await network.createLedgers(requestData)
-        receivedMainObserver.updateLedgers()
+        receivedMainUpdatePublisher.sendUpdatePage()
         await dismiss()
       }
     default:

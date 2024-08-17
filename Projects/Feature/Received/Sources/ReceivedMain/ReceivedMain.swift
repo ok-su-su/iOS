@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSBottomSelectSheet
+import SSNotification
 
 // MARK: - ReceivedMain
 
@@ -55,7 +56,7 @@ struct ReceivedMain {
   public init() {}
 
   @Dependency(\.receivedMainNetwork) var network
-  @Dependency(\.receivedMainObserver) var receivedMainObserver
+  @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
 
   @CasePathable
   enum Action: FeatureAction, Equatable {
@@ -82,13 +83,16 @@ struct ReceivedMain {
   enum InnerAction: Equatable {
     case isLoading(Bool)
     case updateLedgers([LedgerBoxProperty])
+    case overwriteLedgers([LedgerBoxProperty])
     case isRefresh(Bool)
+    case deleteLedger(Int64)
   }
 
   enum AsyncAction: Equatable {
     case getLedgersInitialPage
     case getLedgers
     case ledgersNetworkTask
+    case updateLedger(Int64)
   }
 
   @CasePathable
@@ -114,14 +118,7 @@ struct ReceivedMain {
 
       return .merge(
         .send(.async(.getLedgersInitialPage)),
-        .merge(
-          .publisher {
-            receivedMainObserver
-              .updateLedgerPublisher
-              .receive(on: RunLoop.main)
-              .map { _ in .async(.getLedgersInitialPage) }
-          }
-        )
+        sinkPublisher()
       )
 
     case .tappedAddLedgerButton:
@@ -217,8 +214,21 @@ struct ReceivedMain {
       state.page += 1
       state.ledgersProperty = currentProperty
       return .none
+
     case let .isRefresh(val):
       state.isRefresh = val
+      return .none
+
+    case let .deleteLedger(ledgerID):
+      state.ledgersProperty.removeAll(where: { $0.id == ledgerID })
+      return .none
+
+    case let .overwriteLedgers(ledgers):
+      ledgers.forEach { property in
+        if let firstIndex = state.ledgersProperty.firstIndex(where: { $0.id == property.id }) {
+          state.ledgersProperty[firstIndex] = property
+        }
+      }
       return .none
     }
   }
@@ -253,6 +263,12 @@ struct ReceivedMain {
         await send(.inner(.updateLedgers(property)))
         await send(.inner(.isLoading(false)))
       }
+
+    case let .updateLedger(id):
+      return .run { send in
+        let ledgerProperty = try await network.getLedger(id: id)
+        await send(.inner(.overwriteLedgers([ledgerProperty])))
+      }
     }
   }
 
@@ -278,6 +294,28 @@ struct ReceivedMain {
       }
     }
     .addFeatures()
+  }
+}
+
+extension ReceivedMain {
+  private func sinkPublisher() -> Effect<Action> {
+    return .merge(
+      .publisher {
+        receivedMainUpdatePublisher
+          .deleteLedgerPublisher
+          .map { ledgerID in return .inner(.deleteLedger(ledgerID)) }
+      },
+      .publisher {
+        receivedMainUpdatePublisher
+          .updateLedgerPublisher
+          .map { ledgerID in return .async(.updateLedger(ledgerID)) }
+      },
+      .publisher {
+        receivedMainUpdatePublisher
+          .updatePublisher
+          .map { _ in return .async(.getLedgersInitialPage) }
+      }
+    )
   }
 }
 
