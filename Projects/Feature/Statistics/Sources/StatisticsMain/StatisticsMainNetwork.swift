@@ -15,29 +15,16 @@ import SSNetwork
 // MARK: - StatisticsMainNetwork
 
 struct StatisticsMainNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func getMyStatistics() async throws -> UserEnvelopeStatisticResponse {
-    try await provider.request(.getMyStatistics)
-  }
-
-  func getSUSUStatistics(_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse {
-    try await provider.request(.getSUSUStatistics(val))
-  }
-
-  func getRelationAndCategory() async throws -> ([RelationBottomSheetItem], [CategoryBottomSheetItem]) {
-    let data: CreateEnvelopesConfigResponse = try await provider.request(.getRelationAndCategory)
-    return (data.relationships.map { .init(description: $0.relation, id: $0.id) }, data.categories.map { .init(description: $0.name, id: $0.id) })
-  }
-
-  func getMyBirth() async throws -> Int? {
-    let dto: UserInfoResponseDTO = try await provider.request(.getMyBirth)
-    return dto.birth
-  }
+  var getMyStatistics: @Sendable () async throws -> UserEnvelopeStatisticResponse
+  var getSUSUStatistics: @Sendable (_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse
+  var getRelationAndCategory: @Sendable () async throws -> ([RelationBottomSheetItem], [CategoryBottomSheetItem])
+  var getMyBirth: @Sendable () async throws -> Int?
 }
 
 // MARK: StatisticsMainNetwork.Network
 
 extension StatisticsMainNetwork {
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   private enum Network: SSNetworkTargetType {
     case getMyStatistics
     case getSUSUStatistics(SUSUStatisticsRequestProperty)
@@ -79,7 +66,22 @@ extension StatisticsMainNetwork {
 // MARK: DependencyKey
 
 extension StatisticsMainNetwork: DependencyKey {
-  static var liveValue: StatisticsMainNetwork = .init()
+  static var liveValue: StatisticsMainNetwork = .init(
+    getMyStatistics: {
+      return try await provider.request(.getMyStatistics)
+    },
+    getSUSUStatistics: { val in
+      try await provider.request(.getSUSUStatistics(val))
+    },
+    getRelationAndCategory: {
+      let data: CreateEnvelopesConfigResponse = try await provider.request(.getRelationAndCategory)
+      return (data.relationships.map { .init(description: $0.relation, id: $0.id) }, data.categories.map { .init(description: $0.name, id: $0.id) })
+    },
+    getMyBirth: {
+      let dto: UserInfoResponseDTO = try await provider.request(.getMyBirth)
+      return dto.birth
+    }
+  )
 }
 
 extension DependencyValues {
