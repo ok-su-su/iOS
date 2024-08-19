@@ -31,19 +31,26 @@ struct CreateEnvelopeRelationView: View {
       makeTitleAndRelationButton()
     }
     .padding(.horizontal, Metrics.horizontalSpacing)
-    .padding(.bottom, Metrics.bottomSpacing)
   }
 
   @ViewBuilder
   private func makeTitleAndRelationButton() -> some View {
     ScrollView(.vertical) {
-      VStack(alignment: .leading, spacing: 34) {
-        Text(Constants.titleText)
-          .modifier(SSTypoModifier(.title_m))
-          .foregroundStyle(SSColor.gray100)
-        makeDefaultRelationButton()
+      VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 34) {
+          Text(Constants.titleText)
+            .modifier(SSTypoModifier(.title_m))
+            .foregroundStyle(SSColor.gray100)
+          makeDefaultRelationButton()
+        }
+        Spacer()
+          .frame(height: Metrics.bottomSpacing)
       }
     }
+    .scrollIndicators(.hidden)
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
+    .scrollBounceBehavior(.basedOnSize)
   }
 
   @ViewBuilder
@@ -57,6 +64,7 @@ struct CreateEnvelopeRelationView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .contentShape(Rectangle())
         .whenTapDismissKeyboard()
 
       makeContentView()
