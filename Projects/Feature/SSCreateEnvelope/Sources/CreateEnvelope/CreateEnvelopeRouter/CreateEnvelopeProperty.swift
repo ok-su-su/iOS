@@ -18,7 +18,7 @@ public struct CreateEnvelopeProperty: Equatable {
   var additionIsGiftHelper: CreateEnvelopeAdditionalIsGiftPropertyHelper = .init()
   var contactHelper: CreateEnvelopeAdditionalContactHelper = .init()
   var memoHelper: CreateEnvelopeAdditionalMemoHelper = .init()
-  init() {}
+  public init() {}
 
   /// 이름검색시 Filter되어 나타내는 봉투의 친구들을 나타내기 위해서 사용됩니다.
   var prevEnvelopes: [PrevEnvelope] = []

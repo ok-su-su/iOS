@@ -10,11 +10,15 @@ import Designsystem
 import SSToast
 import SwiftUI
 
-struct CreateEnvelopeAdditionalIsGiftView: View {
+public struct CreateEnvelopeAdditionalIsGiftView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalIsGift>
+  public init(store: StoreOf<CreateEnvelopeAdditionalIsGift>) {
+    self.store = store
+  }
+
   @FocusState
   var focus
 
@@ -46,7 +50,7 @@ struct CreateEnvelopeAdditionalIsGiftView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

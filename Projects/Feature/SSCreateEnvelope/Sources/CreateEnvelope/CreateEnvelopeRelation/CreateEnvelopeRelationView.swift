@@ -11,13 +11,16 @@ import SSSelectableItems
 import SSToast
 import SwiftUI
 
-struct CreateEnvelopeRelationView: View {
+public struct CreateEnvelopeRelationView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeRelation>
+  public init(store: StoreOf<CreateEnvelopeRelation>) {
+    self.store = store
+  }
 
-  @State var keyBoardShow: Bool = false
+  @State private var keyBoardShow: Bool = false
 
   // MARK: Content
 
@@ -60,7 +63,7 @@ struct CreateEnvelopeRelationView: View {
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

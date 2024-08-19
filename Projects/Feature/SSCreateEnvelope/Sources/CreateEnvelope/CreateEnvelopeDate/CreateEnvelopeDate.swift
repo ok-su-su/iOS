@@ -13,9 +13,9 @@ import SSBottomSelectSheet
 // MARK: - CreateEnvelopeDate
 
 @Reducer
-struct CreateEnvelopeDate {
+public struct CreateEnvelopeDate {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     @Shared var selectedDate: Date
@@ -41,7 +41,7 @@ struct CreateEnvelopeDate {
       !isInitialStateOfDate
     }
 
-    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       _selectedDate = .init(.now)
       _isInitialStateOfDate = .init(true)
@@ -54,7 +54,7 @@ struct CreateEnvelopeDate {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -62,28 +62,28 @@ struct CreateEnvelopeDate {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedNextButton
     case tappedDateSheet
     case tappedDatePickerNextButton
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case push
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
   @Dependency(\.dismiss) var dismiss
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):

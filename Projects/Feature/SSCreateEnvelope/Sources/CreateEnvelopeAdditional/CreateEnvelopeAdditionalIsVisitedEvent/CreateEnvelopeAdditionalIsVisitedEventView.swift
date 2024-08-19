@@ -10,11 +10,15 @@ import Designsystem
 import SSSelectableItems
 import SwiftUI
 
-struct CreateEnvelopeAdditionalIsVisitedEventView: View {
+public struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalIsVisitedEvent>
+
+  init(store: StoreOf<CreateEnvelopeAdditionalIsVisitedEvent>) {
+    self.store = store
+  }
 
   // MARK: Content
 
@@ -47,7 +51,7 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

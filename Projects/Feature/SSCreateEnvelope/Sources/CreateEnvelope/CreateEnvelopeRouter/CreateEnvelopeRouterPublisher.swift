@@ -35,13 +35,13 @@ public enum CreateEnvelopePath {
   case createEnvelopePrice(CreateEnvelopePrice)
   case createEnvelopeName(CreateEnvelopeName)
   case createEnvelopeRelation(CreateEnvelopeRelation)
-//  case createEnvelopeEvent(CreateEnvelopeEvent)
-//  case createEnvelopeDate(CreateEnvelopeDate)
-//  case createEnvelopeAdditionalSection(CreateEnvelopeAdditionalSection)
-//  case createEnvelopeAdditionalMemo(CreateEnvelopeAdditionalMemo)
-//  case createEnvelopeAdditionalContact(CreateEnvelopeAdditionalContact)
-//  case createEnvelopeAdditionalIsGift(CreateEnvelopeAdditionalIsGift)
-//  case createEnvelopeAdditionalIsVisitedEvent(CreateEnvelopeAdditionalIsVisitedEvent)
+  case createEnvelopeEvent(CreateEnvelopeEvent)
+  case createEnvelopeDate(CreateEnvelopeDate)
+  case createEnvelopeAdditionalSection(CreateEnvelopeAdditionalSection)
+  case createEnvelopeAdditionalMemo(CreateEnvelopeAdditionalMemo)
+  case createEnvelopeAdditionalContact(CreateEnvelopeAdditionalContact)
+  case createEnvelopeAdditionalIsGift(CreateEnvelopeAdditionalIsGift)
+  case createEnvelopeAdditionalIsVisitedEvent(CreateEnvelopeAdditionalIsVisitedEvent)
 }
 
 // MARK: - CreateEnvelopeRouterPublisher

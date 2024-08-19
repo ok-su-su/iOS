@@ -11,18 +11,18 @@ import SSSelectableItems
 
 // MARK: - CreateEnvelopeAdditionalIsVisitedEventProperty
 
-struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, SSSelectableItemable {
-  var id: Int
+public struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, SSSelectableItemable {
+  public var id: Int
 
-  var title: String
-  mutating func setTitle(_: String) {
+  public var title: String
+  public mutating func setTitle(_: String) {
     return
   }
 }
 
 // MARK: - CreateEnvelopeAdditionalIsVisitedEventHelper
 
-struct CreateEnvelopeAdditionalIsVisitedEventHelper: Equatable {
+public struct CreateEnvelopeAdditionalIsVisitedEventHelper: Equatable {
   var items: [CreateEnvelopeAdditionalIsVisitedEventProperty] = [
     .init(id: 0, title: "예"),
     .init(id: 1, title: "아니오"),

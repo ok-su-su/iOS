@@ -10,11 +10,15 @@ import Designsystem
 import SSSelectableItems
 import SwiftUI
 
-struct CreateEnvelopeAdditionalSectionView: View {
+public struct CreateEnvelopeAdditionalSectionView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalSection>
+
+  public init(store: StoreOf<CreateEnvelopeAdditionalSection>) {
+    self.store = store
+  }
 
   // MARK: Content
 
@@ -63,7 +67,7 @@ struct CreateEnvelopeAdditionalSectionView: View {
   @ViewBuilder
   private func makeAddCustomRelation() -> some View {}
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

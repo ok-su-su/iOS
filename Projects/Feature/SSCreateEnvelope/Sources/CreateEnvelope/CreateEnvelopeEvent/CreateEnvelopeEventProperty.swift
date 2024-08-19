@@ -11,11 +11,11 @@ import SSSelectableItems
 
 // MARK: - CreateEnvelopeEventProperty
 
-struct CreateEnvelopeEventProperty: Equatable, Identifiable, SSSelectableItemable {
-  var id: Int
-  var title: String
+public struct CreateEnvelopeEventProperty: Equatable, Identifiable, SSSelectableItemable {
+  public var id: Int
+  public var title: String
 
-  mutating func setTitle(_ val: String) {
+  public mutating func setTitle(_ val: String) {
     title = val
   }
 

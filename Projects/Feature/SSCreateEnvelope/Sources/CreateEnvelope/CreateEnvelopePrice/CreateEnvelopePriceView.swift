@@ -21,6 +21,11 @@ public struct CreateEnvelopePriceView: View {
   @Bindable
   var store: StoreOf<CreateEnvelopePrice>
 
+  public init(store: StoreOf<CreateEnvelopePrice>) {
+    self.store = store
+    isFocused = isFocused
+  }
+
   @FocusState
   var isFocused: Bool
 
