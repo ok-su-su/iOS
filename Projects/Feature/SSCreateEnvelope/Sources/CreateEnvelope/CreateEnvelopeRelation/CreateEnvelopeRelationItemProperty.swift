@@ -47,16 +47,16 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
 // MARK: - CreateEnvelopeRelationItemProperty
 
-struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
-  var id: Int
-  var title: String
+public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
+  public var id: Int
+  public var title: String
 
   init(id: Int, title: String) {
     self.id = id
     self.title = title
   }
 
-  mutating func setTitle(_ val: String) {
+  public mutating func setTitle(_ val: String) {
     title = val
   }
 }

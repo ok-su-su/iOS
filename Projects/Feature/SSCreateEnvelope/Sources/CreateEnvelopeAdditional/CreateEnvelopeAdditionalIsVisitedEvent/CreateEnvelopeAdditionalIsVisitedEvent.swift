@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSSelectableItems
 
 @Reducer
 struct CreateEnvelopeAdditionalIsVisitedEvent {
@@ -17,7 +18,7 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     var pushable = false
     @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
 
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
     var eventName = CreateEnvelopeRequestShared.getEvent()
 
     init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
@@ -56,14 +57,14 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
   }
 
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>()
+      SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>()
     }
     Reduce { state, action in
       switch action {

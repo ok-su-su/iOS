@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSSelectableItems
 
 @Reducer
 struct CreateEnvelopeAdditionalSection {
@@ -15,7 +16,7 @@ struct CreateEnvelopeAdditionalSection {
   struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.State
     var pushable: Bool = true
 
     init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
@@ -49,7 +50,7 @@ struct CreateEnvelopeAdditionalSection {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -57,7 +58,7 @@ struct CreateEnvelopeAdditionalSection {
   var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
-      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
+      SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
     }
     Reduce { _, action in
       switch action {

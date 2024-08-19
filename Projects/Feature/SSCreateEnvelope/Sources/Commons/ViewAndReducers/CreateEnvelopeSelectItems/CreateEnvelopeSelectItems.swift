@@ -6,5 +6,3 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import SSSelectableItems
-
-typealias CreateEnvelopeSelectItems = SSSelectableItemsReducer

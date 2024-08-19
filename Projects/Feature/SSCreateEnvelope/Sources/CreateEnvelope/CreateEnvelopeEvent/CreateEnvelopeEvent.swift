@@ -9,6 +9,7 @@ import ComposableArchitecture
 import FeatureAction
 import Foundation
 import SSRegexManager
+import SSSelectableItems
 import SSToast
 
 // MARK: - CreateEnvelopeEvent
@@ -19,7 +20,7 @@ struct CreateEnvelopeEvent {
   struct State: Equatable {
     var isOnAppear = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeEventProperty>.State
     var isLoading = false
     var pushable = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
@@ -117,7 +118,7 @@ struct CreateEnvelopeEvent {
 
   @CasePathable
   enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>.Action)
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeEventProperty>.Action)
     case toast(SSToastReducer.Action)
   }
 
@@ -146,7 +147,7 @@ struct CreateEnvelopeEvent {
 
   var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      CreateEnvelopeSelectItems<CreateEnvelopeEventProperty>(multipleSelectionCount: 1)
+      SSSelectableItemsReducer<CreateEnvelopeEventProperty>(multipleSelectionCount: 1)
     }
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()

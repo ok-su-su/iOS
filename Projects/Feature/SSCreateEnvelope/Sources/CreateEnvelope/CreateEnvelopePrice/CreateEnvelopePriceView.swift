@@ -15,7 +15,7 @@ import UIKit
 
 // MARK: - CreateEnvelopePriceView
 
-struct CreateEnvelopePriceView: View {
+public struct CreateEnvelopePriceView: View {
   // MARK: Reducer
 
   @Bindable
@@ -112,7 +112,7 @@ struct CreateEnvelopePriceView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15
