@@ -22,17 +22,13 @@ struct CreateEnvelopeEventView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    ScrollView(.vertical) {
-      VStack(alignment: .leading, spacing: 0) {
-        Spacer()
-          .frame(height: 24)
+    VStack(alignment: .leading, spacing: 0) {
+      Spacer()
+        .frame(height: 24)
 
-        makeTitleAndButtonView()
-      }
-      .padding(.horizontal, Metrics.horizontalSpacing)
-      .padding(.bottom, Metrics.bottomSpacing)
+      makeTitleAndButtonView()
     }
-    .scrollBounceBehavior(.basedOnSize)
+    .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
   @ViewBuilder
