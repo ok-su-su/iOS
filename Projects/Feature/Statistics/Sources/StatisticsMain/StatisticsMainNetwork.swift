@@ -7,13 +7,14 @@
 //
 
 import Dependencies
+import DependenciesMacros
 import Foundation
 import Moya
 import SSInterceptor
 import SSNetwork
 
 // MARK: - StatisticsMainNetwork
-
+@DependencyClient
 struct StatisticsMainNetwork {
   var getMyStatistics: @Sendable () async throws -> UserEnvelopeStatisticResponse
   var getSUSUStatistics: @Sendable (_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse
