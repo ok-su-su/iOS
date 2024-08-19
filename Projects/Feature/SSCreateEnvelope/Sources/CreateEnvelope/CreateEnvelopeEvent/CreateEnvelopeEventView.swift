@@ -23,19 +23,11 @@ struct CreateEnvelopeEventView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
-      VStack(alignment: .leading, spacing: 34) {
+      VStack(alignment: .leading, spacing: 0) {
         Spacer()
-          .frame(height: 1)
+          .frame(height: 24)
 
-        // MARK: - TextFieldTitleView
-
-        Text(Constants.titleText)
-          .modifier(SSTypoModifier(.title_m))
-          .foregroundStyle(SSColor.gray100)
-
-        // MARK: - Buttons
-
-        makeItem()
+        makeTitleAndButtonView()
       }
       .padding(.horizontal, Metrics.horizontalSpacing)
       .padding(.bottom, Metrics.bottomSpacing)
@@ -44,13 +36,31 @@ struct CreateEnvelopeEventView: View {
   }
 
   @ViewBuilder
+  private func makeTitleAndButtonView() -> some View {
+    ScrollView(.vertical) {
+      VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 34) {
+          Text(Constants.titleText)
+            .modifier(SSTypoModifier(.title_m))
+            .foregroundStyle(SSColor.gray100)
+
+          makeItem()
+        }
+        Spacer()
+          .frame(height: Metrics.bottomSpacing)
+      }
+    }
+    .scrollIndicators(.hidden)
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
+    .scrollBounceBehavior(.basedOnSize)
+  }
+
+  @ViewBuilder
   private func makeItem() -> some View {
     CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
-
-  @ViewBuilder
-  private func makeAddCustomRelation() -> some View {}
 
   var body: some View {
     ZStack {

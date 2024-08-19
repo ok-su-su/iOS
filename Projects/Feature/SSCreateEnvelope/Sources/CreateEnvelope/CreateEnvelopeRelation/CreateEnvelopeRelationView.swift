@@ -41,7 +41,6 @@ struct CreateEnvelopeRelationView: View {
           Text(Constants.titleText)
             .modifier(SSTypoModifier(.title_m))
             .foregroundStyle(SSColor.gray100)
-
           makeDefaultRelationButton()
         }
         Spacer()
