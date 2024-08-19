@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSSelectableItems
 
 // MARK: - CreateEnvelopeAdditionalSectionHelper
 
@@ -77,7 +78,7 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
 
 // MARK: - CreateEnvelopeAdditionalSectionProperty
 
-struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
+struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, SSSelectableItemable {
   var id: Int {
     return type.id
   }

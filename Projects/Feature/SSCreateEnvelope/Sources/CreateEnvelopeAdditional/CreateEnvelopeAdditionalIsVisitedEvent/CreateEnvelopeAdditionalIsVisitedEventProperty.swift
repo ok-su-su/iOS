@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import SSSelectableItems
 
 // MARK: - CreateEnvelopeAdditionalIsVisitedEventProperty
 
-struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
+struct CreateEnvelopeAdditionalIsVisitedEventProperty: Equatable, Identifiable, SSSelectableItemable {
   var id: Int
 
   var title: String

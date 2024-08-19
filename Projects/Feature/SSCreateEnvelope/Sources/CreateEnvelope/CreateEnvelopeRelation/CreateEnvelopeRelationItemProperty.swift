@@ -47,7 +47,7 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
 // MARK: - CreateEnvelopeRelationItemProperty
 
-public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, CreateEnvelopeSelectItemable {
+public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, SSSelectableItemable {
   public var id: Int
   public var title: String
 

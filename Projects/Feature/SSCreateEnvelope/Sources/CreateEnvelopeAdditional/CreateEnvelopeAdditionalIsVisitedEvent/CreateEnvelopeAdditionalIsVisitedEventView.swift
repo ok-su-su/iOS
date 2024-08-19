@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SwiftUI
 
 struct CreateEnvelopeAdditionalIsVisitedEventView: View {
@@ -19,7 +20,7 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
 
   @ViewBuilder
   private func makeDefaultItems() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
   }
 
   @ViewBuilder

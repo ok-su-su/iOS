@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SSToast
 import SwiftUI
 
@@ -54,7 +55,7 @@ struct CreateEnvelopeEventView: View {
 
   @ViewBuilder
   private func makeItem() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 

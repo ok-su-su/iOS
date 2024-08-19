@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SSToast
 import SwiftUI
 
@@ -55,7 +56,7 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeDefaultRelationButton() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
