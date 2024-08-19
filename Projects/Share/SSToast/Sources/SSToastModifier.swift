@@ -20,6 +20,7 @@ public struct SSToastModifier: ViewModifier {
       .overlay(alignment: .bottom) {
         SSToastView(store: toastStore)
           .padding(.horizontal, 24)
+          .padding(.bottom, 24)
       }
   }
 
