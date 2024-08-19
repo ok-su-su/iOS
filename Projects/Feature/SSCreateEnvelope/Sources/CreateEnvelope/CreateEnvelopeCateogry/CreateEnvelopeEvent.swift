@@ -12,15 +12,15 @@ import SSRegexManager
 import SSSelectableItems
 import SSToast
 
-// MARK: - CreateEnvelopeEvent
+// MARK: - CreateEnvelopeCategory
 
 @Reducer
-public struct CreateEnvelopeEvent {
+public struct CreateEnvelopeCategory {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
-    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeEventProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>.State
     var isLoading = false
     var pushable = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
@@ -71,7 +71,7 @@ public struct CreateEnvelopeEvent {
   public enum InnerAction: Equatable {
     case push
     case isLoading(Bool)
-    case update([CreateEnvelopeEventProperty])
+    case update([CreateEnvelopeCategoryProperty])
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
@@ -118,7 +118,7 @@ public struct CreateEnvelopeEvent {
 
   @CasePathable
   public enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeEventProperty>.Action)
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>.Action)
     case toast(SSToastReducer.Action)
   }
 
@@ -147,7 +147,7 @@ public struct CreateEnvelopeEvent {
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      SSSelectableItemsReducer<CreateEnvelopeEventProperty>(multipleSelectionCount: 1)
+      SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>(multipleSelectionCount: 1)
     }
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
@@ -173,4 +173,4 @@ public struct CreateEnvelopeEvent {
 
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureAsyncAction, FeatureInnerAction
 
-extension CreateEnvelopeEvent {}
+extension CreateEnvelopeCategory {}

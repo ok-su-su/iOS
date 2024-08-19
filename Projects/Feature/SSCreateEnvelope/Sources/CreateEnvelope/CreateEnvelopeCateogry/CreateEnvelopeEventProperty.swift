@@ -9,9 +9,9 @@
 import Foundation
 import SSSelectableItems
 
-// MARK: - CreateEnvelopeEventProperty
+// MARK: - CreateEnvelopeCategoryProperty
 
-public struct CreateEnvelopeEventProperty: Equatable, Identifiable, SSSelectableItemable {
+public struct CreateEnvelopeCategoryProperty: Equatable, Identifiable, SSSelectableItemable {
   public var id: Int
   public var title: String
 
@@ -25,14 +25,14 @@ public struct CreateEnvelopeEventProperty: Equatable, Identifiable, SSSelectable
   }
 }
 
-// MARK: - CreateEnvelopeEventPropertyHelper
+// MARK: - CreateEnvelopeCategoryPropertyHelper
 
-struct CreateEnvelopeEventPropertyHelper: Equatable {
+struct CreateEnvelopeCategoryPropertyHelper: Equatable {
   var selectedID: [Int] = []
   private var defaultEventStrings: [String] = []
-  var defaultEvent: [CreateEnvelopeEventProperty] = []
+  var defaultEvent: [CreateEnvelopeCategoryProperty] = []
 
-  var customEvent: CreateEnvelopeEventProperty? = nil
+  var customEvent: CreateEnvelopeCategoryProperty? = nil
 
   func getSelectedItemID() -> Int? {
     selectedID.first
@@ -60,7 +60,7 @@ struct CreateEnvelopeEventPropertyHelper: Equatable {
   }
 
   /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
-  mutating func updateItems(_ items: [CreateEnvelopeEventProperty]) {
+  mutating func updateItems(_ items: [CreateEnvelopeCategoryProperty]) {
     var items = items
     guard let customItemID = items.popLast()?.id else {
       return

@@ -14,6 +14,7 @@ import SSInterceptor
 import SSNetwork
 
 // MARK: - StatisticsMainNetwork
+
 @DependencyClient
 struct StatisticsMainNetwork {
   var getMyStatistics: @Sendable () async throws -> UserEnvelopeStatisticResponse

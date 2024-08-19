@@ -21,7 +21,7 @@ struct CreateEnvelopeRouter {
   struct State: Equatable {
     var type: CreateType
     var isOnAppear = false
-    var path = StackState<PathDestination.State>()
+    var path = StackState<CreateEnvelopePath.State>()
     var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
     var dismiss = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
@@ -40,14 +40,14 @@ struct CreateEnvelopeRouter {
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case path(StackActionOf<PathDestination>)
+    case path(StackActionOf<CreateEnvelopePath>)
     case header(HeaderViewFeature.Action)
-    case push(PathDestination.State)
+    case push(CreateEnvelopePath.State)
     case pushAdditionalScreen(AdditionalScreen)
     case pushCreateEnvelopeAdditional
     case changeProgress
     case createPrice(CreateEnvelopePrice.Action)
-    case screenEnded(PathDestination.State)
+    case screenEnded(CreateEnvelopePath.State)
     case dismiss(Bool)
     case updateDismissData(Data)
     case isLoading(Bool)
@@ -62,11 +62,9 @@ struct CreateEnvelopeRouter {
 
   @Dependency(\.mainQueue) var mainQueue
 
-  init() {
-    // TODO...
-  }
+  init() {}
 
-  func endedScreenHandler(_ pathState: PathDestination.State, state: State) -> Effect<Action> {
+  func endedScreenHandler(_ pathState: CreateEnvelopePath.State, state: State) -> Effect<Action> {
     switch pathState {
     // SENT or RECEIVED에 따라서 접근하는 화면 분기가 달라야 함.
     case .createEnvelopeRelation:
@@ -235,24 +233,5 @@ struct CreateEnvelopeRouter {
 extension Reducer where State == CreateEnvelopeRouter.State, Action == CreateEnvelopeRouter.Action {
   func addFeatures() -> some ReducerOf<Self> {
     forEach(\.path, action: \.path)
-  }
-}
-
-// MARK: - CreateEnvelopeRouter.Path
-
-extension CreateEnvelopeRouter {
-  @CasePathable
-  @Reducer(state: .equatable, action: .equatable)
-  enum Path {
-    case createEnvelopePrice(CreateEnvelopePrice)
-    case createEnvelopeName(CreateEnvelopeName)
-    case createEnvelopeRelation(CreateEnvelopeRelation)
-    case createEnvelopeEvent(CreateEnvelopeEvent)
-    case createEnvelopeDate(CreateEnvelopeDate)
-    case createEnvelopeAdditionalSection(CreateEnvelopeAdditionalSection)
-    case createEnvelopeAdditionalMemo(CreateEnvelopeAdditionalMemo)
-    case createEnvelopeAdditionalContact(CreateEnvelopeAdditionalContact)
-    case createEnvelopeAdditionalIsGift(CreateEnvelopeAdditionalIsGift)
-    case createEnvelopeAdditionalIsVisitedEvent(CreateEnvelopeAdditionalIsVisitedEvent)
   }
 }

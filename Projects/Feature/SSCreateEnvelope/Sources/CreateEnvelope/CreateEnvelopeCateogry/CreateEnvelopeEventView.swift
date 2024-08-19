@@ -11,13 +11,13 @@ import SSSelectableItems
 import SSToast
 import SwiftUI
 
-public struct CreateEnvelopeEventView: View {
+public struct CreateEnvelopeCategoryView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<CreateEnvelopeEvent>
+  var store: StoreOf<CreateEnvelopeCategory>
 
-  public init(store: StoreOf<CreateEnvelopeEvent>) {
+  public init(store: StoreOf<CreateEnvelopeCategory>) {
     self.store = store
     keyBoardShow = keyBoardShow
   }

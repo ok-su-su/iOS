@@ -13,7 +13,7 @@ import Foundation
 public struct CreateEnvelopeProperty: Equatable {
   var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
   var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
-  var eventHelper: CreateEnvelopeEventPropertyHelper = .init()
+  var eventHelper: CreateEnvelopeCategoryPropertyHelper = .init()
   var isVisitedHelper: CreateEnvelopeAdditionalIsVisitedEventHelper = .init()
   var additionIsGiftHelper: CreateEnvelopeAdditionalIsGiftPropertyHelper = .init()
   var contactHelper: CreateEnvelopeAdditionalContactHelper = .init()
