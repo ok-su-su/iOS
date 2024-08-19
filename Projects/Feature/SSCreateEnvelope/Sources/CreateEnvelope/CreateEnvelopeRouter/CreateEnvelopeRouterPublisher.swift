@@ -14,24 +14,7 @@ import Foundation
 
 @CasePathable
 @Reducer(state: .equatable, action: .equatable)
-enum PathDestination {
-  case createEnvelopePrice(CreateEnvelopePrice)
-  case createEnvelopeName(CreateEnvelopeName)
-  case createEnvelopeRelation(CreateEnvelopeRelation)
-  case createEnvelopeEvent(CreateEnvelopeEvent)
-  case createEnvelopeDate(CreateEnvelopeDate)
-  case createEnvelopeAdditionalSection(CreateEnvelopeAdditionalSection)
-  case createEnvelopeAdditionalMemo(CreateEnvelopeAdditionalMemo)
-  case createEnvelopeAdditionalContact(CreateEnvelopeAdditionalContact)
-  case createEnvelopeAdditionalIsGift(CreateEnvelopeAdditionalIsGift)
-  case createEnvelopeAdditionalIsVisitedEvent(CreateEnvelopeAdditionalIsVisitedEvent)
-}
-
-// MARK: - CreateEnvelopePath
-
-@CasePathable
-@Reducer(state: .equatable, action: .equatable)
-public enum CreateEnvelopePath {
+public enum PathDestination {
   case createEnvelopePrice(CreateEnvelopePrice)
   case createEnvelopeName(CreateEnvelopeName)
   case createEnvelopeRelation(CreateEnvelopeRelation)
