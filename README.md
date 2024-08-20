@@ -47,7 +47,9 @@
 
 ### TCA + With SUSU (View and Reducer)
 
-![image](https://github.com/user-attachments/assets/f82105a6-f2fb-421d-95ae-c30d8f08e26d)
+
+![image](https://github.com/user-attachments/assets/3815d5c4-c1af-4b47-90c7-d5a7f3ab1a82)
+
 
 <br/><br/>
 
