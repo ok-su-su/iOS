@@ -7,14 +7,20 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SSToast
 import SwiftUI
 
-struct CreateEnvelopeEventView: View {
+public struct CreateEnvelopeCategoryView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<CreateEnvelopeEvent>
+  var store: StoreOf<CreateEnvelopeCategory>
+
+  public init(store: StoreOf<CreateEnvelopeCategory>) {
+    self.store = store
+    keyBoardShow = keyBoardShow
+  }
 
   @State var keyBoardShow: Bool = false
 
@@ -54,11 +60,11 @@ struct CreateEnvelopeEventView: View {
 
   @ViewBuilder
   private func makeItem() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

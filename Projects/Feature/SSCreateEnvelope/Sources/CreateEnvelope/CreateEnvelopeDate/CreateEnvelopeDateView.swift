@@ -10,11 +10,15 @@ import Designsystem
 import SSBottomSelectSheet
 import SwiftUI
 
-struct CreateEnvelopeDateView: View {
+public struct CreateEnvelopeDateView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeDate>
+
+  public init(store: StoreOf<CreateEnvelopeDate>) {
+    self.store = store
+  }
 
   // MARK: Content
 
@@ -75,7 +79,7 @@ struct CreateEnvelopeDateView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

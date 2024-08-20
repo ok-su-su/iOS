@@ -8,16 +8,17 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSSelectableItems
 
 @Reducer
-struct CreateEnvelopeAdditionalIsVisitedEvent {
+public struct CreateEnvelopeAdditionalIsVisitedEvent {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     var pushable = false
     @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
 
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
     var eventName = CreateEnvelopeRequestShared.getEvent()
 
     init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
@@ -35,7 +36,7 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -43,27 +44,27 @@ struct CreateEnvelopeAdditionalIsVisitedEvent {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case push
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
+  public enum ScopeAction: Equatable {
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalIsVisitedEventProperty>()
+      SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>()
     }
     Reduce { state, action in
       switch action {

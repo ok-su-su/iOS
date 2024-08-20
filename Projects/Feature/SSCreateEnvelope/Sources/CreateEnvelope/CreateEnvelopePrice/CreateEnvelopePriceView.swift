@@ -15,11 +15,16 @@ import UIKit
 
 // MARK: - CreateEnvelopePriceView
 
-struct CreateEnvelopePriceView: View {
+public struct CreateEnvelopePriceView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopePrice>
+
+  public init(store: StoreOf<CreateEnvelopePrice>) {
+    self.store = store
+    isFocused = isFocused
+  }
 
   @FocusState
   var isFocused: Bool
@@ -112,7 +117,7 @@ struct CreateEnvelopePriceView: View {
     .padding(.horizontal, Metrics.horizontalSpacing)
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

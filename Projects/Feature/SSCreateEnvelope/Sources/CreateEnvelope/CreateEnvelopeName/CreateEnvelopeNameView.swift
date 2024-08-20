@@ -9,7 +9,9 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-struct CreateEnvelopeNameView: View {
+// MARK: - CreateEnvelopeNameView
+
+public struct CreateEnvelopeNameView: View {
   // MARK: Reducer
 
   @FocusState
@@ -107,7 +109,7 @@ struct CreateEnvelopeNameView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

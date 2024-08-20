@@ -38,7 +38,7 @@ struct CreateEnvelopeRouterView: View {
       case let .createEnvelopeRelation(store):
         CreateEnvelopeRelationView(store: store)
       case let .createEnvelopeEvent(store):
-        CreateEnvelopeEventView(store: store)
+        CreateEnvelopeCategoryView(store: store)
       case let .createEnvelopeDate(store):
         CreateEnvelopeDateView(store: store)
       case let .createEnvelopeAdditionalSection(store):

@@ -8,17 +8,18 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSSelectableItems
 
 @Reducer
-struct CreateEnvelopeAdditionalSection {
+public struct CreateEnvelopeAdditionalSection {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.State
     var pushable: Bool = true
 
-    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
@@ -28,7 +29,7 @@ struct CreateEnvelopeAdditionalSection {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -36,28 +37,28 @@ struct CreateEnvelopeAdditionalSection {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case push
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>.Action)
+  public enum ScopeAction: Equatable {
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
-      CreateEnvelopeSelectItems<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
+      SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
     }
     Reduce { _, action in
       switch action {

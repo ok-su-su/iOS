@@ -7,16 +7,20 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SSToast
 import SwiftUI
 
-struct CreateEnvelopeRelationView: View {
+public struct CreateEnvelopeRelationView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeRelation>
+  public init(store: StoreOf<CreateEnvelopeRelation>) {
+    self.store = store
+  }
 
-  @State var keyBoardShow: Bool = false
+  @State private var keyBoardShow: Bool = false
 
   // MARK: Content
 
@@ -55,11 +59,11 @@ struct CreateEnvelopeRelationView: View {
 
   @ViewBuilder
   private func makeDefaultRelationButton() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
       .modifier(SSLoadingModifier(isLoading: store.isLoading))
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

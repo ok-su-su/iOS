@@ -10,15 +10,15 @@ import Foundation
 
 // MARK: - CreateEnvelopeProperty
 
-struct CreateEnvelopeProperty: Equatable {
+public struct CreateEnvelopeProperty: Equatable {
   var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
   var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
-  var eventHelper: CreateEnvelopeEventPropertyHelper = .init()
+  var eventHelper: CreateEnvelopeCategoryPropertyHelper = .init()
   var isVisitedHelper: CreateEnvelopeAdditionalIsVisitedEventHelper = .init()
   var additionIsGiftHelper: CreateEnvelopeAdditionalIsGiftPropertyHelper = .init()
   var contactHelper: CreateEnvelopeAdditionalContactHelper = .init()
   var memoHelper: CreateEnvelopeAdditionalMemoHelper = .init()
-  init() {}
+  public init() {}
 
   /// 이름검색시 Filter되어 나타내는 봉투의 친구들을 나타내기 위해서 사용됩니다.
   var prevEnvelopes: [PrevEnvelope] = []
@@ -39,7 +39,7 @@ struct CreateEnvelopeProperty: Equatable {
 // MARK: - PrevEnvelope
 
 // TODO: - change DTO
-struct PrevEnvelope: Equatable, Hashable {
+public struct PrevEnvelope: Equatable, Hashable {
   let name: String
   let relationShip: String
   let eventName: String?

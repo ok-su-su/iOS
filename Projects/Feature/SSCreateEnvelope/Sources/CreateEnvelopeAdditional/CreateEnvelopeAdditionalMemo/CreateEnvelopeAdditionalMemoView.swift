@@ -10,11 +10,16 @@ import Designsystem
 import SSToast
 import SwiftUI
 
-struct CreateEnvelopeAdditionalMemoView: View {
+public struct CreateEnvelopeAdditionalMemoView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalMemo>
+
+  init(store: StoreOf<CreateEnvelopeAdditionalMemo>) {
+    self.store = store
+  }
+
   @FocusState var focus
 
   // MARK: Content
@@ -46,7 +51,7 @@ struct CreateEnvelopeAdditionalMemoView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15

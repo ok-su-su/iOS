@@ -9,18 +9,19 @@ import ComposableArchitecture
 import FeatureAction
 import Foundation
 import SSRegexManager
+import SSSelectableItems
 import SSToast
 
 // MARK: - CreateEnvelopeRelation
 
 @Reducer
-struct CreateEnvelopeRelation {
+public struct CreateEnvelopeRelation {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     var isLoading = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
-    var createEnvelopeSelectionItems: CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.State
+    var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>.State
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
@@ -42,7 +43,7 @@ struct CreateEnvelopeRelation {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -50,12 +51,12 @@ struct CreateEnvelopeRelation {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+  public func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -74,7 +75,7 @@ struct CreateEnvelopeRelation {
     }
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case push
     case isLoading(Bool)
     case update([CreateEnvelopeRelationItemProperty])
@@ -106,11 +107,11 @@ struct CreateEnvelopeRelation {
     }
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
-    case createEnvelopeSelectionItems(CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>.Action)
+  public enum ScopeAction: Equatable {
+    case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>.Action)
     case toast(SSToastReducer.Action)
   }
 
@@ -133,16 +134,16 @@ struct CreateEnvelopeRelation {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
   @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
     }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      CreateEnvelopeSelectItems<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
+      SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
     }
     Reduce { state, action in
       switch action {
@@ -159,4 +160,4 @@ struct CreateEnvelopeRelation {
 
 // MARK: FeatureViewAction, FeatureScopeAction, FeatureInnerAction
 
-extension CreateEnvelopeRelation: FeatureViewAction, FeatureScopeAction, FeatureInnerAction {}
+extension CreateEnvelopeRelation {}

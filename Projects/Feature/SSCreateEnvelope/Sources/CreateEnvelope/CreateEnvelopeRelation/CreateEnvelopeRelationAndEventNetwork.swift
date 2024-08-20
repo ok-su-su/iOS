@@ -35,7 +35,7 @@ struct CreateEnvelopeRelationAndEventNetwork: DependencyKey, Equatable {
     return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
   }
 
-  func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
+  func getEventItems() async throws -> [CreateEnvelopeCategoryProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
     return dto.categories.map { .init(id: $0.id, title: $0.name) }
   }

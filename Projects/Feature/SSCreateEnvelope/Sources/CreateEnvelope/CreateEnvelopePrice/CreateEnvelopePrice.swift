@@ -17,9 +17,9 @@ import SSToast
 // MARK: - CreateEnvelopePrice
 
 @Reducer
-struct CreateEnvelopePrice {
+public struct CreateEnvelopePrice {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var subscriptions: Set<AnyCancellable> = .init()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
@@ -48,7 +48,7 @@ struct CreateEnvelopePrice {
     }
   }
 
-  enum Action: Equatable, FeatureAction, BindableAction {
+  public enum Action: Equatable, FeatureAction, BindableAction {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
@@ -58,7 +58,7 @@ struct CreateEnvelopePrice {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedGuidValue(Int64)
     case changeText(String)
@@ -91,7 +91,7 @@ struct CreateEnvelopePrice {
     }
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case convertPrice(String)
     case push
     case addPrice(Int64)
@@ -122,18 +122,18 @@ struct CreateEnvelopePrice {
     }
   }
 
-  enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable {
     case toast(SSToastReducer.Action)
   }
 
-  enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable {
     case dismissCreateFlow
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
 
     Scope(state: \.toast, action: \.scope.toast) {
@@ -160,4 +160,4 @@ struct CreateEnvelopePrice {
 
 // MARK: FeatureViewAction, FeatureInnerAction
 
-extension CreateEnvelopePrice: FeatureViewAction, FeatureInnerAction {}
+extension CreateEnvelopePrice {}

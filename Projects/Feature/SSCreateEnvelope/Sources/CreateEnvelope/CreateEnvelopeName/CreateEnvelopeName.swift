@@ -16,9 +16,9 @@ import SSToast
 // MARK: - CreateEnvelopeName
 
 @Reducer
-struct CreateEnvelopeName {
+public struct CreateEnvelopeName {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var isOnAppear = false
     var textFieldText: String = ""
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
@@ -32,12 +32,12 @@ struct CreateEnvelopeName {
       return textFieldText == "" ? createEnvelopeProperty.prevEnvelopes : createEnvelopeProperty.filteredName(textFieldText)
     }
 
-    init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -46,14 +46,14 @@ struct CreateEnvelopeName {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  public enum ViewAction: Equatable {
     case onAppear(Bool)
     case tappedFilterItem(name: String)
     case changeText(String)
     case tappedNextButton
   }
 
-  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+  private func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -85,13 +85,13 @@ struct CreateEnvelopeName {
     }
   }
 
-  enum InnerAction: Equatable {
+  public enum InnerAction: Equatable {
     case push
     case updateEnvelopes([PrevEnvelope])
     case emptyTextField
   }
 
-  func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
+  private func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .push:
       CreateFriendRequestShared.setName(state.textFieldText)
@@ -109,11 +109,11 @@ struct CreateEnvelopeName {
     }
   }
 
-  enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable {
     case searchName(String)
   }
 
-  func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
+  private func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case let .searchName(val):
       return .run { send in
@@ -124,20 +124,20 @@ struct CreateEnvelopeName {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable {
     case toast(SSToastReducer.Action)
   }
 
-  func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
+  private func scopeAction(_: inout State, _ action: ScopeAction) -> Effect<Action> {
     switch action {
     case .toast:
       return .none
     }
   }
 
-  enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable {}
 
-  enum ThrottleID {
+  private enum ThrottleID {
     case search
   }
 
@@ -145,7 +145,7 @@ struct CreateEnvelopeName {
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.createEnvelopeNameNetwork) var network
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
     }
@@ -166,4 +166,4 @@ struct CreateEnvelopeName {
 
 // MARK: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction
 
-extension CreateEnvelopeName: FeatureViewAction, FeatureInnerAction, FeatureAsyncAction, FeatureScopeAction {}
+extension CreateEnvelopeName {}

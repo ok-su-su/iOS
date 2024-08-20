@@ -7,19 +7,24 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSSelectableItems
 import SwiftUI
 
-struct CreateEnvelopeAdditionalIsVisitedEventView: View {
+public struct CreateEnvelopeAdditionalIsVisitedEventView: View {
   // MARK: Reducer
 
   @Bindable
   var store: StoreOf<CreateEnvelopeAdditionalIsVisitedEvent>
 
+  init(store: StoreOf<CreateEnvelopeAdditionalIsVisitedEvent>) {
+    self.store = store
+  }
+
   // MARK: Content
 
   @ViewBuilder
   private func makeDefaultItems() -> some View {
-    CreateEnvelopeSelectItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
+    SSSelectableItemsView(store: store.scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems))
   }
 
   @ViewBuilder
@@ -46,7 +51,7 @@ struct CreateEnvelopeAdditionalIsVisitedEventView: View {
     }
   }
 
-  var body: some View {
+  public var body: some View {
     ZStack {
       SSColor
         .gray15
