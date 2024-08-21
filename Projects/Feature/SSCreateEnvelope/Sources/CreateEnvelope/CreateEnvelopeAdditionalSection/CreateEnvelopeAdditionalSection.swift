@@ -24,7 +24,8 @@ public struct CreateEnvelopeAdditionalSection {
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
         selectedID: createEnvelopeProperty.additionalSectionHelper.selectedID,
-        isCustomItem: .init(nil)
+        isCustomItem: .init(nil),
+        multipleSelectionCount: 20
       )
     }
   }
@@ -58,7 +59,7 @@ public struct CreateEnvelopeAdditionalSection {
   public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
       // TODO: 다른 로직 생각
-      SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>(multipleSelectionCount: 20)
+      SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>()
     }
     Reduce { _, action in
       switch action {

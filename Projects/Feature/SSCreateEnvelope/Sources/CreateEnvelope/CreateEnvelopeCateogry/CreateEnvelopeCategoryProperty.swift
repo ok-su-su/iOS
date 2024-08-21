@@ -1,5 +1,5 @@
 //
-//  CreateEnvelopeEventProperty.swift
+//  CreateEnvelopeCategoryProperty.swift
 //  Sent
 //
 //  Created by MaraMincho on 5/8/24.

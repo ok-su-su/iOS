@@ -43,19 +43,23 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     /// 현재 TextFieldButton을 통해서 수정되고 있는지 여부를 나타냅니다.
     /// TextFieldButton을 통해 수정할 경우 True로 바뀝니다.
     var isAddingNewItem: Bool = false
+    fileprivate var multipleSelectionCount: Int
 
     /// 버튼을 통한 아이템을 선택하는 Reducer입니다.
     /// 생성자에 모든 변수들은 @Shared처리 되어서 부모에서 Shared로 선언되어야 합니다.
     /// - Parameters:
     ///   - items: defaults아이템들을 나타냅니다. 이는 SSSelectableItemable을 따라야 합니다.
-    ///   - selectedID: 선택된 아이템들의 UUID를 나타내는 함수 입니다.
+    ///   - selectedID: 선택된 아이템들의 ID(Int)를 나타내는 Shared 변수 입니다.
     ///   - isCustomItem: 사용자 입력을 통한 새로운 아이템을 받을지 여부를 나타냅니다.
+    ///   - multipleSelectionCount: 몇개의 아이템이 선택가능하게 만들어 줍니다.
+    ///   - regexPatternString: Custom Item을 만들 시 RegexPattern을 입력받습니다.
     ///
     ///    isCustomItem을 Nil로 할 경우 "직접 입력" 버튼이 추가되지 않습니다.
-    public init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>, regexPatternString: String? = nil) {
+    public init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>, multipleSelectionCount: Int = 1, regexPatternString: String? = nil) {
       _items = items
       _selectedID = selectedID
       _isCustomItem = isCustomItem
+      self.multipleSelectionCount = multipleSelectionCount
       self.regexPatternString = regexPatternString
     }
   }
@@ -77,7 +81,6 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
   }
 
   public enum InnerAction: Equatable {
-    case singleSelection(id: Int)
     case multipleSelection(id: Int)
     case startAddCustomRelation
     case endAddCustomRelation
@@ -88,11 +91,7 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     case invalidText(String)
   }
 
-  public var multipleSelectionCount = 1
-
-  public init(multipleSelectionCount: Int = 1) {
-    self.multipleSelectionCount = multipleSelectionCount
-  }
+  public init() {}
 
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -110,66 +109,43 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
         state.isOnAppear = isAppear
         return .none
 
-        // MARK: - 사용자가 버튼을 눌렀을 경우에
-
+      // 사용자가 버튼을 눌렀을 경우에
       case let .view(.tappedItem(id)):
 
-        // MARK: - 이미 선택된 버튼일 때
-
+        // 이미 선택된 버튼일 때
         if state.selectedID.contains(id) {
           state.selectedID = state.selectedID.filter { $0 != id }
-          let curSelected = state.selectedID
-          return .run { send in
-            await send(.delegate(.selected(id: curSelected)))
-          }
+          return .send(.delegate(.selected(id: state.selectedID)))
         }
 
-        // MARK: - 한개의 버튼을 선택하는 화면일 때
-
-        else if multipleSelectionCount == 1 {
-          return .run { send in
-            await send(.inner(.singleSelection(id: id)))
-          }
+        // 한개의 버튼을 선택하는 화면일 때
+        else if state.multipleSelectionCount == 1 {
+          state.selectedID = [id]
+          let curSelection = state.selectedID
+          return .send(.delegate(.selected(id: curSelection)))
         }
 
-        // MARK: - 여러개의 버튼을 선택할 수 있을 때
+        // 여러개의 버튼을 선택할 수 있을 때
+        return .send(.inner(.multipleSelection(id: id)))
 
-        return .run { send in
-          await send(.inner(.multipleSelection(id: id)))
+      case let .inner(.multipleSelection(id)):
+        if state.selectedID.count + 1 <= state.multipleSelectionCount {
+          state.selectedID.append(id)
+        }
+        return .run { [curSelection = state.selectedID] send in
+          await send(.delegate(.selected(id: curSelection)))
         }
 
       case .delegate(.selected):
         return .none
 
-      case let .inner(.singleSelection(id)):
-        state.selectedID = [id]
-        let curSelection = state.selectedID
-        return .run { send in
-          await send(.delegate(.selected(id: curSelection)))
-        }
-
-      case let .inner(.multipleSelection(id)):
-        if state.selectedID.count + 1 <= multipleSelectionCount {
-          state.selectedID.append(id)
-        }
-        // TODO: Some Logic to depend multiple Selection
-        else {}
-        let curSelection = state.selectedID
-        return .run { send in
-          await send(.delegate(.selected(id: curSelection)))
-        }
-
       case .view(.tappedAddCustomTextField):
-        return .run { send in
-          await send(.inner(.startAddCustomRelation))
-        }
+        return .send(.inner(.startAddCustomRelation))
 
       case .view(.tappedTextFieldCloseButton):
         state.customTitleText = ""
         if state.customItemSaved {
-          return .run { send in
-            await send(.inner(.endAddCustomRelation))
-          }
+          return .send(.inner(.endAddCustomRelation))
         }
         return .none
 
