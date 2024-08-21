@@ -33,6 +33,7 @@ public struct CreateEnvelopeRelation {
         items: createEnvelopeProperty.relationHelper.defaultRelations,
         selectedID: createEnvelopeProperty.relationHelper.selectedID,
         isCustomItem: createEnvelopeProperty.relationHelper.customRelation,
+        multipleSelectionCount: 1,
         regexPatternString: RegexPatternString.relationship.regexString
       )
       resetSelected()
@@ -143,7 +144,7 @@ public struct CreateEnvelopeRelation {
       SSToastReducer()
     }
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>(multipleSelectionCount: 1)
+      SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>()
     }
     Reduce { state, action in
       switch action {

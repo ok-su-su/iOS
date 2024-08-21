@@ -32,6 +32,7 @@ public struct CreateEnvelopeCategory {
         items: createEnvelopeProperty.eventHelper.defaultEvent,
         selectedID: createEnvelopeProperty.eventHelper.selectedID,
         isCustomItem: createEnvelopeProperty.eventHelper.customEvent,
+        multipleSelectionCount: 1,
         regexPatternString: RegexPatternString.category.regexString
       )
       resetSelectedItems()
@@ -147,7 +148,7 @@ public struct CreateEnvelopeCategory {
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {
-      SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>(multipleSelectionCount: 1)
+      SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>()
     }
     Scope(state: \.toast, action: \.scope.toast) {
       SSToastReducer()
