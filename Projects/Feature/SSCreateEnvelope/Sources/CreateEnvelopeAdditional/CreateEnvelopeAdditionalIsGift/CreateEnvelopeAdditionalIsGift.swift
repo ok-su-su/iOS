@@ -76,7 +76,7 @@ public struct CreateEnvelopeAdditionalIsGift {
         let pushable = RegexManager.isValidGift(newText)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByGift(newText) ?
-          .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요")))) : .none
+          .send(.scope(.toast(.showToastMessage(DefaultToastMessage.gift.message)))) : .none
 
       case .view(.changeIsHighlight(_)):
         return .none

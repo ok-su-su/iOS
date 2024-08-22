@@ -132,7 +132,7 @@ public struct CreateEnvelopeCategory {
 
     case let .createEnvelopeSelectionItems(.delegate(.invalidText(text))):
       return ToastRegexManager.isShowToastByCustomCategory(text) ?
-        .send(.scope(.toast(.showToastMessage("경조사는 10글자까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.category.message)))) : .none
 
     case .createEnvelopeSelectionItems:
       return .none

@@ -75,7 +75,7 @@ public struct CreateEnvelopeName {
       let isEmptyTextField = text.isEmpty
       return .merge(
         isShowToast ?
-          .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none,
+          .send(.scope(.toast(.showToastMessage(DefaultToastMessage.name.message)))) : .none,
         isEmptyTextField ?
           .send(.inner(.emptyTextField)) : .send(.async(.searchName(text)))
       )

@@ -111,7 +111,7 @@ struct CreateLedgerCategory {
 
     case let .selection(.delegate(.invalidText(text))):
       return ToastRegexManager.isShowToastByLedgerName(text) ?
-        .send(.scope(.toast(.showToastMessage("장부 이름은 10글자까지 입력 가능합니다.")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.ledger.description)))) : .none
 
     case .selection:
       return .none
