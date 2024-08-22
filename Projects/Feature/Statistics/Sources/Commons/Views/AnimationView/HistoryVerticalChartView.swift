@@ -8,6 +8,7 @@
 
 import Designsystem
 import OSLog
+import SSNetwork
 import SwiftUI
 
 // MARK: - HistoryVerticalChartViewProperty

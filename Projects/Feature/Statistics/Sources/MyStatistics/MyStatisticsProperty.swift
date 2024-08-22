@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSNetwork
 
 struct MyStatisticsProperty: Equatable {
   var toDecimal: (Int64?) -> String? {

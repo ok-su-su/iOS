@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import Foundation
+import SSNetwork
 import SSNotification
 
 final class MyPageSharedState {
@@ -22,15 +23,15 @@ final class MyPageSharedState {
   static let shared = MyPageSharedState()
 
   /// 저장된 UserInfoResponseDTO를 가져옵니다.
-  func getMyUserInfoDTO() -> UserInfoResponseDTO? {
+  func getMyUserInfoDTO() -> UserInfoResponse? {
     return info
   }
 
-  func setUserInfoResponseDTO(_ val: UserInfoResponseDTO) {
+  func setUserInfoResponseDTO(_ val: UserInfoResponse) {
     info = val
   }
 
-  private var info: UserInfoResponseDTO?
+  private var info: UserInfoResponse?
 
   func getVersion() -> String {
     return (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "1.0.0"

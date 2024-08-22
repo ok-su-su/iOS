@@ -19,12 +19,12 @@ struct SentEnvelopeFilterNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func getInitialData() async throws -> [SentPerson] {
-    let data: SearchFriendsResponseDTO = try await provider.request(.getInitialName)
+    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getInitialName)
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 
   func findFriendsBy(name: String) async throws -> [SentPerson] {
-    let data: SearchFriendsResponseDTO = try await provider.request(.findByName(name))
+    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.findByName(name))
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 

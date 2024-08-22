@@ -16,47 +16,7 @@ import SSPersistancy
 
 // MARK: - OnboardingLoginNetworkHelper
 
-struct OnboardingLoginNetworkHelper: Equatable {
-  static func == (_: OnboardingLoginNetworkHelper, _: OnboardingLoginNetworkHelper) -> Bool {
-    return true
-  }
-
-  private enum Network: SSNetworkTargetType {
-    case isNewUser(LoginType, String)
-    case loginWithSUSU(LoginType, Data)
-    var additionalHeader: [String: String]? {
-      nil
-    }
-
-    var path: String {
-      switch self {
-      case let .isNewUser(loginType, _):
-        os_log("요청 URL: oauth/\(loginType.rawValue)/sign-up/valid")
-        return "oauth/\(loginType)/sign-up/valid"
-      case let .loginWithSUSU(loginType, _):
-        return "oauth/\(loginType)/login"
-      }
-    }
-
-    var method: Moya.Method {
-      switch self {
-      case .isNewUser:
-        .get
-      case .loginWithSUSU:
-        .post
-      }
-    }
-
-    var task: Moya.Task {
-      switch self {
-      case let .isNewUser(_, token):
-        return .requestParameters(parameters: ["accessToken": token], encoding: URLEncoding.queryString)
-      case let .loginWithSUSU(_, tokenData):
-        return .requestData(tokenData)
-      }
-    }
-  }
-
+struct OnboardingLoginNetworkHelper {
   private let provider: MoyaProvider<Network> = .init()
   func loginWithKakao() async -> Bool {
     return await LoginWithKakao.loginWithKakao()
@@ -97,6 +57,41 @@ struct OnboardingLoginNetworkHelper: Equatable {
 
 extension OnboardingLoginNetworkHelper: DependencyKey {
   static var liveValue: OnboardingLoginNetworkHelper = .init()
+  private enum Network: SSNetworkTargetType {
+    case isNewUser(LoginType, String)
+    case loginWithSUSU(LoginType, Data)
+    var additionalHeader: [String: String]? {
+      nil
+    }
+
+    var path: String {
+      switch self {
+      case let .isNewUser(loginType, _):
+        os_log("요청 URL: oauth/\(loginType.rawValue)/sign-up/valid")
+        return "oauth/\(loginType)/sign-up/valid"
+      case let .loginWithSUSU(loginType, _):
+        return "oauth/\(loginType)/login"
+      }
+    }
+
+    var method: Moya.Method {
+      switch self {
+      case .isNewUser:
+        .get
+      case .loginWithSUSU:
+        .post
+      }
+    }
+
+    var task: Moya.Task {
+      switch self {
+      case let .isNewUser(_, token):
+        return .requestParameters(parameters: ["accessToken": token], encoding: URLEncoding.queryString)
+      case let .loginWithSUSU(_, tokenData):
+        return .requestData(tokenData)
+      }
+    }
+  }
 }
 
 extension DependencyValues {

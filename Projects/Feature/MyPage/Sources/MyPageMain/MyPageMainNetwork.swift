@@ -19,11 +19,11 @@ final class MyPageMainNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   private let networkProvider = MoyaProvider<AppstoreNetwork>()
 
-  func getMyInformation() async throws -> UserInfoResponseDTO {
+  func getMyInformation() async throws -> UserInfoResponse {
     return try await provider.request(.myPageInformation)
   }
 
-  func updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponseDTO {
+  func updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponse {
     return try await provider.request(.updateMyProfile(userID: userID, body: requestBody))
   }
 
@@ -135,38 +135,6 @@ extension MyPageMainNetwork: DependencyKey {
       case let .withdrawApple(token):
         .requestParameters(parameters: ["appleAccessToken": token], encoding: URLEncoding.queryString)
       }
-    }
-  }
-}
-
-// MARK: - UserInfoResponseDTO
-
-struct UserInfoResponseDTO: Equatable, Decodable {
-  /// 내 아이디
-  let id: Int64
-  /// 내 이름
-  let name: String
-  /// 성별 M: 남자, W 여자
-  let gender: String?
-  /// 출생 년도
-  let birth: Int?
-}
-
-// MARK: - UpdateUserProfileRequestBody
-
-struct UpdateUserProfileRequestBody: Encodable {
-  let name: String
-  /// 성별 M: 남자, W 여자
-  let gender: String?
-  /// 출생 년도
-  let birth: Int?
-
-  func getBody() -> Data {
-    do {
-      return try JSONEncoder().encode(self)
-    } catch {
-      os_log("UpdateUserProfileRequestBody Encode 실패했습니다.")
-      return Data()
     }
   }
 }

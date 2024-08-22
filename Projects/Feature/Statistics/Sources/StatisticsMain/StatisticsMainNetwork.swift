@@ -80,7 +80,7 @@ extension StatisticsMainNetwork: DependencyKey {
       return (data.relationships.map { .init(description: $0.relation, id: $0.id) }, data.categories.map { .init(description: $0.name, id: $0.id) })
     },
     getMyBirth: {
-      let dto: UserInfoResponseDTO = try await provider.request(.getMyBirth)
+      let dto: UserInfoResponse = try await provider.request(.getMyBirth)
       return dto.birth
     }
   )
@@ -90,5 +90,11 @@ extension DependencyValues {
   var statisticsMainNetwork: StatisticsMainNetwork {
     get { self[StatisticsMainNetwork.self] }
     set { self[StatisticsMainNetwork.self] = newValue }
+  }
+}
+
+extension SUSUEnvelopeStatisticResponse {
+  var averageSentLabel: String {
+    CustomNumberFormatter.toDecimal(averageSent) ?? "50,000" + "원"
   }
 }

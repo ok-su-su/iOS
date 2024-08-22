@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSNetwork
 
 // MARK: - MyPageInformation
 
@@ -25,7 +26,7 @@ struct MyPageInformation: Reducer {
     var listItems: IdentifiedArrayOf<MyPageMainItemListCell<MyPageInformationListItem>.State>
       = .init(uniqueElements: [])
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
-    var userInfo: UserInfoResponseDTO?
+    var userInfo: UserInfoResponse?
     init() {}
   }
 
@@ -43,7 +44,7 @@ struct MyPageInformation: Reducer {
   }
 
   enum InnerAction: Equatable {
-    case updateUserInfo(UserInfoResponseDTO)
+    case updateUserInfo(UserInfoResponse)
     case isLoading(Bool)
     case updateCellItems
   }
@@ -153,7 +154,7 @@ struct MyPageInformationListItem: MyPageMainItemListCellItemable, Equatable {
   }
 }
 
-private extension UserInfoResponseDTO {
+private extension UserInfoResponse {
   func makeMyPageInformationListItem() -> [MyPageMainItemListCell<MyPageInformationListItem>.State] {
     let items = MyPageInformationListItemType.allCases.map { type -> MyPageInformationListItem in
       let content = switch type {

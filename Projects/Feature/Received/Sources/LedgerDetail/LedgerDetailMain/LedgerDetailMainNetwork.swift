@@ -140,15 +140,6 @@ extension LedgerDetailMainNetwork: DependencyKey {
   }
 }
 
-// MARK: - LedgerDetailResponse
-
-struct LedgerDetailResponse: Decodable {
-  let ledger: LedgerModel
-  let category: CategoryWithCustomModel
-  let totalAmounts: Int64
-  let totalCounts: Int64
-}
-
 // MARK: - GetEnvelopesRequestParameter
 
 struct GetEnvelopesRequestParameter {

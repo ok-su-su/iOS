@@ -20,17 +20,17 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
   func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
     os_log("요청한 Page \(page)")
-    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
     return data.data.map { $0.toEnvelopeContent() }
   }
 
   func getEnvelope(friendID: Int64) async throws -> [EnvelopeContent] {
-    let data: SearchLatestOfThreeEnvelopeResponseDTO = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
     return data.data.map { $0.toEnvelopeContent() }
   }
 
   func getEnvelope(envelopeID: Int64) async throws -> EnvelopeContent {
-    let data: SearchLatestOfThreeEnvelopeDataResponseDTO = try await provider.request(.searchEnvelopeByID(envelopeID))
+    let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
 
     return data.toEnvelopeContent()
   }
@@ -44,7 +44,7 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
   }
 
   func getEnvelopeProperty(ID: Int64) async throws -> EnvelopeProperty? {
-    let data: SearchFriendsResponseDTO = try await provider.request(.getEnvelopeProperty(friendID: ID))
+    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getEnvelopeProperty(friendID: ID))
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(
         id: dto.friend.id,
@@ -143,27 +143,21 @@ extension DependencyValues {
   }
 }
 
-// MARK: - SearchLatestOfThreeEnvelopeResponseDTO
-
-struct SearchLatestOfThreeEnvelopeResponseDTO: Decodable {
-  let data: [SearchLatestOfThreeEnvelopeDataResponseDTO]
-  let page: Int?
-  let size: Int?
-  let totalPage: Int
-  let totalCount: Int
-  let sort: SortResponseDTO
-}
-
 // MARK: - SearchLatestOfThreeEnvelopeDataResponseDTO
 
-struct SearchLatestOfThreeEnvelopeDataResponseDTO: Decodable {
-  let envelope: SearchEnvelopeResponseEnvelopeDTO
-  let category: SearchEnvelopeResponseCategoryDTO
-  let relationship: SearchEnvelopeResponseRelationshipDTO
-  let friend: SearchEnvelopeResponseFriendDTO
+extension SearchEnvelopeResponse {
+  func toEnvelopeContent() -> EnvelopeContent {
+    return .init(
+      id: envelope.id,
+      dateText: CustomDateFormatter.getYearAndMonthDateString(from: envelope.handedOverAt) ?? "",
+      eventName: category?.category ?? "",
+      envelopeType: envelope.type == "SENT" ? .sent : .receive,
+      price: envelope.amount
+    )
+  }
 }
 
-extension SearchLatestOfThreeEnvelopeDataResponseDTO {
+extension EnvelopeDetailResponse {
   func toEnvelopeContent() -> EnvelopeContent {
     return .init(
       id: envelope.id,
@@ -174,5 +168,3 @@ extension SearchLatestOfThreeEnvelopeDataResponseDTO {
     )
   }
 }
-
-private extension SearchLatestOfThreeEnvelopeDataResponseDTO {}
