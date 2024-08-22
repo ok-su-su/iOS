@@ -11,7 +11,7 @@ import Foundation
 // MARK: - VoteMainProperty
 
 struct VoteMainProperty: Equatable {
-  var favoriteVoteItems: [FavoriteVoteItem] = .makeItem()
+  var favoriteVoteItems: [PopularVoteItem] = .makeItem()
   var selectedSectionHeaderItem: VoteSectionHeaderItem = .all
   var selectedBottomFilterType: BottomVoteListFilterItemType = .none
   var votePreviews: [VotePreviewProperty] = .fakeData()

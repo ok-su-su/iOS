@@ -205,21 +205,22 @@ struct VoteMainView: View {
             makeFavoriteSectionItem(item)
           }
         }
+        .scrollTargetLayout()
       }
+      .scrollTargetBehavior(.viewAligned)
       .scrollIndicators(.hidden)
     }
-    .padding(.vertical, 16)
-    .padding(.leading, 16)
+    .padding(.horizontal, 16)
     .background(SSColor.gray10)
   }
 
   @ViewBuilder
-  private func makeFavoriteSectionItem(_ item: FavoriteVoteItem) -> some View {
+  private func makeFavoriteSectionItem(_ item: PopularVoteItem) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       // Top Content
       VStack(alignment: .leading, spacing: 8) {
         HStack(spacing: 0) {
-          Text(item.title)
+          Text(item.categoryTitle)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray60)
 
@@ -282,8 +283,14 @@ struct VoteMainView: View {
       ZStack(alignment: .bottomTrailing) {
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+            .background(SSColor.gray10)
           makeContentView()
         }
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
+      HStack(spacing: 0) {
+        Spacer()
         makeFloatingButton()
       }
     }

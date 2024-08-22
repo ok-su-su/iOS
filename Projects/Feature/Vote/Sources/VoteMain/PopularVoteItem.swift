@@ -10,19 +10,26 @@ import Foundation
 
 // MARK: - FavoriteVoteItem
 
-struct FavoriteVoteItem: Equatable, Identifiable {
-  var id: Int
-  var title: String
+struct PopularVoteItem: Equatable, Identifiable {
+  var id: Int64
+  var categoryTitle: String
   var content: String
   var isActive: Bool
   var isModified: Bool
-  var participantCount: Int
+  var participantCount: Int64
 }
 
-extension [FavoriteVoteItem] {
+extension [PopularVoteItem] {
   static func makeItem() -> Self {
     return (0 ..< 5).map { ind in
-      return .init(id: ind, title: fakeTitle, content: fakeContent, isActive: fakeBool, isModified: fakeBool, participantCount: fakeParticipantCount)
+      return .init(
+        id: ind,
+        categoryTitle: fakeTitle,
+        content: fakeContent,
+        isActive: fakeBool,
+        isModified: fakeBool,
+        participantCount: fakeParticipantCount
+      )
     }
   }
 
@@ -45,7 +52,7 @@ extension [FavoriteVoteItem] {
     return [false, true].randomElement()!
   }
 
-  private static var fakeParticipantCount: Int {
+  private static var fakeParticipantCount: Int64 {
     return (1 ... 50000).randomElement()!
   }
 }
