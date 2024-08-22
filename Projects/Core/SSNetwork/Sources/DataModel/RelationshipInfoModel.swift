@@ -1,5 +1,5 @@
 //
-//  RelationshipModel.swift
+//  RelationshipInfoModel.swift
 //  SSNetwork
 //
 //  Created by MaraMincho on 8/22/24.
@@ -8,19 +8,17 @@
 
 import Foundation
 
-// MARK: - SearchEnvelopeResponseRelationshipDTO
+// MARK: - RelationshipInfoModel
 
-public struct RelationshipModel: Codable, Equatable {
-  /// 관계 ID
+public struct RelationshipInfoModel: Equatable, Codable {
   public let id: Int
-  /// 관계 이름
   public let relation: String
-  /// 관계 설명
+  public let customRelation: String?
   public let description: String?
-
-  enum CodingKeys: String, CodingKey {
+  enum CodingKeys: CodingKey {
     case id
     case relation
+    case customRelation
     case description
   }
 }

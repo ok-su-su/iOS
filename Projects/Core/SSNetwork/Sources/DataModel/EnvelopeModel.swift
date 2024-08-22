@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 public struct EnvelopeModel: Codable, Equatable {
   ///  봉투 id
   public let id: Int64

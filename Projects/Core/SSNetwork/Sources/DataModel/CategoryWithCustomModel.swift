@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 // MARK: - SearchEnvelopeResponseCategoryDTO
 
 public struct CategoryWithCustomModel: Codable, Equatable {

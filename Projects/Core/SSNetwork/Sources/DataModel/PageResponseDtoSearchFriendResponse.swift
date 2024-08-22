@@ -1,5 +1,5 @@
 //
-//  PageResponseDtoSearchEnvelopeResponse.swift
+//  PageResponseDtoSearchFriendResponse.swift
 //  SSNetwork
 //
 //  Created by MaraMincho on 8/22/24.
@@ -8,15 +8,15 @@
 
 import Foundation
 
-public struct PageResponseDtoSearchEnvelopeResponse: Equatable, Codable {
-  public let data: [SearchEnvelopeResponse]
+public struct PageResponseDtoSearchFriendResponse: Equatable, Codable {
+  public let data: [SearchFriendResponse]
   public let page: Int?
   public let size: Int?
   public let totalPage: Int
   public let totalCount: Int
   public let sort: SortObject
 
-  enum CodingKeys: String, CodingKey {
+  enum CodingKeys: CodingKey {
     case data
     case page
     case size

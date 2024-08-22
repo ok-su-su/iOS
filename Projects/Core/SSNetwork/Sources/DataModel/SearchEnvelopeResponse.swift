@@ -11,8 +11,8 @@ import Foundation
 public struct SearchEnvelopeResponse: Codable, Equatable {
   public let envelope: EnvelopeModel
   public let category: CategoryWithCustomModel?
-  public let friend:   FriendModel?
-  public let relationship:   RelationshipModel?
+  public let friend: FriendModel?
+  public let relationship: RelationshipModel?
   public let friendRelationship: FriendRelationshipModel?
 
   enum CodingKeys: String, CodingKey {

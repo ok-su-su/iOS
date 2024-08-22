@@ -1,5 +1,5 @@
 //
-//  friendRelationship.swift
+//  FriendRelationshipModel.swift
 //  SSNetwork
 //
 //  Created by MaraMincho on 8/22/24.
@@ -15,7 +15,7 @@ public struct FriendRelationshipModel: Codable, Equatable {
   public let friendID: Int64
   /// 관계 ID
   public let relationshipID: Int
-  /// CustomRelation Name 
+  /// CustomRelation Name
   public let customRelation: String?
 
   enum CodingKeys: String, CodingKey {

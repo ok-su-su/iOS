@@ -131,4 +131,3 @@ struct RelationshipInfoModel: Codable {
     case description
   }
 }
-
