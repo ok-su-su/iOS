@@ -2,29 +2,11 @@
 //  CreateAndUpdateEnvelopeRequest.swift
 //  SSEnvelope
 //
-//  Created by MaraMincho on 7/6/24.
+//  Created by MaraMincho on 8/22/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation
-
-// MARK: - CreateAndUpdateEnvelopeResponse
-
-struct CreateAndUpdateEnvelopeResponse: Decodable {
-  var envelope: EnvelopeModel
-  var friend: FriendModel
-  var friendRelationship: FriendRelationshipModel
-  var relationship: RelationshipModel
-  var category: CategoryWithCustomModel
-
-  enum CodingKeys: CodingKey {
-    case envelope
-    case friend
-    case friendRelationship
-    case relationship
-    case category
-  }
-}
 
 // MARK: - CreateAndUpdateEnvelopeRequest
 

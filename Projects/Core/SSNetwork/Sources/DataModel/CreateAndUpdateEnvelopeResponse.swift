@@ -13,4 +13,5 @@ public struct CreateAndUpdateEnvelopeResponse: Decodable {
   public let friend: FriendModel
   public let friendRelationship: FriendRelationshipModel
   public let relationship: RelationshipModel
+  public let category: CategoryWithCustomModel
 }
