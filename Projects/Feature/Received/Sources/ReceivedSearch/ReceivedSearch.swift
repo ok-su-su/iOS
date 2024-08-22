@@ -92,7 +92,7 @@ struct ReceivedSearch {
     case let .search(.changeTextField(text)):
       return .concatenate(
         ToastRegexManager.isShowToastByLedgerName(text) ?
-          .send(.scope(.toast(.showToastMessage("경조사 명은 10글자까지만 입력 가능해요")))) : .none,
+          .send(.scope(.toast(.showToastMessage(DefaultToastMessage.ledger.message)))) : .none,
 
         .send(.async(.searchLedgerByName(text)))
       )

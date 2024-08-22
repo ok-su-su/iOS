@@ -84,7 +84,7 @@ public struct CreateEnvelopePrice {
       let isShowToast = ToastRegexManager.isShowToastByPrice(value)
       state.isAbleToPush = pushable
       return isShowToast ?
-        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능합니다.")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.price.message)))) : .none
 
     case .tappedNextButton:
       return .send(.inner(.push))

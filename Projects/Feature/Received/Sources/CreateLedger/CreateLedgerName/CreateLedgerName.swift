@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import FeatureAction
 import Foundation
+import SSRegexManager
 import SSToast
 
 // MARK: - CreateLedgerName
@@ -58,15 +59,13 @@ struct CreateLedgerName {
       }
       state.isOnAppear = isAppear
       return .none
+
     case let .changedTextField(text):
       state.textFieldText = text
-      state.pushable = TextValidator.checkCategoryName(text)
+      state.pushable = RegexManager.isValidCustomCategory(text)
 
-      return .run { send in
-        if TextValidator.checkCategoryNameWithToast(text) {
-          await send(.scope(.toast(.showToastMessage("경조사 이름 10글자까지만 입력 가능해요"))))
-        }
-      }
+      return ToastRegexManager.isShowToastByCustomCategory(text) ?
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.category.message)))) : .none
     case .tappedNextButton:
       CreateLedgerSharedState.setTitle(state.textFieldText)
       CreateLedgerRouterPathPublisher.push(.date(.init()))

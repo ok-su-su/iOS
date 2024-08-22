@@ -174,27 +174,27 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
     case let .changeNameTextField(text):
       state.editHelper.changeName(text)
       return state.editHelper.isShowToastByName() ?
-        .send(.scope(.toast(.showToastMessage("이름은 10글자까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.name.message)))) : .none
 
     case let .changeGiftTextField(text):
       state.editHelper.changeGift(text)
       return state.editHelper.isShowToastByGift() ?
-        .send(.scope(.toast(.showToastMessage("선물은 30글자까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.gift.message)))) : .none
 
     case let .changeContactTextField(text):
       state.editHelper.changeContact(text)
       return state.editHelper.isShowToastByContact() ?
-        .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.contact.message)))) : .none
 
     case let .changeMemoTextField(text):
       state.editHelper.changeMemo(text)
       return state.editHelper.isShowToastByContact() ?
-        .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.memo.message)))) : .none
 
     case let .changePriceTextField(text):
       state.editHelper.changePrice(text)
       return state.editHelper.isShowToastByPrice() ?
-        .send(.scope(.toast(.showToastMessage("100억 미만의 금액만 입력 가능해요")))) : .none
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.price.message)))) : .none
 
     case .tappedSaveButton:
       return .send(.async(.editFriendsAndEnvelope))

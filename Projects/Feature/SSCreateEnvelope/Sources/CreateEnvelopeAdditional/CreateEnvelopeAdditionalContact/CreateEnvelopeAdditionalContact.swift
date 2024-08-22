@@ -70,7 +70,7 @@ public struct CreateEnvelopeAdditionalContact {
         let pushable = RegexManager.isValidContacts(text)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByContacts(text) ?
-          .send(.scope(.toast(.showToastMessage("연락처는 11자리까지만 입력 가능해요")))) : .none
+          .send(.scope(.toast(.showToastMessage(DefaultToastMessage.contact.description)))) : .none
 
       case let .view(.changeIsHighlight(isHighlight)):
         state.contactHelper.isHighlight = isHighlight

@@ -82,7 +82,7 @@ public struct CreateEnvelopeAdditionalMemo {
         let pushable = RegexManager.isValidMemo(text)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByMemo(text) ?
-          .send(.scope(.toast(.showToastMessage("메모는 30글자까지만 입력 가능해요")))) : .none
+          .send(.scope(.toast(.showToastMessage(DefaultToastMessage.memo.message)))) : .none
 
       case let .view(.isHighlightChanged(highlight)):
         state.memoHelper.isHighlight = highlight

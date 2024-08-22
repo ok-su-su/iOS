@@ -48,7 +48,7 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
   }
 
   @ViewBuilder
-  // 만약 커스텀 아이템이 존재 하면
+  /// 만약 커스텀 아이템이 존재 하면
   private func makeCustomItem() -> some View {
     // CustomItem을 Edit하는 상황이면
     if store.isAddingNewItem,
@@ -74,7 +74,7 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
           store.send(.view(.tappedTextFieldSaveAndEditButton))
         }
     } else {
-      //만약 커스텀 아이템이 존재하면서, EmptyState일 때
+      // 만약 커스텀 아이템이 존재하면서, EmptyState일 때
       SSButton(
         .init(
           size: .mh60,
