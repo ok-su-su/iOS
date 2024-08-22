@@ -10,16 +10,16 @@ import Foundation
 
 // MARK: - SUSUEnvelopeStatisticResponse
 
-struct SUSUEnvelopeStatisticResponse: Decodable, Equatable {
+public struct SUSUEnvelopeStatisticResponse: Decodable, Equatable {
   /// 평균 보낸 비용
-  let averageSent: Int64?
+  public let averageSent: Int64?
 
-  let averageRelationship: TitleValueModelLong?
-  let averageCategory: TitleValueModelLong?
-  let recentSpent: [TitleValueModelLong]?
-  let mostSpentMonth: Int64?
-  let mostRelationship: TitleValueModelLong?
-  let mostCategory: TitleValueModelLong?
+  public let averageRelationship: TitleValueModelLong?
+  public let averageCategory: TitleValueModelLong?
+  public let recentSpent: [TitleValueModelLong]?
+  public let mostSpentMonth: Int64?
+  public let mostRelationship: TitleValueModelLong?
+  public let mostCategory: TitleValueModelLong?
 
   enum CodingKeys: CodingKey {
     case averageSent
@@ -32,7 +32,7 @@ struct SUSUEnvelopeStatisticResponse: Decodable, Equatable {
   }
 }
 
-extension SUSUEnvelopeStatisticResponse {
+public extension SUSUEnvelopeStatisticResponse {
   static var emptyState: Self {
     .init(
       averageSent: nil,
@@ -43,11 +43,5 @@ extension SUSUEnvelopeStatisticResponse {
       mostRelationship: nil,
       mostCategory: nil
     )
-  }
-}
-
-extension SUSUEnvelopeStatisticResponse {
-  var averageSentLabel: String {
-    CustomNumberFormatter.toDecimal(averageSent) ?? "50,000" + "원"
   }
 }
