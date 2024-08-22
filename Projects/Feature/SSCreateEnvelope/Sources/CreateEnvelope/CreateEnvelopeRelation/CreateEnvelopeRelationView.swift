@@ -20,8 +20,6 @@ public struct CreateEnvelopeRelationView: View {
     self.store = store
   }
 
-  @State private var keyBoardShow: Bool = false
-
   // MARK: Content
 
   @ViewBuilder
@@ -78,11 +76,8 @@ public struct CreateEnvelopeRelationView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .nextButton(store.isPushable, isShow: !keyBoardShow) {
+    .nextButton(store.isPushable) {
       store.sendViewAction(.tappedNextButton)
-    }
-    .onReceive(KeyBoardReadablePublisher.shared.keyboardPublisher) { newIsKeyboardVisible in
-      keyBoardShow = newIsKeyboardVisible
     }
   }
 

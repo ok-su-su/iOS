@@ -19,10 +19,7 @@ public struct CreateEnvelopeCategoryView: View {
 
   public init(store: StoreOf<CreateEnvelopeCategory>) {
     self.store = store
-    keyBoardShow = keyBoardShow
   }
-
-  @State var keyBoardShow: Bool = false
 
   // MARK: Content
 
@@ -74,11 +71,8 @@ public struct CreateEnvelopeCategoryView: View {
       makeContentView()
         .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     }
-    .nextButton(store.pushable, isShow: !keyBoardShow) {
+    .nextButton(store.pushable) {
       store.sendViewAction(.tappedNextButton)
-    }
-    .onReceive(KeyBoardReadablePublisher.shared.keyboardPublisher) { newIsKeyboardVisible in
-      keyBoardShow = newIsKeyboardVisible
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
