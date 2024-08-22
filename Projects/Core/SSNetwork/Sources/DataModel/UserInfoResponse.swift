@@ -12,11 +12,18 @@ import Foundation
 
 public struct UserInfoResponse: Equatable, Decodable {
   /// 내 아이디
-  let id: Int64
+  public let id: Int64
   /// 내 이름
-  let name: String
+  public let name: String
   /// 성별 M: 남자, W 여자
-  let gender: String?
+  public let gender: String?
   /// 출생 년도
-  let birth: Int?
+  public let birth: Int?
+
+  public init(id: Int64, name: String, gender: String?, birth: Int?) {
+    self.id = id
+    self.name = name
+    self.gender = gender
+    self.birth = birth
+  }
 }

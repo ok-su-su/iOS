@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import SSBottomSelectSheet
 import SSEditSingleSelectButton
+import SSNetwork
 import SSRegexManager
 import SSToast
 
@@ -23,7 +24,7 @@ struct MyPageEdit {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var userInfo: UserInfoResponseDTO
+    var userInfo: UserInfoResponse
     var selectedGender: Gender? { genderSectionProperty.selectedItem?.gender }
     @Shared var genderSectionProperty: SingleSelectButtonProperty<GenderSelectButtonItem>
     var genderSection: SingleSelectButtonReducer<GenderSelectButtonItem>.State?
@@ -69,7 +70,7 @@ struct MyPageEdit {
       )
     }
 
-    init(_ userInfo: UserInfoResponseDTO) {
+    init(_ userInfo: UserInfoResponse) {
       self.userInfo = userInfo
       _selectedBottomSheetItem = .init(nil)
       _genderSectionProperty = .init(

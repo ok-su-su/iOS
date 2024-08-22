@@ -9,6 +9,7 @@
 import Combine
 import ComposableArchitecture
 import Designsystem
+import SSNetwork
 import SwiftUI
 
 final class MyPageEditRouter: UIHostingController<MyPageEditView> {
@@ -33,7 +34,7 @@ final class MyPageEditRouter: UIHostingController<MyPageEditView> {
       }
   }
 
-  init(_: UserInfoResponseDTO) {
+  init(_: UserInfoResponse) {
     let reducer = MyPageEdit()
     self.reducer = reducer
 

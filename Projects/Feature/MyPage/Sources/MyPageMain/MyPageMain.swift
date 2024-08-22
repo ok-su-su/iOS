@@ -13,6 +13,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSAlert
+import SSNetwork
 import SSNotification
 import SSPersistancy
 
@@ -28,7 +29,7 @@ struct MyPageMain {
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .mypage)
     var isLoading: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: " ", type: .defaultNonIconType))
-    var userInfo: UserInfoResponseDTO = .init(id: 0, name: " ", gender: nil, birth: nil)
+    var userInfo: UserInfoResponse = .init(id: 0, name: " ", gender: nil, birth: nil)
     var currentVersionText = MyPageSharedState.shared.getVersion()
     var isLatestVersion: Bool = false
 
@@ -69,7 +70,7 @@ struct MyPageMain {
     case topSection(TopPageListSection)
     case middleSection(MiddlePageSectionType)
     case bottomSection(BottomPageSection)
-    case updateMyInformation(UserInfoResponseDTO)
+    case updateMyInformation(UserInfoResponse)
     case isLoading(Bool)
     case pushOnboarding
     case updateIsShowUpdateSUSUVersion(String?)
