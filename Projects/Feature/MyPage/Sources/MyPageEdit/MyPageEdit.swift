@@ -144,9 +144,8 @@ struct MyPageEdit {
     case let .nameEdited(text):
       state.nameTextFieldText = text
 
-//      return ToastRegexManager.isShowToastByName(text) ?
-      return !RegexManager.isValidName(text) ?
-        .send(.scope(.toast(.showToastMessage("이름은 한글 또는 영문 10글자 이내로 입력해주세요")))) : .none
+      return ToastRegexManager.isShowToastByName(text) ?
+        .send(.scope(.toast(.showToastMessage(DefaultToastMessage.name.message)))) : .none
 
     case .selectedYearItem:
       state.bottomSheet = .init(
