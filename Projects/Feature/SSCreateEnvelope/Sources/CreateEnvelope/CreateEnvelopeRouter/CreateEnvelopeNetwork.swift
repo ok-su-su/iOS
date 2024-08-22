@@ -98,12 +98,3 @@ extension CreateEnvelopeNetwork: DependencyKey {
     }
   }
 }
-
-// MARK: - CreateFriendResponseDTO
-
-struct CreateFriendResponseDTO: Decodable, Equatable {
-  let id: Int64
-  enum CodingKeys: CodingKey {
-    case id
-  }
-}
