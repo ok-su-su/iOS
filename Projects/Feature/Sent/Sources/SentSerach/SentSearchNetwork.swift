@@ -81,26 +81,6 @@ extension DependencyValues {
   }
 }
 
-// MARK: - PageResponseDtoSearchFriendResponse
-
-struct PageResponseDtoSearchFriendResponse: Codable {
-  let data: [SearchFriendResponse]
-  let page: Int?
-  let size: Int?
-  let totalPage: Int
-  let totalCount: Int
-  let sort: SortObject
-
-  enum CodingKeys: CodingKey {
-    case data
-    case page
-    case size
-    case totalPage
-    case totalCount
-    case sort
-  }
-}
-
 // MARK: - SearchFriendResponse
 
 struct SearchFriendResponse: Codable {
@@ -152,13 +132,3 @@ struct RelationshipInfoModel: Codable {
   }
 }
 
-// MARK: - SortObject
-
-struct SortObject: Codable {
-  let empty, unsorted, sorted: Bool
-  enum CodingKeys: CodingKey {
-    case empty
-    case unsorted
-    case sorted
-  }
-}

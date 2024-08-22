@@ -8,16 +8,3 @@
 
 import Foundation
 
-// MARK: - FriendModel
-
-struct FriendModel: Codable, Equatable {
-  let id: Int64
-  let name: String
-  let phoneNumber: String?
-
-  enum CodingKeys: String, CodingKey {
-    case id
-    case name
-    case phoneNumber
-  }
-}

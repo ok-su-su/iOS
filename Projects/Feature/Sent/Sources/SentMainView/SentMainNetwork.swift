@@ -64,7 +64,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   func requestSearchFriends(_ parameter: SearchFriendsParameter) async throws -> [EnvelopeProperty] {
-    let data: SearchFriendsResponseDTO = try await provider.request(.searchFriendsByParameter(parameter))
+    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.searchFriendsByParameter(parameter))
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(
         id: dto.friend.id,
@@ -77,7 +77,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
   }
 
   func requestSearchFriends(_ condition: FilterDialItem = .latest) async throws -> [EnvelopeProperty] {
-    let data: SearchFriendsResponseDTO = try await provider.request(.searchFriends(condition))
+    let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.searchFriends(condition))
     return data.data.map { dto -> EnvelopeProperty in
       return EnvelopeProperty(
         id: dto.friend.id,
@@ -90,7 +90,7 @@ struct SentMainNetwork: Equatable, DependencyKey {
   }
 
   func requestSearchFriends(_ amount: Int64) async throws -> [SentSearchItem] {
-    let data: SearchEnvelopeResponseDTOWithOptional = try await provider
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider
       .request(
         .searchEnvelope(
           .init(
