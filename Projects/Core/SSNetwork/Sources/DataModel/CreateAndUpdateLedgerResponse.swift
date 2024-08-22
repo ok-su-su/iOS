@@ -1,16 +1,16 @@
 //
 //  CreateAndUpdateLedgerResponse.swift
-//  Received
+//  SSNetwork
 //
-//  Created by MaraMincho on 7/7/24.
+//  Created by MaraMincho on 8/22/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
 import Foundation
 
-struct CreateAndUpdateLedgerResponse: Decodable {
-  let ledger: LedgerModel
-  let category: CategoryWithCustomModel
+public struct CreateAndUpdateLedgerResponse: Decodable {
+  public let ledger: LedgerModel
+  public let category: CategoryWithCustomModel
 
   enum CodingKeys: CodingKey {
     case ledger

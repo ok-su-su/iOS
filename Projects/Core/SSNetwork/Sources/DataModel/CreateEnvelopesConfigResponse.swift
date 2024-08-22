@@ -10,9 +10,9 @@ import Foundation
 
 // MARK: - CreateEnvelopesConfigResponse
 
-struct CreateEnvelopesConfigResponse: Decodable {
-  var categories: [CategoryModel]
-  var relationships: [RelationshipModel]
+public struct CreateEnvelopesConfigResponse: Decodable {
+  public var categories: [CategoryModel]
+  public var relationships: [RelationshipModel]
   enum CodingKeys: CodingKey {
     case categories
     case relationships

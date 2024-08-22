@@ -20,7 +20,7 @@ public struct CategoryWithCustomModel: Codable, Equatable {
   /// 커스텀 카테고리면 not nill
   public let customCategory: String?
   /// 색깔을 나타내는 property입니다.
-  public let style: String?
+  public let style: String
 
   enum CodingKeys: String, CodingKey {
     case id
