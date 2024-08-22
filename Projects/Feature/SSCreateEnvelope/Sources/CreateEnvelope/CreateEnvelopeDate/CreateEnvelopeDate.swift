@@ -87,6 +87,9 @@ public struct CreateEnvelopeDate {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
         state.datePicker = .init(selectedDate: state.$selectedDate, isInitialStateOfDate: state.$isInitialStateOfDate)
         return .none
