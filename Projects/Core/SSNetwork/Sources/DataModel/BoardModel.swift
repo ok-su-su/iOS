@@ -9,12 +9,12 @@
 import Foundation
 
 public struct BoardModel: Equatable, Codable {
-  // 카테고리 아이디
+  /// 카테고리 아이디
   public let id: Int64
-  // 카테고리 이름
+  /// 카테고리 이름
   public let name: String
-  // 보드 순서
+  /// 보드 순서
   public let seq: Int32
-  // 활성화 여부 / 활성화: 1, 비 활성화: 0
+  /// 활성화 여부 / 활성화: 1, 비 활성화: 0
   public let isActive: Bool
 }

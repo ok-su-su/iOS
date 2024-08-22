@@ -1,5 +1,5 @@
 //
-//  FavoriteVoteItem.swift
+//  PopularVoteItem.swift
 //  Vote
 //
 //  Created by MaraMincho on 5/19/24.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-// MARK: - FavoriteVoteItem
+// MARK: - PopularVoteItem
 
 struct PopularVoteItem: Equatable, Identifiable {
   var id: Int64

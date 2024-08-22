@@ -8,14 +8,14 @@
 
 import Foundation
 
-public struct VoteWithCountResponse: Equatable, Codable{
+public struct VoteWithCountResponse: Equatable, Codable {
   // 투표 아이디
   public let id: Int64
-  public let board:  BoardModel
-  // 내용
-  public let content:String
-  // 총 투표 수
+  public let board: BoardModel
+  /// 내용
+  public let content: String
+  /// 총 투표 수
   public let count: Int64
-  // 수정 여부 (수정함 true, 안함 false)
+  /// 수정 여부 (수정함 true, 안함 false)
   public let isModified: Bool
 }
