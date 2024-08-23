@@ -12,9 +12,7 @@ import Foundation
 
 public struct TaskManager: Equatable {
   private let originalTaskCount: Int
-
   private var taskCount: Int
-
   public init(taskCount: Int) {
     self.taskCount = taskCount
     originalTaskCount = taskCount
