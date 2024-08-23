@@ -71,11 +71,14 @@ struct VoteMain {
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
       state.isOnAppear = isAppear
       return .concatenate(
         .send(.inner(.isLoading(true))),
         .merge(
-          .send(.async(.getPopularVoteItem)),
+          .send(.async(.getPopularVoteItems)),
           .send(.async(.getInitialVoteItems)),
           .send(.async(.getVoteHeaderSectionItems))
         )
@@ -155,13 +158,11 @@ struct VoteMain {
     case let .updateVoteItems(property):
       state.hasNext = property.hasNext
       state.voteMainProperty.votePreviews = property.items
-      dump(state.voteMainProperty.votePreviews.count)
       return .none
 
     case let .overwriteVoteItems(property):
       state.hasNext = property.hasNext
       state.voteMainProperty.votePreviews.overwriteByID(property.items)
-      dump(state.voteMainProperty.votePreviews.count)
       return .none
 
     case let .updateVoteHeaderCategory(items):
@@ -184,10 +185,10 @@ struct VoteMain {
 
   @Dependency(\.voteMainNetwork) var network
   enum AsyncAction: Equatable {
-    case getInitialVoteItems
-    case getVoteItems
-    case getPopularVoteItem
-    case getVoteHeaderSectionItems
+    case getInitialVoteItems // initial상태의 투표 아이템을 불러옵니다.
+    case getVoteItems // 더이상 보여줄 아이템이 없다면 새 아이템을 불러옵니다.
+    case getPopularVoteItems // 인기 투표 아이템을 불러옵니다.
+    case getVoteHeaderSectionItems // 헤더 섹션 아이템을 가져 옵니다.
   }
 
   private func runWithVoteMutex(
@@ -233,7 +234,7 @@ struct VoteMain {
         await send(.inner(.overwriteVoteItems(response)))
       }
 
-    case .getPopularVoteItem:
+    case .getPopularVoteItems:
       return runWithVoteMutex { send in
         let items = try await network.getPopularItems()
         await send(.inner(.updatePopularItems(items)))
