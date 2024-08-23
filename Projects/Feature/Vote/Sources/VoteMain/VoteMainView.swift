@@ -179,8 +179,8 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {
-      ForEach(VoteSectionHeaderItem.allCases) { item in
-        let isSelected = store.voteMainProperty.selectedSectionHeaderItem == item
+      ForEach(store.voteMainProperty.voteSectionItems) { item in
+        let isSelected = store.voteMainProperty.selectedVoteSectionItem == item
         SSButton(
           .init(
             size: .xsh28,
@@ -216,13 +216,13 @@ struct VoteMainView: View {
       .scrollTargetBehavior(.viewAligned)
       .scrollIndicators(.hidden)
     }
-    .padding(.horizontal, 16)
+    .padding(.all, 16)
     .background(SSColor.gray10)
   }
 
   @ViewBuilder
   private func makeFavoriteSectionItem(_ item: PopularVoteItem) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(spacing: 12) {
       // Top Content
       VStack(alignment: .leading, spacing: 8) {
         HStack(spacing: 0) {
@@ -233,13 +233,16 @@ struct VoteMainView: View {
           SSImage
             .envelopeForwardArrow
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+
         Text(item.content)
           .modifier(SSTypoModifier(.text_xxxs))
           .foregroundStyle(SSColor.gray100)
           .lineLimit(1)
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
-      .frame(maxWidth: .infinity)
 
+      // Button Content
       HStack(alignment: .center, spacing: 8) {
         SSImage
           .voteSystemLogo
@@ -252,12 +255,11 @@ struct VoteMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      .frame(maxWidth: .infinity, alignment: .center)
-      .background(.white)
+      .background(SSColor.gray10)
       .clipShape(RoundedRectangle(cornerRadius: 4))
     }
     .padding(16)
-    .frame(width: Metrics.favoriteItemWidth, alignment: .topLeading)
+    .frame(width: Metrics.favoriteItemWidth)
     .background(SSColor.gray15)
     .cornerRadius(8)
   }
@@ -291,6 +293,7 @@ struct VoteMainView: View {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
             .background(SSColor.gray10)
           makeContentView()
+            .ssLoading(store.isLoading)
         }
       }
     }

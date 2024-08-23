@@ -12,7 +12,7 @@ import Foundation
 // MARK: - WriteVoteProperty
 
 struct WriteVoteProperty: Equatable {
-  var selectedSection: VoteSectionHeaderItem = .wedding
+  var selectedSection: VoteSectionHeaderItem = .init(title: "", id: 33, seq: 2, isActive: true)
   var voteTextContent: String = ""
   var selectableItemID: Int = 0
   @Shared var selectableItem: IdentifiedArrayOf<TextFieldButtonWithTCAProperty>
@@ -31,7 +31,7 @@ struct WriteVoteProperty: Equatable {
 
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
   var availableSection: [VoteSectionHeaderItem] {
-    return VoteSectionHeaderItem.allCases.filter { $0 != .all }
+    return []
   }
 
   var voteTextContentPrompt = "투표 내용을 작성해주세요"

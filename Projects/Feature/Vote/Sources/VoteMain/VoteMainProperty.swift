@@ -12,9 +12,10 @@ import Foundation
 
 struct VoteMainProperty: Equatable {
   var favoriteVoteItems: [PopularVoteItem] = .makeItem()
-  var selectedSectionHeaderItem: VoteSectionHeaderItem = .all
+  var selectedVoteSectionItem: VoteSectionHeaderItem? = nil
+  var voteSectionItems: [VoteSectionHeaderItem] = []
   var selectedBottomFilterType: BottomVoteListFilterItemType = .none
-  var votePreviews: [VotePreviewProperty] =  []
+  var votePreviews: [VotePreviewProperty] = []
 
   mutating func setBottomFilter(_ item: BottomVoteListFilterItemType) {
     if selectedBottomFilterType == item {
@@ -22,6 +23,13 @@ struct VoteMainProperty: Equatable {
       return
     }
     selectedBottomFilterType = item
+  }
+
+  mutating func updateVoteSectionItems(_ items: [VoteSectionHeaderItem]) {
+    voteSectionItems = items
+    if let firstItem = items.first {
+      selectedVoteSectionItem = firstItem
+    }
   }
 }
 

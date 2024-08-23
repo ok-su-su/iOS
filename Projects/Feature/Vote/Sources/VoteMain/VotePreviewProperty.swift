@@ -18,6 +18,9 @@ struct VotePreviewProperty: Equatable, Identifiable {
   var createdAt: String
   var voteItemsTitle: [String]
   var participateCount: Int64
+}
+
+extension VotePreviewProperty {
   var participateCountLabel: String {
     CustomNumberFormatter.formattedByThreeZero(participateCount, subFixString: "명") ?? ""
   }

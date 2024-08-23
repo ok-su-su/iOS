@@ -25,9 +25,9 @@ struct VoteMain {
     var isPresentReport: Bool = false
     var isLoading: Bool = true
     @Presents var voteRouter: VoteRouter.State? = nil
+    fileprivate var taskManager: TaskManager = .init(taskCount: 3)
 
     fileprivate var isLastPage: Bool = false
-
     init() {}
   }
 
@@ -56,13 +56,19 @@ struct VoteMain {
     switch action {
     case let .onAppear(isAppear):
       state.isOnAppear = isAppear
-      return .merge(
-        .send(.async(.getPopularVoteItem)),
-        .send(.async(.getInitialVoteItems))
-      )
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        await withTaskGroup(of: Void.self) { group in
+          group.addTask {
+            await send(.async(.getPopularVoteItem))
+            await send(.async(.getInitialVoteItems))
+            await send(.async(.getVoteHeaderSectionItems))
+          }
+        }
+      }
 
     case let .tappedSectionItem(item):
-      state.voteMainProperty.selectedSectionHeaderItem = item
+      state.voteMainProperty.selectedVoteSectionItem = item
       return .none
 
     case let .tappedBottomVoteFilterType(type):
@@ -90,12 +96,18 @@ struct VoteMain {
     }
   }
 
+  enum CancelID {
+    case checkIsLoading
+  }
+
   enum InnerAction: Equatable {
+    case task(SingleTaskState)
     case present(VoteRouterInitialPath)
     case isLoading(Bool)
     case updatePopularItems([PopularVoteItem])
     case updateVoteItems([VotePreviewProperty])
     case overwriteVoteItems([VotePreviewProperty])
+    case updateVoteHeaderCategory([VoteSectionHeaderItem])
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
@@ -114,9 +126,25 @@ struct VoteMain {
     case let .updateVoteItems(items):
       state.voteMainProperty.votePreviews = items
       return .none
+
     case let .overwriteVoteItems(items):
       state.voteMainProperty.votePreviews.overwriteByID(items)
       return .none
+
+    case let .updateVoteHeaderCategory(items):
+      state.voteMainProperty.updateVoteSectionItems(items)
+      return .none
+    case let .task(taskState):
+      switch taskState {
+      case .willRun:
+        state.taskManager.taskWillRun()
+        return .none
+      case .didFinish:
+        state.taskManager.taskDidFinish()
+        return state.taskManager.isRunningTask() ?
+          .none :
+          .send(.inner(.isLoading(false))).throttle(id: CancelID.checkIsLoading, for: 0.2, scheduler: RunLoop.main, latest: true)
+      }
     }
   }
 
@@ -125,26 +153,55 @@ struct VoteMain {
     case getInitialVoteItems
     case getVoteItems(GetVoteRequestQueryParameter)
     case getPopularVoteItem
+    case getVoteHeaderSectionItems
+  }
+
+  private func runWithVoteMutex(
+    priority: TaskPriority? = nil,
+    operation: @escaping @Sendable (Send<Action>) async throws -> Void,
+    catch handler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void)? = nil
+  ) -> Effect<Action> {
+    let startOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.task(.willRun)))
+    }
+    let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.task(.didFinish)))
+    }
+    return .runWithStartFinishAction(
+      priority: priority,
+      operation: operation,
+      startOperation: startOperation,
+      endOperation: endOperation,
+      catch: handler
+    )
   }
 
   func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getInitialVoteItems:
-      return .run { send in
+      return runWithVoteMutex { send in
         let items = try await network.getPopularItems()
         await send(.inner(.updatePopularItems(items)))
       }
+
     case let .getVoteItems(param):
-      return .run { send in
+      return runWithVoteMutex { send in
         let response = try await network.getVoteItems(param)
         await send(.inner(.overwriteVoteItems(response.items)))
         // TODO: Page UpdateLogic 및 다양한 로직 세우기
       }
+
     case .getPopularVoteItem:
-      return .run { send in
+      return runWithVoteMutex { send in
         let response = try await network.getInitialVoteItems()
         await send(.inner(.updateVoteItems(response.items)))
         // TODO: Page UpdateLogic 및 다양한 로직 세우기
+      }
+
+    case .getVoteHeaderSectionItems:
+      return runWithVoteMutex { send in
+        let response = try await network.getVoteCategory()
+        await send(.inner(.updateVoteHeaderCategory(response)))
       }
     }
   }

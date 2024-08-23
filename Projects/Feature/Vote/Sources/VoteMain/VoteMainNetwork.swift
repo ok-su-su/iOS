@@ -40,6 +40,12 @@ struct VoteMainNetwork {
       hasNext: response.hasNext
     )
   }
+
+  var getVoteCategory: () async throws -> [VoteSectionHeaderItem]
+  private static func _getVoteCategory() async throws -> [VoteSectionHeaderItem] {
+    let models: [BoardModel] = try await provider.request(.getVoteConfig)
+    return models.map { $0.convertVoteSectionHeaderItem() }
+  }
 }
 
 // MARK: DependencyKey
@@ -49,11 +55,13 @@ extension VoteMainNetwork: DependencyKey {
   static var liveValue: VoteMainNetwork = .init(
     getPopularItems: _getPopularItems,
     getVoteItems: _getVoteItems,
-    getInitialVoteItems: { try await _getVoteItems(nil) }
+    getInitialVoteItems: { try await _getVoteItems(nil) },
+    getVoteCategory: _getVoteCategory
   )
   enum Network: SSNetworkTargetType {
     case getPopularItems
     case getVoteItems(GetVoteRequestQueryParameter)
+    case getVoteConfig
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -62,6 +70,8 @@ extension VoteMainNetwork: DependencyKey {
         "votes/popular"
       case .getVoteItems:
         "votes"
+      case .getVoteConfig:
+        "posts/configs/create-post"
       }
     }
 
@@ -70,6 +80,8 @@ extension VoteMainNetwork: DependencyKey {
       case .getPopularItems:
         .get
       case .getVoteItems:
+        .get
+      case .getVoteConfig:
         .get
       }
     }
@@ -80,6 +92,8 @@ extension VoteMainNetwork: DependencyKey {
         .requestPlain
       case let .getVoteItems(item):
         .requestParameters(parameters: item.queryParameters, encoding: URLEncoding.queryString)
+      case .getVoteConfig:
+        .requestPlain
       }
     }
   }
@@ -95,6 +109,6 @@ extension DependencyValues {
 private extension VoteAndOptionsWithCountResponse {
   func convertVotePreviewProperty() -> VotePreviewProperty {
     let voteItemsTitle = options.sorted(by: { $0.seq < $1.seq }).map(\.content)
-    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle)
+    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle, participateCount: count)
   }
 }

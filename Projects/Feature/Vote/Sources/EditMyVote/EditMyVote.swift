@@ -17,7 +17,7 @@ struct EditMyVote {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var helper: EditMyVoteProperty = .init()
+    var helper: EditMyVoteProperty = .init(selectedSection: .init(title: "", id: 22, seq: 3, isActive: true))
     var header: HeaderViewFeature.State = .init(.init(title: "투표 편집", type: .depth2Text("등록")))
     init() {}
   }
