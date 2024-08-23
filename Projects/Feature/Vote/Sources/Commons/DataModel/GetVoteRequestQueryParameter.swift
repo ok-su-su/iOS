@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 struct GetVoteRequestQueryParameter: Encodable {
   /// 제목
   var content: String?
@@ -20,7 +21,7 @@ struct GetVoteRequestQueryParameter: Encodable {
   var page: Int32?
   /// 페이지 사이즈, default 10
   var size: Int32?
-  // 정렬 조건 (정렬은 SortType이용하길 바람)
+  /// 정렬 조건 (정렬은 SortType이용하길 바람)
   var sort: Sort?
 
   var queryParameters: [String: Any] {

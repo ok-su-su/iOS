@@ -43,7 +43,7 @@ struct VoteMain {
     case tappedFloatingButton
     // TODO: 어떤 아이템을 터치 했는지 정확하게...
     case tappedVoteItem
-    case tappedReportButton(Int)
+    case tappedReportButton(Int64)
     case tappedReportConfirmButton(isCheck: Bool)
     case presentReport(Bool)
   }

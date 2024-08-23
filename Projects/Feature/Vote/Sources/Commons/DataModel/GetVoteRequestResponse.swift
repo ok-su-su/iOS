@@ -1,5 +1,5 @@
 //
-//  GetVoteResponse.swift
+//  GetVoteRequestResponse.swift
 //  Vote
 //
 //  Created by MaraMincho on 8/23/24.

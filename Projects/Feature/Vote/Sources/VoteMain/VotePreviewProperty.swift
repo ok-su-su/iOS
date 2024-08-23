@@ -21,7 +21,7 @@ struct VotePreviewProperty: Equatable, Identifiable {
 extension [VotePreviewProperty] {
   static func fakeData() -> Self {
     return (0 ..< 10).map { ind in
-        .init(categoryTitle: "하이용", content: "ss", id: ind, createdAt: "", voteItemsTitle: [])
+      .init(categoryTitle: "하이용", content: "ss", id: ind, createdAt: "", voteItemsTitle: [])
     }
   }
 }
