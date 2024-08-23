@@ -27,6 +27,17 @@ struct VoteMainNetwork {
       participantCount: $0.count
     ) }
   }
+
+  var getVoteItems: (_ param: GetVoteRequestQueryParameter) async throws -> GetVoteResponse
+  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter) async throws -> GetVoteResponse {
+    let response: SliceResponseDtoVoteAndOptionsWithCountResponse = try await provider.request(.getVoteItems(param))
+    return .init(
+      items: response.data.map{$0.convertVotePreviewProperty()},
+      page: response.page,
+      size: response.size,
+      hasNext: response.hasNext
+    )
+  }
 }
 
 // MARK: DependencyKey
@@ -34,17 +45,20 @@ struct VoteMainNetwork {
 extension VoteMainNetwork: DependencyKey {
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
   static var liveValue: VoteMainNetwork = .init(
-    getPopularItems: _getPopularItems
+    getPopularItems: _getPopularItems,
+    getVoteItems: _getVoteItems
   )
   enum Network: SSNetworkTargetType {
     case getPopularItems
+    case getVoteItems(GetVoteRequestQueryParameter)
 
     var additionalHeader: [String: String]? { nil }
-
     var path: String {
       switch self {
       case .getPopularItems:
         "votes/popular"
+      case .getVoteItems:
+        "votes"
       }
     }
 
@@ -52,6 +66,9 @@ extension VoteMainNetwork: DependencyKey {
       switch self {
       case .getPopularItems:
         .get
+      case .getVoteItems:
+          .get
+
       }
     }
 
@@ -59,7 +76,16 @@ extension VoteMainNetwork: DependencyKey {
       switch self {
       case .getPopularItems:
         .requestPlain
+      case let .getVoteItems(item):
+          .requestParameters(parameters: item.queryParameters, encoding: URLEncoding.queryString)
       }
     }
+  }
+}
+
+fileprivate extension VoteAndOptionsWithCountResponse {
+  func convertVotePreviewProperty() -> VotePreviewProperty {
+    let voteItemsTitle = options.sorted(by: {$0.seq < $1.seq}).map{$0.content}
+    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle)
   }
 }
