@@ -35,18 +35,23 @@ struct VoteMainView: View {
         }
       }
     }
+    .refreshable { @MainActor in
+      await store.send(.view(.executeRefresh)).finish()
+    }
   }
 
   @ViewBuilder
   private func makeVoteList() -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      ForEach(store.voteMainProperty.votePreviews) { item in
-        makeVotePreview(item: item)
+    if !store.voteMainProperty.votePreviews.isEmpty {
+      LazyVStack(alignment: .leading, spacing: 12) {
+        ForEach(store.voteMainProperty.votePreviews) { item in
+          makeVotePreview(item: item)
+        }
       }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .background(SSColor.gray10)
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -88,14 +93,15 @@ struct VoteMainView: View {
           let buttonTitles = item.voteItemsTitle
           ForEach(0 ..< buttonTitles.count, id: \.self) { index in
             if let currentTitle = buttonTitles[safe: index] {
-              SSButton(.init(
-                size: .xsh36,
-                status: .active,
-                style: .ghost,
-                color: .black,
-                buttonText: "\(item)만원 ",
-                frame: .init(maxWidth: .infinity, alignment: .leading)
-              )
+              SSButton(
+                .init(
+                  size: .xsh36,
+                  status: .active,
+                  style: .ghost,
+                  color: .black,
+                  buttonText: currentTitle,
+                  frame: .init(maxWidth: .infinity, alignment: .leading)
+                )
               ) {}
                 .disabled(true)
             }
@@ -127,12 +133,15 @@ struct VoteMainView: View {
     .onTapGesture {
       store.send(.view(.tappedVoteItem))
     }
+    .onAppear {
+      store.sendViewAction(.voteItemOnAppear(item))
+    }
   }
 
   @ViewBuilder
   private func makeBottomVoteListFilter() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      let selectedFilter = store.voteMainProperty.selectedBottomFilterType
+      let isPopular = store.voteMainProperty.sortByPopular
       // 투표 많은 순
       HStack(alignment: .center, spacing: 8) {
         Circle()
@@ -141,16 +150,18 @@ struct VoteMainView: View {
         Text(Constants.mostVotesFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(selectedFilter == .mostVote ? SSColor.orange60 : SSColor.gray40)
+      .foregroundStyle(isPopular ? SSColor.orange60 : SSColor.gray40)
+      .contentShape(Rectangle())
       .onTapGesture {
-        store.send(.view(.tappedBottomVoteFilterType(.mostVote)))
+        store.sendViewAction(.tappedPopularSortButton)
       }
 
       Spacer()
 
       // 내 글 보기
+      let isOnlyMyPostFilter = store.voteMainProperty.onlyMineVoteFilter
       HStack(spacing: 4) {
-        if selectedFilter == .myBoard {
+        if isOnlyMyPostFilter {
           SSImage.commonMainCheckBox
             .resizable()
             .frame(width: 20, height: 20)
@@ -164,12 +175,12 @@ struct VoteMainView: View {
         Text(Constants.myBoardOnlyFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(selectedFilter == .myBoard ? SSColor.orange60 : SSColor.gray40)
+      .foregroundStyle(isOnlyMyPostFilter ? SSColor.orange60 : SSColor.gray40)
+      .contentShape(Rectangle())
       .onTapGesture {
-        store.send(.view(.tappedBottomVoteFilterType(.myBoard)))
+        store.sendViewAction(.tappedOnlyMyPostButton)
       }
     }
-
     .padding(.vertical, 8)
     .padding(.horizontal, 16)
     .background(SSColor.gray10)
@@ -231,7 +242,7 @@ struct VoteMainView: View {
             .foregroundStyle(SSColor.gray60)
 
           SSImage
-            .envelopeForwardArrow
+            .voteRightArrow
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -278,7 +289,7 @@ struct VoteMainView: View {
         SSImage
           .voteWrite
       }
-      .padding(.trailing, 20)
+      .padding(.all, 20)
     }
   }
 

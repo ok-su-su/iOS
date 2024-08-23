@@ -28,9 +28,9 @@ struct VoteMainNetwork {
     ) }
   }
 
-  var getVoteItems: (_ param: GetVoteRequestQueryParameter?) async throws -> GetVoteResponse
-  var getInitialVoteItems: () async throws -> GetVoteResponse
-  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter?) async throws -> GetVoteResponse {
+  var getVoteItems: (_ param: GetVoteRequestQueryParameter?) async throws -> VoteNetworkResponse
+  var getInitialVoteItems: () async throws -> VoteNetworkResponse
+  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter?) async throws -> VoteNetworkResponse {
     let param = param ?? .init()
     let response: SliceResponseDtoVoteAndOptionsWithCountResponse = try await provider.request(.getVoteItems(param))
     return .init(

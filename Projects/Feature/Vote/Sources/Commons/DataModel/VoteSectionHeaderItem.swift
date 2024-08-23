@@ -23,3 +23,9 @@ extension BoardModel {
     .init(title: name, id: id, seq: seq, isActive: isActive)
   }
 }
+
+extension VoteSectionHeaderItem {
+  static var initialState: Self {
+    .init(title: "전체", id: 0, seq: 0, isActive: true)
+  }
+}

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GetVoteResponse {
+struct VoteNetworkResponse: Equatable {
   let items: [VotePreviewProperty]
   let page: Int32?
   let size: Int32?

@@ -16,7 +16,7 @@ struct GetVoteRequestQueryParameter: Equatable, Encodable {
   /// 정렬 기준 / 최신순 : LATEST, 투표 많은 순 : POPULAR
   var sortType: SortType?
   /// 보드 id
-  var boardID: Int64?
+  var boardId: Int64?
   /// 페이지, 페이지 0 부터 시작
   var page: Int32?
   /// 페이지 사이즈, default 10
@@ -36,8 +36,8 @@ struct GetVoteRequestQueryParameter: Equatable, Encodable {
     if let sortType {
       res["sortType"] = sortType.rawValue
     }
-    if let boardID {
-      res["boardID"] = boardID
+    if let boardId {
+      res["boardId"] = boardId
     }
     if let page {
       res["page"] = page
