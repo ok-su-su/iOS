@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/19/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -55,7 +56,10 @@ struct VoteMain {
     switch action {
     case let .onAppear(isAppear):
       state.isOnAppear = isAppear
-      return .none
+      return .merge(
+        .send(.async(.getPopularVoteItem)),
+        .send(.async(.getInitialVoteItems))
+      )
 
     case let .tappedSectionItem(item):
       state.voteMainProperty.selectedSectionHeaderItem = item
@@ -127,15 +131,21 @@ struct VoteMain {
     switch action {
     case .getInitialVoteItems:
       return .run { send in
-        let response = try await network.getPopularItems()
-
+        let items = try await network.getPopularItems()
+        await send(.inner(.updatePopularItems(items)))
       }
     case let .getVoteItems(param):
       return .run { send in
         let response = try await network.getVoteItems(param)
+        await send(.inner(.overwriteVoteItems(response.items)))
+        // TODO: Page UpdateLogic 및 다양한 로직 세우기
       }
     case .getPopularVoteItem:
-      return .none
+      return .run { send in
+        let response = try await network.getInitialVoteItems()
+        await send(.inner(.updateVoteItems(response.items)))
+        // TODO: Page UpdateLogic 및 다양한 로직 세우기
+      }
     }
   }
 
@@ -193,38 +203,5 @@ private extension Reducer where State == VoteMain.State, Action == VoteMain.Acti
     ifLet(\.$voteRouter, action: \.scope.voteRouter) {
       VoteRouter()
     }
-  }
-}
-
-extension Array where Element: Identifiable{
-  func overwritedByID(_ others: Self) -> Self{
-    var mutatingSelf = self
-    var indexDictionary: [Element.ID : Int] = [:]
-    enumerated().forEach{indexDictionary[$0.element.id] = $0.offset}
-    let notUpdateOthers = others.compactMap{ element -> Element? in
-      if let index = indexDictionary[element.id] {
-        mutatingSelf[index] = element
-        return nil
-      }
-      return element
-    }
-    return mutatingSelf + notUpdateOthers
-  }
-
-  mutating func overwriteByID(_ others: Self){
-    var indexDictionary: [Element.ID : Int] = [:]
-    enumerated().forEach{indexDictionary[$0.element.id] = $0.offset}
-    let notUpdateOthers = others.compactMap{ element -> Element? in
-      if let index = indexDictionary[element.id] {
-        self[index] = element
-        return nil
-      }
-      return element
-    }
-    notUpdateOthers.forEach{append($0)}
-  }
-
-  subscript (safe index: Int) -> Element? {
-    indices.contains(index) ? self[index] : nil
   }
 }

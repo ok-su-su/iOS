@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/19/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import SSAlert
@@ -57,7 +58,7 @@ struct VoteMainView: View {
           HStack {
             HStack(alignment: .center, spacing: 0) {
               // SectionTitleText
-              Text("결혼식")
+              Text(item.categoryTitle)
                 .modifier(SSTypoModifier(.title_xxxs))
                 .foregroundStyle(SSColor.orange60)
 
@@ -67,39 +68,44 @@ struct VoteMainView: View {
 
             Spacer()
 
-            Text("10분 전")
+            Text(item.createdAt)
               .modifier(SSTypoModifier(.text_xxxs))
               .foregroundStyle(SSColor.gray60)
           }
           // Content
-          Text("고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼? 고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼?")
+          Text(item.content)
             .modifier(SSTypoModifier(.text_xxxs))
             .foregroundStyle(SSColor.gray100)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .lineLimit(2)
             .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity)
 
         // Middle Section
 
         VStack(spacing: 4) {
-          ForEach([3, 5, 10, 20, 30], id: \.self) { item in
-            SSButton(
-              .init(
+          let buttonTitles = item.voteItemsTitle
+          ForEach(0 ..< buttonTitles.count, id: \.self) { index in
+            if let currentTitle = buttonTitles[safe: index] {
+              SSButton(.init(
                 size: .xsh36,
                 status: .active,
                 style: .ghost,
                 color: .black,
-                buttonText: "\(item)만원 ", frame: .init(maxWidth: .infinity, alignment: .leading)
-              )) {}
-              .disabled(true)
+                buttonText: "\(item)만원 ",
+                frame: .init(maxWidth: .infinity, alignment: .leading)
+              )
+              ) {}
+                .disabled(true)
+            }
           }
         }
         .frame(maxWidth: .infinity)
 
         // Bottom Section
         HStack(spacing: 0) {
-          Text("8명 참여") // Participants Count
+          Text(item.participateCountLabel) // Participants Count
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.blue60)
 

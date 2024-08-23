@@ -28,8 +28,10 @@ struct VoteMainNetwork {
     ) }
   }
 
-  var getVoteItems: (_ param: GetVoteRequestQueryParameter) async throws -> GetVoteResponse
-  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter) async throws -> GetVoteResponse {
+  var getVoteItems: (_ param: GetVoteRequestQueryParameter?) async throws -> GetVoteResponse
+  var getInitialVoteItems: () async throws -> GetVoteResponse
+  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter?) async throws -> GetVoteResponse {
+    let param = param ?? .init()
     let response: SliceResponseDtoVoteAndOptionsWithCountResponse = try await provider.request(.getVoteItems(param))
     return .init(
       items: response.data.map { $0.convertVotePreviewProperty() },
@@ -46,7 +48,8 @@ extension VoteMainNetwork: DependencyKey {
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
   static var liveValue: VoteMainNetwork = .init(
     getPopularItems: _getPopularItems,
-    getVoteItems: _getVoteItems
+    getVoteItems: _getVoteItems,
+    getInitialVoteItems: { try await _getVoteItems(nil) }
   )
   enum Network: SSNetworkTargetType {
     case getPopularItems

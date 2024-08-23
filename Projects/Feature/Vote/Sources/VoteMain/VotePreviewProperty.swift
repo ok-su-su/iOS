@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import CommonExtension
 import Foundation
 
 // MARK: - VotePreviewProperty
@@ -16,12 +17,8 @@ struct VotePreviewProperty: Equatable, Identifiable {
   var id: Int64
   var createdAt: String
   var voteItemsTitle: [String]
-}
-
-extension [VotePreviewProperty] {
-  static func fakeData() -> Self {
-    return (0 ..< 10).map { ind in
-      .init(categoryTitle: "하이용", content: "ss", id: ind, createdAt: "", voteItemsTitle: [])
-    }
+  var participateCount: Int64
+  var participateCountLabel: String {
+    CustomNumberFormatter.formattedByThreeZero(participateCount, subFixString: "명") ?? ""
   }
 }

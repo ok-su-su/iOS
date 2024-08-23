@@ -14,7 +14,7 @@ struct VoteMainProperty: Equatable {
   var favoriteVoteItems: [PopularVoteItem] = .makeItem()
   var selectedSectionHeaderItem: VoteSectionHeaderItem = .all
   var selectedBottomFilterType: BottomVoteListFilterItemType = .none
-  var votePreviews: [VotePreviewProperty] = .fakeData()
+  var votePreviews: [VotePreviewProperty] =  []
 
   mutating func setBottomFilter(_ item: BottomVoteListFilterItemType) {
     if selectedBottomFilterType == item {

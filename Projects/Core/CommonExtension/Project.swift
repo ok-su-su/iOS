@@ -9,4 +9,3 @@ let project = Project.makeModule(
     product: .framework
   )
 )
-
