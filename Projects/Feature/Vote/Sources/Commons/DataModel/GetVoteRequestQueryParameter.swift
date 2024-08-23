@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GetVoteRequestQueryParameter: Encodable {
+struct GetVoteRequestQueryParameter: Equatable, Encodable {
   /// 제목
   var content: String?
   /// 본인 글 소유 여부

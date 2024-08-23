@@ -22,7 +22,10 @@ struct VoteMain {
     var tabBar = SSTabBarFeature.State(tabbarType: .vote)
     var voteMainProperty = VoteMainProperty()
     var isPresentReport: Bool = false
+    var isLoading: Bool = true
     @Presents var voteRouter: VoteRouter.State? = nil
+
+    fileprivate var isLastPage: Bool = false
 
     init() {}
   }
@@ -48,17 +51,116 @@ struct VoteMain {
     case presentReport(Bool)
   }
 
-  enum InnerAction: Equatable {
-    case present(VoteRouterInitialPath)
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .none
+
+    case let .tappedSectionItem(item):
+      state.voteMainProperty.selectedSectionHeaderItem = item
+      return .none
+
+    case let .tappedBottomVoteFilterType(type):
+      state.voteMainProperty.setBottomFilter(type)
+      return .none
+
+    case .tappedFloatingButton:
+      return .send(.inner(.present(.write)))
+
+    case .tappedVoteItem:
+      return .send(.inner(.present(.voteDetail(Bool.random() ? .mine : .other))))
+
+    case let .tappedReportButton(id):
+      // TODO: 메시지 신고할 때 추가 로직 생성
+      state.isPresentReport = true
+      return .none
+
+    case let .tappedReportConfirmButton(isChecked):
+      // TODO: 신고 했을 때 로직 생성
+      return .none
+
+    case let .presentReport(val):
+      state.isPresentReport = val
+      return .none
+    }
   }
 
-  enum AsyncAction: Equatable {}
+  enum InnerAction: Equatable {
+    case present(VoteRouterInitialPath)
+    case isLoading(Bool)
+    case updatePopularItems([PopularVoteItem])
+    case updateVoteItems([VotePreviewProperty])
+    case overwriteVoteItems([VotePreviewProperty])
+  }
+
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .present(present):
+      state.voteRouter = .init(initialPath: present)
+      return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+
+    case let .updatePopularItems(popularItems):
+      state.voteMainProperty.favoriteVoteItems = popularItems
+      return .none
+    case let .updateVoteItems(items):
+      state.voteMainProperty.votePreviews = items
+      return .none
+    case let .overwriteVoteItems(items):
+      state.voteMainProperty.votePreviews.overwriteByID(items)
+      return .none
+    }
+  }
+
+  @Dependency(\.voteMainNetwork) var network
+  enum AsyncAction: Equatable {
+    case getInitialVoteItems
+    case getVoteItems(GetVoteRequestQueryParameter)
+    case getPopularVoteItem
+  }
+
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getInitialVoteItems:
+      return .run { send in
+        let response = try await network.getPopularItems()
+
+      }
+    case let .getVoteItems(param):
+      return .run { send in
+        let response = try await network.getVoteItems(param)
+      }
+    case .getPopularVoteItem:
+      return .none
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
     case voteRouter(PresentationAction<VoteRouter.Action>)
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .tabBar:
+      return .none
+
+    case .header(.tappedSearchButton):
+      state.voteRouter = .init(initialPath: .search)
+      return .none
+
+    case .header:
+      return .none
+
+    case .voteRouter:
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -72,51 +174,14 @@ struct VoteMain {
     }
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
-
-      case .scope(.tabBar):
-        return .none
-
-      case .scope(.header(.tappedSearchButton)):
-        state.voteRouter = .init(initialPath: .search)
-        return .none
-
-      case .scope(.header):
-        return .none
-
-      case let .view(.tappedSectionItem(item)):
-        state.voteMainProperty.selectedSectionHeaderItem = item
-        return .none
-
-      case let .view(.tappedBottomVoteFilterType(type)):
-        state.voteMainProperty.setBottomFilter(type)
-        return .none
-
-      case .view(.tappedFloatingButton):
-        return .send(.inner(.present(.write)))
-
-      case .view(.tappedVoteItem):
-        return .send(.inner(.present(.voteDetail(Bool.random() ? .mine : .other))))
-
-      case let .view(.tappedReportButton(id)):
-        // TODO: 메시지 신고할 때 추가 로직 생성
-        state.isPresentReport = true
-        return .none
-      case let .view(.tappedReportConfirmButton(idChecked)):
-        // TODO: 신고 했을 때 로직 생성
-        return .none
-      case let .view(.presentReport(val)):
-        state.isPresentReport = val
-        return .none
-
-      case .scope(.voteRouter):
-        return .none
-
-      case let .inner(.present(present)):
-        state.voteRouter = .init(initialPath: present)
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
     .addFeatures0()
@@ -128,5 +193,38 @@ private extension Reducer where State == VoteMain.State, Action == VoteMain.Acti
     ifLet(\.$voteRouter, action: \.scope.voteRouter) {
       VoteRouter()
     }
+  }
+}
+
+extension Array where Element: Identifiable{
+  func overwritedByID(_ others: Self) -> Self{
+    var mutatingSelf = self
+    var indexDictionary: [Element.ID : Int] = [:]
+    enumerated().forEach{indexDictionary[$0.element.id] = $0.offset}
+    let notUpdateOthers = others.compactMap{ element -> Element? in
+      if let index = indexDictionary[element.id] {
+        mutatingSelf[index] = element
+        return nil
+      }
+      return element
+    }
+    return mutatingSelf + notUpdateOthers
+  }
+
+  mutating func overwriteByID(_ others: Self){
+    var indexDictionary: [Element.ID : Int] = [:]
+    enumerated().forEach{indexDictionary[$0.element.id] = $0.offset}
+    let notUpdateOthers = others.compactMap{ element -> Element? in
+      if let index = indexDictionary[element.id] {
+        self[index] = element
+        return nil
+      }
+      return element
+    }
+    notUpdateOthers.forEach{append($0)}
+  }
+
+  subscript (safe index: Int) -> Element? {
+    indices.contains(index) ? self[index] : nil
   }
 }

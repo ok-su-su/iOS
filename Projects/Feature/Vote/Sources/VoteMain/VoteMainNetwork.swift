@@ -82,6 +82,13 @@ extension VoteMainNetwork: DependencyKey {
   }
 }
 
+extension DependencyValues {
+  var voteMainNetwork: VoteMainNetwork {
+    get { self[VoteMainNetwork.self] }
+    set { self[VoteMainNetwork.self] = newValue }
+  }
+}
+
 private extension VoteAndOptionsWithCountResponse {
   func convertVotePreviewProperty() -> VotePreviewProperty {
     let voteItemsTitle = options.sorted(by: { $0.seq < $1.seq }).map(\.content)
