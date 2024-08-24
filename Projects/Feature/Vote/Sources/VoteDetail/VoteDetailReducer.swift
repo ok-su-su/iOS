@@ -19,7 +19,7 @@ struct VoteDetailReducer {
   struct State: Equatable {
     var id: Int64
     var isOnAppear = false
-    var isVoted: Bool = false
+    var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
     ///    var helper: OtherVoteDetailProperty = .init()
     ///    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
@@ -71,6 +71,9 @@ struct VoteDetailReducer {
       return .run { _ in await dismiss() }
 
     case let .tappedVoteItem(id):
+      if state.selectedVotedID != nil {
+        
+      }
       return .none
     }
   }
@@ -82,6 +85,10 @@ struct VoteDetailReducer {
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .updateVoteDetail(property):
+      if let votedItem = property.options.filter({$0.isVoted}).first {
+        state.selectedVotedID = votedItem.id
+      }
+      // propertyUpdate
       state.voteDetailProperty = property
 
       let title = property.board.name
@@ -108,7 +115,6 @@ struct VoteDetailReducer {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
-    case voteProgressBar(IdentifiedActionOf<VoteProgressBarReducer>)
   }
 
   func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
@@ -117,10 +123,6 @@ struct VoteDetailReducer {
       return .send(.view(.showAlert(true)))
 
     case .header:
-      return .none
-
-    case let .voteProgressBar(.element(id: id, action: .tapped)):
-//      state.helper.voted(id: id)
       return .none
     }
   }

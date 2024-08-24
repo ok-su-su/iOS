@@ -12,15 +12,9 @@ import SwiftUI
 // MARK: - VoteDetailProgressProperty
 
 struct VoteDetailProgressProperty: Equatable {
-  var isShowProgressBar: Bool = false
-  private var _items: [VoteDetailProgressBarProperty]
+  let selectedVotedID: Int64?
+  private var _items: [VoteDetailProgressBarProperty] = []
   var items: [VoteDetailProgressBarProperty] { _items }
-  private var _currentVotedItemID: Int64? = nil
-  var currentVotedItemID: Int64? { _currentVotedItemID }
-
-  mutating func updateCurrentVoteItemID(_ id: Int64) {
-    _currentVotedItemID = id
-  }
 
   mutating func updateItems(_ items: [VoteDetailProgressBarProperty]) {
     let totalCount = items.reduce(0) { $0 + $1.count }
@@ -31,9 +25,9 @@ struct VoteDetailProgressProperty: Equatable {
     }
   }
 
-  init(isShowProgressBar: Bool, items: [VoteDetailProgressBarProperty]) {
-    self.isShowProgressBar = isShowProgressBar
-    _items = items
+  init(selectedVotedID: Int64?, items: [VoteDetailProgressBarProperty]) {
+    self.selectedVotedID = selectedVotedID
+    updateItems(items)
   }
 }
 
@@ -87,16 +81,17 @@ struct VoteDetailProgressView: View {
   @ViewBuilder
   private func makeProgressBarView(_ item: VoteDetailProgressBarProperty) -> some View {
     ZStack(alignment: .leading) {
+      let isSelected = property.selectedVotedID == item.id
       // progress bar
-      if property.isShowProgressBar {
+      if property.selectedVotedID != nil {
         GeometryReader { proxy in
-          SSColor.orange40
+          Rectangle()
+            .fill(isSelected ? SSColor.orange60 : SSColor.orange40)
             .frame(width: proxy.size.width * item.portion, alignment: .leading)
         }
       }
 
       HStack(alignment: .center, spacing: 0) {
-        let isSelected = property.currentVotedItemID == item.id
         // if voted, add check image
         if isSelected {
           SSImage
@@ -112,7 +107,7 @@ struct VoteDetailProgressView: View {
         Spacer()
 
         // if show Progress
-        if property.isShowProgressBar {
+        if property.selectedVotedID != nil {
           HStack(spacing: 8) {
             Text(Constants.participantsCountLabel(item.count))
               .modifier(SSTypoModifier(.text_xxxs))
