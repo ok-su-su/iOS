@@ -12,7 +12,7 @@ import SwiftUI
 // MARK: - VoteDetailProgressProperty
 
 struct VoteDetailProgressProperty: Equatable {
-  let selectedVotedID: Int64?
+  var selectedVotedID: Int64?
   private var _items: [VoteDetailProgressBarProperty] = []
   var items: [VoteDetailProgressBarProperty] { _items }
 
@@ -32,6 +32,7 @@ struct VoteDetailProgressProperty: Equatable {
     if let currentSelectedFirstIndex = _items.firstIndex(where: { $0.id == optionID }) {
       _items[currentSelectedFirstIndex].count += 1
     }
+    selectedVotedID = optionID
     updateItems(_items)
   }
 
@@ -52,7 +53,7 @@ struct VoteDetailProgressBarProperty: Equatable, Identifiable {
   var title: String
   /// 퍼센테이지
   var percentageLabel: Int {
-    Int(portion * 100)
+    Int((portion * 100).rounded())
   }
 
   var portion: Double {
@@ -90,17 +91,8 @@ struct VoteDetailProgressView: View {
 
   @ViewBuilder
   private func makeProgressBarView(_ item: VoteDetailProgressBarProperty) -> some View {
+    let isSelected = property.selectedVotedID == item.id
     ZStack(alignment: .leading) {
-      let isSelected = property.selectedVotedID == item.id
-      // progress bar
-      if property.selectedVotedID != nil {
-        GeometryReader { proxy in
-          Rectangle()
-            .fill(isSelected ? SSColor.orange60 : SSColor.orange40)
-            .frame(width: proxy.size.width * item.portion, alignment: .leading)
-        }
-      }
-
       HStack(alignment: .center, spacing: 0) {
         // if voted, add check image
         if isSelected {
@@ -133,7 +125,18 @@ struct VoteDetailProgressView: View {
       .padding(.horizontal, 16)
     }
     .frame(maxWidth: .infinity, alignment: .center)
-    .background(SSColor.orange10)
+    .background {
+      ZStack(alignment: .leading) {
+        SSColor.orange10
+        if property.selectedVotedID != nil {
+          GeometryReader { proxy in
+            Rectangle()
+              .fill(isSelected ? SSColor.orange60 : SSColor.orange40)
+              .frame(width: proxy.size.width * item.portion, alignment: .leading)
+          }
+        }
+      }
+    }
     .clipShape(RoundedRectangle(cornerRadius: 4))
     .onTapGesture {
       onTapProgressBar(item.id)

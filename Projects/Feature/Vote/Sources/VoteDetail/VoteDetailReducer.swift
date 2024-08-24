@@ -79,14 +79,14 @@ struct VoteDetailReducer {
       // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
       if state.selectedVotedID == nil {
         return .run { [boardID = state.id, optionID = id] send in
-          try await network.executeVote(boardID, optionID)
           await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
+          try await network.executeVote(boardID, optionID)
         }
         // 만약 선택된 아이디가 있는 경우(투표 덮어쓰기)
       } else if state.selectedVotedID != id {
         return .run { [boardID = state.id, optionID = id] send in
-          try await network.overwriteVote(boardID, optionID)
           await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
+          try await network.overwriteVote(boardID, optionID)
         }.throttle(id: CancelID.patchVote, for: 2, scheduler: RunLoop.main, latest: false)
         // 선택된 아이디를 다시 선택한 경우
       } else {
