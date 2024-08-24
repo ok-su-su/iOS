@@ -6,12 +6,11 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import CommonExtension
+import Foundation
 import SSPersistancy
 
 final class VoteSearchPersistence {
-
   private init() {}
 
   static func getPrevVoteSearchItems() -> [VoteSearchItem] {
@@ -27,8 +26,9 @@ final class VoteSearchPersistence {
     let uniqueItems = ([item] + prevItems).uniqued()
     savePrevVoteSearchItems(uniqueItems)
   }
+
   static func deletePrevVoteSearchItemsByID(_ id: Int64) {
-    let items = getPrevVoteSearchItems().filter{$0.id != id}
+    let items = getPrevVoteSearchItems().filter { $0.id != id }
     savePrevVoteSearchItems(items)
   }
 

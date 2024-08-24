@@ -54,9 +54,33 @@ struct VoteSearch {
     }
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case updateVoteSearchItem([VoteSearchItem])
+  }
 
-  enum AsyncAction: Equatable {}
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .updateVoteSearchItem(items):
+      state.helper.nowSearchedItem = items
+      return .none
+    }
+  }
+
+  @Dependency(\.voteSearchNetwork) var network
+
+  enum AsyncAction: Equatable {
+    case searchVoteByContent(String)
+  }
+
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case let .searchVoteByContent(contentString):
+      return .run { send in
+        let items = try await network.searchByVoteName(contentString)
+        await send(.inner(.updateVoteSearchItem(items)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
@@ -66,23 +90,8 @@ struct VoteSearch {
 
   func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
-    case let .searchReducer(.changeTextField(text)):
-      // changeTextField
-//        state.helper.searchItem(by: text)
-      return .none
-    case let .searchReducer(.tappedDeletePrevItem(id: id)):
-      state.helper.deletePrevItem(prevItemID: id)
-      return .none
-
-    case let .searchReducer(.tappedPrevItem(id: id)):
-      let title = state.helper.titleByPrevItem(id: id)
-      return .send(.scope(.searchReducer(.changeTextField(title))))
-
-    case let .searchReducer(.tappedPrevItem(id)):
-      return .none
-
-    case .searchReducer:
-      return .none
+    case let .searchReducer(currentAction):
+      return searchAction(&state, currentAction)
 
     case .header:
       return .none
@@ -91,14 +100,13 @@ struct VoteSearch {
 
   func searchAction(_ state: inout State, _ action: SSSearchReducer<VoteSearchProperty>.Action) -> Effect<Action> {
     switch action {
-    case let  .onAppear(bool):
+    case let .onAppear(bool):
       return .none
     case .tappedCloseButton:
       return .none
 
-    case let .changeTextField(string):
-      // TODO: Network 검색 기능 추가
-      return .none
+    case let .changeTextField(contentString):
+      return .send(.async(.searchVoteByContent(contentString)))
 
     case let .tappedPrevItem(id):
       VotePathPublisher.shared.push(.detail(.init(id: id)))
@@ -110,10 +118,11 @@ struct VoteSearch {
       return .none
 
     case let .tappedSearchItem(id):
-      if let targetItem = state.helper.nowSearchedItem.first(where: {$0.id == id}) {
+      if let targetItem = state.helper.nowSearchedItem.first(where: { $0.id == id }) {
         VoteSearchPersistence.setPrevVoteSearchItems(targetItem)
       }
       VotePathPublisher.shared.push(.detail(.init(id: id)))
+      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
       return .none
     }
   }
@@ -133,6 +142,10 @@ struct VoteSearch {
         return viewAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
       }
     }
   }
