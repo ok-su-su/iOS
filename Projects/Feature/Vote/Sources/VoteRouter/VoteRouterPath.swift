@@ -9,21 +9,6 @@
 import ComposableArchitecture
 import Foundation
 
-// MARK: - DismissVoteRouter
-
-@Reducer
-struct DismissVoteRouter {
-  struct State: Equatable {}
-
-  struct Action: Equatable {}
-
-  var body: some ReducerOf<Self> {
-    Reduce { _, _ in
-      return .none
-    }
-  }
-}
-
 // MARK: - VoteRouterPath
 
 @Reducer(state: .equatable, action: .equatable)
@@ -33,5 +18,4 @@ enum VoteRouterPath {
   case write(WriteVote)
   case myVote(MyVoteDetail)
   case edit(EditMyVote)
-  case dismiss(DismissVoteRouter)
 }

@@ -24,7 +24,12 @@ struct VoteMain {
     var voteMainProperty = VoteMainProperty()
     var isPresentReport: Bool = false
     var isLoading: Bool = true
-    @Presents var voteRouter: VoteRouter.State? = nil
+
+    fileprivate var votePath: VotePathReducer.State = .init()
+    var path: StackState<VoteRouterPath.State> {
+      votePath.path
+    }
+
     fileprivate var taskManager: TaskManager = .init(taskCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
@@ -68,6 +73,12 @@ struct VoteMain {
     case executeRefresh
   }
 
+  private func registerVoteReducer() -> Effect<Action> {
+    return .merge(
+      .send(.scope(.votePath(.registerReducer)))
+    )
+  }
+
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
@@ -76,6 +87,7 @@ struct VoteMain {
       }
       state.isOnAppear = isAppear
       return .concatenate(
+        .send(.scope(.votePath(.registerReducer))),
         .send(.inner(.isLoading(true))),
         .merge(
           .send(.async(.getPopularVoteItems)),
@@ -97,10 +109,12 @@ struct VoteMain {
       return .send(.async(.getInitialVoteItems))
 
     case .tappedFloatingButton:
-      return .send(.inner(.present(.write)))
+      state.votePath.path.append(.write(.init()))
+      return .none
 
     case .tappedVoteItem:
-      return .send(.inner(.present(.voteDetail(Bool.random() ? .mine : .other))))
+      return .none
+//      return .send(.inner(.present(.voteDetail(Bool.random() ? .mine : .other))))
 
     case let .tappedReportButton(id):
       // TODO: 메시지 신고할 때 추가 로직 생성
@@ -133,7 +147,6 @@ struct VoteMain {
 
   enum InnerAction: Equatable {
     case task(SingleTaskState)
-    case present(VoteRouterInitialPath)
     case isLoading(Bool)
     case updatePopularItems([PopularVoteItem])
     case updateVoteItems(VoteNetworkResponse)
@@ -143,10 +156,6 @@ struct VoteMain {
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
-    case let .present(present):
-      state.voteRouter = .init(initialPath: present)
-      return .none
-
     case let .isLoading(val):
       state.isLoading = val
       return .none
@@ -250,24 +259,24 @@ struct VoteMain {
 
   @CasePathable
   enum ScopeAction: Equatable {
+    case votePath(VotePathReducer.Action)
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
-    case voteRouter(PresentationAction<VoteRouter.Action>)
   }
 
-  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
+    case .votePath:
+      return .none
+
     case .tabBar:
       return .none
 
     case .header(.tappedSearchButton):
-      state.voteRouter = .init(initialPath: .search)
+      VotePathPublisher.shared.push(.search(.init()))
       return .none
 
     case .header:
-      return .none
-
-    case .voteRouter:
       return .none
     }
   }
@@ -275,6 +284,10 @@ struct VoteMain {
   enum DelegateAction: Equatable {}
 
   var body: some Reducer<State, Action> {
+    Scope(state: \.votePath, action: \.scope.votePath) {
+      VotePathReducer()
+    }
+
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
@@ -293,14 +306,7 @@ struct VoteMain {
         return asyncAction(&state, currentAction)
       }
     }
-    .addFeatures0()
   }
 }
 
-private extension Reducer where State == VoteMain.State, Action == VoteMain.Action {
-  func addFeatures0() -> some ReducerOf<Self> {
-    ifLet(\.$voteRouter, action: \.scope.voteRouter) {
-      VoteRouter()
-    }
-  }
-}
+private extension Reducer where State == VoteMain.State, Action == VoteMain.Action {}

@@ -9,23 +9,26 @@
 import Combine
 import Foundation
 
-// MARK: - VoteRouterBuilder
-
-final class VoteRouterBuilder {
-  var voteRouter: VoteRouter = .init()
-}
-
 // MARK: - VotePathPublisher
 
 final class VotePathPublisher {
   static var shared: VotePathPublisher = .init()
   private var publisher: PassthroughSubject<VoteRouterPath.State, Never> = .init()
   func pathPublisher() -> AnyPublisher<VoteRouterPath.State, Never> {
-    return publisher.eraseToAnyPublisher()
+    return publisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
   func push(_ path: VoteRouterPath.State) {
     publisher.send(path)
+  }
+
+  private var _pathPopPublisher: PassthroughSubject<Void, Never> = .init()
+  func pathPopPublisher() -> AnyPublisher<Void, Never> {
+    _pathPopPublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
+  }
+
+  func pop() {
+    _pathPopPublisher.send()
   }
 
   private init() {}

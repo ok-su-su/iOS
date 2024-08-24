@@ -68,9 +68,6 @@ struct MyVoteDetail {
       case .scope(.header(.tappedDoubleTextButton(.leading))):
         VotePathPublisher.shared.push(.edit(EditMyVote.State()))
         return .none
-      case .scope(.header(.tappedDismissButton)):
-        VotePathPublisher.shared.push(.dismiss(.init()))
-        return .none
       case .scope(.header):
         return .none
       case .scope(.voteProgressBar):
