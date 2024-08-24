@@ -6,10 +6,12 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
-import FeatureAction
 import Designsystem
+import FeatureAction
+import Foundation
+
+// MARK: - VoteDetailReducer
 
 @Reducer
 struct VoteDetailReducer {
@@ -26,6 +28,7 @@ struct VoteDetailReducer {
     init(isMine: Bool) {
       self.isMine = isMine
     }
+
     init() {
       isMine = false
       helper.voteProgress.forEach { property in
