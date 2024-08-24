@@ -83,7 +83,10 @@ struct VoteDetailReducer {
     switch action {
     case let .updateVoteDetail(property):
       state.voteDetailProperty = property
-      return .none
+
+      let title = property.board.name
+      let headerProperty = HeaderViewProperty(title: title, type: property.isMine ? .depth2DoubleText("편집", "삭제") : .depth2CustomIcon(.reportIcon))
+      return .send(.scope(.header(.updateProperty(headerProperty))))
     }
   }
 
