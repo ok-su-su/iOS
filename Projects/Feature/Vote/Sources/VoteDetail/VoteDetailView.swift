@@ -16,26 +16,38 @@ struct VoteDetailView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<OtherVoteDetail>
+  var store: StoreOf<VoteDetailReducer>
 
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    if let property = store.voteDetailProperty {
+      makeVoteDetailContentView(property)
+    } else {
+      makeLoadingView()
+    }
+  }
+
+  @ViewBuilder
+  private func makeVoteDetailContentView(_ property: VoteDetailProperty) -> some View {
     VStack(spacing: 0) {
       Spacer()
         .frame(height: 16)
 
       VStack(alignment: .center, spacing: 24) {
-        TopContentWithProfileAndText(property: .init(userImage: nil, userName: nil, userText: "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 \n얼마 내야 돼?"))
-          .padding(.horizontal, 16)
+        TopContentWithProfileAndText(
+          property: .init(
+            userImage: nil,
+            userName: property.creatorProfile.name,
+            userText: "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 \n얼마 내야 돼?"
+          )
+        )
+        .padding(.horizontal, 16)
 
-        VStack(alignment: .center, spacing: 16) {
-          ParticipantsAndDateView(property: .init())
-
-          ForEach(store.scope(state: \.voteProgressBar, action: \.scope.voteProgressBar)) { store in
-            VoteProgressBar(store: store)
-          }
+        let items: [VoteDetailProgressBarProperty] = property.options.map { .init(id: $0.id, seq: $0.seq, title: $0.content, count: $0.count) }
+        VoteDetailProgressView(property: .init(isShowProgressBar: store.isVoted, items: items)) { id in
+          store.sendViewAction(.tappedVoteItem(id: id))
         }
         .padding(.horizontal, 16)
       }
@@ -43,6 +55,11 @@ struct VoteDetailView: View {
       Spacer()
     }
     .frame(maxWidth: .infinity)
+  }
+
+  @ViewBuilder
+  private func makeLoadingView() -> some View {
+    Color.clear
   }
 
   var body: some View {

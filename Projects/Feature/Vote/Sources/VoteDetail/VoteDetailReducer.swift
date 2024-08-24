@@ -17,26 +17,23 @@ import Foundation
 struct VoteDetailReducer {
   @ObservableState
   struct State: Equatable {
+    var id: Int64
     var isOnAppear = false
+    var isVoted: Bool = false
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
-    var helper: OtherVoteDetailProperty = .init()
-    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
+    ///    var helper: OtherVoteDetailProperty = .init()
+    ///    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
     var isPresentAlert: Bool = false
 
-    let isMine: Bool
-
-    init(isMine: Bool) {
-      self.isMine = isMine
-    }
+    var voteDetailProperty: VoteDetailProperty? = nil
+    var isLoading: Bool { voteDetailProperty == nil }
 
     init() {
-      isMine = false
-      helper.voteProgress.forEach { property in
-        guard let sharedProperty = Shared(helper.$voteProgress[id: property.id]) else {
-          return
-        }
-        voteProgressBar.append(.init(property: sharedProperty))
-      }
+      id = 12312
+    }
+
+    init(id: Int64) {
+      self.id = id
     }
   }
 
@@ -53,16 +50,73 @@ struct VoteDetailReducer {
     case onAppear(Bool)
     case showAlert(Bool)
     case tappedAlertConfirmButton(isChecked: Bool)
+    case tappedVoteItem(id: Int64)
   }
 
-  enum InnerAction: Equatable {}
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .none
 
-  enum AsyncAction: Equatable {}
+    case let .showAlert(present):
+      state.isPresentAlert = present
+      return .none
+
+    case let .tappedAlertConfirmButton(isChecked: _):
+      // TODO: 신고 확인 버튼 눌렀을 때 적절한 API 사용
+      return .run { _ in await dismiss() }
+
+    case let .tappedVoteItem(id):
+      return .none
+    }
+  }
+
+  enum InnerAction: Equatable {
+    case updateVoteDetail(VoteDetailProperty)
+  }
+
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .updateVoteDetail(property):
+      state.voteDetailProperty = property
+      return .none
+    }
+  }
+
+  enum AsyncAction: Equatable {
+    case getVoteDetail
+  }
+
+  @Dependency(\.voteDetailNetwork) var network
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getVoteDetail:
+      return .run { [id = state.id] send in
+        let responseProperty = try await network.voteDetail(id)
+        await send(.inner(.updateVoteDetail(responseProperty)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case voteProgressBar(IdentifiedActionOf<VoteProgressBarReducer>)
+  }
+
+  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header(.tappedSearchButton):
+      return .send(.view(.showAlert(true)))
+
+    case .header:
+      return .none
+
+    case let .voteProgressBar(.element(id: id, action: .tapped)):
+//      state.helper.voted(id: id)
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -75,36 +129,24 @@ struct VoteDetailReducer {
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
-      case .scope(.header(.tappedSearchButton)):
-        return .send(.view(.showAlert(true)))
-
-      case .scope(.header):
-        return .none
-
-      case let .scope(.voteProgressBar(.element(id: id, action: .tapped))):
-        state.helper.voted(id: id)
-        return .none
-
-      case let .view(.showAlert(present)):
-        state.isPresentAlert = present
-        return .none
-      case let .view(.tappedAlertConfirmButton(isChecked: _)):
-        // TODO: 신고 확인 버튼 눌렀을 때 적절한 API사용
-
-        return .run { _ in await dismiss() }
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
       }
     }
-    .addFeatures()
+//    .addFeatures()
   }
 }
 
 extension Reducer where State == VoteDetailReducer.State, Action == VoteDetailReducer.Action {
-  func addFeatures() -> some ReducerOf<Self> {
-    forEach(\.voteProgressBar, action: \.scope.voteProgressBar) {
-      VoteProgressBarReducer()
-    }
-  }
+//  func addFeatures() -> some ReducerOf<Self> {
+//    forEach(\.voteProgressBar, action: \.scope.voteProgressBar) {
+//      VoteProgressBarReducer()
+//    }
+//  }
 }

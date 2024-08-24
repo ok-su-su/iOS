@@ -10,11 +10,11 @@ import Foundation
 
 public struct UserProfileModel: Equatable, Decodable {
   /// 유저 id
-  let id: Int64
+  public let id: Int64
   /// 이름
-  let name: String
+  public let name: String
   /// 프로필 사진 url
-  let profileImageUrl: String?
+  public let profileImageUrl: String?
 
   enum CodingKeys: CodingKey {
     case id
