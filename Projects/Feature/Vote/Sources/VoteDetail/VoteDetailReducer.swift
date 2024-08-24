@@ -76,7 +76,6 @@ struct VoteDetailReducer {
       // TODO: 신고 확인 버튼 눌렀을 때 적절한 API 사용
       return .run { _ in await dismiss() }
 
-
     case let .tappedVoteItem(id):
       // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
       return .send(.inner(.updateSelectedVotedItem(optionID: id)))
