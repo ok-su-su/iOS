@@ -13,12 +13,12 @@ import Foundation
 
 final class VotePathPublisher {
   static var shared: VotePathPublisher = .init()
-  private var publisher: PassthroughSubject<VoteRouterPath.State, Never> = .init()
-  func pathPublisher() -> AnyPublisher<VoteRouterPath.State, Never> {
+  private var publisher: PassthroughSubject<VotePathDestination.State, Never> = .init()
+  func pathPublisher() -> AnyPublisher<VotePathDestination.State, Never> {
     return publisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
-  func push(_ path: VoteRouterPath.State) {
+  func push(_ path: VotePathDestination.State) {
     publisher.send(path)
   }
 

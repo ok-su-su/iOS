@@ -12,15 +12,15 @@ import Foundation
 struct VotePathReducer {
   @ObservableState
   struct State: Equatable {
-    var path: StackState<VoteRouterPath.State> = .init()
+    var path: StackState<VotePathDestination.State> = .init()
 
     init() {}
   }
 
   enum Action: Equatable {
     case registerReducer
-    case path(StackActionOf<VoteRouterPath>)
-    case push(VoteRouterPath.State)
+    case path(StackActionOf<VotePathDestination>)
+    case push(VotePathDestination.State)
   }
 
   var body: some Reducer<State, Action> {

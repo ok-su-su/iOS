@@ -1,5 +1,5 @@
 //
-//  VoteRouterPath.swift
+//  VotePathDestination.swift
 //  Vote
 //
 //  Created by MaraMincho on 5/24/24.
@@ -9,10 +9,10 @@
 import ComposableArchitecture
 import Foundation
 
-// MARK: - VoteRouterPath
+// MARK: - VotePathDestination
 
 @Reducer(state: .equatable, action: .equatable)
-enum VoteRouterPath {
+enum VotePathDestination {
   case search(VoteSearch)
   case otherVoteDetail(OtherVoteDetail)
   case write(WriteVote)

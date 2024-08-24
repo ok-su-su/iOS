@@ -26,7 +26,7 @@ struct VoteMain {
     var isLoading: Bool = true
 
     fileprivate var votePath: VotePathReducer.State = .init()
-    var path: StackState<VoteRouterPath.State> {
+    var path: StackState<VotePathDestination.State> {
       votePath.path
     }
 
