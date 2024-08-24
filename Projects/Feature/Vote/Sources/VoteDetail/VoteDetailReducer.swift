@@ -27,6 +27,7 @@ struct VoteDetailReducer {
 
     var voteDetailProperty: VoteDetailProperty? = nil
     var isLoading: Bool { voteDetailProperty == nil }
+    var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
 
     init() {
       id = 12312
@@ -35,6 +36,10 @@ struct VoteDetailReducer {
     init(id: Int64) {
       self.id = id
     }
+  }
+
+  enum CancelID {
+    case patchVote
   }
 
   enum Action: Equatable, FeatureAction {
@@ -71,29 +76,53 @@ struct VoteDetailReducer {
       return .run { _ in await dismiss() }
 
     case let .tappedVoteItem(id):
-      if state.selectedVotedID != nil {
-        
+      // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
+      if state.selectedVotedID == nil {
+        return .run { [boardID = state.id, optionID = id] send in
+          try await network.executeVote(boardID, optionID)
+          await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
+        }
+        // 만약 선택된 아이디가 있는 경우(투표 덮어쓰기)
+      } else if state.selectedVotedID != id {
+        return .run { [boardID = state.id, optionID = id] send in
+          try await network.overwriteVote(boardID, optionID)
+          await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
+        }.throttle(id: CancelID.patchVote, for: 2, scheduler: RunLoop.main, latest: false)
+        // 선택된 아이디를 다시 선택한 경우
+      } else {
+        return .none
       }
-      return .none
     }
   }
 
   enum InnerAction: Equatable {
     case updateVoteDetail(VoteDetailProperty)
+    case updateSelectedVotedItem(optionID: Int64)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .updateVoteDetail(property):
-      if let votedItem = property.options.filter({$0.isVoted}).first {
+
+      // updateIsSelectedVoteProperty
+      if let votedItem = property.options.filter(\.isVoted).first {
         state.selectedVotedID = votedItem.id
       }
+
+      // updateVoteDetailProgressBarProperty
+      let items: [VoteDetailProgressBarProperty] = property.options.map { .init(id: $0.id, seq: $0.seq, title: $0.content, count: $0.count) }
+      state.voteDetailProgressProperty = .init(selectedVotedID: state.selectedVotedID, items: items)
       // propertyUpdate
       state.voteDetailProperty = property
 
       let title = property.board.name
       let headerProperty = HeaderViewProperty(title: title, type: property.isMine ? .depth2DoubleText("편집", "삭제") : .depth2CustomIcon(.reportIcon))
       return .send(.scope(.header(.updateProperty(headerProperty))))
+
+    case let .updateSelectedVotedItem(optionID):
+      state.selectedVotedID = optionID
+      state.voteDetailProgressProperty.selectItem(optionID: optionID)
+      return .none
     }
   }
 

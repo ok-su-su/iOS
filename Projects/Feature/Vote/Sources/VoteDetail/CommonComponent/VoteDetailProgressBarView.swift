@@ -25,6 +25,16 @@ struct VoteDetailProgressProperty: Equatable {
     }
   }
 
+  mutating func selectItem(optionID: Int64) {
+    if let prevSelectedFirstIndex = _items.firstIndex(where: { $0.id == selectedVotedID }) {
+      _items[prevSelectedFirstIndex].count -= 1
+    }
+    if let currentSelectedFirstIndex = _items.firstIndex(where: { $0.id == optionID }) {
+      _items[currentSelectedFirstIndex].count += 1
+    }
+    updateItems(_items)
+  }
+
   init(selectedVotedID: Int64?, items: [VoteDetailProgressBarProperty]) {
     self.selectedVotedID = selectedVotedID
     updateItems(items)

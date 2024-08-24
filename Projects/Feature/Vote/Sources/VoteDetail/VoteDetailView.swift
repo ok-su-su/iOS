@@ -48,8 +48,7 @@ struct VoteDetailView: View {
         ParticipantsAndDateView(property: .init(participantsCount: property.count, createdDateLabel: property.createdAt))
           .padding(.horizontal, 16)
 
-        let items: [VoteDetailProgressBarProperty] = property.options.map { .init(id: $0.id, seq: $0.seq, title: $0.content, count: $0.count) }
-        VoteDetailProgressView(property: .init(selectedVotedID: store.selectedVotedID, items: items)) { id in
+        VoteDetailProgressView(property: store.voteDetailProgressProperty) { id in
           store.sendViewAction(.tappedVoteItem(id: id))
         }
         .padding(.horizontal, 16)

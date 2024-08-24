@@ -9,5 +9,5 @@
 import Foundation
 
 public extension JSONEncoder {
-  static var `default`: JSONEncoder = JSONEncoder()
+  static var `default`: JSONEncoder = .init()
 }

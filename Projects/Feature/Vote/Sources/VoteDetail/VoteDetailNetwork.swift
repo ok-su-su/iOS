@@ -20,14 +20,17 @@ struct VoteDetailNetwork {
   private static func _voteDetail(_ id: Int64) async throws -> VoteDetailProperty {
     try await provider.request(.getVoteDetail(boardID: id))
   }
+
+  /// (Int64:, Int64:)
   var executeVote: (_ boardID: Int64, _ optionID: Int64) async throws -> Void
   private static func _executeVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.executeVote(boardID: boardID, optionID: optionID))
   }
 
+  /// (Int64:, Int64:)
   var overwriteVote: (_ boardID: Int64, _ optionID: Int64) async throws -> Void
-  private static func _overwriteVote(_ boardID: Int64, _ optionID: Int64) async throws -> Void {
-    try await provider.request(.executeVote(boardID: boardID, optionID: optionID))
+  private static func _overwriteVote(_ boardID: Int64, _ optionID: Int64) async throws {
+    try await provider.request(.overwriteVote(boardID: boardID, optionID: optionID))
   }
 }
 
@@ -45,9 +48,8 @@ extension VoteDetailNetwork: DependencyKey {
     case getVoteDetail(boardID: Int64)
     case executeVote(boardID: Int64, optionID: Int64)
     case overwriteVote(boardID: Int64, optionID: Int64)
-    ///    case deleteVote(postID: Int64)
-    ///    case updateVote(postID: Int64)
-    
+    //    case deleteVote(postID: Int64)
+    //    case updateVote(postID: Int64)
 
     var additionalHeader: [String: String]? { nil }
 
@@ -57,8 +59,8 @@ extension VoteDetailNetwork: DependencyKey {
         "votes/\(boardID)"
       case let .executeVote(boardID, _):
         "votes/\(boardID)"
-      case let .overwriteVote(boardID,_):
-        "votes/\(boardID)"
+      case let .overwriteVote(boardID, _):
+        "votes/\(boardID)/vote"
       }
     }
 
@@ -67,9 +69,9 @@ extension VoteDetailNetwork: DependencyKey {
       case .getVoteDetail:
         .get
       case .executeVote:
-          .post
+        .post
       case .overwriteVote:
-          .post
+        .patch
       }
     }
 
@@ -79,7 +81,7 @@ extension VoteDetailNetwork: DependencyKey {
         return .requestPlain
       case let .executeVote(_, optionID):
         let data = try? JSONEncoder.default.encode(CreateVoteHistoryRequest(id: optionID))
-        return   .requestData(data ?? .init())
+        return .requestData(data ?? .init())
       case let .overwriteVote(_, optionID):
         let data = try? JSONEncoder.default.encode(OverwriteVoteHistoryRequest(optionId: optionID))
         return .requestData(data ?? .init())
@@ -99,14 +101,20 @@ extension DependencyValues {
 
 struct CreateVoteHistoryRequest: Encodable {
   let isCancel: Bool
-  let optionID: Int64
-  init(isCancel: Bool, optionID: Int64) {
+  let optionId: Int64
+  init(isCancel: Bool, optionId: Int64) {
     self.isCancel = isCancel
-    self.optionID = optionID
+    self.optionId = optionId
   }
+
   init(id: Int64) {
     isCancel = false
-    self.optionID = id
+    optionId = id
+  }
+
+  enum CodingKeys: CodingKey {
+    case isCancel
+    case optionId
   }
 }
 
@@ -117,10 +125,17 @@ struct UpdateVoteRequest: Encodable {
   let boardId: Int64
   ///   투표 내용
   let content: String
+  enum CodingKeys: CodingKey {
+    case boardId
+    case content
+  }
 }
 
 // MARK: - OverwriteVoteHistoryRequest
 
 struct OverwriteVoteHistoryRequest: Encodable {
   let optionId: Int64
+  enum CodingKeys: CodingKey {
+    case optionId
+  }
 }
