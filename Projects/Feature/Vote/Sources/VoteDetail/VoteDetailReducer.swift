@@ -76,23 +76,10 @@ struct VoteDetailReducer {
       // TODO: 신고 확인 버튼 눌렀을 때 적절한 API 사용
       return .run { _ in await dismiss() }
 
+
     case let .tappedVoteItem(id):
       // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
-      if state.selectedVotedID == nil {
-        return .run { [boardID = state.id, optionID = id] send in
-          await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
-//          try await network.executeVote(boardID, optionID)
-        }
-        // 만약 선택된 아이디가 있는 경우(투표 덮어쓰기)
-      } else if state.selectedVotedID != id {
-        return .run { [boardID = state.id, optionID = id] send in
-          await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
-//          try await network.overwriteVote(boardID, optionID)
-        }
-        // 선택된 아이디를 다시 선택한 경우
-      } else {
-        return .none
-      }
+      return .send(.inner(.updateSelectedVotedItem(optionID: id)))
     }
   }
 
