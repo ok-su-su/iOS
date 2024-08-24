@@ -62,11 +62,18 @@ struct VoteSearch {
     Reduce { state, action in
       switch action {
       case let .view(.onAppear(isAppear)):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
+
+        // set PrevItems
+        state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
         return .none
 
       case let .scope(.searchReducer(.changeTextField(text))):
-        state.helper.searchItem(by: text)
+        // changeTextField
+//        state.helper.searchItem(by: text)
         return .none
 
       case let .scope(.searchReducer(.tappedDeletePrevItem(id: id))):

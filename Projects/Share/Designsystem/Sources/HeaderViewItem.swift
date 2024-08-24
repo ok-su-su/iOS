@@ -35,7 +35,7 @@ extension HeaderView {
         }
       } label: {
         Image(.commonArrow)
-          .frame(width: 56, height: 24, alignment: .leading)
+          .frame(width: 44, height: 44, alignment: .leading)
           .padding(.leading, Constants.headerLeftMargin)
       }
     }
