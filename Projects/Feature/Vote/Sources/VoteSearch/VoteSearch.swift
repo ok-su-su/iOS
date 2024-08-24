@@ -40,6 +40,20 @@ struct VoteSearch {
     case onAppear(Bool)
   }
 
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.isOnAppear = isAppear
+
+      // set PrevItems
+      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
+      return .none
+    }
+  }
+
   enum InnerAction: Equatable {}
 
   enum AsyncAction: Equatable {}
@@ -48,6 +62,60 @@ struct VoteSearch {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case searchReducer(SSSearchReducer<VoteSearchProperty>.Action)
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case let .searchReducer(.changeTextField(text)):
+      // changeTextField
+//        state.helper.searchItem(by: text)
+      return .none
+    case let .searchReducer(.tappedDeletePrevItem(id: id)):
+      state.helper.deletePrevItem(prevItemID: id)
+      return .none
+
+    case let .searchReducer(.tappedPrevItem(id: id)):
+      let title = state.helper.titleByPrevItem(id: id)
+      return .send(.scope(.searchReducer(.changeTextField(title))))
+
+    case let .searchReducer(.tappedPrevItem(id)):
+      return .none
+
+    case .searchReducer:
+      return .none
+
+    case .header:
+      return .none
+    }
+  }
+
+  func searchAction(_ state: inout State, _ action: SSSearchReducer<VoteSearchProperty>.Action) -> Effect<Action> {
+    switch action {
+    case let  .onAppear(bool):
+      return .none
+    case .tappedCloseButton:
+      return .none
+
+    case let .changeTextField(string):
+      // TODO: Network 검색 기능 추가
+      return .none
+
+    case let .tappedPrevItem(id):
+      VotePathPublisher.shared.push(.detail(.init(id: id)))
+      return .none
+
+    case let .tappedDeletePrevItem(id):
+      VoteSearchPersistence.deletePrevVoteSearchItemsByID(id)
+      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
+      return .none
+
+    case let .tappedSearchItem(id):
+      if let targetItem = state.helper.nowSearchedItem.first(where: {$0.id == id}) {
+        VoteSearchPersistence.setPrevVoteSearchItems(targetItem)
+      }
+      VotePathPublisher.shared.push(.detail(.init(id: id)))
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -61,34 +129,10 @@ struct VoteSearch {
     }
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        if state.isOnAppear {
-          return .none
-        }
-        state.isOnAppear = isAppear
-
-        // set PrevItems
-        state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
-        return .none
-
-      case let .scope(.searchReducer(.changeTextField(text))):
-        // changeTextField
-//        state.helper.searchItem(by: text)
-        return .none
-
-      case let .scope(.searchReducer(.tappedDeletePrevItem(id: id))):
-        state.helper.deletePrevItem(prevItemID: id)
-        return .none
-
-      case let .scope(.searchReducer(.tappedPrevItem(id: id))):
-        let title = state.helper.titleByPrevItem(id: id)
-        return .send(.scope(.searchReducer(.changeTextField(title))))
-
-      case .scope(.searchReducer):
-        return .none
-
-      case .scope(.header):
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
     }
   }
