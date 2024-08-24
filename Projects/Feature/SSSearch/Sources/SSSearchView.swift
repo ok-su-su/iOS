@@ -98,6 +98,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
 
             VStack(spacing: 0) {
               Text("\(currentItem.title)")
+                .lineLimit(1)
                 .modifier(SSTypoModifier(.title_s))
                 .foregroundStyle(SSColor.gray100)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -170,6 +171,7 @@ public struct SSSearchView<item: SSSearchPropertiable>: View {
           let currentItem = searchedItem[ind]
           HStack(spacing: 0) {
             Text(currentItem.title)
+              .lineLimit(1)
               .modifier(SSTypoModifier(.title_s))
               .foregroundStyle(SSColor.gray100)
               .frame(maxWidth: .infinity, alignment: .leading)

@@ -20,10 +20,8 @@ struct VoteSearchView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      SSSearchView(store: store.scope(state: \.searchReducer, action: \.scope.searchReducer))
-        .padding(.horizontal, 16)
-    }
+    SSSearchView(store: store.scope(state: \.searchReducer, action: \.scope.searchReducer))
+      .padding(.horizontal, 16)
   }
 
   var body: some View {
@@ -31,6 +29,9 @@ struct VoteSearchView: View {
       SSColor
         .gray10
         .ignoresSafeArea()
+        .contentShape(Rectangle())
+        .whenTapDismissKeyboard()
+
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()

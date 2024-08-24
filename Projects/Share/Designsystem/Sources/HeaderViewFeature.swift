@@ -164,12 +164,12 @@ public struct HeaderView: View {
     ZStack {
       makeCenterItem(type: store.state.property.centerItem)
 
-      HStack {
+      HStack(alignment: .center) {
         makeLeadingItem(isImage: store.state.property.isLogoImage)
         Spacer()
         makeTrailingItem(type: store.state.property.trailingItem)
       }
-      .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
+      .frame(maxWidth: .infinity, maxHeight: 44)
     }
     .onAppear {
       store.send(.onAppear)

@@ -30,10 +30,6 @@ struct VoteDetailReducer {
     var isLoading: Bool { voteDetailProperty == nil }
     var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
 
-    init() {
-      id = 12312
-    }
-
     init(id: Int64) {
       self.id = id
     }
