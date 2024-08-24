@@ -1,39 +1,55 @@
 //
-//  OtherVoteDetailView.swift
+//  VoteDetailView.swift
 //  Vote
 //
-//  Created by MaraMincho on 5/20/24.
+//  Created by MaraMincho on 8/24/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+
 import ComposableArchitecture
 import Designsystem
+import Foundation
 import SSAlert
 import SwiftUI
 
-struct OtherVoteDetailView: View {
+struct VoteDetailView: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<OtherVoteDetail>
+  var store: StoreOf<VoteDetailReducer>
 
   // MARK: Content
 
   @ViewBuilder
   private func makeContentView() -> some View {
+    if let property = store.voteDetailProperty {
+      makeVoteDetailContentView(property)
+    } else {
+      makeLoadingView()
+    }
+  }
+
+  @ViewBuilder
+  private func makeVoteDetailContentView(_ property: VoteDetailProperty) -> some View {
     VStack(spacing: 0) {
       Spacer()
         .frame(height: 16)
 
       VStack(alignment: .center, spacing: 24) {
-        TopContentWithProfileAndText(property: .init(userImage: nil, userName: nil, userText: "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 \n얼마 내야 돼?"))
+        TopContentWithProfileAndText(
+          property: .init(
+            userImage: nil,
+            userName: property.creatorProfile.name,
+            userText: "고등학교 동창이고 좀 애매하게 친한 사인데 축의금 \n얼마 내야 돼?"
+          )
+        )
+        .padding(.horizontal, 16)
+
+        ParticipantsAndDateView(property: .init(participantsCount: property.count, createdDateLabel: property.createdAt))
           .padding(.horizontal, 16)
 
-        VStack(alignment: .center, spacing: 16) {
-          ParticipantsAndDateView(property: .init())
-
-          ForEach(store.scope(state: \.voteProgressBar, action: \.scope.voteProgressBar)) { store in
-            VoteProgressBar(store: store)
-          }
+        VoteDetailProgressView(property: store.voteDetailProgressProperty) { id in
+          store.sendViewAction(.tappedVoteItem(id: id))
         }
         .padding(.horizontal, 16)
       }
@@ -41,6 +57,11 @@ struct OtherVoteDetailView: View {
       Spacer()
     }
     .frame(maxWidth: .infinity)
+  }
+
+  @ViewBuilder
+  private func makeLoadingView() -> some View {
+    Color.clear
   }
 
   var body: some View {
@@ -51,6 +72,7 @@ struct OtherVoteDetailView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+          .ssLoading(store.isLoading)
       }
     }
     .navigationBarBackButtonHidden()
@@ -72,6 +94,15 @@ struct OtherVoteDetailView: View {
         }
       )
     )
+    .onDisappear {
+      if let boardID = store.voteDetailProperty?.id {
+        let type: VoteDetailDeferNetworkType = store.isPrevVoteID == nil ? .just : .overwrite
+        let optionID = store.selectedVotedID == store.isPrevVoteID ? nil : store.selectedVotedID
+
+        VoteDetailPublisher
+          .disappear(.init(boardID: boardID, optionID: optionID, type: type))
+      }
+    }
   }
 
   private enum Metrics {}

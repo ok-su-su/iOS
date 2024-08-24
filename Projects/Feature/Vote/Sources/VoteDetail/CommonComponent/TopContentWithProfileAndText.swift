@@ -25,11 +25,13 @@ struct TopContentWithProfileAndText: View {
         // Profile Name
         Text(property.name)
           .modifier(SSTypoModifier(.title_xxxs))
+          .foregroundStyle(SSColor.gray100)
       }
 
       // Content Text
       Text(property.contentText)
         .modifier(SSTypoModifier(.text_xxs))
+        .foregroundStyle(SSColor.gray100)
         .frame(maxWidth: .infinity, alignment: .leading)
         .multilineTextAlignment(.leading)
     }

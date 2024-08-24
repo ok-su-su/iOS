@@ -7,10 +7,7 @@ assignees: ''
 
 ---
 
-### Description of Refactor task
+### Description of refactor task
 - Module Name: 
 - Task
-  - 
-  - 
-  - 
   - 

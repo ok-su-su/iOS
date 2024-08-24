@@ -19,39 +19,34 @@ struct ParticipantsAndDateView: View {
         SSImage
           .voteMainFill
 
-        Text(property.participantsLabelText)
+        Text(Constants.participantsCountLabel(property.participantsCount))
           .modifier(SSTypoModifier(.title_xxxs))
           .foregroundStyle(SSColor.orange60)
       }
       Spacer()
 
-      Text(property.createdDateText)
+      Text(property.createdDateLabel)
         .modifier(SSTypoModifier(.text_xxxs))
         .foregroundStyle(SSColor.gray50)
     }
     .frame(maxWidth: .infinity)
+  }
+
+  enum Constants {
+    static var participantsCountLabel: (Int64) -> String = { count in
+      count.description + "명 참여"
+    }
   }
 }
 
 // MARK: - ParticipantsAndDateViewProperty
 
 struct ParticipantsAndDateViewProperty {
-  private var participantsCount: Int?
-  private var createdDate: Date?
+  let participantsCount: Int64
+  let createdDateLabel: String
 
-  init(participantsCount: Int? = nil, createdDate: Date? = nil) {
-    self.participantsCount = participantsCount
-    self.createdDate = createdDate
-  }
-
-  var participantsLabelText: String {
-    if let participantsCount {
-      return "\(participantsCount)명 참여"
-    }
-    return "N명 참여"
-  }
-
-  var createdDateText: String {
-    return CustomDateFormatter.stringFrom(date: createdDate ?? .now)
+  init(participantsCount: Int64?, createdDateLabel: String?) {
+    self.participantsCount = participantsCount ?? 0
+    self.createdDateLabel = createdDateLabel ?? ""
   }
 }

@@ -130,8 +130,9 @@ struct VoteMainView: View {
     .padding(16)
     .background(SSColor.gray15)
     .cornerRadius(8)
+    .contentShape(Rectangle())
     .onTapGesture {
-      store.send(.view(.tappedVoteItem))
+      store.send(.view(.tappedVoteItem(id: item.id)))
     }
     .onAppear {
       store.sendViewAction(.voteItemOnAppear(item))
@@ -273,6 +274,10 @@ struct VoteMainView: View {
     .frame(width: Metrics.favoriteItemWidth)
     .background(SSColor.gray15)
     .cornerRadius(8)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.sendViewAction(.tappedVoteItem(id: item.id))
+    }
   }
 
   @ViewBuilder
@@ -293,7 +298,28 @@ struct VoteMainView: View {
     }
   }
 
-  var body: some View {
+  @ViewBuilder
+  private func makeVoteNavigationStackView(@ViewBuilder rootView: () -> some View) -> some View {
+    NavigationStack(path: $store.scope(state: \.path, action: \.scope.votePath.path)) {
+      rootView()
+    } destination: { store in
+      switch store.case {
+      case let .write(store):
+        WriteVoteView(store: store)
+
+      case let .search(store):
+        VoteSearchView(store: store)
+
+      case let .edit(store):
+        EditMyVoteView(store: store)
+      case let .detail(store):
+        VoteDetailView(store: store)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeVoteRootView() -> some View {
     ZStack {
       SSColor
         .gray20
@@ -332,10 +358,13 @@ struct VoteMainView: View {
         }
       )
     )
-    .fullScreenCover(item: $store.scope(state: \.voteRouter, action: \.scope.voteRouter)) { store in
-      VoteRouterView(store: store)
-    }
     .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
+  }
+
+  var body: some View {
+    makeVoteNavigationStackView {
+      makeVoteRootView()
+    }
   }
 
   private enum Metrics {
