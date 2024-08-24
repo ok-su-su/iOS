@@ -62,7 +62,7 @@ struct EditMyVote {
         state.helper.selectedSection = item
         return .none
       case .scope(.header(.tappedTextButton)):
-        VotePathPublisher.shared.push(.myVote(.init()))
+//        VotePathPublisher.shared.push(.myVote(.init()))
         return .none
       case .scope(.header):
         return .none

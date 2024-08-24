@@ -56,8 +56,11 @@ struct VoteDetailReducer {
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
       state.isOnAppear = isAppear
-      return .none
+      return .send(.async(.getVoteDetail))
 
     case let .showAlert(present):
       state.isPresentAlert = present

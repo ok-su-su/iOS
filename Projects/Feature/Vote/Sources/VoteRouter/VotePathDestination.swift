@@ -14,9 +14,7 @@ import Foundation
 @Reducer(state: .equatable, action: .equatable)
 enum VotePathDestination {
   case search(VoteSearch)
-  case otherVoteDetail(OtherVoteDetail)
   case write(WriteVote)
-  case myVote(MyVoteDetail)
   case edit(EditMyVote)
   case detail(VoteDetailReducer)
 }

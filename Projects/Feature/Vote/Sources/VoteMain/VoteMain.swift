@@ -64,8 +64,7 @@ struct VoteMain {
     case tappedPopularSortButton
     case tappedOnlyMyPostButton
     case tappedFloatingButton
-    // TODO: 어떤 아이템을 터치 했는지 정확하게...
-    case tappedVoteItem
+    case tappedVoteItem(id: Int64)
     case tappedReportButton(Int64)
     case tappedReportConfirmButton(isCheck: Bool)
     case presentReport(Bool)
@@ -112,9 +111,9 @@ struct VoteMain {
       state.votePath.path.append(.write(.init()))
       return .none
 
-    case .tappedVoteItem:
+    case let .tappedVoteItem(id):
+      VotePathPublisher.shared.push(.detail(.init(id: id)))
       return .none
-//      return .send(.inner(.present(.voteDetail(Bool.random() ? .mine : .other))))
 
     case let .tappedReportButton(id):
       // TODO: 메시지 신고할 때 추가 로직 생성

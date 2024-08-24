@@ -127,7 +127,7 @@ struct VoteDetailProgressView: View {
       .padding(.vertical, 12)
       .padding(.horizontal, 16)
     }
-    .frame(maxWidth: .infinity, maxHeight: 48, alignment: .center)
+    .frame(maxWidth: .infinity, alignment: .center)
     .background(SSColor.orange10)
     .clipShape(RoundedRectangle(cornerRadius: 4))
     .onTapGesture {
@@ -136,7 +136,7 @@ struct VoteDetailProgressView: View {
   }
 
   var body: some View {
-    VStack(alignment: .center, spacing: 16) {
+    VStack(alignment: .center, spacing: 4) {
       ForEach(property.items) { item in
         makeProgressBarView(item)
       }

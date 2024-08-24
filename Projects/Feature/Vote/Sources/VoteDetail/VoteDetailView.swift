@@ -45,6 +45,9 @@ struct VoteDetailView: View {
         )
         .padding(.horizontal, 16)
 
+        ParticipantsAndDateView(property: .init(participantsCount: property.count, createdDateLabel: property.createdAt))
+          .padding(.horizontal, 16)
+
         let items: [VoteDetailProgressBarProperty] = property.options.map { .init(id: $0.id, seq: $0.seq, title: $0.content, count: $0.count) }
         VoteDetailProgressView(property: .init(isShowProgressBar: store.isVoted, items: items)) { id in
           store.sendViewAction(.tappedVoteItem(id: id))
@@ -70,6 +73,7 @@ struct VoteDetailView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
+          .ssLoading(store.isLoading)
       }
     }
     .navigationBarBackButtonHidden()

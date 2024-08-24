@@ -130,8 +130,9 @@ struct VoteMainView: View {
     .padding(16)
     .background(SSColor.gray15)
     .cornerRadius(8)
+    .contentShape(Rectangle())
     .onTapGesture {
-      store.send(.view(.tappedVoteItem))
+      store.send(.view(.tappedVoteItem(id: item.id)))
     }
     .onAppear {
       store.sendViewAction(.voteItemOnAppear(item))
@@ -273,6 +274,10 @@ struct VoteMainView: View {
     .frame(width: Metrics.favoriteItemWidth)
     .background(SSColor.gray15)
     .cornerRadius(8)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      store.sendViewAction(.tappedVoteItem(id: item.id))
+    }
   }
 
   @ViewBuilder
@@ -302,17 +307,13 @@ struct VoteMainView: View {
       case let .write(store):
         WriteVoteView(store: store)
 
-      case let .otherVoteDetail(store):
-        OtherVoteDetailView(store: store)
-
       case let .search(store):
         VoteSearchView(store: store)
 
-      case let .myVote(store):
-        MyVoteDetailView(store: store)
-
       case let .edit(store):
         EditMyVoteView(store: store)
+      case let .detail(store):
+        VoteDetailView(store: store)
       }
     }
   }
