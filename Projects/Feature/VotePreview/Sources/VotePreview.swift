@@ -7,6 +7,7 @@
 //
 
 import Designsystem
+import SSPersistancy
 import SwiftUI
 import Vote
 
@@ -14,6 +15,7 @@ import Vote
 struct ToastPreviewMain: App {
   init() {
     Font.registerFont()
+    FakeTokenManager.saveFakeToken(fakeToken: .uid5)
   }
 
   var body: some Scene {

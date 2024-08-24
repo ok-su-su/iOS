@@ -21,6 +21,7 @@ public enum Core: String {
   case sSRegexManager
   case sSFirebase
   case sSNotification
+  case commonExtension
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

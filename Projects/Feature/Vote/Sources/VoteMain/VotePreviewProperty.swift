@@ -6,21 +6,22 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import CommonExtension
 import Foundation
 
 // MARK: - VotePreviewProperty
 
 struct VotePreviewProperty: Equatable, Identifiable {
-  var section: VoteSectionHeaderItem
+  var categoryTitle: String
   var content: String
-  var id: Int
-  var createdAt: Date
+  var id: Int64
+  var createdAt: String
+  var voteItemsTitle: [String]
+  var participateCount: Int64
 }
 
-extension [VotePreviewProperty] {
-  static func fakeData() -> Self {
-    return (0 ..< 10).map { ind in
-      .init(section: .birthDay, content: "ss", id: ind, createdAt: .now)
-    }
+extension VotePreviewProperty {
+  var participateCountLabel: String {
+    CustomNumberFormatter.formattedByThreeZero(participateCount, subFixString: "명 참여중") ?? ""
   }
 }

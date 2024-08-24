@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/19/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import SSAlert
@@ -34,18 +35,23 @@ struct VoteMainView: View {
         }
       }
     }
+    .refreshable { @MainActor in
+      await store.send(.view(.executeRefresh)).finish()
+    }
   }
 
   @ViewBuilder
   private func makeVoteList() -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      ForEach(store.voteMainProperty.votePreviews) { item in
-        makeVotePreview(item: item)
+    if !store.voteMainProperty.votePreviews.isEmpty {
+      LazyVStack(alignment: .leading, spacing: 12) {
+        ForEach(store.voteMainProperty.votePreviews) { item in
+          makeVotePreview(item: item)
+        }
       }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .background(SSColor.gray10)
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -57,7 +63,7 @@ struct VoteMainView: View {
           HStack {
             HStack(alignment: .center, spacing: 0) {
               // SectionTitleText
-              Text("결혼식")
+              Text(item.categoryTitle)
                 .modifier(SSTypoModifier(.title_xxxs))
                 .foregroundStyle(SSColor.orange60)
 
@@ -67,39 +73,45 @@ struct VoteMainView: View {
 
             Spacer()
 
-            Text("10분 전")
+            Text(item.createdAt)
               .modifier(SSTypoModifier(.text_xxxs))
               .foregroundStyle(SSColor.gray60)
           }
           // Content
-          Text("고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼? 고등학교 동창이고 좀 애매하게 친한 사인데 축의금 얼마 내야 돼?")
+          Text(item.content)
             .modifier(SSTypoModifier(.text_xxxs))
             .foregroundStyle(SSColor.gray100)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .lineLimit(2)
             .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity)
 
         // Middle Section
 
         VStack(spacing: 4) {
-          ForEach([3, 5, 10, 20, 30], id: \.self) { item in
-            SSButton(
-              .init(
-                size: .xsh36,
-                status: .active,
-                style: .ghost,
-                color: .black,
-                buttonText: "\(item)만원 ", frame: .init(maxWidth: .infinity, alignment: .leading)
-              )) {}
-              .disabled(true)
+          let buttonTitles = item.voteItemsTitle
+          ForEach(0 ..< buttonTitles.count, id: \.self) { index in
+            if let currentTitle = buttonTitles[safe: index] {
+              SSButton(
+                .init(
+                  size: .xsh36,
+                  status: .active,
+                  style: .ghost,
+                  color: .black,
+                  buttonText: currentTitle,
+                  frame: .init(maxWidth: .infinity, alignment: .leading)
+                )
+              ) {}
+                .disabled(true)
+            }
           }
         }
         .frame(maxWidth: .infinity)
 
         // Bottom Section
         HStack(spacing: 0) {
-          Text("8명 참여") // Participants Count
+          Text(item.participateCountLabel) // Participants Count
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.blue60)
 
@@ -121,12 +133,15 @@ struct VoteMainView: View {
     .onTapGesture {
       store.send(.view(.tappedVoteItem))
     }
+    .onAppear {
+      store.sendViewAction(.voteItemOnAppear(item))
+    }
   }
 
   @ViewBuilder
   private func makeBottomVoteListFilter() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      let selectedFilter = store.voteMainProperty.selectedBottomFilterType
+      let isPopular = store.voteMainProperty.sortByPopular
       // 투표 많은 순
       HStack(alignment: .center, spacing: 8) {
         Circle()
@@ -135,16 +150,18 @@ struct VoteMainView: View {
         Text(Constants.mostVotesFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(selectedFilter == .mostVote ? SSColor.orange60 : SSColor.gray40)
+      .foregroundStyle(isPopular ? SSColor.orange60 : SSColor.gray40)
+      .contentShape(Rectangle())
       .onTapGesture {
-        store.send(.view(.tappedBottomVoteFilterType(.mostVote)))
+        store.sendViewAction(.tappedPopularSortButton)
       }
 
       Spacer()
 
       // 내 글 보기
+      let isOnlyMyPostFilter = store.voteMainProperty.onlyMineVoteFilter
       HStack(spacing: 4) {
-        if selectedFilter == .myBoard {
+        if isOnlyMyPostFilter {
           SSImage.commonMainCheckBox
             .resizable()
             .frame(width: 20, height: 20)
@@ -158,12 +175,12 @@ struct VoteMainView: View {
         Text(Constants.myBoardOnlyFilterText)
           .modifier(SSTypoModifier(.title_xxxs))
       }
-      .foregroundStyle(selectedFilter == .myBoard ? SSColor.orange60 : SSColor.gray40)
+      .foregroundStyle(isOnlyMyPostFilter ? SSColor.orange60 : SSColor.gray40)
+      .contentShape(Rectangle())
       .onTapGesture {
-        store.send(.view(.tappedBottomVoteFilterType(.myBoard)))
+        store.sendViewAction(.tappedOnlyMyPostButton)
       }
     }
-
     .padding(.vertical, 8)
     .padding(.horizontal, 16)
     .background(SSColor.gray10)
@@ -173,8 +190,8 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {
-      ForEach(VoteSectionHeaderItem.allCases) { item in
-        let isSelected = store.voteMainProperty.selectedSectionHeaderItem == item
+      ForEach(store.voteMainProperty.voteSectionItems) { item in
+        let isSelected = store.voteMainProperty.selectedVoteSectionItem == item
         SSButton(
           .init(
             size: .xsh28,
@@ -205,34 +222,38 @@ struct VoteMainView: View {
             makeFavoriteSectionItem(item)
           }
         }
+        .scrollTargetLayout()
       }
+      .scrollTargetBehavior(.viewAligned)
       .scrollIndicators(.hidden)
     }
-    .padding(.vertical, 16)
-    .padding(.leading, 16)
+    .padding(.all, 16)
     .background(SSColor.gray10)
   }
 
   @ViewBuilder
-  private func makeFavoriteSectionItem(_ item: FavoriteVoteItem) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+  private func makeFavoriteSectionItem(_ item: PopularVoteItem) -> some View {
+    VStack(spacing: 12) {
       // Top Content
       VStack(alignment: .leading, spacing: 8) {
         HStack(spacing: 0) {
-          Text(item.title)
+          Text(item.categoryTitle)
             .modifier(SSTypoModifier(.title_xxxs))
             .foregroundStyle(SSColor.gray60)
 
           SSImage
-            .envelopeForwardArrow
+            .voteRightArrow
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+
         Text(item.content)
           .modifier(SSTypoModifier(.text_xxxs))
           .foregroundStyle(SSColor.gray100)
           .lineLimit(1)
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
-      .frame(maxWidth: .infinity)
 
+      // Button Content
       HStack(alignment: .center, spacing: 8) {
         SSImage
           .voteSystemLogo
@@ -245,12 +266,11 @@ struct VoteMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      .frame(maxWidth: .infinity, alignment: .center)
-      .background(.white)
+      .background(SSColor.gray10)
       .clipShape(RoundedRectangle(cornerRadius: 4))
     }
     .padding(16)
-    .frame(width: Metrics.favoriteItemWidth, alignment: .topLeading)
+    .frame(width: Metrics.favoriteItemWidth)
     .background(SSColor.gray15)
     .cornerRadius(8)
   }
@@ -269,7 +289,7 @@ struct VoteMainView: View {
         SSImage
           .voteWrite
       }
-      .padding(.trailing, 20)
+      .padding(.all, 20)
     }
   }
 
@@ -282,8 +302,15 @@ struct VoteMainView: View {
       ZStack(alignment: .bottomTrailing) {
         VStack(spacing: 0) {
           HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+            .background(SSColor.gray10)
           makeContentView()
+            .ssLoading(store.isLoading)
         }
+      }
+    }
+    .safeAreaInset(edge: .bottom) {
+      HStack(spacing: 0) {
+        Spacer()
         makeFloatingButton()
       }
     }

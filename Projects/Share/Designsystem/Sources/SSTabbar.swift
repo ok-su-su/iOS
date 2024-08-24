@@ -154,22 +154,22 @@ public struct SSTabbar: View {
   private func makeContentView() -> some View {
     HStack(alignment: .center, spacing: 0) {
       // 1차 배포 탭바
-      let items = [SSTabType.envelope, SSTabType.received, SSTabType.statistics, SSTabType.mypage]
-      ForEach(items, id: \.self) { tabbarType in
+      let items = SSTabType.allCases
+      //      ForEach(items, id: \.self) { tabbarType in
+      //        makeItem(type: tabbarType)
+      //          .frame(maxWidth: .infinity, maxHeight: 56)
+      //          .onTapGesture {
+      //            store.send(.tappedSection(tabbarType))
+      //          }
+      //      }
+      // 전체 탭바
+      ForEach(SSTabType.allCases, id: \.self) { tabbarType in
         makeItem(type: tabbarType)
           .frame(maxWidth: .infinity, maxHeight: 56)
           .onTapGesture {
             store.send(.tappedSection(tabbarType))
           }
       }
-      // 전체 탭바
-      //        ForEach(SSTabType.allCases, id: \.self) { tabbarType in
-      //          makeItem(type: tabbarType)
-      //            .frame(maxWidth: .infinity, maxHeight: 56)
-      //            .onTapGesture {
-      //              store.send(.tappedSection(tabbarType))
-      //            }
-      //        }
     }
   }
 

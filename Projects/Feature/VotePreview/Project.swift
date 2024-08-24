@@ -9,9 +9,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "SSVotePreview",
+  name: "VotePreview",
   targets: .app(
-    name: "SSVotePreview",
+    name: "VotePreview",
     testingOptions: [
     ],
     dependencies: [

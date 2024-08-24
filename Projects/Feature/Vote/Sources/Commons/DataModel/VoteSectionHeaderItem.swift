@@ -7,38 +7,25 @@
 //
 
 import Foundation
+import SSNetwork
 
-// MARK: - SectionHeaderItem
+// MARK: - VoteSectionHeaderItem
 
-enum VoteSectionHeaderItem: Int, Equatable, Identifiable, CaseIterable {
-  /// 전체
-  case all = 0
-  /// 결혼식
-  case wedding
-  /// 장례식
-  case funeral
-  /// 돌잔치
-  case doljanchi
-  /// 생일 기념일
-  case birthDay
-  /// 자유
-  case freeBoard
-  var id: Int { return rawValue }
+struct VoteSectionHeaderItem: Equatable, Identifiable {
+  var title: String
+  var id: Int64
+  var seq: Int32
+  var isActive: Bool
+}
 
-  var title: String {
-    switch self {
-    case .all:
-      "전체"
-    case .wedding:
-      "결혼식"
-    case .funeral:
-      "장례식"
-    case .doljanchi:
-      "돌잔치"
-    case .birthDay:
-      "생일기념일"
-    case .freeBoard:
-      "자유"
-    }
+extension BoardModel {
+  func convertVoteSectionHeaderItem() -> VoteSectionHeaderItem {
+    .init(title: name, id: id, seq: seq, isActive: isActive)
+  }
+}
+
+extension VoteSectionHeaderItem {
+  static var initialState: Self {
+    .init(title: "전체", id: 0, seq: 0, isActive: true)
   }
 }

@@ -11,27 +11,14 @@ import Foundation
 // MARK: - VoteMainProperty
 
 struct VoteMainProperty: Equatable {
-  var favoriteVoteItems: [FavoriteVoteItem] = .makeItem()
-  var selectedSectionHeaderItem: VoteSectionHeaderItem = .all
-  var selectedBottomFilterType: BottomVoteListFilterItemType = .none
-  var votePreviews: [VotePreviewProperty] = .fakeData()
+  var favoriteVoteItems: [PopularVoteItem] = []
+  var selectedVoteSectionItem: VoteSectionHeaderItem? = .initialState
+  var voteSectionItems: [VoteSectionHeaderItem] = [.initialState]
+  var onlyMineVoteFilter: Bool = false
+  var sortByPopular: Bool = false
+  var votePreviews: [VotePreviewProperty] = []
 
-  mutating func setBottomFilter(_ item: BottomVoteListFilterItemType) {
-    if selectedBottomFilterType == item {
-      selectedBottomFilterType = .none
-      return
-    }
-    selectedBottomFilterType = item
+  mutating func updateVoteSectionItems(_ items: [VoteSectionHeaderItem]) {
+    items.forEach { voteSectionItems.append($0) }
   }
-}
-
-// MARK: - BottomVoteListFilterItemType
-
-enum BottomVoteListFilterItemType: Equatable {
-  /// 아무것도 선택하지 않음
-  case none
-  /// 투표 많은 순
-  case mostVote
-  /// 내 글
-  case myBoard
 }
