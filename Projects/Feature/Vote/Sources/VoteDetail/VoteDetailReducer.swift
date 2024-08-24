@@ -19,6 +19,7 @@ struct VoteDetailReducer {
   struct State: Equatable {
     var id: Int64
     var isOnAppear = false
+    var isPrevVoteID: Int64? = nil
     var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
     ///    var helper: OtherVoteDetailProperty = .init()
@@ -80,14 +81,14 @@ struct VoteDetailReducer {
       if state.selectedVotedID == nil {
         return .run { [boardID = state.id, optionID = id] send in
           await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
-          try await network.executeVote(boardID, optionID)
+//          try await network.executeVote(boardID, optionID)
         }
         // 만약 선택된 아이디가 있는 경우(투표 덮어쓰기)
       } else if state.selectedVotedID != id {
         return .run { [boardID = state.id, optionID = id] send in
           await send(.inner(.updateSelectedVotedItem(optionID: optionID)))
-          try await network.overwriteVote(boardID, optionID)
-        }.throttle(id: CancelID.patchVote, for: 2, scheduler: RunLoop.main, latest: false)
+//          try await network.overwriteVote(boardID, optionID)
+        }
         // 선택된 아이디를 다시 선택한 경우
       } else {
         return .none
@@ -107,6 +108,7 @@ struct VoteDetailReducer {
       // updateIsSelectedVoteProperty
       if let votedItem = property.options.filter(\.isVoted).first {
         state.selectedVotedID = votedItem.id
+        state.isPrevVoteID = votedItem.id
       }
 
       // updateVoteDetailProgressBarProperty

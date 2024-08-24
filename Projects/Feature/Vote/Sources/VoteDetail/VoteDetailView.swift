@@ -94,6 +94,15 @@ struct VoteDetailView: View {
         }
       )
     )
+    .onDisappear {
+      if let boardID = store.voteDetailProperty?.id {
+        let type: VoteDetailDeferNetworkType = store.isPrevVoteID == nil ? .just : .overwrite
+        let optionID = store.selectedVotedID == store.isPrevVoteID ? nil : store.selectedVotedID
+
+        VoteDetailPublisher
+          .disappear(.init(boardID: boardID, optionID: optionID, type: type))
+      }
+    }
   }
 
   private enum Metrics {}
