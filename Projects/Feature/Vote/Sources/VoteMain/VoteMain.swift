@@ -108,7 +108,8 @@ struct VoteMain {
       return .send(.async(.getInitialVoteItems))
 
     case .tappedFloatingButton:
-      state.votePath.path.append(.write(.init()))
+      let items = state.voteMainProperty.voteSectionItems
+      VotePathPublisher.shared.push(.write(.init(sectionHeaderItems: items)))
       return .none
 
     case let .tappedVoteItem(id):

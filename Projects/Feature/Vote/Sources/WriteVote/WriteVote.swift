@@ -17,11 +17,17 @@ struct WriteVote {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Text("등록")))
+    var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Default))
     var helper: WriteVoteProperty = .init()
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
-    init() {
+
+    var isCreatable: Bool {
+      false
+    }
+
+    init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])
+      helper.updateHeaderSectionItem(items: sectionHeaderItems)
       setSelectableItemsState()
     }
 
@@ -58,6 +64,32 @@ struct WriteVote {
     case tappedSection(VoteSectionHeaderItem)
     case editedVoteTextContent(String)
     case tappedAddSectionItemButton
+    case tappedCreateButton
+  }
+
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .none
+
+    case let .tappedSection(item):
+      state.helper.selectedSection = item
+      return .none
+
+    case let .editedVoteTextContent(text):
+      state.helper.voteTextContent = text
+      return .none
+
+    case .tappedAddSectionItemButton:
+      state.helper.addNewItem()
+      state.setSelectableItemsState()
+      return .none
+
+    case .tappedCreateButton:
+      // TODO: Add Create Post Logic
+      return .none
+    }
   }
 
   enum InnerAction: Equatable {}
@@ -79,29 +111,16 @@ struct WriteVote {
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+
       case .scope(.header):
-        return .none
-
-      case let .view(.tappedSection(item)):
-        state.helper.selectedSection = item
-        return .none
-
-      case let .view(.editedVoteTextContent(text)):
-        state.helper.voteTextContent = text
         return .none
 
       case let .scope(.selectableItems(.element(id: id, action: .deleteComponent))):
         state.deleteSelectableItemsState(id: id)
         return .none
       case .scope(.selectableItems(.element(id: _, action: _))):
-        return .none
-
-      case .view(.tappedAddSectionItemButton):
-        state.helper.addNewItem()
-        state.setSelectableItemsState()
         return .none
       }
     }

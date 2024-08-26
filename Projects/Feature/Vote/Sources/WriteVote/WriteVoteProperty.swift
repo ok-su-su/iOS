@@ -30,8 +30,11 @@ struct WriteVoteProperty: Equatable {
   }
 
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
-  var availableSection: [VoteSectionHeaderItem] {
-    return []
+  private var _headerSectionItems: [VoteSectionHeaderItem] = []
+  var headerSectionItems: [VoteSectionHeaderItem] { _headerSectionItems }
+
+  mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem]) {
+    _headerSectionItems = items.filter { $0.id != VoteSectionHeaderItem.initialState.id }
   }
 
   var voteTextContentPrompt = "투표 내용을 작성해주세요"
