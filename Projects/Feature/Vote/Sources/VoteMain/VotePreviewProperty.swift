@@ -18,6 +18,12 @@ struct VotePreviewProperty: Equatable, Identifiable {
   var createdAt: String
   var voteItemsTitle: [String]
   var participateCount: Int64
+//  var createdAtLabel: String? {
+//    guard let date = createdAt.fromISO8601ToDate() else {
+//      return nil
+//    }
+//
+//  }
 }
 
 extension VotePreviewProperty {
