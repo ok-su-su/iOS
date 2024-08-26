@@ -45,8 +45,10 @@ struct VoteDetailView: View {
         )
         .padding(.horizontal, 16)
 
-        ParticipantsAndDateView(property: .init(participantsCount: property.count, createdDateLabel: property.createdAt))
-          .padding(.horizontal, 16)
+        ParticipantsAndDateView(
+          property: .init(participantsCount: property.count, createdDateLabel: property.createdAtLabel)
+        )
+        .padding(.horizontal, 16)
 
         VoteDetailProgressView(property: store.voteDetailProgressProperty) { id in
           store.sendViewAction(.tappedVoteItem(id: id))

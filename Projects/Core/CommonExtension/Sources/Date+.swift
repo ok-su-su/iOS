@@ -9,9 +9,17 @@
 import Foundation
 
 public extension String {
-  private static let ISO8601DateFormatter: ISO8601DateFormatter = .init()
+  private static var ISODateFormatter: DateFormatter = {
+    var dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = Constants.iso8601DateFormatWithoutMiliSeconds
+    return dateFormatter
+  }()
 
   func fromISO8601ToDate() -> Date? {
-    Self.ISO8601DateFormatter.date(from: self)
+    Self.ISODateFormatter.date(from: self)
+  }
+
+  private enum Constants {
+    static let iso8601DateFormatWithoutMiliSeconds: String = "yyyy-MM-dd'T'HH:mm:ss"
   }
 }

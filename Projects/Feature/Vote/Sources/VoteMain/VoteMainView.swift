@@ -73,7 +73,7 @@ struct VoteMainView: View {
 
             Spacer()
 
-            Text(item.createdAt)
+            Text(item.createdAtLabel)
               .modifier(SSTypoModifier(.text_xxxs))
               .foregroundStyle(SSColor.gray60)
           }
