@@ -98,11 +98,34 @@ struct VoteDetailView: View {
     )
     .onDisappear {
       if let boardID = store.voteDetailProperty?.id {
-        let type: VoteDetailDeferNetworkType = store.isPrevVoteID == nil ? .just : .overwrite
-        let optionID = store.selectedVotedID == store.isPrevVoteID ? nil : store.selectedVotedID
+        let type: VoteDetailDeferNetworkType
+          // 선택한 투표가 존재한다면
+          = if let selectedID = store.selectedVotedID {
+          // 과거 투표와 현재 투표가 같을 경우 아무 작업도 하지 않스빈다.
+          if selectedID == store.isPrevVoteID {
+            .none
+          }
+          // 과거투표와 현재 투표가 같지 않으면서, 만약 과거 투표를 했다면 덮어쓰기 합니다.
+          else if store.isPrevVoteID != nil {
+            .overwrite(optionID: selectedID)
+          }
+          // 과거 투표를 하지 않았다면
+          else {
+            .just(optionID: selectedID)
+          }
+        } else {
+          // 과거 투표를 했었다면 투표를 취소합니다.
+          if let prevID = store.isPrevVoteID {
+            .cancel(optionID: prevID)
+          }
+          // 과거 투표를 하지 않았고 현재도 투표하지 않았음으로 아무것도 하지 않습니다.
+          else {
+            .none
+          }
+        }
 
         VoteDetailPublisher
-          .disappear(.init(boardID: boardID, optionID: optionID, type: type))
+          .disappear(.init(boardID: boardID, type: type))
       }
     }
   }
