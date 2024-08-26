@@ -22,8 +22,12 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
-      VStack(spacing: 8) {
+      VStack(spacing: 0) {
         makeFavoriteSection()
+
+        SSColor.gray20
+          .frame(height: 8)
+
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
           Section {
             // Bottom Vote Content
@@ -35,7 +39,6 @@ struct VoteMainView: View {
         }
       }
     }
-    .scrollBounceBehavior(.basedOnSize)
     .refreshable { @MainActor in
       await store.send(.view(.executeRefresh)).finish()
     }
@@ -52,7 +55,6 @@ struct VoteMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      .background(SSColor.gray10)
     }
     // // 만약 VotePreviews가 값이 없는 경우
     else {
@@ -62,6 +64,9 @@ struct VoteMainView: View {
         Text(Constants.votePreviewEmptyStateLabel)
           .foregroundStyle(SSColor.gray50)
           .applySSFont(.text_s)
+          .frame(maxWidth: .infinity, alignment: .center)
+        Spacer()
+          .frame(height: 297)
       }
     }
   }
@@ -196,7 +201,6 @@ struct VoteMainView: View {
     }
     .padding(.vertical, 8)
     .padding(.horizontal, 16)
-    .background(SSColor.gray10)
   }
 
   /// Sticky Header
@@ -241,7 +245,6 @@ struct VoteMainView: View {
       .scrollIndicators(.hidden)
     }
     .padding(.all, 16)
-    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -334,7 +337,7 @@ struct VoteMainView: View {
   private func makeVoteRootView() -> some View {
     ZStack {
       SSColor
-        .gray20
+        .gray10
         .ignoresSafeArea()
 
       ZStack(alignment: .bottomTrailing) {
