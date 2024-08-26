@@ -334,11 +334,8 @@ struct VoteMainView: View {
         }
       }
     }
-    .safeAreaInset(edge: .bottom) {
-      HStack(spacing: 0) {
-        Spacer()
-        makeFloatingButton()
-      }
+    .overlay(alignment: .bottomTrailing) {
+      makeFloatingButton()
     }
     .onAppear {
       store.send(.view(.onAppear(true)))

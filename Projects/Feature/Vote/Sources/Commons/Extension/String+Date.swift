@@ -33,7 +33,7 @@ extension String {
   ///  1시간 이내에 작성된 투표의 경우 [n 분전]
   func subtractFromNowAndMakeLabel() -> String {
     guard let targetDate = fromISO8601ToDate() else {
-      //TODO: GA탑재
+      // TODO: GA탑재
       return ""
     }
     let interval = targetDate.secondsSinceNow()
