@@ -12,7 +12,6 @@ import Foundation
 // MARK: - WriteVoteProperty
 
 struct WriteVoteProperty: Equatable {
-  var selectedSection: VoteSectionHeaderItem = .init(title: "", id: 33, seq: 2, isActive: true)
   var voteTextContent: String = ""
   var selectableItemID: Int = 0
   @Shared var selectableItem: IdentifiedArrayOf<TextFieldButtonWithTCAProperty>
@@ -21,7 +20,7 @@ struct WriteVoteProperty: Equatable {
     guard selectableItem.count < 5 else {
       return
     }
-    selectableItem.append(.init(id: selectableItemID))
+    selectableItem.append(.init(id: selectableItemID, regexString: TextFieldButtonWithTCAProperty.defaultRegex))
     selectableItemID += 1
   }
 
@@ -32,9 +31,11 @@ struct WriteVoteProperty: Equatable {
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
   private var _headerSectionItems: [VoteSectionHeaderItem] = []
   var headerSectionItems: [VoteSectionHeaderItem] { _headerSectionItems }
+  var selectedSection: VoteSectionHeaderItem? = nil
 
   mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem]) {
     _headerSectionItems = items.filter { $0.id != VoteSectionHeaderItem.initialState.id }
+    selectedSection = _headerSectionItems.first
   }
 
   var voteTextContentPrompt = "투표 내용을 작성해주세요"
@@ -48,10 +49,20 @@ struct WriteVoteProperty: Equatable {
 // MARK: - TextFieldButtonWithTCAProperty
 
 struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
+  static func == (lhs: TextFieldButtonWithTCAProperty, rhs: TextFieldButtonWithTCAProperty) -> Bool {
+    if lhs.id == rhs.id,
+       lhs.title == rhs.title,
+       lhs.isSaved == rhs.isSaved,
+       lhs.isEditing == rhs.isEditing {
+      return true
+    } else { return false }
+  }
+
   var id: Int
   var title: String
   var isSaved: Bool
   var isEditing: Bool
+  var regexString: Regex<Substring>?
 
   mutating func deleteTextFieldText() {}
 
@@ -63,15 +74,16 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
     title = text
   }
 
-  init(id: Int, title: String, isSaved: Bool, isEditing: Bool) {
+  init(id: Int, title: String, isSaved: Bool, isEditing: Bool, regexString _: Regex<Substring>?) {
     self.id = id
     self.title = title
     self.isSaved = isSaved
     self.isEditing = isEditing
   }
 
-  init(id: Int) {
+  init(id: Int, regexString: Regex<Substring>?) {
     self.id = id
+    self.regexString = regexString
     title = ""
     isSaved = false
     isEditing = true
@@ -79,5 +91,13 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
 }
 
 extension [TextFieldButtonWithTCAProperty] {
-  static func `default`() -> Self { return (0 ..< 2).map { .init(id: $0) } }
+  private static var defaultPropertyItemsCount: Int = 2
+  static func `default`() -> Self {
+    return (0 ..< defaultPropertyItemsCount).map { .init(id: $0, regexString: TextFieldButtonWithTCAProperty.defaultRegex) }
+  }
+}
+
+extension TextFieldButtonWithTCAProperty {
+  private static var defaultRegexPattern: String = "^.{1,10}$"
+  static let defaultRegex: Regex<Substring> = try! .init(defaultRegexPattern)
 }

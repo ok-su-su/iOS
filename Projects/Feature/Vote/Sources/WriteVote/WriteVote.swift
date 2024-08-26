@@ -19,6 +19,7 @@ struct WriteVote {
     var isOnAppear = false
     var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Default))
     var helper: WriteVoteProperty = .init()
+    /// TextFieldWithTCA Reducer.State
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
 
     var isCreatable: Bool {

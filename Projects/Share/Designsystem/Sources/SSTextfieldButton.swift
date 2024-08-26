@@ -43,7 +43,7 @@ public struct SSTextFieldButton: View {
         TextField(
           "",
           text: property.$textFieldText,
-          prompt: Text(property.prompt)
+          prompt: Text(property.prompt).foregroundStyle(SSColor.gray40)
         )
         .keyboardType(.default)
         .multilineTextAlignment(.center)

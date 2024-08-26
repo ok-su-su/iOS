@@ -59,11 +59,10 @@ struct WriteVoteView: View {
       TextField(
         "VoteTextContent",
         text: $store.helper.voteTextContent.sending(\.view.editedVoteTextContent),
-        prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40),
+        prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40).applySSFontToText(.text_xxs),
         axis: .vertical
       )
       .applySSFont(.text_xxs)
-      .frame(maxWidth: .infinity, minHeight: 24)
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 

@@ -87,3 +87,9 @@ public extension View {
     modifier(SSTypoModifier(designSystemFont))
   }
 }
+
+public extension Text {
+  func applySSFontToText(_ designSystemFont: SSFont) -> Text {
+    font(.custom(designSystemFont))
+  }
+}
