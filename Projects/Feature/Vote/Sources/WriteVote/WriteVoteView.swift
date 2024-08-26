@@ -62,7 +62,7 @@ struct WriteVoteView: View {
         prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40).applySSFontToText(.text_xxs),
         axis: .vertical
       )
-      .applySSFont(.text_xxs)
+      .font(.custom(.text_xxs))
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 

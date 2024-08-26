@@ -22,9 +22,7 @@ struct WriteVote {
     /// TextFieldWithTCA Reducer.State
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
 
-    var isCreatable: Bool {
-      false
-    }
+    var isCreatable: Bool { helper.isCreatable }
 
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])

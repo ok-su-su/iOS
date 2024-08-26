@@ -40,6 +40,15 @@ struct WriteVoteProperty: Equatable {
 
   var voteTextContentPrompt = "투표 내용을 작성해주세요"
   var selectableItemPrompt = "선택지를 입력하세요"
+
+  var isCreatable: Bool {
+    isTextFieldValid &&
+      isItemValid
+  }
+
+  var isTextFieldValid: Bool { voteTextContent.count < 200 }
+  var isItemValid: Bool { selectableItem.filter(\.isSaved).count >= 2 }
+
   init() {
     _selectableItem = .init(.init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
     selectableItemID = selectableItem.count
