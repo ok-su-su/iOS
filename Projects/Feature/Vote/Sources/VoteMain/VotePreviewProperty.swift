@@ -18,10 +18,19 @@ struct VotePreviewProperty: Equatable, Identifiable {
   var createdAt: String
   var voteItemsTitle: [String]
   var participateCount: Int64
+  var createdAtLabel: String { createdAt.subtractFromNowAndMakeLabel() }
 }
 
 extension VotePreviewProperty {
   var participateCountLabel: String {
-    CustomNumberFormatter.formattedByThreeZero(participateCount, subFixString: "명 참여중") ?? ""
+    CustomNumberFormatter.formattedByThreeZero(
+      participateCount,
+      subFixString: Constants.participantsSubfixString
+    ) ?? Constants.defaultParticipantsLabel
+  }
+
+  private enum Constants {
+    static let participantsSubfixString: String = "명 참여중"
+    static let defaultParticipantsLabel: String = ""
   }
 }

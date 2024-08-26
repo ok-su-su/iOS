@@ -15,20 +15,29 @@ import SSNetwork
 // MARK: - VoteDetailNetwork
 
 struct VoteDetailNetwork {
-  // Vote Detail을 가져 옵니다.
-  var voteDetail: (_ id: Int64) async throws -> VoteDetailProperty
+  /// Vote Detail을 가져 옵니다.
+  var voteDetail: @Sendable (_ id: Int64) async throws -> VoteDetailProperty
+  @Sendable
   private static func _voteDetail(_ id: Int64) async throws -> VoteDetailProperty {
     try await provider.request(.getVoteDetail(boardID: id))
   }
 
   /// (Int64:, Int64:)
-  var executeVote: (_ boardID: Int64, _ optionID: Int64) async throws -> Void
+  var executeVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
+  @Sendable
   private static func _executeVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.executeVote(boardID: boardID, optionID: optionID))
   }
 
+  var cancelVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
+  @Sendable
+  private static func _cancelVote(_ boardID: Int64, _ optionID: Int64) async throws {
+    try await provider.request(.cancelVote(boardID: boardID, optionID: optionID))
+  }
+
   /// (Int64:, Int64:)
-  var overwriteVote: (_ boardID: Int64, _ optionID: Int64) async throws -> Void
+  var overwriteVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
+  @Sendable
   private static func _overwriteVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.overwriteVote(boardID: boardID, optionID: optionID))
   }
@@ -40,6 +49,7 @@ extension VoteDetailNetwork: DependencyKey {
   static var liveValue: VoteDetailNetwork = .init(
     voteDetail: _voteDetail,
     executeVote: _executeVote,
+    cancelVote: _cancelVote,
     overwriteVote: _overwriteVote
   )
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
@@ -48,6 +58,7 @@ extension VoteDetailNetwork: DependencyKey {
     case getVoteDetail(boardID: Int64)
     case executeVote(boardID: Int64, optionID: Int64)
     case overwriteVote(boardID: Int64, optionID: Int64)
+    case cancelVote(boardID: Int64, optionID: Int64)
     //    case deleteVote(postID: Int64)
     //    case updateVote(postID: Int64)
 
@@ -61,6 +72,8 @@ extension VoteDetailNetwork: DependencyKey {
         "votes/\(boardID)"
       case let .overwriteVote(boardID, _):
         "votes/\(boardID)/vote"
+      case let .cancelVote(boardID, _):
+        "votes/\(boardID)"
       }
     }
 
@@ -72,6 +85,8 @@ extension VoteDetailNetwork: DependencyKey {
         .post
       case .overwriteVote:
         .patch
+      case .cancelVote:
+        .post
       }
     }
 
@@ -84,6 +99,9 @@ extension VoteDetailNetwork: DependencyKey {
         return .requestData(data ?? .init())
       case let .overwriteVote(_, optionID):
         let data = try? JSONEncoder.default.encode(OverwriteVoteHistoryRequest(optionId: optionID))
+        return .requestData(data ?? .init())
+      case let .cancelVote(_, optionID):
+        let data = try? JSONEncoder.default.encode(CreateVoteHistoryRequest(isCancel: true, optionId: optionID))
         return .requestData(data ?? .init())
       }
     }

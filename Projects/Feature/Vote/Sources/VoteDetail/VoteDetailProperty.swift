@@ -10,3 +10,7 @@ import Foundation
 import SSNetwork
 
 typealias VoteDetailProperty = VoteAllInfoResponse
+
+extension VoteDetailProperty {
+  var createdAtLabel: String { createdAt.subtractFromNowAndMakeLabel() }
+}

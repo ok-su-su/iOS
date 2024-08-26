@@ -22,8 +22,6 @@ struct VoteDetailReducer {
     var isPrevVoteID: Int64? = nil
     var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
-    ///    var helper: OtherVoteDetailProperty = .init()
-    ///    var voteProgressBar: IdentifiedArrayOf<VoteProgressBarReducer.State> = []
     var isPresentAlert: Bool = false
 
     var voteDetailProperty: VoteDetailProperty? = nil
@@ -104,8 +102,9 @@ struct VoteDetailReducer {
       return .send(.scope(.header(.updateProperty(headerProperty))))
 
     case let .updateSelectedVotedItem(optionID):
-      state.selectedVotedID = optionID
-      state.voteDetailProgressProperty.selectItem(optionID: optionID)
+      let targetOptionID = optionID == state.selectedVotedID ? nil : optionID
+      state.selectedVotedID = targetOptionID
+      state.voteDetailProgressProperty.selectItem(optionID: targetOptionID)
       return .none
     }
   }

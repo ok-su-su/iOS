@@ -29,12 +29,10 @@ final class VoteDetailPublisher {
 
 struct VoteDetailDeferNetworkRequest: Equatable {
   var boardID: Int64
-  var optionID: Int64?
   var type: VoteDetailDeferNetworkType
 
-  init(boardID: Int64, optionID: Int64? = nil, type: VoteDetailDeferNetworkType) {
+  init(boardID: Int64, type: VoteDetailDeferNetworkType) {
     self.boardID = boardID
-    self.optionID = optionID
     self.type = type
   }
 }
@@ -42,6 +40,8 @@ struct VoteDetailDeferNetworkRequest: Equatable {
 // MARK: - VoteDetailDeferNetworkType
 
 enum VoteDetailDeferNetworkType: Equatable {
-  case just
-  case overwrite
+  case just(optionID: Int64)
+  case overwrite(optionID: Int64)
+  case cancel(optionID: Int64)
+  case none
 }

@@ -22,8 +22,12 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
-      VStack(spacing: 8) {
+      VStack(spacing: 0) {
         makeFavoriteSection()
+
+        SSColor.gray20
+          .frame(height: 8)
+
         LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
           Section {
             // Bottom Vote Content
@@ -42,6 +46,7 @@ struct VoteMainView: View {
 
   @ViewBuilder
   private func makeVoteList() -> some View {
+    // 만약 VotePreviews가 값이 있을 경우
     if !store.voteMainProperty.votePreviews.isEmpty {
       LazyVStack(alignment: .leading, spacing: 12) {
         ForEach(store.voteMainProperty.votePreviews) { item in
@@ -50,7 +55,19 @@ struct VoteMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      .background(SSColor.gray10)
+    }
+    // // 만약 VotePreviews가 값이 없는 경우
+    else {
+      VStack(spacing: 0) {
+        Spacer()
+          .frame(height: 200)
+        Text(Constants.votePreviewEmptyStateLabel)
+          .foregroundStyle(SSColor.gray50)
+          .applySSFont(.text_s)
+          .frame(maxWidth: .infinity, alignment: .center)
+        Spacer()
+          .frame(height: 297)
+      }
     }
   }
 
@@ -73,7 +90,7 @@ struct VoteMainView: View {
 
             Spacer()
 
-            Text(item.createdAt)
+            Text(item.createdAtLabel)
               .modifier(SSTypoModifier(.text_xxxs))
               .foregroundStyle(SSColor.gray60)
           }
@@ -184,7 +201,6 @@ struct VoteMainView: View {
     }
     .padding(.vertical, 8)
     .padding(.horizontal, 16)
-    .background(SSColor.gray10)
   }
 
   /// Sticky Header
@@ -229,7 +245,6 @@ struct VoteMainView: View {
       .scrollIndicators(.hidden)
     }
     .padding(.all, 16)
-    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -322,7 +337,7 @@ struct VoteMainView: View {
   private func makeVoteRootView() -> some View {
     ZStack {
       SSColor
-        .gray20
+        .gray10
         .ignoresSafeArea()
 
       ZStack(alignment: .bottomTrailing) {
@@ -334,11 +349,8 @@ struct VoteMainView: View {
         }
       }
     }
-    .safeAreaInset(edge: .bottom) {
-      HStack(spacing: 0) {
-        Spacer()
-        makeFloatingButton()
-      }
+    .overlay(alignment: .bottomTrailing) {
+      makeFloatingButton()
     }
     .onAppear {
       store.send(.view(.onAppear(true)))
@@ -384,5 +396,7 @@ struct VoteMainView: View {
     static let reportAlertCancelText = "취소"
     static let reportAlertConfirmText = "신고하기"
     static let checkBoxMessage = "작성자도 바로 차단하기"
+
+    static let votePreviewEmptyStateLabel: String = "아직 작성된 투표 글이 없어요"
   }
 }

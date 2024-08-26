@@ -25,7 +25,7 @@ struct VoteDetailProgressProperty: Equatable {
     }
   }
 
-  mutating func selectItem(optionID: Int64) {
+  mutating func selectItem(optionID: Int64?) {
     if let prevSelectedFirstIndex = _items.firstIndex(where: { $0.id == selectedVotedID }) {
       _items[prevSelectedFirstIndex].count -= 1
     }

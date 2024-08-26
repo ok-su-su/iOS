@@ -34,19 +34,22 @@ struct VotePathReducer {
     case let .updateVoteDetail(property):
       let type = property.type
       let boardID = property.boardID
-      // 선택된 아이디가 없기 때문에 return
-      guard let optionID = property.optionID else {
-        return .none
-      }
+
       switch type {
-      case .just: // 단일 투표
+      case let .just(optionID): // 단일 투표
         return .run { _ in
           try await voteDetailNetwork.executeVote(boardID, optionID)
         }
-      case .overwrite: // overwrite투표
+      case let .overwrite(optionID): // overwrite투표
         return .run { _ in
           try await voteDetailNetwork.overwriteVote(boardID, optionID)
         }
+      case let .cancel(optionID):
+        return .run { _ in
+          try await voteDetailNetwork.cancelVote(boardID, optionID)
+        }
+      case .none:
+        return .none
       }
     }
   }
