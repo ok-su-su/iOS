@@ -47,7 +47,16 @@ struct VoteDetailNetwork {
   private static func _deleteVote(_ boardID: Int64) async throws {
     try await provider.request(.deleteVote(boardID: boardID))
   }
+
+  var reportVote: @Sendable (_ boardID: Int64) async throws -> Void
+  var blockUser: @Sendable (_ userID: Int64) async throws -> Void
 }
+
+fileprivate enum VoteMainNetworkLiveFunction {
+  static var voteMainReportVote: @Sendable (_ boardID: Int64) async throws -> Void = VoteMainNetwork.liveValue.reportVote
+  private static var voteMainBlockUser: @Sendable (_ userID: Int64) async throws -> Void = VoteMainNetwork.liveValue.blockUser
+}
+
 
 // MARK: DependencyKey
 
@@ -57,7 +66,9 @@ extension VoteDetailNetwork: DependencyKey {
     executeVote: _executeVote,
     cancelVote: _cancelVote,
     overwriteVote: _overwriteVote,
-    deleteVote: _deleteVote
+    deleteVote: _deleteVote,
+    reportVote: VoteMainNetworkLiveFunction.voteMainReportVote,
+    blockUser: VoteMainNetworkLiveFunction.voteMainReportVote
   )
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
