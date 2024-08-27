@@ -17,9 +17,14 @@ struct EditMyVote {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var helper: EditMyVoteProperty = .init(selectedSection: .init(title: "", id: 22, seq: 3, isActive: true))
     var header: HeaderViewFeature.State = .init(.init(title: "투표 편집", type: .depth2Text("등록")))
-    init() {}
+    var voteDetailProperty: VoteDetailProperty
+    var headerSectionItem: [VoteSectionHeaderItem] = []
+    var selectedHeaderSectionItem: VoteSectionHeaderItem? = nil
+    var textFieldText: String = ""
+    init(voteDetailProperty: VoteDetailProperty) {
+      self.voteDetailProperty = voteDetailProperty
+    }
   }
 
   enum Action: Equatable, FeatureAction {
@@ -37,13 +42,51 @@ struct EditMyVote {
     case tappedSection(VoteSectionHeaderItem)
   }
 
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
+      state.textFieldText = state.voteDetailProperty.content
+      state.isOnAppear = isAppear
+      guard let headerSectionItem: [VoteSectionHeaderItem] = VoteMemoryCache.value() else{
+        return .send(.async(.getVoteHeaderSectionItems))
+      }
+      state.headerSectionItem = headerSectionItem
+      return .none
+    case let .editedVoteTextContent(text):
+      state.textFieldText = text
+      return .none
+    case let .tappedSection(item):
+      state.selectedHeaderSectionItem = item
+      return .none
+    }
+  }
+
   enum InnerAction: Equatable {}
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable {
+    case getVoteHeaderSectionItems
+  }
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getVoteHeaderSectionItems:
+      return .none
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+  }
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header(.tappedTextButton):
+      return .none
+    case .header:
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -52,20 +95,12 @@ struct EditMyVote {
     initScope
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
-      case let .view(.editedVoteTextContent(text)):
-        state.helper.textFieldText = text
-        return .none
-      case let .view(.tappedSection(item)):
-        state.helper.selectedSection = item
-        return .none
-      case .scope(.header(.tappedTextButton)):
-//        VotePathPublisher.shared.push(.myVote(.init()))
-        return .none
-      case .scope(.header):
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
       }
     }
   }

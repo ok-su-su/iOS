@@ -268,6 +268,7 @@ struct VoteMain {
     case .getVoteHeaderSectionItems:
       return runWithVoteMutex { send in
         let response = try await network.getVoteCategory()
+        VoteMemoryCache.save(value: response)
         await send(.inner(.updateVoteHeaderCategory(response)))
       }
     }

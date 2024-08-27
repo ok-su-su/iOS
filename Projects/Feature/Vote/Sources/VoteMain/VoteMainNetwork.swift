@@ -44,7 +44,7 @@ struct VoteMainNetwork {
   var getVoteCategory: () async throws -> [VoteSectionHeaderItem]
   private static func _getVoteCategory() async throws -> [VoteSectionHeaderItem] {
     let models: [BoardModel] = try await provider.request(.getVoteConfig)
-    return models.map { $0.convertVoteSectionHeaderItem() }
+    return models.sorted { $0.seq < $1.seq }.map { $0.convertVoteSectionHeaderItem() }
   }
 }
 

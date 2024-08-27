@@ -162,8 +162,10 @@ struct VoteDetailReducer {
       return .send(.view(.showReport(true)))
 
     case .header(.tappedDoubleTextButton(.leading)):
+      VotePathPublisher.shared.push(.edit(.init()))
       // TODO: -Edit 화면으로 넘어가는 기능 생성
       return .none
+
     case .header(.tappedDoubleTextButton(.trailing)):
       return .send(.view(.showDeleteAlert(true)))
 
