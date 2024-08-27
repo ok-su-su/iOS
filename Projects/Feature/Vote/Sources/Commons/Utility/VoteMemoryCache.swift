@@ -18,6 +18,7 @@ enum VoteMemoryCache {
   static func value<T>(key: String) -> T? {
     return memoryCache[key] as? T
   }
+
   static func value<T>() -> T? {
     return memoryCache[String(describing: T.self)] as? T
   }

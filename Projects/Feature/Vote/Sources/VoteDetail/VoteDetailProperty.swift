@@ -11,6 +11,12 @@ import SSNetwork
 
 typealias VoteDetailProperty = VoteAllInfoResponse
 
+// MARK: Identifiable
+
 extension VoteDetailProperty {
   var createdAtLabel: String { createdAt.subtractFromNowAndMakeLabel() }
 }
+
+// MARK: - VoteOptionCountModel + Identifiable
+
+extension VoteOptionCountModel: Identifiable {}

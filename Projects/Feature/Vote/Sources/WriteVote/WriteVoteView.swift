@@ -101,6 +101,7 @@ struct WriteVoteView: View {
       store.sendViewAction(.tappedCreateButton)
     } label: {
       Text("등록")
+        .foregroundStyle(SSColor.gray100)
         .applySSFont(.title_xxs)
         .foregroundStyle(store.isCreatable ? SSColor.gray100 : SSColor.gray40)
         .padding(.horizontal, 16)

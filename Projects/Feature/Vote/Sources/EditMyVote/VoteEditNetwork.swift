@@ -6,12 +6,16 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import Dependencies
+import Foundation
+
+// MARK: - VoteEditNetwork
 
 struct VoteEditNetwork {
   var getVoteCategory: @Sendable () async throws -> [VoteSectionHeaderItem]
 }
+
+// MARK: DependencyKey
 
 extension VoteEditNetwork: DependencyKey {
   static let liveValue: VoteEditNetwork = .init(getVoteCategory: VoteMainNetwork.liveValue.getVoteCategory)
@@ -20,6 +24,6 @@ extension VoteEditNetwork: DependencyKey {
 extension DependencyValues {
   var voteEditNetwork: VoteEditNetwork {
     get { self[VoteEditNetwork.self] }
-    set { self[VoteEditNetwork.self] = newValue}
+    set { self[VoteEditNetwork.self] = newValue }
   }
 }

@@ -156,14 +156,16 @@ struct VoteDetailReducer {
     case header(HeaderViewFeature.Action)
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case .header(.tappedSearchButton):
       return .send(.view(.showReport(true)))
 
     case .header(.tappedDoubleTextButton(.leading)):
-      VotePathPublisher.shared.push(.edit(.init()))
-      // TODO: -Edit 화면으로 넘어가는 기능 생성
+
+      if let voteDetailProperty = state.voteDetailProperty {
+        VotePathPublisher.shared.push(.edit(.init(voteDetailProperty: voteDetailProperty)))
+      }
       return .none
 
     case .header(.tappedDoubleTextButton(.trailing)):
