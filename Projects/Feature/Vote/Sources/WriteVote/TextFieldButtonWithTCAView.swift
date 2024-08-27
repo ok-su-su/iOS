@@ -39,7 +39,8 @@ struct TextFieldButtonWithTCAView<Item: TextFieldButtonWithTCAPropertiable>: Vie
         textFieldText: $store.item.title.sending(\.changedTextfield),
         showCloseButton: true,
         showDeleteButton: true,
-        prompt: prompt
+        prompt: prompt,
+        regex: store.item.regexString
       ),
       onTap: {
         store.send(.tappedTextFieldButton)

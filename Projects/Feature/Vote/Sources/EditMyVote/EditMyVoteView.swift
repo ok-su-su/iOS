@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SwiftUI
+import SSToast
 
 struct EditMyVoteView: View {
   // MARK: Reducer
@@ -19,18 +20,22 @@ struct EditMyVoteView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 24) {
-      makeHeaderSection()
-      makeVoteContent()
-      Spacer()
+    ScrollView(.vertical) {
+      VStack(spacing: 0) {
+        makeHeaderSection()
+        makeVoteContent()
+      }
     }
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
+    .scrollBounceBehavior(.basedOnSize)
   }
 
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {
-      ForEach(store.helper.availableSection) { item in
-        let isSelected = store.helper.selectedSection == item
+      ForEach(store.headerSectionItem) { item in
+        let isSelected = store.selectedHeaderSectionItem == item
         SSButton(
           .init(
             size: .xsh28,
@@ -53,31 +58,43 @@ struct EditMyVoteView: View {
       // VoteTextContent
       TextField(
         "VoteTextContent",
-        text: $store.helper.textFieldText.sending(\.view.editedVoteTextContent),
+        text: $store.textFieldText.sending(\.view.editedVoteTextContent),
         prompt: nil,
         axis: .vertical
       )
-      .frame(maxWidth: .infinity, minHeight: 24)
+      .font(.custom(.text_xxs))
       .modifier(SSTypoModifier(.text_xxs))
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
-    }
 
-    // VoteItem
-    VStack(spacing: 8) {
-      ForEach(0 ..< store.helper.voteItemProperties.count, id: \.self) { ind in
-        let title = store.helper.voteItemProperties[ind]
-        Text(title)
-          .modifier(SSTypoModifier(.title_xxs))
-          .foregroundStyle(SSColor.gray100)
-          .frame(maxWidth: .infinity)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .background(SSColor.orange10)
-          .clipShape(RoundedRectangle(cornerRadius: 4))
+      // VoteItem
+      VStack(spacing: 8) {
+        ForEach(store.voteDetailProperty.options) { item in
+          Text(item.content)
+            .modifier(SSTypoModifier(.title_xxs))
+            .foregroundStyle(SSColor.gray100)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(SSColor.orange10)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+        }
       }
+      .padding(.horizontal, 16)
     }
-    .padding(.horizontal, 16)
+  }
+
+  @ViewBuilder
+  private func makeCreateButton() -> some View {
+    Button {
+      store.sendViewAction(.tappedEditConfirmButton)
+    } label: {
+      Text("등록")
+        .foregroundStyle(SSColor.gray100)
+        .applySSFont(.title_xxs)
+        .foregroundStyle(store.isEditConfirmable ? SSColor.gray100 : SSColor.gray40)
+        .padding(.horizontal, 16)
+    }
   }
 
   var body: some View {
@@ -87,7 +104,12 @@ struct EditMyVoteView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .overlay(alignment: .trailing) {
+            makeCreateButton()
+          }
         makeContentView()
+          .ssLoading(store.isLoading)
+          .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
       }
     }
     .navigationBarBackButtonHidden()

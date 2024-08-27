@@ -17,6 +17,7 @@ public enum RegexPatternString {
   case gift
   case memo
   case contacts
+  case voteContents
 
   public var regexString: String {
     switch self {
@@ -36,6 +37,8 @@ public enum RegexPatternString {
       "^.{1,30}$"
     case .contacts:
       "^[\\d]{11}$"
+    case .voteContents:
+      "^.{1,200}$"
     }
   }
 }

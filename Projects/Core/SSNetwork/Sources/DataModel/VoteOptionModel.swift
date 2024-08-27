@@ -9,7 +9,7 @@
 import Foundation
 
 /// 투표 옵션 모델
-public struct VoteOptionModel: Equatable, Decodable {
+public struct VoteOptionModel: Equatable, Codable {
   /// 투표 옵션 아이디
   public let id: Int64
   /// 투표 id
@@ -18,4 +18,11 @@ public struct VoteOptionModel: Equatable, Decodable {
   public let content: String
   /// 순서
   public let seq: Int32
+
+  public init(id: Int64, postId: Int64, content: String, seq: Int32) {
+    self.id = id
+    self.postId = postId
+    self.content = content
+    self.seq = seq
+  }
 }

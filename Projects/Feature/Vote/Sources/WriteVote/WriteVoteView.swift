@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import OSLog
+import SSToast
 import SwiftUI
 
 struct WriteVoteView: View {
@@ -26,12 +27,15 @@ struct WriteVoteView: View {
         makeWritableVoteContent()
       }
     }
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
+    .scrollBounceBehavior(.basedOnSize)
   }
 
   @ViewBuilder
   private func makeHeaderSection() -> some View {
     HStack(alignment: .top, spacing: 4) {
-      ForEach(store.helper.availableSection) { item in
+      ForEach(store.helper.headerSectionItems) { item in
         let isSelected = store.helper.selectedSection == item
         SSButton(
           .init(
@@ -56,11 +60,10 @@ struct WriteVoteView: View {
       TextField(
         "VoteTextContent",
         text: $store.helper.voteTextContent.sending(\.view.editedVoteTextContent),
-        prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40),
+        prompt: Text(store.helper.voteTextContentPrompt).foregroundStyle(SSColor.gray40).applySSFontToText(.text_xxs),
         axis: .vertical
       )
-      .frame(maxWidth: .infinity, minHeight: 24)
-      .modifier(SSTypoModifier(.text_xxs))
+      .font(.custom(.text_xxs))
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 
@@ -92,6 +95,19 @@ struct WriteVoteView: View {
     .padding(0)
   }
 
+  @ViewBuilder
+  private func makeCreateButton() -> some View {
+    Button {
+      store.sendViewAction(.tappedCreateButton)
+    } label: {
+      Text("등록")
+        .foregroundStyle(SSColor.gray100)
+        .applySSFont(.title_xxs)
+        .foregroundStyle(store.isCreatable ? SSColor.gray100 : SSColor.gray40)
+        .padding(.horizontal, 16)
+    }
+  }
+
   var body: some View {
     ZStack {
       SSColor
@@ -99,10 +115,14 @@ struct WriteVoteView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
+          .overlay(alignment: .trailing) {
+            makeCreateButton()
+          }
 
         makeContentView()
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

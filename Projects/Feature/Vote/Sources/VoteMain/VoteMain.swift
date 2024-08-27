@@ -30,7 +30,7 @@ struct VoteMain {
       votePath.path
     }
 
-    fileprivate var taskManager: TaskManager = .init(taskCount: 3)
+    fileprivate var taskManager: TCAMutexManager = .init(taskCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
 
@@ -72,9 +72,19 @@ struct VoteMain {
     case executeRefresh
   }
 
-  private func registerVoteReducer() -> Effect<Action> {
+  private func registerVoteReducerAndPublisher() -> Effect<Action> {
     return .merge(
-      .send(.scope(.votePath(.registerReducer)))
+      .send(.scope(.votePath(.registerReducer))),
+      .publisher {
+        votePublisher
+          .deleteVotePublisher
+          .map { .inner(.deleteVote($0)) }
+      },
+      .publisher {
+        votePublisher
+          .updateVoteListPublisher
+          .map { .async(.getInitialVoteItems) }
+      }
     )
   }
 
@@ -86,9 +96,9 @@ struct VoteMain {
       }
       state.isOnAppear = isAppear
       return .concatenate(
-        .send(.scope(.votePath(.registerReducer))),
         .send(.inner(.isLoading(true))),
         .merge(
+          registerVoteReducerAndPublisher(),
           .send(.async(.getPopularVoteItems)),
           .send(.async(.getInitialVoteItems)),
           .send(.async(.getVoteHeaderSectionItems))
@@ -108,7 +118,8 @@ struct VoteMain {
       return .send(.async(.getInitialVoteItems))
 
     case .tappedFloatingButton:
-      state.votePath.path.append(.write(.init()))
+      let items = state.voteMainProperty.voteSectionItems
+      VotePathPublisher.shared.push(.write(.init(sectionHeaderItems: items)))
       return .none
 
     case let .tappedVoteItem(id):
@@ -151,6 +162,7 @@ struct VoteMain {
     case updateVoteItems(VoteNetworkResponse)
     case overwriteVoteItems(VoteNetworkResponse)
     case updateVoteHeaderCategory([VoteSectionHeaderItem])
+    case deleteVote(Int64)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
@@ -177,6 +189,10 @@ struct VoteMain {
       state.voteMainProperty.updateVoteSectionItems(items)
       return .none
 
+    case let .deleteVote(id):
+      state.voteMainProperty.votePreviews.removeAll(where: { $0.id == id })
+      return .none
+
     case let .task(taskState):
       switch taskState {
       case .willRun:
@@ -192,6 +208,7 @@ struct VoteMain {
   }
 
   @Dependency(\.voteMainNetwork) var network
+  @Dependency(\.voteUpdatePublisher) var votePublisher
   enum AsyncAction: Equatable {
     case getInitialVoteItems // initial상태의 투표 아이템을 불러옵니다.
     case getVoteItems // 더이상 보여줄 아이템이 없다면 새 아이템을 불러옵니다.
@@ -251,6 +268,7 @@ struct VoteMain {
     case .getVoteHeaderSectionItems:
       return runWithVoteMutex { send in
         let response = try await network.getVoteCategory()
+        VoteMemoryCache.save(value: response)
         await send(.inner(.updateVoteHeaderCategory(response)))
       }
     }

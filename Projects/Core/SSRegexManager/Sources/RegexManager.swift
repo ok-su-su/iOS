@@ -56,4 +56,9 @@ public enum RegexManager {
   public static func isValidContacts(_ value: String) -> Bool {
     return value.contains(concatsRegex)
   }
+
+  private static let voteContentRegex: Regex<Substring> = try! Regex(RegexPatternString.voteContents.regexString)
+  public static func isValidVoteContent(_ value: String) -> Bool {
+    return value.contains(voteContentRegex)
+  }
 }

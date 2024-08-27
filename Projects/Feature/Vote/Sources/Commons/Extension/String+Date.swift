@@ -12,10 +12,10 @@ extension Date {
   private static var dateFormatter: DateFormatter = .init()
 
   /// 특정 날짜로부터 얼마나 시간이 지났는지 체크하는 함수
-  func secondsSinceNow() -> TimeInterval {
+  func secondsSinceNow() -> Int {
     let now = Date()
     let elapsedTime = now.timeIntervalSince(self) // 현재 시간으로부터 self로 지정된 날짜까지의 시간 간격을 구함
-    return elapsedTime
+    return Int(elapsedTime)
   }
 
   func string(dateFormat: String) -> String {
@@ -38,10 +38,10 @@ extension String {
     }
     let interval = targetDate.secondsSinceNow()
     if interval / 3600 == 0 {
-      let targetMinute = Int(interval / 60)
+      let targetMinute = interval / 60
       return targetMinute.description + Constants.minuteSubfixString
     } else if targetDate == .now {
-      let targetHours = Int(interval / 3600)
+      let targetHours = interval / 3600
       return targetHours.description + Constants.hourSubfixString
     } else {
       return targetDate.string(dateFormat: Constants.dateFormat)

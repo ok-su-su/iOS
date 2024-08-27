@@ -76,6 +76,12 @@ struct VotePathReducer {
       case .registerReducer:
         return sinkPublisherAndReducer()
       case let .push(pathState):
+        switch pathState {
+        case .createVoteAndPushDetail:
+          _ = state.path.popLast()
+        default:
+          break
+        }
         state.path.append(pathState)
         return .none
 

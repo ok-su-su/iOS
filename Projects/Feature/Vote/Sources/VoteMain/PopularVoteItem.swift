@@ -18,5 +18,3 @@ struct PopularVoteItem: Equatable, Identifiable {
   var isModified: Bool
   var participantCount: Int64
 }
-
-extension [PopularVoteItem] {}

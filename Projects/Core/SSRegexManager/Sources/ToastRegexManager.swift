@@ -40,4 +40,8 @@ public enum ToastRegexManager {
   public static func isShowToastByContacts(_ value: String) -> Bool {
     return value.count > 11
   }
+
+  public static func isShowToastVoteContent(_ value: String) -> Bool {
+    return value.count > 200
+  }
 }

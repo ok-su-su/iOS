@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSRegexManager
+import SSToast
 
 // MARK: - WriteVote
 
@@ -17,11 +19,18 @@ struct WriteVote {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Text("등록")))
+    var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Default))
     var helper: WriteVoteProperty = .init()
+    /// TextFieldWithTCA Reducer.State
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
-    init() {
+
+    var isCreatable: Bool { helper.isCreatable }
+    var mutex: TCAMutexManager = .init()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "글은 200자 이내로 등록할 수 있어요!", trailingType: .none))
+
+    init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])
+      helper.updateHeaderSectionItem(items: sectionHeaderItems)
       setSelectableItemsState()
     }
 
@@ -58,16 +67,82 @@ struct WriteVote {
     case tappedSection(VoteSectionHeaderItem)
     case editedVoteTextContent(String)
     case tappedAddSectionItemButton
+    case tappedCreateButton
+  }
+
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .none
+
+    case let .tappedSection(item):
+      state.helper.selectedSection = item
+      return .none
+
+    case let .editedVoteTextContent(text):
+      state.helper.voteTextContent = text
+      return ToastRegexManager.isShowToastVoteContent(text)
+        ? .send(.scope(.toast(.onAppear(true))))
+        : .none
+
+    case .tappedAddSectionItemButton:
+      state.helper.addNewItem()
+      state.setSelectableItemsState()
+      return .none
+
+    case .tappedCreateButton:
+      return .send(.async(.writeVote))
+    }
   }
 
   enum InnerAction: Equatable {}
 
-  enum AsyncAction: Equatable {}
+  @Dependency(\.writeVoteNetwork) var network
+  enum AsyncAction: Equatable {
+    case writeVote
+  }
+
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .writeVote:
+      guard let selectedSectionID = state.helper.selectedSection?.id else {
+        return .none
+      }
+      let options = state.helper.getVoteOptionModel()
+      let request = CreateVoteRequestBody(
+        content: state.helper.voteTextContent,
+        options: options,
+        boardId: selectedSectionID
+      )
+
+      return .run { _ in
+        let response = try await network.createVote(request)
+        VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case selectableItems(IdentifiedActionOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>>)
+    case toast(SSToastReducer.Action)
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .toast:
+      return .none
+    case .header:
+      return .none
+
+    case let .selectableItems(.element(id: id, action: .deleteComponent)):
+      state.deleteSelectableItemsState(id: id)
+      return .none
+    case .selectableItems(.element(id: _, action: _)):
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -76,33 +151,20 @@ struct WriteVote {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
+    }
 
     Reduce { state, action in
       switch action {
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .none
-      case .scope(.header):
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
 
-      case let .view(.tappedSection(item)):
-        state.helper.selectedSection = item
-        return .none
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
 
-      case let .view(.editedVoteTextContent(text)):
-        state.helper.voteTextContent = text
-        return .none
-
-      case let .scope(.selectableItems(.element(id: id, action: .deleteComponent))):
-        state.deleteSelectableItemsState(id: id)
-        return .none
-      case .scope(.selectableItems(.element(id: _, action: _))):
-        return .none
-
-      case .view(.tappedAddSectionItemButton):
-        state.helper.addNewItem()
-        state.setSelectableItemsState()
-        return .none
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
     .addFeatures0()

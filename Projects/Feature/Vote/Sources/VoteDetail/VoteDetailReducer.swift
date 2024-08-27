@@ -10,6 +10,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSAlert
+import SSNotification
 
 // MARK: - VoteDetailReducer
 
@@ -22,16 +24,25 @@ struct VoteDetailReducer {
     var isPrevVoteID: Int64? = nil
     var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
-    var isPresentAlert: Bool = false
+    var presentReportAlert: Bool = false
 
     var voteDetailProperty: VoteDetailProperty? = nil
     var isLoading: Bool { voteDetailProperty == nil }
     var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
+    var presentDeleteAlert: Bool = false
+    var isRefreshVoteList: Bool = false
 
     init(id: Int64) {
       self.id = id
     }
+
+    init(createdBoardID: Int64) {
+      id = createdBoardID
+      isRefreshVoteList = true
+    }
   }
+
+  @Dependency(\.dismiss) var dismiss
 
   enum CancelID {
     case patchVote
@@ -48,9 +59,11 @@ struct VoteDetailReducer {
   @CasePathable
   enum ViewAction: Equatable {
     case onAppear(Bool)
-    case showAlert(Bool)
+    case showReport(Bool)
+    case showDeleteAlert(Bool)
     case tappedAlertConfirmButton(isChecked: Bool)
     case tappedVoteItem(id: Int64)
+    case tappedDeleteConfirmButton
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -62,8 +75,8 @@ struct VoteDetailReducer {
       state.isOnAppear = isAppear
       return .send(.async(.getVoteDetail))
 
-    case let .showAlert(present):
-      state.isPresentAlert = present
+    case let .showReport(present):
+      state.presentReportAlert = present
       return .none
 
     case let .tappedAlertConfirmButton(isChecked: _):
@@ -73,6 +86,12 @@ struct VoteDetailReducer {
     case let .tappedVoteItem(id):
       // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
       return .send(.inner(.updateSelectedVotedItem(optionID: id)))
+    case let .showDeleteAlert(val):
+      state.presentDeleteAlert = val
+      return .none
+
+    case .tappedDeleteConfirmButton:
+      return .send(.async(.deleteVote))
     }
   }
 
@@ -111,15 +130,23 @@ struct VoteDetailReducer {
 
   enum AsyncAction: Equatable {
     case getVoteDetail
+    case deleteVote
   }
 
   @Dependency(\.voteDetailNetwork) var network
+  @Dependency(\.voteUpdatePublisher) var votePublisher
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getVoteDetail:
       return .run { [id = state.id] send in
         let responseProperty = try await network.voteDetail(id)
         await send(.inner(.updateVoteDetail(responseProperty)))
+      }
+    case .deleteVote:
+      return .run { [id = state.id] _ in
+        try await network.deleteVote(id)
+        votePublisher.deleteVote(ID: id)
+        await dismiss()
       }
     }
   }
@@ -129,10 +156,20 @@ struct VoteDetailReducer {
     case header(HeaderViewFeature.Action)
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case .header(.tappedSearchButton):
-      return .send(.view(.showAlert(true)))
+      return .send(.view(.showReport(true)))
+
+    case .header(.tappedDoubleTextButton(.leading)):
+
+      if let voteDetailProperty = state.voteDetailProperty {
+        VotePathPublisher.shared.push(.edit(.init(voteDetailProperty: voteDetailProperty)))
+      }
+      return .none
+
+    case .header(.tappedDoubleTextButton(.trailing)):
+      return .send(.view(.showDeleteAlert(true)))
 
     case .header:
       return .none
@@ -140,7 +177,6 @@ struct VoteDetailReducer {
   }
 
   enum DelegateAction: Equatable {}
-  @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {

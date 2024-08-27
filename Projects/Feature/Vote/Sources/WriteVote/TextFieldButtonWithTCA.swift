@@ -71,6 +71,7 @@ protocol TextFieldButtonWithTCAPropertiable: Identifiable, Equatable {
   var id: Int { get }
   var title: String { get set }
   var isSaved: Bool { get set }
+  var regexString: Regex<Substring>? { get set }
 
   mutating func deleteTextFieldText()
   mutating func deleteTextField()

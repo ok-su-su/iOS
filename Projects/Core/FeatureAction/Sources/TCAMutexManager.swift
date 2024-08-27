@@ -8,14 +8,20 @@
 
 import Foundation
 
-// MARK: - TaskManager
+// MARK: - TCAMutexManager
 
-public struct TaskManager: Equatable {
+public struct TCAMutexManager: Equatable {
   private let originalTaskCount: Int
   private var taskCount: Int
   public init(taskCount: Int) {
     self.taskCount = taskCount
     originalTaskCount = taskCount
+  }
+
+  public init() {
+    let targetTaskCount = 0
+    taskCount = targetTaskCount
+    originalTaskCount = targetTaskCount
   }
 
   public mutating func task(_ state: SingleTaskState) {
