@@ -24,6 +24,9 @@ struct EditMyVote {
     var textFieldText: String = ""
     init(voteDetailProperty: VoteDetailProperty) {
       self.voteDetailProperty = voteDetailProperty
+      textFieldText = voteDetailProperty.content
+      headerSectionItem = VoteMemoryCache.value() ?? []
+      selectedHeaderSectionItem = headerSectionItem.first(where: {$0.id == voteDetailProperty.board.id})
     }
   }
 
@@ -48,13 +51,14 @@ struct EditMyVote {
       if state.isOnAppear {
         return .none
       }
-      state.textFieldText = state.voteDetailProperty.content
       state.isOnAppear = isAppear
-      guard let headerSectionItem: [VoteSectionHeaderItem] = VoteMemoryCache.value() else{
+
+      if state.headerSectionItem.isEmpty {
         return .send(.async(.getVoteHeaderSectionItems))
       }
-      state.headerSectionItem = headerSectionItem
+
       return .none
+
     case let .editedVoteTextContent(text):
       state.textFieldText = text
       return .none
@@ -69,6 +73,7 @@ struct EditMyVote {
   enum AsyncAction: Equatable {
     case getVoteHeaderSectionItems
   }
+
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getVoteHeaderSectionItems:
