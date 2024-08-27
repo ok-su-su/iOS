@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import OSLog
+import SSToast
 import SwiftUI
 
 struct WriteVoteView: View {
@@ -120,6 +121,7 @@ struct WriteVoteView: View {
         makeContentView()
       }
     }
+    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

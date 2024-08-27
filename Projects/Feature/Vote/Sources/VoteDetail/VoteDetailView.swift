@@ -11,7 +11,6 @@ import Designsystem
 import Foundation
 import SSAlert
 import SSNotification
-import SSToast
 import SwiftUI
 
 // MARK: - VoteDetailView
@@ -86,7 +85,6 @@ struct VoteDetailView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
-    .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
     .sSAlert(
       isPresented: $store.presentReportAlert.sending(\.view.showReport),
       messageAlertProperty: .init(
