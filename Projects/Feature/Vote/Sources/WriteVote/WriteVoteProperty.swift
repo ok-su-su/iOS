@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Foundation
 import SSNetwork
+import SSRegexManager
 
 // MARK: - WriteVoteProperty
 
@@ -54,7 +55,7 @@ struct WriteVoteProperty: Equatable {
       isItemValid
   }
 
-  var isTextFieldValid: Bool { voteTextContent.count < 200 }
+  var isTextFieldValid: Bool { RegexManager.isValidVoteContent(voteTextContent) }
   var isItemValid: Bool { selectableItem.filter(\.isSaved).count >= 2 }
 
   init() {

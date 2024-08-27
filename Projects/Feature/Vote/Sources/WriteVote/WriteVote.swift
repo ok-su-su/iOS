@@ -9,6 +9,8 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSRegexManager
+import SSToast
 
 // MARK: - WriteVote
 
@@ -24,6 +26,7 @@ struct WriteVote {
 
     var isCreatable: Bool { helper.isCreatable }
     var mutex: TCAMutexManager = .init()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "글은 200자 이내로 등록할 수 있어요!", trailingType: .none))
 
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])
@@ -79,7 +82,9 @@ struct WriteVote {
 
     case let .editedVoteTextContent(text):
       state.helper.voteTextContent = text
-      return .none
+      return ToastRegexManager.isShowToastVoteContent(text)
+        ? .send(.scope(.toast(.onAppear(true))))
+        : .none
 
     case .tappedAddSectionItemButton:
       state.helper.addNewItem()
@@ -122,10 +127,13 @@ struct WriteVote {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case selectableItems(IdentifiedActionOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>>)
+    case toast(SSToastReducer.Action)
   }
 
   func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
+    case .toast:
+      return .none
     case .header:
       return .none
 
@@ -142,6 +150,9 @@ struct WriteVote {
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
     }
 
     Reduce { state, action in

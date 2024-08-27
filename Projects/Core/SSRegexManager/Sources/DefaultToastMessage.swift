@@ -17,6 +17,7 @@ public enum DefaultToastMessage: CustomStringConvertible {
   case gift
   case memo
   case contact
+  case voteContent
   public var description: String {
     switch self {
     case .price:
@@ -35,6 +36,8 @@ public enum DefaultToastMessage: CustomStringConvertible {
       "메모는 30글자까지만 입력 가능해요"
     case .contact:
       "연락처는 11자리까지만 입력 가능해요"
+    case .voteContent:
+      "글은 200자 이내로 등록할 수 있어요!"
     }
   }
 
