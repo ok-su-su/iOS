@@ -17,6 +17,11 @@ public struct TaskManager: Equatable {
     self.taskCount = taskCount
     originalTaskCount = taskCount
   }
+  public init() {
+    let targetTaskCount = 0
+    taskCount = targetTaskCount
+    originalTaskCount = targetTaskCount
+  }
 
   public mutating func task(_ state: SingleTaskState) {
     switch state {
