@@ -41,6 +41,12 @@ struct VoteDetailNetwork {
   private static func _overwriteVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.overwriteVote(boardID: boardID, optionID: optionID))
   }
+
+  var deleteVote: @Sendable (_ boardID: Int64) async throws -> Void
+  @Sendable
+  private static func _deleteVote(_ boardID: Int64) async throws {
+    try await provider.request(.deleteVote(boardID: boardID))
+  }
 }
 
 // MARK: DependencyKey
@@ -50,7 +56,8 @@ extension VoteDetailNetwork: DependencyKey {
     voteDetail: _voteDetail,
     executeVote: _executeVote,
     cancelVote: _cancelVote,
-    overwriteVote: _overwriteVote
+    overwriteVote: _overwriteVote,
+    deleteVote: _deleteVote
   )
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
@@ -59,7 +66,7 @@ extension VoteDetailNetwork: DependencyKey {
     case executeVote(boardID: Int64, optionID: Int64)
     case overwriteVote(boardID: Int64, optionID: Int64)
     case cancelVote(boardID: Int64, optionID: Int64)
-    //    case deleteVote(postID: Int64)
+    case deleteVote(boardID: Int64)
     //    case updateVote(postID: Int64)
 
     var additionalHeader: [String: String]? { nil }
@@ -74,6 +81,8 @@ extension VoteDetailNetwork: DependencyKey {
         "votes/\(boardID)/vote"
       case let .cancelVote(boardID, _):
         "votes/\(boardID)"
+      case let .deleteVote(boardID):
+        "votes/\(boardID)"
       }
     }
 
@@ -87,6 +96,8 @@ extension VoteDetailNetwork: DependencyKey {
         .patch
       case .cancelVote:
         .post
+      case .deleteVote:
+        .delete
       }
     }
 
@@ -103,6 +114,8 @@ extension VoteDetailNetwork: DependencyKey {
       case let .cancelVote(_, optionID):
         let data = try? JSONEncoder.default.encode(CreateVoteHistoryRequest(isCancel: true, optionId: optionID))
         return .requestData(data ?? .init())
+      case let .deleteVote(boardID):
+        return .requestPlain
       }
     }
   }

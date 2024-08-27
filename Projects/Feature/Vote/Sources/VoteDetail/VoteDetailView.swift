@@ -82,19 +82,33 @@ struct VoteDetailView: View {
       store.send(.view(.onAppear(true)))
     }
     .sSAlert(
-      isPresented: $store.isPresentAlert.sending(\.view.showAlert),
+      isPresented: $store.presentReportAlert.sending(\.view.showReport),
       messageAlertProperty: .init(
-        titleText: Constants.reportAlertTitle,
-        contentText: Constants.reportAlertDescription,
-        checkBoxMessage: .text(Constants.checkBoxMessage),
+        titleText: Constants.Report.reportAlertTitle,
+        contentText: Constants.Report.reportAlertDescription,
+        checkBoxMessage: .text(Constants.Report.checkBoxMessage),
         buttonMessage: .doubleButton(
-          left: Constants.reportAlertCancelText,
-          right: Constants.reportAlertConfirmText
+          left: Constants.Report.reportAlertCancelText,
+          right: Constants.Report.reportAlertConfirmText
         ),
         didTapCompletionButton: { isChecked in
           store.send(.view(.tappedAlertConfirmButton(isChecked: isChecked)))
         }
       )
+    )
+    .sSAlert(
+      isPresented: $store.presentDeleteAlert.sending(\.view.showDeleteAlert),
+      messageAlertProperty: .init(
+        titleText: Constants.Delete.title,
+        contentText: Constants.Delete.description,
+        checkBoxMessage: .none,
+        buttonMessage: .doubleButton(
+          left: Constants.Delete.ConfirmText,
+          right: Constants.Delete.ConfirmText
+        )
+      ) { _ in
+        store.sendViewAction(.tappedDeleteConfirmButton)
+      }
     )
     .onDisappear {
       if let boardID = store.voteDetailProperty?.id {
@@ -133,12 +147,23 @@ struct VoteDetailView: View {
   private enum Metrics {}
 
   private enum Constants {
-    static let reportAlertTitle = "해당 글을 신고할까요?"
-    static let reportAlertDescription = """
-    신고된 글은 수수의 확인 후 제재됩니다.\n이 작성자의 글을 더 이상 보고 싶지 않다면\n작성자를 바로 차단해 주세요.
-    """
-    static let reportAlertCancelText = "취소"
-    static let reportAlertConfirmText = "신고하기"
-    static let checkBoxMessage = "작성자도 바로 차단하기"
+    enum Report {
+      static let reportAlertTitle = "해당 글을 신고할까요?"
+      static let reportAlertDescription = """
+      신고된 글은 수수의 확인 후 제재됩니다.\n이 작성자의 글을 더 이상 보고 싶지 않다면\n작성자를 바로 차단해 주세요.
+      """
+      static let reportAlertCancelText = "취소"
+      static let reportAlertConfirmText = "신고하기"
+      static let checkBoxMessage = "작성자도 바로 차단하기"
+    }
+
+    enum Delete {
+      static let title = "투표를 삭제할까요?"
+      static let description = """
+      삭제한 투표는 다시 복구할 수 없어요.
+      """
+      static let cancelText = "취소"
+      static let ConfirmText = "삭제"
+    }
   }
 }
