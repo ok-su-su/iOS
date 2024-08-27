@@ -93,10 +93,6 @@ struct WriteVote {
 
   enum InnerAction: Equatable {}
 
-  func innerAction(_: inout State, _: Action.InnerAction) -> Effect<Action> {
-    return .none
-  }
-
   @Dependency(\.writeVoteNetwork) var network
   enum AsyncAction: Equatable {
     case writeVote
@@ -115,12 +111,9 @@ struct WriteVote {
         boardId: selectedSectionID
       )
 
-      dump(request)
-      print(String(data: try! JSONEncoder.default.encode(request), encoding: .utf8))
-
       return .run { _ in
         let response = try await network.createVote(request)
-        VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(id: response.id)))
+        VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
       }
     }
   }

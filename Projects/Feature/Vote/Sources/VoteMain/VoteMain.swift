@@ -74,7 +74,17 @@ struct VoteMain {
 
   private func registerVoteReducer() -> Effect<Action> {
     return .merge(
-      .send(.scope(.votePath(.registerReducer)))
+      .send(.scope(.votePath(.registerReducer))),
+      .publisher {
+        votePublisher
+          .deleteVotePublisher
+          .map { .inner(.deleteVote($0)) }
+      },
+      .publisher {
+        votePublisher
+          .updateVoteListPublisher
+          .map { .async(.getInitialVoteItems) }
+      }
     )
   }
 
@@ -152,6 +162,7 @@ struct VoteMain {
     case updateVoteItems(VoteNetworkResponse)
     case overwriteVoteItems(VoteNetworkResponse)
     case updateVoteHeaderCategory([VoteSectionHeaderItem])
+    case deleteVote(Int64)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
@@ -178,6 +189,10 @@ struct VoteMain {
       state.voteMainProperty.updateVoteSectionItems(items)
       return .none
 
+    case let .deleteVote(id):
+      state.voteMainProperty.votePreviews.removeAll(where: { $0.id == id })
+      return .none
+
     case let .task(taskState):
       switch taskState {
       case .willRun:
@@ -193,6 +208,7 @@ struct VoteMain {
   }
 
   @Dependency(\.voteMainNetwork) var network
+  @Dependency(\.voteUpdatePublisher) var votePublisher
   enum AsyncAction: Equatable {
     case getInitialVoteItems // initial상태의 투표 아이템을 불러옵니다.
     case getVoteItems // 더이상 보여줄 아이템이 없다면 새 아이템을 불러옵니다.

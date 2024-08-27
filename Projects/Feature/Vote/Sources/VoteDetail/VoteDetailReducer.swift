@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSAlert
+import SSNotification
 
 // MARK: - VoteDetailReducer
 
@@ -29,9 +30,15 @@ struct VoteDetailReducer {
     var isLoading: Bool { voteDetailProperty == nil }
     var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
     var presentDeleteAlert: Bool = false
+    var isRefreshVoteList: Bool = false
 
     init(id: Int64) {
       self.id = id
+    }
+
+    init(createdBoardID: Int64) {
+      id = createdBoardID
+      isRefreshVoteList = true
     }
   }
 
@@ -83,7 +90,7 @@ struct VoteDetailReducer {
       state.presentDeleteAlert = val
       return .none
 
-    case let .tappedDeleteConfirmButton:
+    case .tappedDeleteConfirmButton:
       return .send(.async(.deleteVote))
     }
   }
@@ -127,6 +134,7 @@ struct VoteDetailReducer {
   }
 
   @Dependency(\.voteDetailNetwork) var network
+  @Dependency(\.voteUpdatePublisher) var votePublisher
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getVoteDetail:
@@ -137,6 +145,7 @@ struct VoteDetailReducer {
     case .deleteVote:
       return .run { [id = state.id] _ in
         try await network.deleteVote(id)
+        votePublisher.deleteVote(ID: id)
         await dismiss()
       }
     }

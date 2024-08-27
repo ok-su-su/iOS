@@ -54,8 +54,5 @@ public struct UpdateLedgerDetailPublisher: DependencyKey {
 }
 
 public extension DependencyValues {
-  var updateLedgerDetailPublisher: UpdateLedgerDetailPublisher {
-    get { self[UpdateLedgerDetailPublisher.self] }
-    set { self[UpdateLedgerDetailPublisher.self] = newValue }
-  }
+  var updateLedgerDetailPublisher: UpdateLedgerDetailPublisher { self[UpdateLedgerDetailPublisher.self] }
 }
