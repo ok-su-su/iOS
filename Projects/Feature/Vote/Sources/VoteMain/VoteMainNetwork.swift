@@ -49,6 +49,8 @@ struct VoteMainNetwork {
     let models: [BoardModel] = try await provider.request(.getVoteConfig)
     return models.sorted { $0.seq < $1.seq }.map { $0.convertVoteSectionHeaderItem() }
   }
+
+  var 
 }
 
 // MARK: DependencyKey
