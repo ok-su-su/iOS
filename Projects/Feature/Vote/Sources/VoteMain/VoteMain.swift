@@ -72,7 +72,7 @@ struct VoteMain {
     case executeRefresh
   }
 
-  private func registerVoteReducer() -> Effect<Action> {
+  private func registerVoteReducerAndPublisher() -> Effect<Action> {
     return .merge(
       .send(.scope(.votePath(.registerReducer))),
       .publisher {
@@ -96,9 +96,9 @@ struct VoteMain {
       }
       state.isOnAppear = isAppear
       return .concatenate(
-        .send(.scope(.votePath(.registerReducer))),
         .send(.inner(.isLoading(true))),
         .merge(
+          registerVoteReducerAndPublisher(),
           .send(.async(.getPopularVoteItems)),
           .send(.async(.getInitialVoteItems)),
           .send(.async(.getVoteHeaderSectionItems))
