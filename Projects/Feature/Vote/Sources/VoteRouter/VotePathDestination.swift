@@ -17,4 +17,5 @@ enum VotePathDestination {
   case write(WriteVote)
   case edit(EditMyVote)
   case detail(VoteDetailReducer)
+  case createVoteAndPushDetail(VoteDetailReducer)
 }

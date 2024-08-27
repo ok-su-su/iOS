@@ -327,7 +327,11 @@ struct VoteMainView: View {
 
       case let .edit(store):
         EditMyVoteView(store: store)
+
       case let .detail(store):
+        VoteDetailView(store: store)
+
+      case let .createVoteAndPushDetail(store):
         VoteDetailView(store: store)
       }
     }

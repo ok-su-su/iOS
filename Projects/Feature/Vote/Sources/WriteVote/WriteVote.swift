@@ -23,6 +23,7 @@ struct WriteVote {
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
 
     var isCreatable: Bool { helper.isCreatable }
+    var mutex: TCAMutexManager = .init()
 
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])
@@ -86,19 +87,61 @@ struct WriteVote {
       return .none
 
     case .tappedCreateButton:
-      // TODO: Add Create Post Logic
-      return .none
+      return .send(.async(.writeVote))
     }
   }
 
   enum InnerAction: Equatable {}
 
-  enum AsyncAction: Equatable {}
+  func innerAction(_: inout State, _: Action.InnerAction) -> Effect<Action> {
+    return .none
+  }
+
+  @Dependency(\.writeVoteNetwork) var network
+  enum AsyncAction: Equatable {
+    case writeVote
+  }
+
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .writeVote:
+      guard let selectedSectionID = state.helper.selectedSection?.id else {
+        return .none
+      }
+      let options = state.helper.getVoteOptionModel()
+      let request = CreateVoteRequestBody(
+        content: state.helper.voteTextContent,
+        options: options,
+        boardId: selectedSectionID
+      )
+
+      dump(request)
+      print(String(data: try! JSONEncoder.default.encode(request), encoding: .utf8))
+
+      return .run { _ in
+        let response = try await network.createVote(request)
+        VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(id: response.id)))
+      }
+    }
+  }
 
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case selectableItems(IdentifiedActionOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>>)
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header:
+      return .none
+
+    case let .selectableItems(.element(id: id, action: .deleteComponent)):
+      state.deleteSelectableItemsState(id: id)
+      return .none
+    case .selectableItems(.element(id: _, action: _)):
+      return .none
+    }
   }
 
   enum DelegateAction: Equatable {}
@@ -113,14 +156,11 @@ struct WriteVote {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
 
-      case .scope(.header):
-        return .none
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
 
-      case let .scope(.selectableItems(.element(id: id, action: .deleteComponent))):
-        state.deleteSelectableItemsState(id: id)
-        return .none
-      case .scope(.selectableItems(.element(id: _, action: _))):
-        return .none
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
       }
     }
     .addFeatures0()

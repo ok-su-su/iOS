@@ -18,4 +18,11 @@ public struct VoteOptionModel: Equatable, Codable {
   public let content: String
   /// 순서
   public let seq: Int32
+
+  public init(id: Int64, postId: Int64, content: String, seq: Int32) {
+    self.id = id
+    self.postId = postId
+    self.content = content
+    self.seq = seq
+  }
 }

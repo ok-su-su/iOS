@@ -30,7 +30,7 @@ struct VoteMain {
       votePath.path
     }
 
-    fileprivate var taskManager: TaskManager = .init(taskCount: 3)
+    fileprivate var taskManager: TCAMutexManager = .init(taskCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
 
