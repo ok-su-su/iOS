@@ -18,7 +18,7 @@ struct ReceivedFilterNetwork {
   private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    var res: [FilterSelectableItemProperty] = data.categories.map { .init(id: $0.id, title: $0.name) }
+    var res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
     _ = res.popLast()
     return res
   }

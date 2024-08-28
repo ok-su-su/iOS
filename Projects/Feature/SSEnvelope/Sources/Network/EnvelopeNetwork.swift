@@ -43,28 +43,35 @@ struct EnvelopeNetwork {
   }
 
   func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
-    // 맨 뒤 기타는 제거 합니다.
-    var events = try await getEventItems()
-    _ = events.popLast()
-    // 맨 뒤 기타는 제거 합니다.
-    var relations = try await getRelationItems()
-    _ = relations.popLast()
+    let events = try await getEventItems()
+    let relations = try await getRelationItems()
+    let envelopeProperty = try await getEnvelopeDetailPropertyByEnvelopeID(envelopeID)
 
-    return try await .init(
-      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelopeID(envelopeID),
-      eventItems: events,
-      relationItems: relations
+    guard let categoryCustomItem = events.first(where: { $0.isMiscCategory }),
+          let relationCustomItem = relations.first(where: { $0.id == 5 }) // TODO: 서버쪽 질의를 통한 로직 변경
+    else {
+      throw NSError(domain: "", code: 3)
+    }
+    let targetCategoryItems = events.filter { $0.isMiscCategory == false }
+    let targetRelationItems = relations.filter { $0.id != 5 }
+
+    return .init(
+      envelopeDetailProperty: envelopeProperty,
+      eventItems: targetCategoryItems,
+      customEventItem: categoryCustomItem,
+      relationItems: targetRelationItems,
+      customRelationItem: relationCustomItem
     )
   }
 
   private func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
+    return dto.relationships.sorted(by: { $0.id < $1.id })
   }
 
   private func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.categories.map { .init(id: $0.id, title: $0.name) }
+    return dto.categories.sorted(by: { $0.seq < $1.seq })
   }
 
   func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64 {

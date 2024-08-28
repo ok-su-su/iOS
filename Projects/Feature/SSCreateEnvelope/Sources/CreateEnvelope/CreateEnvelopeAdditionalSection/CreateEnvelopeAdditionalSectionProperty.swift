@@ -79,18 +79,12 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
 // MARK: - CreateEnvelopeAdditionalSectionProperty
 
 public struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, SSSelectableItemable {
-  public var id: Int {
-    return type.id
-  }
-
-  public var title: String {
-    return type.rawValue
-  }
-
-  var type: CreateEnvelopeAdditionalSectionSceneType
+  public var id: Int
+  public var title: String
 
   init(type: CreateEnvelopeAdditionalSectionSceneType) {
-    self.type = type
+    id = type.id
+    title = type.title
   }
 
   public mutating func setTitle(_: String) {}

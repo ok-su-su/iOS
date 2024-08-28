@@ -10,13 +10,13 @@ import Foundation
 
 // MARK: - CategoryModel
 
-public struct CategoryModel: Codable, Equatable {
+public struct CategoryModel: Identifiable, Codable, Equatable {
   /// 카테고리 아이디
   public let id: Int
   /// 카테고리 순서
   public let seq: Int
   /// 카테고리 이름
-  public let name: String
+  public var name: String
   /// 카테고리 스타일
   public let style: String
   /// 기타
@@ -28,5 +28,13 @@ public struct CategoryModel: Codable, Equatable {
     case name
     case style
     case isMiscCategory
+  }
+
+  public init(id: Int, seq: Int, name: String, style: String, isMiscCategory: Bool) {
+    self.id = id
+    self.seq = seq
+    self.name = name
+    self.style = style
+    self.isMiscCategory = isMiscCategory
   }
 }

@@ -33,7 +33,7 @@ struct CreateLedgerCategory {
       _selectableItems = .init([])
       _selectedItemsID = .init([])
       _customItems = .init(nil)
-      selection = .init(
+      selection = SSSelectableItemsReducer<CreateLedgerCategoryItem>.State(
         items: _selectableItems,
         selectedID: _selectedItemsID,
         isCustomItem: _customItems,
@@ -170,16 +170,3 @@ struct CreateLedgerCategory {
 extension CreateLedgerCategory: FeatureScopeAction, FeatureInnerAction, FeatureAsyncAction {}
 
 extension Reducer where Self.State == CreateLedgerCategory.State, Self.Action == CreateLedgerCategory.Action {}
-
-// MARK: - CreateLedgerCategoryItem
-
-struct CreateLedgerCategoryItem: SSSelectableItemable {
-  /// 카테고리 이름 입니다.
-  var title: String
-  /// 카테고리 아이디 입니다.
-  var id: Int
-
-  mutating func setTitle(_ val: String) {
-    title = val
-  }
-}

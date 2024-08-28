@@ -55,7 +55,13 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     ///   - regexPatternString: Custom Item을 만들 시 RegexPattern을 입력받습니다.
     ///
     ///    isCustomItem을 Nil로 할 경우 "직접 입력" 버튼이 추가되지 않습니다.
-    public init(items: Shared<[Item]>, selectedID: Shared<[Int]>, isCustomItem: Shared<Item?>, multipleSelectionCount: Int = 1, regexPatternString: String? = nil) {
+    public init(
+      items: Shared<[Item]>,
+      selectedID: Shared<[Int]>,
+      isCustomItem: Shared<Item?>,
+      multipleSelectionCount: Int = 1,
+      regexPatternString: String? = nil
+    ) {
       _items = items
       _selectedID = selectedID
       _isCustomItem = isCustomItem
@@ -151,7 +157,7 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
 
       case .view(.tappedTextFieldSaveAndEditButton):
         state.customItemSaved.toggle()
-        state.isCustomItem?.setTitle(state.customTitleText)
+        state.isCustomItem?.title = state.customTitleText
         return .none
 
       case .inner(.startAddCustomRelation):

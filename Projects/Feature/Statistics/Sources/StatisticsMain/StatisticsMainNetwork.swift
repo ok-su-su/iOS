@@ -77,7 +77,10 @@ extension StatisticsMainNetwork: DependencyKey {
     },
     getRelationAndCategory: {
       let data: CreateEnvelopesConfigResponse = try await provider.request(.getRelationAndCategory)
-      return (data.relationships.map { .init(description: $0.relation, id: $0.id) }, data.categories.map { .init(description: $0.name, id: $0.id) })
+      return (
+        data.relationships.sorted { $0.id < $1.id }.map { .init(description: $0.relation, id: $0.id) },
+        data.categories.sorted { $0.seq < $1.seq }.map { .init(description: $0.name, id: $0.id) }
+      )
     },
     getMyBirth: {
       let dto: UserInfoResponse = try await provider.request(.getMyBirth)
