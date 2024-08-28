@@ -11,6 +11,7 @@ import Designsystem
 import Foundation
 import SSAlert
 import SSNotification
+import SSToast
 import SwiftUI
 
 // MARK: - VoteDetailView
@@ -49,8 +50,9 @@ struct VoteDetailView: View {
         )
         .padding(.horizontal, 16)
 
+        // ParticipantsCount는 이례적으로 사용자의 투표 여부에 관해 값이 변경됨으로 State을 통해서 값을 가져옵니다.
         ParticipantsAndDateView(
-          property: .init(participantsCount: property.count, createdDateLabel: property.createdAtLabel)
+          property: .init(participantsCount: store.participantsCount, createdDateLabel: property.createdAtLabel)
         )
         .padding(.horizontal, 16)
 
@@ -79,6 +81,7 @@ struct VoteDetailView: View {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
         makeContentView()
           .ssLoading(store.isLoading)
+          .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
       }
     }
     .navigationBarBackButtonHidden()

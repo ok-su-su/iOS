@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import SSAlert
 import SSNotification
+import SSToast
 
 // MARK: - VoteDetailReducer
 
@@ -23,14 +24,19 @@ struct VoteDetailReducer {
     var isOnAppear = false
     var isPrevVoteID: Int64? = nil
     var selectedVotedID: Int64? = nil
-    var header: HeaderViewFeature.State = .init(.init(title: "결혼식", type: .depth2CustomIcon(.reportIcon)))
+    var header: HeaderViewFeature.State = .init(.init(title: "", type: .depth2CustomIcon(.reportIcon)))
     var presentReportAlert: Bool = false
+
+    var participantsCount: Int64 {
+      (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
+    }
 
     var voteDetailProperty: VoteDetailProperty? = nil
     var isLoading: Bool { voteDetailProperty == nil }
     var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
     var presentDeleteAlert: Bool = false
     var isRefreshVoteList: Bool = false
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "누군가가 투표한 게시물은 수정할 수 없어요.", trailingType: .none))
 
     fileprivate var taskManager: TCAMutexManager = .init()
 
@@ -89,8 +95,8 @@ struct VoteDetailReducer {
       )
 
     case let .tappedVoteItem(id):
-      // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
       return .send(.inner(.updateSelectedVotedItem(optionID: id)))
+
     case let .showDeleteAlert(val):
       state.presentDeleteAlert = val
       return .none
@@ -123,7 +129,10 @@ struct VoteDetailReducer {
       state.voteDetailProperty = property
 
       let title = property.board.name
-      let headerProperty = HeaderViewProperty(title: title, type: property.isMine ? .depth2DoubleText("편집", "삭제") : .depth2CustomIcon(.reportIcon))
+      let headerProperty = HeaderViewProperty(
+        title: title,
+        type: property.isMine ? .depth2DoubleText("편집", "삭제") : .depth2CustomIcon(.reportIcon)
+      )
       return .send(.scope(.header(.updateProperty(headerProperty))))
 
     case let .updateSelectedVotedItem(optionID):
@@ -214,6 +223,7 @@ struct VoteDetailReducer {
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
+    case toast(SSToastReducer.Action)
   }
 
   func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
@@ -222,15 +232,18 @@ struct VoteDetailReducer {
       return .send(.view(.showReport(true)))
 
     case .header(.tappedDoubleTextButton(.leading)):
-
+      let isEditable = state.voteDetailProperty?.count == 0
+      if !isEditable {
+        return .send(.scope(.toast(.onAppear(true))))
+      }
       if let voteDetailProperty = state.voteDetailProperty,
          let sectionHeaderItems: [VoteSectionHeaderItem] = VoteMemoryCache.value() {
         let voteEditInitialState: WriteVote.State = .init(
+          voteId: voteDetailProperty.id,
           sectionHeaderItems: sectionHeaderItems,
           selectedHeaderItemID: Int(voteDetailProperty.board.id),
           content: voteDetailProperty.content,
-          selectableItemsProperty: voteDetailProperty.options.map { .convertFromVoteOptionCountModel($0) },
-          editVoteType: .editVoteContentOnly // TODO: 로직 변경
+          selectableItemsProperty: voteDetailProperty.options.map { .convertFromVoteOptionCountModel($0) }
         )
         VotePathPublisher.shared.push(.edit(voteEditInitialState))
       }
@@ -241,6 +254,9 @@ struct VoteDetailReducer {
 
     case .header:
       return .none
+
+    case .toast:
+      return .none
     }
   }
 
@@ -249,6 +265,9 @@ struct VoteDetailReducer {
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+    Scope(state: \.toast, action: \.scope.toast) {
+      SSToastReducer()
     }
 
     Reduce { state, action in

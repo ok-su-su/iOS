@@ -13,6 +13,7 @@ import SSInterceptor
 import SSNetwork
 
 typealias CreateVoteRequestBody = CreateVoteRequest
+typealias UpdateVoteRequestBody = UpdateVoteRequest
 
 // MARK: - WriteVoteNetwork
 
@@ -23,22 +24,38 @@ struct WriteVoteNetwork {
     let data = try JSONEncoder.default.encode(createVoteRequestBody)
     return try await provider.request(.createVote(CreateVoteRequestBodyToData: data))
   }
+
+  var updateVote: @Sendable (_ id: Int64, _ updateVoteRequestBody: UpdateVoteRequestBody) async throws -> CreateAndUpdateVoteResponse
+  @Sendable
+  private static func _updateVote(_ id: Int64, _ updateVoteRequestBody: UpdateVoteRequestBody) async throws -> CreateAndUpdateVoteResponse {
+    let data = try JSONEncoder.default.encode(updateVoteRequestBody)
+    return try await provider.request(.updateVote(
+      id: id,
+      UpdateVoteRequestBodyToData: data
+    ))
+  }
 }
 
 // MARK: DependencyKey
 
 extension WriteVoteNetwork: DependencyKey {
-  static var liveValue: WriteVoteNetwork = .init(createVote: _createVote)
+  static var liveValue: WriteVoteNetwork = .init(
+    createVote: _createVote,
+    updateVote: _updateVote
+  )
 
   static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   enum Network: SSNetworkTargetType {
     case createVote(CreateVoteRequestBodyToData: Data)
+    case updateVote(id: Int64, UpdateVoteRequestBodyToData: Data)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
       case .createVote:
         "votes"
+      case let .updateVote(id, _):
+        "votes/\(id)"
       }
     }
 
@@ -46,6 +63,8 @@ extension WriteVoteNetwork: DependencyKey {
       switch self {
       case .createVote:
         .post
+      case .updateVote:
+        .patch
       }
     }
 
@@ -53,6 +72,8 @@ extension WriteVoteNetwork: DependencyKey {
       switch self {
       case let .createVote(CreateVoteRequestBodyToData):
         .requestData(CreateVoteRequestBodyToData)
+      case let .updateVote(_, updateVoteRequestBodyToData):
+        .requestData(updateVoteRequestBodyToData)
       }
     }
   }

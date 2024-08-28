@@ -67,32 +67,61 @@ struct WriteVoteView: View {
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 
-      // SelectableItems
-      VStack(spacing: 8) {
-        ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
-          TextFieldButtonWithTCAView(
-            size: .mh52,
-            prompt: store.helper.voteTextContentPrompt,
-            store: scopedStore
-          )
-        }
+      // 글 쓰기
+      if !store.isEditMode {
+        makeCreateVoteSectionItems()
       }
-      .padding(.horizontal, 16)
-
-      // Add Button
-      Button {
-        store.send(.view(.tappedAddSectionItemButton))
-      } label: {
-        SSImage
-          .commonAdd
-          .resizable()
-          .frame(width: 24, height: 24)
-          .padding(4)
-          .background(SSColor.orange60)
-          .clipShape(Circle())
+      // 글 편집
+      else {
+        makeEditVoteSectionItems()
       }
     }
-    .padding(0)
+  }
+
+  @ViewBuilder
+  private func makeCreateVoteSectionItems() -> some View {
+    // SelectableItems
+    VStack(spacing: 8) {
+      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
+        TextFieldButtonWithTCAView(
+          size: .mh52,
+          prompt: store.helper.voteTextContentPrompt,
+          store: scopedStore
+        )
+      }
+    }
+    .padding(.horizontal, 16)
+
+    // Add Button
+    Button {
+      store.send(.view(.tappedAddSectionItemButton))
+    } label: {
+      SSImage
+        .commonAdd
+        .resizable()
+        .frame(width: 24, height: 24)
+        .padding(4)
+        .background(SSColor.orange60)
+        .clipShape(Circle())
+    }
+  }
+
+  @ViewBuilder
+  private func makeEditVoteSectionItems() -> some View {
+    // VoteItem
+    VStack(spacing: 8) {
+      ForEach(store.helper.selectableItem.elements) { item in
+        Text(item.title)
+          .modifier(SSTypoModifier(.title_xxs))
+          .foregroundStyle(SSColor.gray100)
+          .frame(maxWidth: .infinity)
+          .padding(.horizontal, 16)
+          .padding(.vertical, 12)
+          .background(SSColor.orange10)
+          .clipShape(RoundedRectangle(cornerRadius: 4))
+      }
+    }
+    .padding(.horizontal, 16)
   }
 
   @ViewBuilder

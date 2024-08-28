@@ -19,7 +19,7 @@ struct WriteVote {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-    var header: HeaderViewFeature.State = .init(.init(title: "새 투표 작성", type: .depth2Default))
+    var header: HeaderViewFeature.State
     var helper: WriteVoteProperty = .init()
     /// TextFieldWithTCA Reducer.State
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
@@ -27,10 +27,17 @@ struct WriteVote {
     var isCreatable: Bool { helper.isCreatable }
     var mutex: TCAMutexManager = .init()
     var toast: SSToastReducer.State = .init(.init(toastMessage: "글은 200자 이내로 등록할 수 있어요!", trailingType: .none))
-    var editVoteType: EditVoteType? = nil
+
+    var isEditMode: Bool
+
+    /// 만약 Edit Mode일 경우 Initial 함수를 통해서 입력받습니다..
+    fileprivate let voteID: Int64?
 
     /// WriteVote State Initial Function
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
+      voteID = nil
+      header = .init(.init(title: "새 투표 작성", type: .depth2Default))
+      isEditMode = false
       selectableItems = .init(uniqueElements: [])
       helper.updateHeaderSectionItem(items: sectionHeaderItems)
       setSelectableItemsState()
@@ -38,16 +45,18 @@ struct WriteVote {
 
     /// EditVote State Initial Function
     init(
+      voteId: Int64,
       sectionHeaderItems: [VoteSectionHeaderItem],
       selectedHeaderItemID: Int,
       content: String,
-      selectableItemsProperty: [TextFieldButtonWithTCAProperty],
-      editVoteType: EditVoteType
+      selectableItemsProperty: [TextFieldButtonWithTCAProperty]
     ) {
+      voteID = voteId
+      header = .init(.init(title: "투표 편집", type: .depth2Default))
+      isEditMode = true
       selectableItems = .init(uniqueElements: [])
       helper.updateHeaderSectionItem(items: sectionHeaderItems, selectedID: selectedHeaderItemID)
       helper.voteTextContent = content
-      self.editVoteType = editVoteType
       helper.selectableItem = .init(uniqueElements: selectableItemsProperty)
       setSelectableItemsState()
     }
@@ -110,15 +119,20 @@ struct WriteVote {
       return .none
 
     case .tappedCreateButton:
-      return .send(.async(.writeVote))
+
+      return state.isEditMode
+        ? .send(.async(.updateVote))
+        : .send(.async(.writeVote))
     }
   }
 
   enum InnerAction: Equatable {}
 
   @Dependency(\.writeVoteNetwork) var network
+  @Dependency(\.dismiss) var dismiss
   enum AsyncAction: Equatable {
     case writeVote
+    case updateVote
   }
 
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
@@ -136,6 +150,18 @@ struct WriteVote {
 
       return .run { _ in
         let response = try await network.createVote(request)
+        VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
+      }
+    case .updateVote:
+      guard let voteID = state.voteID,
+            let selectedSectionID = state.helper.selectedSection?.id
+      else {
+        return .none
+      }
+      let content = state.helper.voteTextContent
+      let updateVoteRequestBody = UpdateVoteRequestBody(boardId: selectedSectionID, content: content)
+      return .run { _ in
+        let response = try await network.updateVote(voteID, updateVoteRequestBody)
         VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
       }
     }
@@ -195,11 +221,4 @@ private extension Reducer where State == WriteVote.State, Action == WriteVote.Ac
       TextFieldButtonWithTCA()
     }
   }
-}
-
-// MARK: - EditVoteType
-
-enum EditVoteType {
-  case editVoteContentOnly
-  case editVoteContentAndSelectableSection
 }

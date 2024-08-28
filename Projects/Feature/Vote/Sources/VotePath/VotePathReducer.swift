@@ -78,7 +78,7 @@ struct VotePathReducer {
       case let .push(pathState):
         switch pathState {
         case .createVoteAndPushDetail:
-          _ = state.path.popLast()
+          state.path.removeAll()
         default:
           break
         }
