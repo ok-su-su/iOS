@@ -12,7 +12,7 @@ public struct CreateBlockRequest: Encodable {
   /// 차단 타겟 id (Target ID)
   public let targetId: Int64
   /// 차단 타겟 타입 (Target Type)
-  public let targetType: UserBlockTargetType
+  public let targetType: String
   /// 차단 이유 (Optional Reason)
   public let reason: String?
 
@@ -22,7 +22,7 @@ public struct CreateBlockRequest: Encodable {
     reason: String? = nil
   ) {
     self.targetId = targetId
-    self.targetType = targetType
+    self.targetType = targetType.description
     self.reason = reason
   }
 

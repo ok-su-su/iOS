@@ -8,11 +8,20 @@
 
 import Foundation
 
-public enum ReportTargetType: Encodable {
+public enum ReportTargetType: CustomStringConvertible, Equatable, Encodable {
   /// 사용자 (User)
   case user
   /// 게시글 (Post)
   case post
+
+  public var description: String {
+    switch self {
+    case .user:
+      "USER"
+    case .post:
+      "POST"
+    }
+  }
 
   enum CodingKeys: String, CodingKey {
     case user = "USER"

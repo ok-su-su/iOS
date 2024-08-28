@@ -69,7 +69,7 @@ private struct CheckBoxView: View {
       checkBoxImage
         .frame(width: 24, height: 24)
       Text(checkBoxString)
-        .modifier(SSTypoModifier(.title_xxxs))
+        .applySSFontToText(.title_xxs)
         .foregroundStyle(textColor)
     }
     .onTapGesture {

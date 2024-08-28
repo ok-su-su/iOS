@@ -14,7 +14,7 @@ public struct ReportCreateRequest: Encodable {
   /// 신고 대상 (Target ID)
   public let targetId: Int64
   /// 신고 대상 유형 (Target Type)
-  public let targetType: ReportTargetType
+  public let targetType: String
   /// 신고 상세 설명 (Optional Description)
   public let description: String?
 
@@ -26,9 +26,10 @@ public struct ReportCreateRequest: Encodable {
   ) {
     self.metadataId = metadataId
     self.targetId = targetId
-    self.targetType = targetType
+    self.targetType = targetType.description
     self.description = description
   }
+
   enum CodingKeys: CodingKey {
     case metadataId
     case targetId
