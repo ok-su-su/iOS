@@ -25,4 +25,10 @@ public struct CreateBlockRequest: Encodable {
     self.targetType = targetType
     self.reason = reason
   }
+
+  enum CodingKeys: CodingKey {
+    case targetId
+    case targetType
+    case reason
+  }
 }

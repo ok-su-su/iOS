@@ -29,4 +29,10 @@ public struct ReportCreateRequest: Encodable {
     self.targetType = targetType
     self.description = description
   }
+  enum CodingKeys: CodingKey {
+    case metadataId
+    case targetId
+    case targetType
+    case description
+  }
 }
