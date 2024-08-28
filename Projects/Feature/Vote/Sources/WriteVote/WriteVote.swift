@@ -27,10 +27,28 @@ struct WriteVote {
     var isCreatable: Bool { helper.isCreatable }
     var mutex: TCAMutexManager = .init()
     var toast: SSToastReducer.State = .init(.init(toastMessage: "글은 200자 이내로 등록할 수 있어요!", trailingType: .none))
+    var editVoteType: EditVoteType? = nil
 
+    /// WriteVote State Initial Function
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       selectableItems = .init(uniqueElements: [])
       helper.updateHeaderSectionItem(items: sectionHeaderItems)
+      setSelectableItemsState()
+    }
+
+    /// EditVote State Initial Function
+    init(
+      sectionHeaderItems: [VoteSectionHeaderItem],
+      selectedHeaderItemID: Int,
+      content: String,
+      selectableItemsProperty: [TextFieldButtonWithTCAProperty],
+      editVoteType: EditVoteType
+    ) {
+      selectableItems = .init(uniqueElements: [])
+      helper.updateHeaderSectionItem(items: sectionHeaderItems, selectedID: selectedHeaderItemID)
+      helper.voteTextContent = content
+      self.editVoteType = editVoteType
+      helper.selectableItem = .init(uniqueElements: selectableItemsProperty)
       setSelectableItemsState()
     }
 
@@ -177,4 +195,11 @@ private extension Reducer where State == WriteVote.State, Action == WriteVote.Ac
       TextFieldButtonWithTCA()
     }
   }
+}
+
+// MARK: - EditVoteType
+
+enum EditVoteType {
+  case editVoteContentOnly
+  case editVoteContentAndSelectableSection
 }

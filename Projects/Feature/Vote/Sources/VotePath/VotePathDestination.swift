@@ -15,7 +15,7 @@ import Foundation
 enum VotePathDestination {
   case search(VoteSearch)
   case write(WriteVote)
-  case edit(EditMyVote)
+  case edit(WriteVote)
   case detail(VoteDetailReducer)
   case createVoteAndPushDetail(VoteDetailReducer)
 }

@@ -36,11 +36,12 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
     title = text
   }
 
-  init(id: Int, title: String, isSaved: Bool, isEditing: Bool, regexString _: Regex<Substring>?) {
+  init(id: Int, title: String, isSaved: Bool, isEditing: Bool, regexString: Regex<Substring>?) {
     self.id = id
     self.title = title
     self.isSaved = isSaved
     self.isEditing = isEditing
+    self.regexString = regexString
   }
 
   init(id: Int, regexString: Regex<Substring>?) {
@@ -62,4 +63,18 @@ extension [TextFieldButtonWithTCAProperty] {
 extension TextFieldButtonWithTCAProperty {
   private static var defaultRegexPattern: String = "^.{1,10}$"
   static let defaultRegex: Regex<Substring> = try! .init(defaultRegexPattern)
+}
+
+import SSNetwork
+
+extension TextFieldButtonWithTCAProperty {
+  static func convertFromVoteOptionCountModel(_ dto: VoteOptionCountModel) -> Self {
+    return .init(
+      id: Int(dto.id),
+      title: dto.content,
+      isSaved: true,
+      isEditing: false,
+      regexString: defaultRegex
+    )
+  }
 }

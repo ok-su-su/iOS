@@ -223,8 +223,16 @@ struct VoteDetailReducer {
 
     case .header(.tappedDoubleTextButton(.leading)):
 
-      if let voteDetailProperty = state.voteDetailProperty {
-        VotePathPublisher.shared.push(.edit(.init(voteDetailProperty: voteDetailProperty)))
+      if let voteDetailProperty = state.voteDetailProperty,
+         let sectionHeaderItems: [VoteSectionHeaderItem] = VoteMemoryCache.value() {
+        let voteEditInitialState: WriteVote.State = .init(
+          sectionHeaderItems: sectionHeaderItems,
+          selectedHeaderItemID: Int(voteDetailProperty.board.id),
+          content: voteDetailProperty.content,
+          selectableItemsProperty: voteDetailProperty.options.map { .convertFromVoteOptionCountModel($0) },
+          editVoteType: .editVoteContentOnly // TODO: 로직 변경
+        )
+        VotePathPublisher.shared.push(.edit(voteEditInitialState))
       }
       return .none
 
