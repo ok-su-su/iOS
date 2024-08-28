@@ -210,10 +210,10 @@ struct MyPageEdit {
         }
 
         let genderString = state.userInfo.gender
-        let currentGender = Gender.getGenderByKey(genderString ?? "")
+        let currentGenderID = Gender.getGenderByKey(genderString ?? "")?.id
 
         state.nameTextFieldText = state.userInfo.name
-        state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty, initialValue: currentGender?.description)
+        state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty, initialSelectedID: currentGenderID)
         return .none
 
       case .inner(.updateUserInformation):

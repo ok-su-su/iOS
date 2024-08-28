@@ -36,11 +36,6 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
   var memoEditProperty: MemoEditProperty
 
-  /// SpecificEnvelopEditHelper를 생성합니다.
-  /// - Parameters:
-  ///   - envelopeDetailProperty: EnvelopeDetailProperty
-  ///   - eventItems: [EventModel]을 입력받습니다. 단 기타 아이템이 포함되어야만 합니다.
-  ///   - relationItems: [RelationModel]을 입력받습니다. 단 기타 아이템이 포함되어야만 합니다.
   init(
     envelopeDetailProperty: EnvelopeDetailProperty,
     eventItems: [CreateEnvelopeEventProperty],
@@ -289,9 +284,16 @@ public struct VisitedSelectButtonItem: SingleSelectButtonItemable {
 extension VisitedSelectButtonItem {
   static func defaultItems() -> [Self] {
     return [
-      .init(id: 0, title: "예", isVisited: true),
-      .init(id: 1, title: "아니오", isVisited: false),
+      yes, no,
     ]
+  }
+
+  static var yes: Self {
+    .init(id: 0, title: "예", isVisited: true)
+  }
+
+  static var no: Self {
+    .init(id: 1, title: "아니오", isVisited: false)
   }
 }
 

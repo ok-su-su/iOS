@@ -23,4 +23,10 @@ public struct RelationshipModel: Codable, Equatable, Identifiable {
     case relation
     case description
   }
+
+  public init(id: Int, relation: String, description: String?) {
+    self.id = id
+    self.relation = relation
+    self.description = description
+  }
 }

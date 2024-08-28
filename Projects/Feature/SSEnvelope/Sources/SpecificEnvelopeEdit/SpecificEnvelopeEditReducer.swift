@@ -35,10 +35,24 @@ public struct SpecificEnvelopeEditReducer {
       _editHelper = .init(editHelper)
       let initialEvent = editHelper.envelopeDetailProperty.eventName
       let initialRelation = editHelper.envelopeDetailProperty.relation
-      let initialVisited = editHelper.envelopeDetailProperty.isVisitedText
-      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper, initialValue: initialEvent)
-      relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper, initialValue: initialRelation)
-      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper, initialValue: initialVisited)
+      let initialVisited: VisitedSelectButtonItem? =
+        if let isVisited = editHelper.envelopeDetailProperty.isVisited {
+          isVisited ? .yes : .no
+        } else {
+          nil
+        }
+      eventSection = .init(
+        singleSelectButtonHelper: _editHelper.eventSectionButtonHelper,
+        initialSelectedID: editHelper.envelopeDetailProperty.eventID
+      )
+      relationSection = .init(
+        singleSelectButtonHelper: _editHelper.relationSectionButtonHelper,
+        initialSelectedID: editHelper.envelopeDetailProperty.relationID
+      )
+      visitedSection = .init(
+        singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper,
+        initialSelectedID: initialVisited?.id
+      )
     }
 
     public init(envelopeID: Int64) async throws {

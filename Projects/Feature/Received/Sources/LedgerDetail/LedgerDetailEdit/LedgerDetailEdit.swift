@@ -40,7 +40,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       self.ledgerProperty = ledgerProperty
       _editProperty = .init(ledgerDetailEditProperty)
       let initialCategoryName = ledgerProperty.customCategory ?? ledgerProperty.category
-      categorySection = .init(singleSelectButtonHelper: _editProperty.categoryEditProperty, initialValue: initialCategoryName)
+      categorySection = .init(singleSelectButtonHelper: _editProperty.categoryEditProperty, initialSelectedID: nil)
     }
   }
 
