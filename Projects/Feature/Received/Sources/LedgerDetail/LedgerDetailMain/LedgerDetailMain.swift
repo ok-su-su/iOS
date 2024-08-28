@@ -260,6 +260,7 @@ struct LedgerDetailMain {
     case .updateLedgerDetailProperty:
       state.isUpdateLedgerDetail = true
       return .send(.async(.getLedgerDetailProperty))
+
     case .getEnvelopes:
       let parameter = GetEnvelopesRequestParameter(
         friendIds: state.filterProperty.selectedItems.map(\.id),
@@ -302,8 +303,8 @@ struct LedgerDetailMain {
       let ledgerProperty = state.ledgerProperty
       return .run { _ in
         let category = try await network.getCategories()
-        let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name) }
-        let editState = LedgerDetailEdit.State(
+        let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name, isMiscCategory: $0.isMiscCategory) }
+        let editState = try LedgerDetailEdit.State(
           ledgerProperty: ledgerProperty,
           ledgerDetailEditProperty: .init(ledgerDetailProperty: ledgerProperty, category: categoryEditProperty)
         )

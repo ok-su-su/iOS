@@ -123,11 +123,11 @@ public struct SSTextFieldButton: View {
         maxHeight: property.frame.maxHeight,
         alignment: property.frame.alignment
       )
-      .frame(height: property.minimumHeight)
-      .background {
-        property.backgroundColor
-      }
-      .clipShape(RoundedRectangle(cornerRadius: SSTextFieldButtonConstans.cornerRadius))
     }
+    .frame(height: property.minimumHeight)
+    .background {
+      property.backgroundColor
+    }
+    .clipShape(RoundedRectangle(cornerRadius: SSTextFieldButtonConstans.cornerRadius))
   }
 }

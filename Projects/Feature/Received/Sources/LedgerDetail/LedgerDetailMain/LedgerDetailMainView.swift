@@ -32,7 +32,7 @@ struct LedgerDetailMainView: View {
       }
 
       VStack(spacing: 4) {
-        makeTopSectionDescriptionView(leadingTitle: "경조사 카테고리", trailingTitle: store.ledgerProperty.category)
+        makeTopSectionDescriptionView(leadingTitle: "경조사 카테고리", trailingTitle: store.ledgerProperty.categoryLabel)
 
         makeTopSectionDescriptionView(leadingTitle: "경조사 명", trailingTitle: store.ledgerProperty.title)
 
