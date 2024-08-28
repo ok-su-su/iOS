@@ -32,6 +32,8 @@ struct VoteDetailReducer {
     var presentDeleteAlert: Bool = false
     var isRefreshVoteList: Bool = false
 
+    fileprivate var taskManager: TCAMutexManager = .init()
+
     init(id: Int64) {
       self.id = id
     }
@@ -46,6 +48,7 @@ struct VoteDetailReducer {
 
   enum CancelID {
     case patchVote
+    case report
   }
 
   enum Action: Equatable, FeatureAction {
@@ -79,9 +82,11 @@ struct VoteDetailReducer {
       state.presentReportAlert = present
       return .none
 
-    case let .tappedAlertConfirmButton(isChecked: _):
-      // TODO: 신고 확인 버튼 눌렀을 때 적절한 API 사용
-      return .run { _ in await dismiss() }
+    case let .tappedAlertConfirmButton(isChecked):
+      return .merge(
+        .send(.async(.reportVote)),
+        isChecked ? .send(.async(.blockUser)) : .none
+      )
 
     case let .tappedVoteItem(id):
       // 만약 선택된 아이디가 없을 경우(첫 투표 일 경우)
@@ -98,6 +103,7 @@ struct VoteDetailReducer {
   enum InnerAction: Equatable {
     case updateVoteDetail(VoteDetailProperty)
     case updateSelectedVotedItem(optionID: Int64)
+    case taskWithReport(SingleTaskState)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
@@ -125,12 +131,49 @@ struct VoteDetailReducer {
       state.selectedVotedID = targetOptionID
       state.voteDetailProgressProperty.selectItem(optionID: targetOptionID)
       return .none
+
+    case let .taskWithReport(taskState):
+      switch taskState {
+      case .willRun:
+        state.taskManager.taskWillRun()
+      case .didFinish:
+        state.taskManager.taskDidFinish()
+      }
+      return state.taskManager.isRunningTask() ?
+        .none :
+        .run { _ in
+          votePublisher.updateVoteList()
+          await dismiss()
+        }
+        .debounce(id: CancelID.report, for: 0.4, scheduler: RunLoop.main)
     }
+  }
+
+  private func runWithVoteReportMutex(
+    priority: TaskPriority? = nil,
+    operation: @escaping @Sendable (Send<Action>) async throws -> Void,
+    catch handler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void)? = nil
+  ) -> Effect<Action> {
+    let startOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.taskWithReport(.willRun)))
+    }
+    let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.taskWithReport(.didFinish)))
+    }
+    return .runWithStartFinishAction(
+      priority: priority,
+      operation: operation,
+      startOperation: startOperation,
+      endOperation: endOperation,
+      catch: handler
+    )
   }
 
   enum AsyncAction: Equatable {
     case getVoteDetail
     case deleteVote
+    case reportVote
+    case blockUser
   }
 
   @Dependency(\.voteDetailNetwork) var network
@@ -142,11 +185,28 @@ struct VoteDetailReducer {
         let responseProperty = try await network.voteDetail(id)
         await send(.inner(.updateVoteDetail(responseProperty)))
       }
+
     case .deleteVote:
       return .run { [id = state.id] _ in
         try await network.deleteVote(id)
         votePublisher.deleteVote(ID: id)
         await dismiss()
+      }
+
+    case .reportVote:
+      guard let boardID = state.voteDetailProperty?.id else {
+        return .none
+      }
+      return runWithVoteReportMutex { _ in
+        try await network.reportVote(boardID)
+      }
+
+    case .blockUser:
+      guard let userID = state.voteDetailProperty?.creatorProfile.id else {
+        return .none
+      }
+      return runWithVoteReportMutex { _ in
+        try await network.blockUser(userID)
       }
     }
   }

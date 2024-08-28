@@ -14,10 +14,13 @@ import Foundation
 struct VotePreviewProperty: Equatable, Identifiable {
   var categoryTitle: String
   var content: String
+  // BoardID
   var id: Int64
   var createdAt: String
   var voteItemsTitle: [String]
   var participateCount: Int64
+  // USerID
+  var userID: Int64
   var createdAtLabel: String { createdAt.subtractFromNowAndMakeLabel() }
 }
 

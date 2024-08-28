@@ -17,47 +17,66 @@ import SSNetwork
 struct VoteDetailNetwork {
   /// Vote Detail을 가져 옵니다.
   var voteDetail: @Sendable (_ id: Int64) async throws -> VoteDetailProperty
+
   @Sendable
   private static func _voteDetail(_ id: Int64) async throws -> VoteDetailProperty {
     try await provider.request(.getVoteDetail(boardID: id))
   }
 
-  /// (Int64:, Int64:)
+  /// 투표를 실행합니다.
   var executeVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
   @Sendable
   private static func _executeVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.executeVote(boardID: boardID, optionID: optionID))
   }
 
+  /// 실행한 투표를 취소 합니다.
   var cancelVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
   @Sendable
   private static func _cancelVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.cancelVote(boardID: boardID, optionID: optionID))
   }
 
-  /// (Int64:, Int64:)
+  /// 투표를 덮어씁니다.
   var overwriteVote: @Sendable (_ boardID: Int64, _ optionID: Int64) async throws -> Void
   @Sendable
   private static func _overwriteVote(_ boardID: Int64, _ optionID: Int64) async throws {
     try await provider.request(.overwriteVote(boardID: boardID, optionID: optionID))
   }
 
+  /// 자신의 투표를 삭제합니다.
   var deleteVote: @Sendable (_ boardID: Int64) async throws -> Void
   @Sendable
   private static func _deleteVote(_ boardID: Int64) async throws {
     try await provider.request(.deleteVote(boardID: boardID))
   }
+
+  /// 투표를 신고합니다.
+  var reportVote: @Sendable (_ boardID: Int64) async throws -> Void
+
+  /// 사용자를 차단 합니다.
+  var blockUser: @Sendable (_ userID: Int64) async throws -> Void
 }
 
-// MARK: DependencyKey
+// MARK: - VoteMainNetworkLiveFunction
+
+private enum VoteMainNetworkLiveFunction {
+  static var voteMainReportVote: @Sendable (_ boardID: Int64) async throws -> Void = VoteMainNetwork.liveValue.reportVote
+  private static var voteMainBlockUser: @Sendable (_ userID: Int64) async throws -> Void = VoteMainNetwork.liveValue.blockUser
+}
+
+// MARK: - VoteDetailNetwork + DependencyKey
 
 extension VoteDetailNetwork: DependencyKey {
+  /// reportVote, blockUser는 VoteMain의 Network API를 활용합니다.
   static var liveValue: VoteDetailNetwork = .init(
     voteDetail: _voteDetail,
     executeVote: _executeVote,
     cancelVote: _cancelVote,
     overwriteVote: _overwriteVote,
-    deleteVote: _deleteVote
+    deleteVote: _deleteVote,
+    reportVote: VoteMainNetworkLiveFunction.voteMainReportVote,
+    blockUser: VoteMainNetworkLiveFunction.voteMainReportVote
   )
   static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 

@@ -49,6 +49,22 @@ struct VoteMainNetwork {
     let models: [BoardModel] = try await provider.request(.getVoteConfig)
     return models.sorted { $0.seq < $1.seq }.map { $0.convertVoteSectionHeaderItem() }
   }
+
+  var reportVote: @Sendable (_ boardID: Int64) async throws -> Void
+  @Sendable
+  private static func _reportVote(_ boardID: Int64) async throws {
+    let property = ReportCreateRequest(metadataId: 1, targetId: boardID, targetType: .post)
+    let data = try JSONEncoder.default.encode(property)
+    try await provider.request(.reportVote(ReportCreateRequestData: data))
+  }
+
+  var blockUser: @Sendable (_ userID: Int64) async throws -> Void
+  @Sendable
+  private static func _blockUser(_ userID: Int64) async throws {
+    let property = CreateBlockRequest(targetId: userID, targetType: .user)
+    let data = try JSONEncoder.default.encode(property)
+    try await provider.request(.blockUser(CreateBlockRequestData: data))
+  }
 }
 
 // MARK: DependencyKey
@@ -59,12 +75,16 @@ extension VoteMainNetwork: DependencyKey {
     getPopularItems: _getPopularItems,
     getVoteItems: _getVoteItems,
     getInitialVoteItems: { try await _getVoteItems(nil) },
-    getVoteCategory: _getVoteCategory
+    getVoteCategory: _getVoteCategory,
+    reportVote: _reportVote,
+    blockUser: _blockUser
   )
   enum Network: SSNetworkTargetType {
     case getPopularItems
     case getVoteItems(GetVoteRequestQueryParameter)
     case getVoteConfig
+    case reportVote(ReportCreateRequestData: Data)
+    case blockUser(CreateBlockRequestData: Data)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -75,6 +95,10 @@ extension VoteMainNetwork: DependencyKey {
         "votes"
       case .getVoteConfig:
         "posts/configs/create-post"
+      case .reportVote:
+        "reports"
+      case .blockUser:
+        "blocks"
       }
     }
 
@@ -86,6 +110,10 @@ extension VoteMainNetwork: DependencyKey {
         .get
       case .getVoteConfig:
         .get
+      case .reportVote:
+        .post
+      case .blockUser:
+        .post
       }
     }
 
@@ -97,6 +125,10 @@ extension VoteMainNetwork: DependencyKey {
         .requestParameters(parameters: item.queryParameters, encoding: URLEncoding.queryString)
       case .getVoteConfig:
         .requestPlain
+      case let .reportVote(ReportCreateRequestData: data):
+        .requestData(data)
+      case let .blockUser(CreateBlockRequestData: data):
+        .requestData(data)
       }
     }
   }
@@ -112,6 +144,6 @@ extension DependencyValues {
 private extension VoteAndOptionsWithCountResponse {
   func convertVotePreviewProperty() -> VotePreviewProperty {
     let voteItemsTitle = options.sorted(by: { $0.seq < $1.seq }).map(\.content)
-    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle, participateCount: count)
+    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle, participateCount: count, userID: uid)
   }
 }
