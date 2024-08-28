@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSNetwork
 import SSSelectableItems
 
 // MARK: - CreateEnvelopeRelationItemPropertyHelper
@@ -14,7 +15,7 @@ import SSSelectableItems
 struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
   var selectedID: [Int] = []
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
-  var customRelation: CreateEnvelopeRelationItemProperty? = .init(id: 1024, title: "")
+  var customRelation: CreateEnvelopeRelationItemProperty? = nil
 
   mutating func resetSelectedItems() {
     selectedID.removeAll()
@@ -34,12 +35,10 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
   /// 마지막에 기타 아이템이 와야 합니다. 기타 아이템을 없앱니다.
   mutating func updateItems(_ items: [CreateEnvelopeRelationItemProperty]) {
-    var items = items
-    guard let customItemID = items.popLast()?.id else {
-      return
-    }
+    let customItem = items.first(where: { $0.id == 5 })
+    let items = items.filter { $0.id != 5 }
     defaultRelations = items
-    customRelation = .init(id: customItemID, title: "")
+    customRelation = customItem
   }
 
   init() {}
@@ -47,16 +46,13 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
 
 // MARK: - CreateEnvelopeRelationItemProperty
 
-public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, SSSelectableItemable {
-  public var id: Int
-  public var title: String
+public typealias CreateEnvelopeRelationItemProperty = RelationshipModel
 
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
-  }
+// MARK: SSSelectableItemable
 
-  public mutating func setTitle(_ val: String) {
-    title = val
+extension CreateEnvelopeRelationItemProperty: SSSelectableItemable {
+  public var title: String {
+    get { relation }
+    set { relation = newValue }
   }
 }

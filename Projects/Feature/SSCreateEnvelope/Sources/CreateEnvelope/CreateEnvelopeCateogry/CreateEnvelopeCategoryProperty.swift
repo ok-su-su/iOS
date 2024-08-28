@@ -7,21 +7,19 @@
 //
 
 import Foundation
+import SSNetwork
 import SSSelectableItems
 
 // MARK: - CreateEnvelopeCategoryProperty
 
-public struct CreateEnvelopeCategoryProperty: Equatable, Identifiable, SSSelectableItemable {
-  public var id: Int
-  public var title: String
+public typealias CreateEnvelopeCategoryProperty = CategoryModel
 
-  public mutating func setTitle(_ val: String) {
-    title = val
-  }
+// MARK: SSSelectableItemable
 
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
+extension CreateEnvelopeCategoryProperty: SSSelectableItemable {
+  public var title: String {
+    get { name }
+    set { name = newValue }
   }
 }
 
@@ -61,14 +59,12 @@ struct CreateEnvelopeCategoryPropertyHelper: Equatable {
 
   /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
   mutating func updateItems(_ items: [CreateEnvelopeCategoryProperty]) {
-    var items = items
-    guard let customItemID = items.popLast()?.id else {
-      return
-    }
+    let customItem = items.first(where: { $0.isMiscCategory })
+    let items = items.filter { $0.isMiscCategory == false }
 
     // TODO: API로직 바꿔달라고 말 하기
     defaultEvent = items
-    customEvent = .init(id: customItemID, title: "")
+    customEvent = customItem
   }
 
   init() {}

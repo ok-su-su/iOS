@@ -32,12 +32,12 @@ struct CreateEnvelopeRelationAndEventNetwork: DependencyKey, Equatable {
 
   func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
-    return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
+    return dto.relationships
   }
 
   func getEventItems() async throws -> [CreateEnvelopeCategoryProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
-    return dto.categories.map { .init(id: $0.id, title: $0.name) }
+    return dto.categories.sorted { $0.seq < $1.seq }
   }
 }
 

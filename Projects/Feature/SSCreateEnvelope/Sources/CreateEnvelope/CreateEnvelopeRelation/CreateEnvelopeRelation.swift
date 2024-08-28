@@ -20,7 +20,6 @@ public struct CreateEnvelopeRelation {
   public struct State: Equatable {
     var isOnAppear = false
     var isLoading = false
-    var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>.State
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
