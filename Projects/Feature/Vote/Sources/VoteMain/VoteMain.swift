@@ -225,10 +225,10 @@ struct VoteMain {
         state.taskManager.taskDidFinish()
         return state.taskManager.isRunningTask() ?
           .none :
-        runWithVoteMutex{ send in
+          runWithVoteMutex { send in
             await send(.async(.getInitialVoteItems))
-        }
-        .debounce(id: CancelID.report, for: 0.4, scheduler: RunLoop.main)
+          }
+          .debounce(id: CancelID.report, for: 0.4, scheduler: RunLoop.main)
       }
     }
   }
