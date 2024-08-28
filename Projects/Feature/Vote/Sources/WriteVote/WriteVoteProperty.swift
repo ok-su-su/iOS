@@ -35,9 +35,13 @@ struct WriteVoteProperty: Equatable {
   var headerSectionItems: [VoteSectionHeaderItem] { _headerSectionItems }
   var selectedSection: VoteSectionHeaderItem? = nil
 
-  mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem]) {
+  mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem], selectedID: Int? = nil) {
     _headerSectionItems = items.filter { $0.id != VoteSectionHeaderItem.initialState.id }
-    selectedSection = _headerSectionItems.first
+    if let selectedID {
+      selectedSection = _headerSectionItems.first(where: { $0.id == selectedID })
+    } else {
+      selectedSection = _headerSectionItems.first
+    }
   }
 
   func getVoteOptionModel() -> [VoteOptionWithoutIdModel] {
