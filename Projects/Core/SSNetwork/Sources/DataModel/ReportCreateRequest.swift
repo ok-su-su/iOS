@@ -17,7 +17,7 @@ public struct ReportCreateRequest: Encodable {
   public let targetType: ReportTargetType
   /// 신고 상세 설명 (Optional Description)
   public let description: String?
-  
+
   public init(
     metadataId: Int64,
     targetId: Int64,

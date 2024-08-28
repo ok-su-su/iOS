@@ -9,10 +9,10 @@
 import Foundation
 
 public enum ReportTargetType: Encodable {
-    /// 사용자 (User)
-    case user
-    /// 게시글 (Post)
-    case post
+  /// 사용자 (User)
+  case user
+  /// 게시글 (Post)
+  case post
 
   enum CodingKeys: String, CodingKey {
     case user = "USER"

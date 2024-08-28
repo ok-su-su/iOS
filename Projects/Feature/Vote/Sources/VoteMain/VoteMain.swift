@@ -33,6 +33,8 @@ struct VoteMain {
     fileprivate var taskManager: TCAMutexManager = .init(taskCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
+    fileprivate var reportTargetUserID: Int64? = nil
+    fileprivate var reportTargetBoardID: Int64? = nil
 
     fileprivate var voteRequestParam: GetVoteRequestQueryParameter {
       // 만약 InitialState 즉 전체를 선택할 경우에는 boardId를 0으로 해서 네트워크 통신블 보내야 합니다.
@@ -65,8 +67,8 @@ struct VoteMain {
     case tappedOnlyMyPostButton
     case tappedFloatingButton
     case tappedVoteItem(id: Int64)
-    case tappedReportButton(Int64)
-    case tappedReportConfirmButton(isCheck: Bool)
+    case tappedReportButton(boardID: Int64, userID: Int64)
+    case tappedReportConfirmButton(isBlockUser: Bool)
     case presentReport(Bool)
     case voteItemOnAppear(VotePreviewProperty)
     case executeRefresh
@@ -126,14 +128,22 @@ struct VoteMain {
       VotePathPublisher.shared.push(.detail(.init(id: id)))
       return .none
 
-    case let .tappedReportButton(id):
-      // TODO: 메시지 신고할 때 추가 로직 생성
+    case let .tappedReportButton(boardID, userID):
+      state.reportTargetBoardID = boardID
+      state.reportTargetUserID = userID
       state.isPresentReport = true
       return .none
 
     case let .tappedReportConfirmButton(isChecked):
-      // TODO: 신고 했을 때 로직 생성
-      return .none
+      let userID = state.reportTargetUserID
+      state.reportTargetUserID = nil
+      let boardID = state.reportTargetBoardID
+      state.reportTargetBoardID = nil
+      return .merge(
+        .send(.inner(.isLoading(true))),
+        .send(.async(.reportVote(boardID: boardID))),
+        isChecked ? .send(.async(.blockUser(userID: userID))) : .none
+      )
 
     case let .presentReport(val):
       state.isPresentReport = val
@@ -153,10 +163,12 @@ struct VoteMain {
   enum CancelID {
     case checkIsLoading
     case updateNextPage
+    case report
   }
 
   enum InnerAction: Equatable {
     case task(SingleTaskState)
+    case taskWithReport(SingleTaskState)
     case isLoading(Bool)
     case updatePopularItems([PopularVoteItem])
     case updateVoteItems(VoteNetworkResponse)
@@ -202,7 +214,21 @@ struct VoteMain {
         state.taskManager.taskDidFinish()
         return state.taskManager.isRunningTask() ?
           .none :
-          .send(.inner(.isLoading(false))).throttle(id: CancelID.checkIsLoading, for: 0.2, scheduler: RunLoop.main, latest: true)
+          .send(.inner(.isLoading(false))).debounce(id: CancelID.checkIsLoading, for: 0.2, scheduler: RunLoop.main)
+      }
+    case let .taskWithReport(taskState):
+      switch taskState {
+      case .willRun:
+        state.taskManager.taskWillRun()
+        return .none
+      case .didFinish:
+        state.taskManager.taskDidFinish()
+        return state.taskManager.isRunningTask() ?
+          .none :
+          .merge(
+            .send(.inner(.isLoading(false))),
+            .send(.async(.getInitialVoteItems)).debounce(id: CancelID.report, for: 0.4, scheduler: RunLoop.main)
+          )
       }
     }
   }
@@ -214,6 +240,8 @@ struct VoteMain {
     case getVoteItems // 더이상 보여줄 아이템이 없다면 새 아이템을 불러옵니다.
     case getPopularVoteItems // 인기 투표 아이템을 불러옵니다.
     case getVoteHeaderSectionItems // 헤더 섹션 아이템을 가져 옵니다.
+    case reportVote(boardID: Int64?)
+    case blockUser(userID: Int64?)
   }
 
   private func runWithVoteMutex(
@@ -226,6 +254,26 @@ struct VoteMain {
     }
     let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
       await send(.inner(.task(.didFinish)))
+    }
+    return .runWithStartFinishAction(
+      priority: priority,
+      operation: operation,
+      startOperation: startOperation,
+      endOperation: endOperation,
+      catch: handler
+    )
+  }
+
+  private func runWithVoteReportMutex(
+    priority: TaskPriority? = nil,
+    operation: @escaping @Sendable (Send<Action>) async throws -> Void,
+    catch handler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void)? = nil
+  ) -> Effect<Action> {
+    let startOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.taskWithReport(.willRun)))
+    }
+    let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
+      await send(.inner(.taskWithReport(.didFinish)))
     }
     return .runWithStartFinishAction(
       priority: priority,
@@ -270,6 +318,21 @@ struct VoteMain {
         let response = try await network.getVoteCategory()
         VoteMemoryCache.save(value: response)
         await send(.inner(.updateVoteHeaderCategory(response)))
+      }
+    case let .reportVote(boardID):
+      guard let boardID else {
+        return .none
+      }
+      return runWithVoteReportMutex { _ in
+        try await network.reportVote(boardID)
+      }
+
+    case let .blockUser(userID):
+      guard let userID else {
+        return .none
+      }
+      return runWithVoteReportMutex { _ in
+        try await network.blockUser(userID)
       }
     }
   }

@@ -52,13 +52,14 @@ struct VoteDetailNetwork {
   var blockUser: @Sendable (_ userID: Int64) async throws -> Void
 }
 
-fileprivate enum VoteMainNetworkLiveFunction {
+// MARK: - VoteMainNetworkLiveFunction
+
+private enum VoteMainNetworkLiveFunction {
   static var voteMainReportVote: @Sendable (_ boardID: Int64) async throws -> Void = VoteMainNetwork.liveValue.reportVote
   private static var voteMainBlockUser: @Sendable (_ userID: Int64) async throws -> Void = VoteMainNetwork.liveValue.blockUser
 }
 
-
-// MARK: DependencyKey
+// MARK: - VoteDetailNetwork + DependencyKey
 
 extension VoteDetailNetwork: DependencyKey {
   static var liveValue: VoteDetailNetwork = .init(

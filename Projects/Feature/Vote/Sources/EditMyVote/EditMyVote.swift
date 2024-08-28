@@ -156,4 +156,4 @@ struct EditMyVote {
   }
 }
 
-extension Reducer where State == EditMyVote.State, Action == EditMyVote.Action { }
+extension Reducer where State == EditMyVote.State, Action == EditMyVote.Action {}

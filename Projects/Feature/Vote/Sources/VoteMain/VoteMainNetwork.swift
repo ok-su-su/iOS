@@ -52,7 +52,7 @@ struct VoteMainNetwork {
 
   var reportVote: @Sendable (_ boardID: Int64) async throws -> Void
   @Sendable
-  private static func _reportVote(_ boardID: Int64) async throws -> Void {
+  private static func _reportVote(_ boardID: Int64) async throws {
     let property = ReportCreateRequest(metadataId: 1, targetId: boardID, targetType: .post)
     let data = try JSONEncoder.default.encode(property)
     try await provider.request(.reportVote(ReportCreateRequestData: data))
@@ -60,7 +60,7 @@ struct VoteMainNetwork {
 
   var blockUser: @Sendable (_ userID: Int64) async throws -> Void
   @Sendable
-  private static func _blockUser(_ userID: Int64) async throws -> Void {
+  private static func _blockUser(_ userID: Int64) async throws {
     let property = CreateBlockRequest(targetId: userID, targetType: .user)
     let data = try JSONEncoder.default.encode(property)
     try await provider.request(.blockUser(CreateBlockRequestData: data))
@@ -111,24 +111,24 @@ extension VoteMainNetwork: DependencyKey {
       case .getVoteConfig:
         .get
       case .reportVote:
-          .post
+        .post
       case .blockUser:
-          .post
+        .post
       }
     }
 
     var task: Moya.Task {
       switch self {
       case .getPopularItems:
-          .requestPlain
+        .requestPlain
       case let .getVoteItems(item):
-          .requestParameters(parameters: item.queryParameters, encoding: URLEncoding.queryString)
+        .requestParameters(parameters: item.queryParameters, encoding: URLEncoding.queryString)
       case .getVoteConfig:
-          .requestPlain
+        .requestPlain
       case let .reportVote(ReportCreateRequestData: data):
-          .requestData(data)
+        .requestData(data)
       case let .blockUser(CreateBlockRequestData: data):
-          .requestData(data)
+        .requestData(data)
       }
     }
   }
@@ -144,6 +144,6 @@ extension DependencyValues {
 private extension VoteAndOptionsWithCountResponse {
   func convertVotePreviewProperty() -> VotePreviewProperty {
     let voteItemsTitle = options.sorted(by: { $0.seq < $1.seq }).map(\.content)
-    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle, participateCount: count)
+    return .init(categoryTitle: board.name, content: content, id: id, createdAt: createdAt, voteItemsTitle: voteItemsTitle, participateCount: count, userID: uid)
   }
 }

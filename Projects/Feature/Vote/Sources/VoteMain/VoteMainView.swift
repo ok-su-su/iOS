@@ -135,7 +135,7 @@ struct VoteMainView: View {
           Spacer()
 
           Button {
-            store.send(.view(.tappedReportButton(item.id)))
+            store.sendViewAction(.tappedReportButton(boardID: item.id, userID: item.userID))
           } label: {
             SSImage
               .voteWarning
@@ -370,7 +370,7 @@ struct VoteMainView: View {
           right: Constants.reportAlertConfirmText
         ),
         didTapCompletionButton: { isCheck in
-          store.send(.view(.tappedReportConfirmButton(isCheck: isCheck)))
+          store.send(.view(.tappedReportConfirmButton(isBlockUser: isCheck)))
         }
       )
     )

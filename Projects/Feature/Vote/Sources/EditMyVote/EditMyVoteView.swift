@@ -7,8 +7,8 @@
 //
 import ComposableArchitecture
 import Designsystem
-import SwiftUI
 import SSToast
+import SwiftUI
 
 struct EditMyVoteView: View {
   // MARK: Reducer

@@ -8,11 +8,11 @@
 
 import Foundation
 
-public enum UserBlockTargetType: Encodable, Equatable  {
-  /** 유저 */
+public enum UserBlockTargetType: Encodable, Equatable {
+  /// 유저
   case user
-  
-  /** 게시글 */
+
+  /// 게시글
   case post
   enum CodingKeys: String, CodingKey {
     case user = "USER"
