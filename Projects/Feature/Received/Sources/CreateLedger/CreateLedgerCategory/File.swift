@@ -11,7 +11,3 @@ import SSNetwork
 import SSSelectableItems
 
 typealias CreateLedgerCategoryItem = CategoryModel
-
-// MARK: SSSelectableItemable
-
-extension CreateLedgerCategoryItem: SSSelectableItemable {}

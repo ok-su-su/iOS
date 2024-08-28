@@ -72,8 +72,8 @@ struct CreateLedgerCategory {
 
     // 마지막 기타 아이템을 제거하고 커스텀 아이템으로 만듭니다.
     case let .updateItems(items):
-      let customItem = items.first{$0.isMiscCategory}
-      let items = items.filter{$0.isMiscCategory == false}
+      let customItem = items.first { $0.isMiscCategory }
+      let items = items.filter { $0.isMiscCategory == false }
 
       state.selectableItems = items
       state.customItems = customItem
