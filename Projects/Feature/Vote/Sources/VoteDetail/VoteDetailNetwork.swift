@@ -68,7 +68,6 @@ private enum VoteMainNetworkLiveFunction {
 // MARK: - VoteDetailNetwork + DependencyKey
 
 extension VoteDetailNetwork: DependencyKey {
-  
   /// reportVote, blockUser는 VoteMain의 Network API를 활용합니다.
   static var liveValue: VoteDetailNetwork = .init(
     voteDetail: _voteDetail,
