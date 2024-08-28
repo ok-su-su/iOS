@@ -33,8 +33,6 @@ public struct SpecificEnvelopeEditReducer {
 
     init(editHelper: SpecificEnvelopeEditHelper) {
       _editHelper = .init(editHelper)
-      let initialEvent = editHelper.envelopeDetailProperty.eventName
-      let initialRelation = editHelper.envelopeDetailProperty.relation
       let initialVisited: VisitedSelectButtonItem? =
         if let isVisited = editHelper.envelopeDetailProperty.isVisited {
           isVisited ? .yes : .no

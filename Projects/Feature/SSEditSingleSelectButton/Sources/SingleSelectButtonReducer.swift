@@ -24,6 +24,15 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
       _singleSelectButtonHelper = singleSelectButtonHelper
       customTextFieldText = ""
       self.initialSelectedID = initialSelectedID
+
+      setCustomTextField()
+    }
+
+    private mutating func setCustomTextField() {
+      if initialSelectedID == singleSelectButtonHelper.isCustomItem?.id {
+        customTextFieldText = singleSelectButtonHelper.isCustomItem?.title ?? ""
+        singleSelectButtonHelper.saveCustomTextField(title: customTextFieldText)
+      }
     }
   }
 
@@ -34,7 +43,6 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
     case changedText(String)
     case tappedCloseButton
     case tappedSaveAndEditButton
-    case tappedCustomItem
   }
 
   public var body: some Reducer<State, Action> {
@@ -45,9 +53,6 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
           return .none
         }
         state.isOnAppear = isAppear
-        if state.singleSelectButtonHelper.isCustomItem?.id == state.initialSelectedID {
-          state.customTextFieldText = state.singleSelectButtonHelper.isCustomItem?.title ?? ""
-        }
         return .send(.tappedID(state.initialSelectedID))
 
       case let .tappedID(id):
@@ -75,9 +80,6 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
         } else {
           state.singleSelectButtonHelper.saveCustomTextField(title: state.customTextFieldText)
         }
-        return .none
-      case .tappedCustomItem:
-        state.singleSelectButtonHelper.selectedCustomItem()
         return .none
       }
     }

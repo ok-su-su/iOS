@@ -46,7 +46,8 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     guard let id else {
       return
     }
-    if let firstItemIndex = items.firstIndex(where: { $0.id == id }) {
+    let items = items + [isCustomItem]
+    if let firstItemIndex = items.firstIndex(where: { $0?.id == id }) {
       if isEssentialProperty == false && selectedItem == items[firstItemIndex] {
         selectedItem = nil
         return
@@ -57,10 +58,6 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
 
   public mutating func makeAndSelectedCustomItem(title: String) {
     selectedItem?.title = title
-    selectedItem = isCustomItem
-  }
-
-  public mutating func selectedCustomItem() {
     selectedItem = isCustomItem
   }
 

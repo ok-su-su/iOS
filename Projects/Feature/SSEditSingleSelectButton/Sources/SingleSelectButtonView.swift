@@ -88,7 +88,9 @@ public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
               showDeleteButton: true,
               prompt: store.singleSelectButtonHelper.customTextFieldPrompt ?? ""
             )) {
-              store.send(.tappedCustomItem)
+              if store.singleSelectButtonHelper.isSaved {
+                store.send(.tappedID(customItem.id))
+              }
             } onTapCloseButton: {
               store.send(.tappedCloseButton)
             } onTapSaveButton: {
