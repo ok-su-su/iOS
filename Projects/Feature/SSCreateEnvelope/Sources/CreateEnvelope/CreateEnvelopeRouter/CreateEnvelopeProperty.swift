@@ -21,14 +21,9 @@ public struct CreateEnvelopeProperty: Equatable {
   public init() {}
 
   /// 이름검색시 Filter되어 나타내는 봉투의 친구들을 나타내기 위해서 사용됩니다.
-  var prevEnvelopes: [PrevEnvelope] = []
+  var prevEnvelopes: [SearchFriendItem] = []
 
-  var customRelation: [String] = [
-    "동창",
-  ]
-
-  // TODO: - change Names
-  func filteredName(_ value: String) -> [PrevEnvelope] {
+  func filteredName(_ value: String) -> [SearchFriendItem] {
     guard let regex: Regex = try? .init("[\\w\\p{L}]*\(value)[\\w\\p{L}]*") else {
       return []
     }
@@ -36,10 +31,9 @@ public struct CreateEnvelopeProperty: Equatable {
   }
 }
 
-// MARK: - PrevEnvelope
+// MARK: - SearchFriendItem
 
-// TODO: - change DTO
-public struct PrevEnvelope: Equatable, Hashable {
+public struct SearchFriendItem: Equatable, Hashable {
   let name: String
   let relationShip: String
   let eventName: String?

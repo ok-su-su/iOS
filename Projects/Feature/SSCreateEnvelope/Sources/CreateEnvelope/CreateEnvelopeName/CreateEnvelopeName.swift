@@ -28,7 +28,7 @@ public struct CreateEnvelopeName {
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
 
-    var filteredPrevEnvelopes: [PrevEnvelope] {
+    var filteredPrevEnvelopes: [SearchFriendItem] {
       return textFieldText == "" ? createEnvelopeProperty.prevEnvelopes : createEnvelopeProperty.filteredName(textFieldText)
     }
 
@@ -87,7 +87,7 @@ public struct CreateEnvelopeName {
 
   public enum InnerAction: Equatable {
     case push
-    case updateEnvelopes([PrevEnvelope])
+    case updateEnvelopes([SearchFriendItem])
     case emptyTextField
   }
 
@@ -117,7 +117,7 @@ public struct CreateEnvelopeName {
     switch action {
     case let .searchName(val):
       return .run { send in
-        let prevEnvelopes = try await network.searchPrevName(val)
+        let prevEnvelopes = try await network.searchFriendByName(val)
         await send(.inner(.updateEnvelopes(prevEnvelopes)))
       }
     }
