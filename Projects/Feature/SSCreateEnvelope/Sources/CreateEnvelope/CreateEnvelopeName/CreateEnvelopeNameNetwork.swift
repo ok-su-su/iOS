@@ -12,18 +12,11 @@ import Moya
 import SSInterceptor
 import SSNetwork
 
-extension DependencyValues {
-  var createEnvelopeNameNetwork: CreateEnvelopeNameNetwork {
-    get { self[CreateEnvelopeNameNetwork.self] }
-    set { self[CreateEnvelopeNameNetwork.self] = newValue }
-  }
-}
-
 // MARK: - CreateEnvelopeNameNetwork
 
 struct CreateEnvelopeNameNetwork {
-  var searchFriendByName: (_ name: String) async throws -> [SearchFriendItem]
-  static func _searchFriendByName(_ val: String) async throws -> [SearchFriendItem] {
+  var searchFriendByName: @Sendable (_ name: String) async throws -> [SearchFriendItem]
+  @Sendable static func _searchFriendByName(_ val: String) async throws -> [SearchFriendItem] {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: val))
     return data.data.compactMap { dto -> SearchFriendItem? in
       guard let recentEnvelope = dto.recentEnvelope,
@@ -70,5 +63,12 @@ extension CreateEnvelopeNameNetwork: DependencyKey {
         return .requestPlain
       }
     }
+  }
+}
+
+extension DependencyValues {
+  var createEnvelopeNameNetwork: CreateEnvelopeNameNetwork {
+    get { self[CreateEnvelopeNameNetwork.self] }
+    set { self[CreateEnvelopeNameNetwork.self] = newValue }
   }
 }

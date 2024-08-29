@@ -12,38 +12,32 @@ import Moya
 import SSInterceptor
 import SSNetwork
 
-extension DependencyValues {
-  var createEnvelopeRelationAndEventNetwork: CreateEnvelopeRelationAndEventNetwork {
-    get { self[CreateEnvelopeRelationAndEventNetwork.self] }
-    set { self[CreateEnvelopeRelationAndEventNetwork.self] = newValue }
-  }
-}
-
 // MARK: - CreateEnvelopeRelationAndEventNetwork
 
-struct CreateEnvelopeRelationAndEventNetwork: DependencyKey, Equatable {
-  static func == (_: CreateEnvelopeRelationAndEventNetwork, _: CreateEnvelopeRelationAndEventNetwork) -> Bool {
-    true
-  }
-
-  static var liveValue: CreateEnvelopeRelationAndEventNetwork = .init()
-
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
+struct CreateEnvelopeRelationAndEventNetwork {
+  var getRelationItems: @Sendable () async throws -> [CreateEnvelopeRelationItemProperty]
+  @Sendable private static func _getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
     return dto.relationships
   }
 
-  func getEventItems() async throws -> [CreateEnvelopeCategoryProperty] {
+  var getEventItems: @Sendable () async throws -> [CreateEnvelopeCategoryProperty]
+  @Sendable private static func _getEventItems() async throws -> [CreateEnvelopeCategoryProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
     return dto.categories.sorted { $0.seq < $1.seq }
   }
 }
 
-// MARK: CreateEnvelopeRelationAndEventNetwork.Network
+// MARK: DependencyKey
 
-extension CreateEnvelopeRelationAndEventNetwork {
+extension CreateEnvelopeRelationAndEventNetwork: DependencyKey {
+  static var liveValue: CreateEnvelopeRelationAndEventNetwork = .init(
+    getRelationItems: _getRelationItems,
+    getEventItems: _getEventItems
+  )
+
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+
   enum Network: SSNetworkTargetType {
     case getItems
 
@@ -51,5 +45,12 @@ extension CreateEnvelopeRelationAndEventNetwork {
     var path: String { "envelopes/configs/create-envelopes" }
     var method: Moya.Method { .get }
     var task: Moya.Task { .requestPlain }
+  }
+}
+
+extension DependencyValues {
+  var createEnvelopeRelationAndEventNetwork: CreateEnvelopeRelationAndEventNetwork {
+    get { self[CreateEnvelopeRelationAndEventNetwork.self] }
+    set { self[CreateEnvelopeRelationAndEventNetwork.self] = newValue }
   }
 }
