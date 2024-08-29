@@ -9,7 +9,6 @@
 import Dependencies
 import Foundation
 import Moya
-import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -20,6 +19,11 @@ struct CreateEnvelopeNetwork {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.findFriend(name))
     // 검색후에 relationID가 똑같은 경우가 있다면 ID를 리턴합니다.
     return data.data.filter { $0.relationship.id == relationID }.first?.friend.id
+  }
+
+  @Sendable private static func createFriend(_ bodyProperty: CreateFriendRequestBody) async throws -> Int64 {
+    let data: CreateFriendResponseDTO = try await provider.request(.createFriend(bodyProperty))
+    return data.id
   }
 
   var getFriendID: @Sendable (_ bodyProperty: CreateFriendRequestBody) async throws -> Int64
@@ -33,12 +37,6 @@ struct CreateEnvelopeNetwork {
     }
     // 만약 사용자가 입력한 이름과 관계가 서버에 존재하지 않는 경우 새 friendID를 만듭니다.
     return try await createFriend(bodyProperty)
-  }
-
-  @Sendable private static func createFriend(_ bodyProperty: CreateFriendRequestBody) async throws -> Int64 {
-    let data: CreateFriendResponseDTO = try await provider.request(.createFriend(bodyProperty))
-    os_log("친구 생성에 성공하였습니다. \(#function)")
-    return data.id
   }
 
   var createEnvelope: @Sendable (_ bodyProperty: CreateEnvelopeRequestBody) async throws -> Data
