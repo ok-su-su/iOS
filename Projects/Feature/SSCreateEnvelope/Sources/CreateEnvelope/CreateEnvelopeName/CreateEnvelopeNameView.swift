@@ -36,7 +36,7 @@ public struct CreateEnvelopeNameView: View {
   }
 
   @ViewBuilder
-  private func makeSearchFriendView(_ current: PrevEnvelope) -> some View {
+  private func makeSearchFriendView(_ current: SearchFriendItem) -> some View {
     HStack(alignment: .top, spacing: 8) {
       Text(current.name)
         .modifier(SSTypoModifier(.title_xs))
