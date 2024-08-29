@@ -142,7 +142,7 @@ struct ReceivedFilter {
     case .getSelectableItems:
       return .run { send in
         await send(.inner(.isLoading(true)))
-        let items = try await network.requestFilterItems()
+        let items = try await network.requestFilterItems().filter { $0.isMiscCategory == false }
         await send(.inner(.updateSelectableItems(items)))
         await send(.inner(.isLoading(false)))
       }

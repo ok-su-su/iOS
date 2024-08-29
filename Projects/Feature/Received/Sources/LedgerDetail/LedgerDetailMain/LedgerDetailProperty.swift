@@ -96,4 +96,8 @@ extension LedgerDetailProperty {
     endDate = CustomDateFormatter.getDate(from: dto.ledger.endAt) ?? .now
     totalCounts = dto.totalCounts
   }
+
+  var categoryLabel: String {
+    customCategory ?? category
+  }
 }

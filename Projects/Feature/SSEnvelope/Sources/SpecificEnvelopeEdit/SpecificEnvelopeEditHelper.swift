@@ -36,19 +36,23 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
   var memoEditProperty: MemoEditProperty
 
-  public init(
+  init(
     envelopeDetailProperty: EnvelopeDetailProperty,
     eventItems: [CreateEnvelopeEventProperty],
-    relationItems: [CreateEnvelopeRelationItemProperty]
+    customEventItem: CreateEnvelopeEventProperty,
+    relationItems: [CreateEnvelopeRelationItemProperty],
+    customRelationItem: CreateEnvelopeRelationItemProperty
   ) {
     self.envelopeDetailProperty = envelopeDetailProperty
 
     priceProperty = .init(price: envelopeDetailProperty.price)
 
-    // 만약 현재 이벤트가 default 이벤트에 존재 하지 않는다면
-    eventSectionButtonCustomItem = .init(
-      id: eventItems.count + 1,
-      title: !eventItems.contains { $0.title == envelopeDetailProperty.eventName } ? envelopeDetailProperty.eventName : ""
+    eventSectionButtonCustomItem = customEventItem
+    eventSectionButtonHelper = .init(
+      titleText: envelopeDetailProperty.eventNameTitle,
+      items: eventItems,
+      isCustomItem: eventSectionButtonCustomItem,
+      customTextFieldPrompt: "경조사 이름"
     )
 
     eventSectionButtonHelper = .init(
@@ -59,10 +63,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     )
 
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
-    relationSectionButtonCustomItem = .init(
-      id: relationItems.count + 1,
-      title: !relationItems.contains { $0.title == envelopeDetailProperty.relation } ? envelopeDetailProperty.relation : ""
-    )
+    relationSectionButtonCustomItem = customRelationItem
 
     relationSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.relationTitle,
@@ -283,9 +284,16 @@ public struct VisitedSelectButtonItem: SingleSelectButtonItemable {
 extension VisitedSelectButtonItem {
   static func defaultItems() -> [Self] {
     return [
-      .init(id: 0, title: "예", isVisited: true),
-      .init(id: 1, title: "아니오", isVisited: false),
+      yes, no,
     ]
+  }
+
+  static var yes: Self {
+    .init(id: 0, title: "예", isVisited: true)
+  }
+
+  static var no: Self {
+    .init(id: 1, title: "아니오", isVisited: false)
   }
 }
 
@@ -316,37 +324,5 @@ struct NameEditProperty: Equatable {
 
   var isShowToast: Bool {
     ToastRegexManager.isShowToastByName(textFieldText)
-  }
-}
-
-// MARK: - CreateEnvelopeEventProperty
-
-public struct CreateEnvelopeEventProperty: Equatable, Identifiable, SingleSelectButtonItemable {
-  public var id: Int
-  public var title: String
-
-  mutating func setTitle(_ val: String) {
-    title = val
-  }
-
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
-  }
-}
-
-// MARK: - CreateEnvelopeRelationItemProperty
-
-public struct CreateEnvelopeRelationItemProperty: Equatable, Identifiable, SingleSelectButtonItemable {
-  public var id: Int
-  public var title: String
-
-  init(id: Int, title: String) {
-    self.id = id
-    self.title = title
-  }
-
-  mutating func setTitle(_ val: String) {
-    title = val
   }
 }

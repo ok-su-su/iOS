@@ -23,26 +23,25 @@ struct LedgerDetailEditProperty: Equatable {
       categoryEditProperty.isValid()
   }
 
-  init(ledgerDetailProperty: LedgerDetailProperty, category: [CategoryEditProperty]) {
+  /// 기타를 포함한 전체 Category를 input으로 받습니다.
+  init(ledgerDetailProperty: LedgerDetailProperty, category: [CategoryEditProperty]) throws {
     var category = category
     nameEditProperty = .init(textFieldText: ledgerDetailProperty.title)
     dateEditProperty = .init(startDate: ledgerDetailProperty.startDate, endDate: ledgerDetailProperty.endDate)
-    var customItem: CategoryEditProperty? = nil
-    if let customItemID = category.popLast()?.id {
-      if let customCategory = ledgerDetailProperty.customCategory {
-        customItem = .init(id: customItemID, title: customCategory)
-      } else {
-        customItem = .init(id: customItemID, title: "")
-      }
+    guard var currentCustomItem: CategoryEditProperty = category.first(where: { $0.isMiscCategory }) else {
+      throw NSError(domain: "", code: 4)
     }
-    categoryEditCustomItem = customItem ?? .init(id: -1, title: "")
+    currentCustomItem.title = ledgerDetailProperty.customCategory ?? ""
+
+    category.removeAll(where: { $0.isMiscCategory })
     categoryEditProperty = .init(
       titleText: "카테고리",
       items: category,
-      isCustomItem: categoryEditCustomItem,
+      isCustomItem: currentCustomItem,
       customTextFieldPrompt: "경조사 이름",
       isEssentialProperty: true
     )
+    categoryEditCustomItem = currentCustomItem
   }
 
   mutating func changeNameTextField(_ name: String) {
@@ -121,13 +120,15 @@ struct DateEditProperty: Equatable {
 public struct CategoryEditProperty: Equatable, Identifiable, SingleSelectButtonItemable {
   public var id: Int
   public var title: String
+  public var isMiscCategory: Bool
 
   mutating func setTitle(_ val: String) {
     title = val
   }
 
-  init(id: Int, title: String) {
+  init(id: Int, title: String, isMiscCategory: Bool) {
     self.id = id
     self.title = title
+    self.isMiscCategory = isMiscCategory
   }
 }

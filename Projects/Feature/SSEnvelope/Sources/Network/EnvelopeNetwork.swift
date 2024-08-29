@@ -21,21 +21,7 @@ struct EnvelopeNetwork {
 
   func getEnvelopeDetailPropertyByEnvelopeID(_ id: Int64) async throws -> EnvelopeDetailProperty {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(id))
-    return .init(
-      id: data.envelope.id,
-      type: data.envelope.type,
-      ledgerID: nil,
-      price: data.envelope.amount,
-      eventName: data.category.customCategory ?? data.category.category,
-      friendID: data.friend.id,
-      name: data.friend.name,
-      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
-      date: .getDate(from: data.envelope.handedOverAt) ?? .now,
-      isVisited: data.envelope.hasVisited,
-      gift: data.envelope.gift,
-      contacts: data.friend.phoneNumber,
-      memo: data.envelope.memo
-    )
+    return data.convertToEnvelopeDetailLProperty()
   }
 
   func deleteEnvelope(id: Int64) async throws {
@@ -43,28 +29,39 @@ struct EnvelopeNetwork {
   }
 
   func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
-    // 맨 뒤 기타는 제거 합니다.
-    var events = try await getEventItems()
-    _ = events.popLast()
-    // 맨 뒤 기타는 제거 합니다.
-    var relations = try await getRelationItems()
-    _ = relations.popLast()
+    let events = try await getEventItems()
+    let relations = try await getRelationItems()
+    let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
+    let envelopeProperty = envelopeDetailResponse.convertToEnvelopeDetailLProperty()
 
-    return try await .init(
-      envelopeDetailProperty: getEnvelopeDetailPropertyByEnvelopeID(envelopeID),
-      eventItems: events,
-      relationItems: relations
+    guard var customCategoryItem = events.first(where: { $0.isMiscCategory }),
+          var customRelationItem = relations.first(where: { $0.id == 5 }) // TODO: 서버쪽 질의를 통한 로직 변경
+    else {
+      throw NSError(domain: "", code: 3)
+    }
+    let targetCategoryItems = events.filter { $0.isMiscCategory == false }
+    let targetRelationItems = relations.filter { $0.id != 5 }
+
+    customCategoryItem.title = envelopeDetailResponse.category.customCategory ?? ""
+    customRelationItem.title = envelopeDetailResponse.friendRelationship.customRelation ?? ""
+
+    return .init(
+      envelopeDetailProperty: envelopeProperty,
+      eventItems: targetCategoryItems,
+      customEventItem: customCategoryItem,
+      relationItems: targetRelationItems,
+      customRelationItem: customRelationItem
     )
   }
 
   private func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.relationships.map { .init(id: $0.id, title: $0.relation) }
+    return dto.relationships.sorted(by: { $0.id < $1.id })
   }
 
   private func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.categories.map { .init(id: $0.id, title: $0.name) }
+    return dto.categories.sorted(by: { $0.seq < $1.seq })
   }
 
   func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64 {
@@ -81,9 +78,11 @@ struct EnvelopeNetwork {
       ledgerID: nil,
       price: dto.envelope.amount,
       eventName: dto.category.customCategory ?? dto.category.category,
+      eventID: dto.category.id,
       friendID: dto.friend.id,
       name: dto.friend.name,
       relation: dto.friendRelationship.customRelation ?? dto.relationship.relation,
+      relationID: dto.relationship.id,
       date: CustomDateFormatter.getDate(from: dto.envelope.handedOverAt) ?? .now,
       isVisited: dto.envelope.hasVisited,
       gift: dto.envelope.gift,
@@ -182,5 +181,28 @@ private extension Date {
     `default`.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
     let targetString = String(val.prefix(19))
     return `default`.date(from: targetString)
+  }
+}
+
+private extension EnvelopeDetailResponse {
+  func convertToEnvelopeDetailLProperty() -> EnvelopeDetailProperty {
+    let data = self
+    return .init(
+      id: data.envelope.id,
+      type: data.envelope.type,
+      ledgerID: nil,
+      price: data.envelope.amount,
+      eventName: data.category.customCategory ?? data.category.category,
+      eventID: data.category.id,
+      friendID: data.friend.id,
+      name: data.friend.name,
+      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
+      relationID: data.relationship.id,
+      date: .getDate(from: data.envelope.handedOverAt) ?? .now,
+      isVisited: data.envelope.hasVisited,
+      gift: data.envelope.gift,
+      contacts: data.friend.phoneNumber,
+      memo: data.envelope.memo
+    )
   }
 }

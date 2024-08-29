@@ -10,11 +10,11 @@ import Foundation
 
 // MARK: - SearchEnvelopeResponseRelationshipDTO
 
-public struct RelationshipModel: Codable, Equatable {
+public struct RelationshipModel: Codable, Equatable, Identifiable {
   /// 관계 ID
   public let id: Int
   /// 관계 이름
-  public let relation: String
+  public var relation: String
   /// 관계 설명
   public let description: String?
 
@@ -22,5 +22,11 @@ public struct RelationshipModel: Codable, Equatable {
     case id
     case relation
     case description
+  }
+
+  public init(id: Int, relation: String, description: String?) {
+    self.id = id
+    self.relation = relation
+    self.description = description
   }
 }

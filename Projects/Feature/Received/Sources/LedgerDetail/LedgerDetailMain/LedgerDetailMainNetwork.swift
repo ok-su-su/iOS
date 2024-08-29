@@ -35,7 +35,7 @@ struct LedgerDetailMainNetwork {
 
   func getCategories() async throws -> [CategoryModel] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    return data.categories
+    return data.categories.sorted(by: { $0.seq < $1.seq })
   }
 
   func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
@@ -72,8 +72,7 @@ struct LedgerDetailMainNetwork {
 
   func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    var res: [FilterSelectableItemProperty] = data.categories.map { .init(id: $0.id, title: $0.name) }
-    _ = res.popLast()
+    var res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
     return res
   }
 }

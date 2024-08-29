@@ -9,6 +9,6 @@
 import Foundation
 
 public protocol SingleSelectButtonItemable: Identifiable, Equatable {
-  var id: Int { get set }
+  var id: Int { get }
   var title: String { get set }
 }

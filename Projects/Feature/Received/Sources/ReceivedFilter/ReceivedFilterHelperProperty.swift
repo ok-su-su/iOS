@@ -76,12 +76,3 @@ struct FilterHelperProperty: Equatable {
     selectedLedgers.remove(at: index)
   }
 }
-
-// MARK: - FilterSelectableItemProperty
-
-struct FilterSelectableItemProperty: Equatable, Identifiable {
-  /// 카테고리 아이디
-  var id: Int
-  /// 카테고리 타이틀
-  var title: String
-}

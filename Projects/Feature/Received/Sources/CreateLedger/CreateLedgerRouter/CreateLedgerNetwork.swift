@@ -19,7 +19,7 @@ struct CreateLedgerNetwork {
   /// 기타 아이템도 포함하여 전달합니다.
   func getCreateLedgerCategoryItem() async throws -> [CreateLedgerCategoryItem] {
     let data: CreateEnvelopesConfigResponse = try await network.request(.getCategories)
-    return data.categories.map { .init(title: $0.name, id: $0.id) }
+    return data.categories.sorted { $0.seq < $1.seq }
   }
 
   func createLedgers(_ data: Data) async throws {
