@@ -35,12 +35,6 @@ struct SentMain {
 
     var presentCreateEnvelope = false
     @Presents var presentDestination: SentMainPresentationDestination.State?
-
-//    @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
-//    @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
-//    @Presents var searchEnvelope: SentSearch.State?
-//    @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
-
     @Shared var sentMainProperty: SentMainProperty
 
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
@@ -249,12 +243,8 @@ struct SentMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-    case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
-    case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
-    case searchEnvelope(PresentationAction<SentSearch.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
-    case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
     case presentDestination(PresentationAction<SentMainPresentationDestination.Action>)
   }
 
@@ -268,10 +258,10 @@ struct SentMain {
       state.presentDestination = .searchEnvelope(.init())
       return .none
 
-    case .filterBottomSheet(.presented(.tapped(item: _))):
+    case .presentDestination(.presented(.filterBottomSheet(.tapped))):
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
-    case .sentEnvelopeFilter(.presented(.tappedConfirmButton)):
+    case .presentDestination(.presented(.filter(.tappedConfirmButton))):
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .envelopes(.element(id: uuid, action: .isOnAppear(true))):
@@ -283,9 +273,7 @@ struct SentMain {
       }
       return .none
 
-    case .searchEnvelope,
-         .specificEnvelopeHistoryRouter,
-         .tabBar:
+    case .tabBar:
       return .none
 
     default:
