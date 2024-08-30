@@ -45,15 +45,16 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 
   func getEnvelopeProperty(ID: Int64) async throws -> EnvelopeProperty? {
     let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getEnvelopeProperty(friendID: ID))
-    return data.data.map { dto -> EnvelopeProperty in
-      return EnvelopeProperty(
-        id: dto.friend.id,
-        envelopeTargetUserName: dto.friend.name,
-        totalPrice: dto.totalAmounts,
-        totalSentPrice: dto.sentAmounts,
-        totalReceivedPrice: dto.receivedAmounts
-      )
-    }.first
+    guard let firstData = data.data.first else {
+      return nil
+    }
+    return EnvelopeProperty(
+      id: firstData.friend.id,
+      envelopeTargetUserName: firstData.friend.name,
+      totalPrice: firstData.totalAmounts,
+      totalSentPrice: firstData.sentAmounts,
+      totalReceivedPrice: firstData.receivedAmounts
+    )
   }
 }
 
@@ -130,7 +131,7 @@ extension EnvelopeNetwork {
         .requestPlain
 
       case let .getEnvelopeProperty(friendID):
-        .requestParameters(parameters: ["friendIds": [friendID]], encoding: URLEncoding.queryString)
+        .requestParameters(parameters: ["friendIds": friendID], encoding: URLEncoding.queryString)
       }
     }
   }

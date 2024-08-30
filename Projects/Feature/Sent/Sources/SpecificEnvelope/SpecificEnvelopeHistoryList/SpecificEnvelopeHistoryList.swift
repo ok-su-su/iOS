@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -123,11 +124,7 @@ struct SpecificEnvelopeHistoryList {
       return .none
 
     case let .overwriteEnvelopeContents(envelopesContent):
-      envelopesContent.forEach { envelopeContent in
-        if let index = state.envelopeContents.firstIndex(where: { $0.id == envelopeContent.id }) {
-          state.envelopeContents[index] = envelopeContent
-        }
-      }
+      state.envelopeContents.overwriteByID(envelopesContent)
       return .none
 
     case let .deleteEnvelope(id):

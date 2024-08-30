@@ -94,12 +94,3 @@ struct SpecificEnvelopeHistoryRouter {
     }.forEach(\.path, action: \.path)
   }
 }
-
-// MARK: - SpecificEnvelopeHistoryRouterPath
-
-@Reducer(state: .equatable, action: .equatable)
-enum SpecificEnvelopeHistoryRouterPath {
-  case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
-  case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
-  case specificEnvelopeHistoryEdit(SpecificEnvelopeEditReducer)
-}
