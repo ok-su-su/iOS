@@ -13,37 +13,47 @@ import OSLog
 import SSInterceptor
 import SSNetwork
 
+// MARK: - GetEnvelopeProperty
+
+struct GetEnvelopeProperty {
+  let friendID: Int64
+  let page: Int
+}
+
 // MARK: - EnvelopeNetwork
 
-struct EnvelopeNetwork: Equatable, DependencyKey {
-  private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
-    os_log("요청한 Page \(page)")
-    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
+struct EnvelopeNetwork: DependencyKey {
+  var getEnvelope: @Sendable (_ property: GetEnvelopeProperty) async throws -> [EnvelopeContent]
+  @Sendable private static func _getEnvelope(_ property: GetEnvelopeProperty) async throws -> [EnvelopeContent] {
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(friendID: property.friendID, page: property.page))
     return data.data.map { $0.toEnvelopeContent() }
   }
 
-  func getEnvelope(friendID: Int64) async throws -> [EnvelopeContent] {
-    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
-    return data.data.map { $0.toEnvelopeContent() }
-  }
+//  @Sendable static private func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
+//    os_log("요청한 Page \(page)")
+//    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
+//    return data.data.map { $0.toEnvelopeContent() }
+//  }
+//
+//  @Sendable static private func getEnvelope(friendID: Int64) async throws -> [EnvelopeContent] {
+//    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
+//    return data.data.map { $0.toEnvelopeContent() }
+//  }
 
-  func getEnvelope(envelopeID: Int64) async throws -> EnvelopeContent {
+  var getEnvelopeByID: @Sendable (_ envelopeID: Int64) async throws -> EnvelopeContent
+  @Sendable private static func _getEnvelopeByID(_ envelopeID: Int64) async throws -> EnvelopeContent {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
 
     return data.toEnvelopeContent()
   }
 
-  func deleteFriend(id: Int64) async throws {
+  var deleteFriendByID: @Sendable (_ friendID: Int64) async throws -> Void
+  @Sendable private static func _deleteFriendByID(_ id: Int64) async throws {
     try await provider.request(.deleteFriend(friendID: id))
   }
 
-  func deleteEnvelope(id: Int64) async throws {
-    try await provider.request(.deleteEnvelope(envelopeID: id))
-  }
-
-  func getEnvelopeProperty(ID: Int64) async throws -> EnvelopeProperty? {
+  var getEnvelopePropertyByID: @Sendable (_ id: Int64) async throws -> EnvelopeProperty?
+  @Sendable private static func _getEnvelopePropertyByID(_ ID: Int64) async throws -> EnvelopeProperty? {
     let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getEnvelopeProperty(friendID: ID))
     guard let firstData = data.data.first else {
       return nil
@@ -59,10 +69,13 @@ struct EnvelopeNetwork: Equatable, DependencyKey {
 }
 
 extension EnvelopeNetwork {
-  static var liveValue: EnvelopeNetwork = .init()
-  static func == (_: EnvelopeNetwork, _: EnvelopeNetwork) -> Bool {
-    return true
-  }
+  private static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  static var liveValue: EnvelopeNetwork = .init(
+    getEnvelope: _getEnvelope,
+    getEnvelopeByID: _getEnvelopeByID,
+    deleteFriendByID: _deleteFriendByID,
+    getEnvelopePropertyByID: _getEnvelopePropertyByID
+  )
 
   enum Network: SSNetworkTargetType {
     case searchLatestOfThreeEnvelope(friendID: Int64)
@@ -84,7 +97,7 @@ extension EnvelopeNetwork {
         "envelopes/\(id)"
       case let .deleteEnvelope(envelopeID: id):
         "envelopes/\(id)"
-      case let .getEnvelopeProperty(friendID: id):
+      case .getEnvelopeProperty:
         "envelopes/friend-statistics"
       }
     }

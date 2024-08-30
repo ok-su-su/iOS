@@ -61,7 +61,7 @@ struct Envelope {
       case .getEnvelopeDetail:
         return .run { [id = state.envelopeProperty.id] send in
           await send(.isLoading(true))
-          let value = try await network.getEnvelope(friendID: id)
+          let value = try await network.getEnvelope(.init(friendID: id, page: 0))
           await send(.updateEnvelopeContent(value))
           await send(.isLoading(false))
         }
