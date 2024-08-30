@@ -29,17 +29,6 @@ struct EnvelopeNetwork: DependencyKey {
     return data.data.map { $0.toEnvelopeContent() }
   }
 
-//  @Sendable static private func getEnvelope(friendID: Int64, page: Int) async throws -> [EnvelopeContent] {
-//    os_log("요청한 Page \(page)")
-//    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(friendID: friendID, page: page))
-//    return data.data.map { $0.toEnvelopeContent() }
-//  }
-//
-//  @Sendable static private func getEnvelope(friendID: Int64) async throws -> [EnvelopeContent] {
-//    let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchLatestOfThreeEnvelope(friendID: friendID))
-//    return data.data.map { $0.toEnvelopeContent() }
-//  }
-
   var getEnvelopeByID: @Sendable (_ envelopeID: Int64) async throws -> EnvelopeContent
   @Sendable private static func _getEnvelopeByID(_ envelopeID: Int64) async throws -> EnvelopeContent {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
