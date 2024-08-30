@@ -107,7 +107,7 @@ public struct SpecificEnvelopeDetailReducer {
     switch action {
     case .deleteEnvelope:
       return .run { [id = state.envelopeDetailProperty.id] _ in
-        try await network.deleteEnvelope(id: id)
+        try await network.deleteEnvelope(id)
         specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
       }

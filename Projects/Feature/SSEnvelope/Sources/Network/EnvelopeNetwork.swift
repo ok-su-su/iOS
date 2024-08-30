@@ -17,20 +17,22 @@ import SSNetwork
 // MARK: - EnvelopeNetwork
 
 struct EnvelopeNetwork {
-  private let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func getEnvelopeDetailPropertyByEnvelopeID(_ id: Int64) async throws -> EnvelopeDetailProperty {
+  var getEnvelopeDetailPropertyByEnvelopeID: @Sendable (_ id: Int64) async throws -> EnvelopeDetailProperty
+  @Sendable static func _getEnvelopeDetailPropertyByEnvelopeID(_ id: Int64) async throws -> EnvelopeDetailProperty {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(id))
     return data.convertToEnvelopeDetailLProperty()
   }
 
-  func deleteEnvelope(id: Int64) async throws {
+  var deleteEnvelope: @Sendable (_ id: Int64) async throws -> Void
+  @Sendable private static func _deleteEnvelope(id: Int64) async throws {
     try await provider.request(.deleteEnvelope(envelopeID: id))
   }
 
-  func getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
-    let events = try await getEventItems()
-    let relations = try await getRelationItems()
+  var getSpecificEnvelopeHistoryEditHelperBy: @Sendable (_ envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper
+  @Sendable private static func _getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
+    let (events, relations) = try await getCategoryAndRelationItem()
     let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
     let envelopeProperty = envelopeDetailResponse.convertToEnvelopeDetailLProperty()
 
@@ -54,22 +56,14 @@ struct EnvelopeNetwork {
     )
   }
 
-  private func getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
-    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.relationships.sorted(by: { $0.id < $1.id })
-  }
-
-  private func getEventItems() async throws -> [CreateEnvelopeEventProperty] {
-    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    return dto.categories.sorted(by: { $0.seq < $1.seq })
-  }
-
-  func editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64 {
+  var editFriends: @Sendable (_ id: Int64, _ body: CreateAndUpdateFriendRequest) async throws -> Int64
+  @Sendable private static func _editFriends(id: Int64, body: CreateAndUpdateFriendRequest) async throws -> Int64 {
     let dto: CreateAndUpdateFriendResponse = try await provider.request(.editFriends(id: id, body))
     return dto.id
   }
 
-  func editEnvelopes(id: Int64, body: CreateAndUpdateEnvelopeRequest) async throws -> EnvelopeDetailProperty {
+  var editEnvelopes: @Sendable (_ id: Int64, _ body: CreateAndUpdateEnvelopeRequest) async throws -> EnvelopeDetailProperty
+  @Sendable private static func _editEnvelopes(id: Int64, body: CreateAndUpdateEnvelopeRequest) async throws -> EnvelopeDetailProperty {
     // TODO: 작업하기
     let dto: CreateAndUpdateEnvelopeResponse = try await provider.request(.editEnvelopes(id: id, body))
     return .init(
@@ -90,6 +84,13 @@ struct EnvelopeNetwork {
       memo: dto.envelope.memo
     )
   }
+
+  private static func getCategoryAndRelationItem() async throws -> ([CreateEnvelopeEventProperty], [CreateEnvelopeRelationItemProperty]) {
+    let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
+    let categories = dto.categories.sorted(by: { $0.seq < $1.seq })
+    let relationships = dto.relationships.sorted(by: { $0.id < $1.id })
+    return (categories, relationships)
+  }
 }
 
 extension DependencyValues {
@@ -102,7 +103,13 @@ extension DependencyValues {
 // MARK: - EnvelopeNetwork + DependencyKey
 
 extension EnvelopeNetwork: DependencyKey {
-  static var liveValue: EnvelopeNetwork = .init()
+  static var liveValue: EnvelopeNetwork = .init(
+    getEnvelopeDetailPropertyByEnvelopeID: _getEnvelopeDetailPropertyByEnvelopeID,
+    deleteEnvelope: _deleteEnvelope,
+    getSpecificEnvelopeHistoryEditHelperBy: _getSpecificEnvelopeHistoryEditHelperBy,
+    editFriends: _editFriends,
+    editEnvelopes: _editEnvelopes
+  )
 
   enum Network: SSNetworkTargetType {
     case deleteEnvelope(envelopeID: Int64)

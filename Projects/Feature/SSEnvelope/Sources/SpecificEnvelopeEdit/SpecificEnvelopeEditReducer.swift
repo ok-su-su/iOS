@@ -54,8 +54,8 @@ public struct SpecificEnvelopeEditReducer {
     }
 
     public init(envelopeID: Int64) async throws {
-      let network = EnvelopeNetwork()
-      let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID: envelopeID)
+      let network = EnvelopeNetwork.liveValue
+      let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID)
       self.init(editHelper: helper)
     }
 
@@ -255,7 +255,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
       return .run { send in
         await send(.inner(.isLoading(true)))
-        let updatedFriendID = try await network.editFriends(id: friendID, body: friendRequestBody)
+        let updatedFriendID = try await network.editFriends(friendID, friendRequestBody)
         await send(.async(.updateEnvelopes(friendID: updatedFriendID)))
         await send(.inner(.isLoading(false)))
       }
@@ -290,7 +290,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       let envelopeID = state.editHelper.envelopeDetailProperty.id
       return .run { send in
         await send(.inner(.isLoading(true)))
-        let envelopeProperty = try await network.editEnvelopes(id: envelopeID, body: envelopeRequestBody)
+        let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
         UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
         await send(.inner(.isLoading(false)))
         await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
