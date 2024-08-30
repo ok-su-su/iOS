@@ -16,19 +16,23 @@ import SSNetwork
 // MARK: - SentEnvelopeFilterNetwork
 
 struct SentEnvelopeFilterNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func getInitialData() async throws -> [SentPerson] {
+  var getInitialData: @Sendable () async throws -> [SentPerson]
+  @Sendable private static func _getInitialData() async throws -> [SentPerson] {
     let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.getInitialName)
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 
-  func findFriendsBy(name: String) async throws -> [SentPerson] {
+  var findFriendsByName: @Sendable (_ name: String) async throws -> [SentPerson]
+
+  @Sendable private static func _findFriendsByName(_ name: String) async throws -> [SentPerson] {
     let data: PageResponseDtoGetFriendStatisticsResponse = try await provider.request(.findByName(name))
     return data.data.map { .init(id: $0.friend.id, name: $0.friend.name) }
   }
 
-  func getMaximumSentValue() async throws -> Int64 {
+  var getMaximumSentValue: @Sendable () async throws -> Int64
+  @Sendable private static func _getMaximumSentValue() async throws -> Int64 {
     let data: SearchFilterEnvelopeResponse = try await provider.request(.getFilterConfig)
     return max(data.maxSentAmount, data.maxReceivedAmount)
   }
@@ -41,14 +45,14 @@ extension DependencyValues {
   }
 }
 
-// MARK: - SentEnvelopeFilterNetwork + DependencyKey, Equatable
+// MARK: - SentEnvelopeFilterNetwork + DependencyKey
 
-extension SentEnvelopeFilterNetwork: DependencyKey, Equatable {
-  static func == (_: SentEnvelopeFilterNetwork, _: SentEnvelopeFilterNetwork) -> Bool {
-    return true
-  }
-
-  static var liveValue: SentEnvelopeFilterNetwork = .init()
+extension SentEnvelopeFilterNetwork: DependencyKey {
+  static var liveValue: SentEnvelopeFilterNetwork = .init(
+    getInitialData: _getInitialData,
+    findFriendsByName: _findFriendsByName,
+    getMaximumSentValue: _getMaximumSentValue
+  )
 
   enum Network: SSNetworkTargetType {
     case getInitialName

@@ -187,7 +187,7 @@ struct SentEnvelopeFilter {
         return .run { send in
           await send(.isLoading(true))
           let data: [SentPerson] = if let name {
-            try await network.findFriendsBy(name: name)
+            try await network.findFriendsByName(name)
           } else {
             try await network.getInitialData()
           }
