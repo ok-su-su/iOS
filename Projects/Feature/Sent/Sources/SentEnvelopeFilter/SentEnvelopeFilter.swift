@@ -17,7 +17,7 @@ import SwiftUI
 @Reducer
 struct SentEnvelopeFilter {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var isOnAppear = false
     var isLoading = false
     @Shared var filterHelper: SentPeopleFilterHelper
