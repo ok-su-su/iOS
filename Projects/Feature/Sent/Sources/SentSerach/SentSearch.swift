@@ -84,7 +84,7 @@ struct SentSearch {
       let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
       return .run { _ in
         // 만약 id검색에 성공한다면 화면 푸쉬를 진행합니다.
-        guard let envelopeProperty = try await network.getEnvelopePropertyBy(id: id) else {
+        guard let envelopeProperty = try await network.getEnvelopePropertyByID(id) else {
           return
         }
         persistence.setSearchItems(searchedItem)
@@ -135,16 +135,15 @@ struct SentSearch {
         return .none
 
       case .searchEnvelope:
-        let currentTextFieldText = state.property.textFieldText
+        let currentTextFieldName = state.property.textFieldText
         return .run { send in
-          os_log("검색 시작합니다. \(currentTextFieldText)")
+          os_log("검색 시작합니다. \(currentTextFieldName)")
           // 이름을 통해 검색
-          var searchedEnvelopes = try await network.searchFriendsBy(name: currentTextFieldText)
-          // 금액을 통해 검색
-          if let amount = Int64(currentTextFieldText) {
-            searchedEnvelopes += try await network.searchEnvelopeBy(amount: amount)
-          }
-          await send(.updateSearchResult(searchedEnvelopes.uniqued()))
+          async let searchedEnvelopes = network.searchFriendsByName(currentTextFieldName)
+          let amount = Int64(currentTextFieldName)
+          async let searchedEnvelopesByAmount = amount != nil ? network.requestSearchFriendsByAmount(amount!) : []
+          let envelopesItem = try await (searchedEnvelopes + searchedEnvelopesByAmount)
+          await send(.updateSearchResult(envelopesItem.uniqued()))
         }
 
       case let .updateSearchResult(results):

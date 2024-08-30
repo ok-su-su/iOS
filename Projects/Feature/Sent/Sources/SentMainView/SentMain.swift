@@ -34,11 +34,7 @@ struct SentMain {
     var isRefresh = false
 
     var presentCreateEnvelope = false
-    @Presents var filterBottomSheet: SSSelectableBottomSheetReducer<FilterDialItem>.State?
-    @Presents var sentEnvelopeFilter: SentEnvelopeFilter.State?
-    @Presents var searchEnvelope: SentSearch.State?
-    @Presents var specificEnvelopeHistoryRouter: SpecificEnvelopeHistoryRouter.State?
-
+    @Presents var presentDestination: SentMainPresentationDestination.State?
     @Shared var sentMainProperty: SentMainProperty
 
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
@@ -86,11 +82,11 @@ struct SentMain {
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case .tappedSortButton:
-      state.filterBottomSheet = .init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial)
+      state.presentDestination = .filterBottomSheet(.init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial))
       return .none
 
     case .tappedFilterButton:
-      state.sentEnvelopeFilter = SentEnvelopeFilter.State(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper)
+      state.presentDestination = .filter(.init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper))
       return .none
 
     case .tappedEmptyEnvelopeButton:
@@ -247,28 +243,25 @@ struct SentMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-    case filterBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<FilterDialItem>.Action>)
-    case sentEnvelopeFilter(PresentationAction<SentEnvelopeFilter.Action>)
-    case searchEnvelope(PresentationAction<SentSearch.Action>)
 
     case envelopes(IdentifiedActionOf<Envelope>)
-    case specificEnvelopeHistoryRouter(PresentationAction<SpecificEnvelopeHistoryRouter.Action>)
+    case presentDestination(PresentationAction<SentMainPresentationDestination.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> Effect<Action> {
     switch action {
     case let .envelopes(.element(id: _, action: .pushEnvelopeDetail(property))):
-      state.specificEnvelopeHistoryRouter = SpecificEnvelopeHistoryRouter.State(envelopeProperty: property)
+      state.presentDestination = .specificEnvelope(.init(envelopeProperty: property))
       return .none
 
     case .header(.tappedSearchButton):
-      state.searchEnvelope = .init()
+      state.presentDestination = .searchEnvelope(.init())
       return .none
 
-    case .filterBottomSheet(.presented(.tapped(item: _))):
+    case .presentDestination(.presented(.filterBottomSheet(.tapped))):
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
-    case .sentEnvelopeFilter(.presented(.tappedConfirmButton)):
+    case .presentDestination(.presented(.filter(.tappedConfirmButton))):
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .envelopes(.element(id: uuid, action: .isOnAppear(true))):
@@ -280,9 +273,7 @@ struct SentMain {
       }
       return .none
 
-    case .searchEnvelope,
-         .specificEnvelopeHistoryRouter,
-         .tabBar:
+    case .tabBar:
       return .none
 
     default:
@@ -326,30 +317,15 @@ struct SentMain {
       }
     }
     .subFeatures1()
-    .subFeatures2()
   }
 }
 
 private extension Reducer where State == SentMain.State, Action == SentMain.Action {
   func subFeatures1() -> some ReducerOf<Self> {
-    ifLet(\.$searchEnvelope, action: \.scope.searchEnvelope) {
-      SentSearch()
-    }
-    .ifLet(\.$sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter) {
-      SentEnvelopeFilter()
-    }
-  }
-
-  func subFeatures2() -> some ReducerOf<Self> {
-    ifLet(\.$filterBottomSheet, action: \.scope.filterBottomSheet) {
-      SSSelectableBottomSheetReducer()
-    }
-    .ifLet(\.$specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter) {
-      SpecificEnvelopeHistoryRouter()
-    }
-    .forEach(\.envelopes, action: \.scope.envelopes) {
-      Envelope()
-    }
+    ifLet(\.$presentDestination, action: \.scope.presentDestination)
+      .forEach(\.envelopes, action: \.scope.envelopes) {
+        Envelope()
+      }
   }
 }
 

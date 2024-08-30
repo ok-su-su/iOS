@@ -14,7 +14,7 @@ import SSEnvelope
 @Reducer
 struct SpecificEnvelopeHistoryRouter {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var isOnAppear = false
     var path: StackState<SpecificEnvelopeHistoryRouterPath.State> = .init()
     var envelopeHistory: SpecificEnvelopeHistoryList.State
@@ -93,13 +93,4 @@ struct SpecificEnvelopeHistoryRouter {
       }
     }.forEach(\.path, action: \.path)
   }
-}
-
-// MARK: - SpecificEnvelopeHistoryRouterPath
-
-@Reducer(state: .equatable, action: .equatable)
-enum SpecificEnvelopeHistoryRouterPath {
-  case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
-  case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
-  case specificEnvelopeHistoryEdit(SpecificEnvelopeEditReducer)
 }

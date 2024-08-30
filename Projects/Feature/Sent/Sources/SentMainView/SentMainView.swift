@@ -232,15 +232,26 @@ private struct DestinationsModifier: ViewModifier {
           store.sendViewAction(.finishedCreateEnvelopes(data))
         }
       }
-      .fullScreenCover(item: $store.scope(state: \.sentEnvelopeFilter, action: \.scope.sentEnvelopeFilter)) { store in
+      .fullScreenCover(item: $store.scope(state: \.presentDestination?.filter, action: \.scope.presentDestination.filter)) { store in
         SentEnvelopeFilterView(store: store)
       }
-      .fullScreenCover(item: $store.scope(state: \.searchEnvelope, action: \.scope.searchEnvelope)) { store in
+      .fullScreenCover(item: $store.scope(state: \.presentDestination?.searchEnvelope, action: \.scope.presentDestination.searchEnvelope)) { store in
         SentSearchView(store: store)
       }
-      .selectableBottomSheet(store: $store.scope(state: \.filterBottomSheet, action: \.scope.filterBottomSheet), cellCount: 4)
-      .fullScreenCover(item: $store.scope(state: \.specificEnvelopeHistoryRouter, action: \.scope.specificEnvelopeHistoryRouter)) { store in
+      .fullScreenCover(
+        item: $store.scope(
+          state: \.presentDestination?.specificEnvelope,
+          action: \.scope.presentDestination.specificEnvelope
+        )
+      ) { store in
         SpecificEnvelopeHistoryRouterView(store: store)
       }
+      .selectableBottomSheet(
+        store: $store.scope(
+          state: \.presentDestination?.filterBottomSheet,
+          action: \.scope.presentDestination.filterBottomSheet
+        ),
+        cellCount: 4
+      )
   }
 }

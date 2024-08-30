@@ -12,7 +12,7 @@ import OSLog
 @Reducer
 struct CustomTextField {
   @ObservableState
-  struct State {
+  struct State: Equatable {
     var isOnAppear = false
     var text: String
   }

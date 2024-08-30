@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -123,11 +124,7 @@ struct SpecificEnvelopeHistoryList {
       return .none
 
     case let .overwriteEnvelopeContents(envelopesContent):
-      envelopesContent.forEach { envelopeContent in
-        if let index = state.envelopeContents.firstIndex(where: { $0.id == envelopeContent.id }) {
-          state.envelopeContents[index] = envelopeContent
-        }
-      }
+      state.envelopeContents.overwriteByID(envelopesContent)
       return .none
 
     case let .deleteEnvelope(id):
@@ -154,21 +151,21 @@ struct SpecificEnvelopeHistoryList {
       state.page += 1
       return .run { [id = state.envelopeProperty.id] send in
         await send(.inner(.isLoading(true)))
-        let envelopeContents = try await network.getEnvelope(friendID: id, page: page)
+        let envelopeContents = try await network.getEnvelope(.init(friendID: id, page: page))
         await send(.inner(.updateEnvelopeContents(envelopeContents)))
         await send(.inner(.isLoading(false)))
       }
 
     case .deleteFriend:
       return .run { [id = state.envelopeProperty.id] _ in
-        try await network.deleteFriend(id: id)
+        try await network.deleteFriendByID(id)
         sentUpdatePublisher.deleteEnvelopes(friendID: id)
         await dismiss()
       }
 
     case let .updateEnvelope(id: id):
       return .run { send in
-        let envelope = try await network.getEnvelope(envelopeID: id)
+        let envelope = try await network.getEnvelopeByID(id)
         await send(.inner(.overwriteEnvelopeContents([envelope])))
         await send(.async(.updateEnvelopeProperty))
       }
@@ -176,7 +173,7 @@ struct SpecificEnvelopeHistoryList {
     case .updateEnvelopeProperty:
       state.isUpdateEnvelopePropertyAtMain = true
       return .run { [envelopeID = state.envelopeProperty.id] send in
-        if let envelopeProperty = try await network.getEnvelopeProperty(ID: envelopeID) {
+        if let envelopeProperty = try await network.getEnvelopePropertyByID(envelopeID) {
           await send(.inner(.updateEnvelopeProperty(envelopeProperty)))
         }
       }

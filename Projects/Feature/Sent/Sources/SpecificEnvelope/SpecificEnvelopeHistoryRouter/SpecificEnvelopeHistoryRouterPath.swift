@@ -1,0 +1,20 @@
+//
+//  SpecificEnvelopeHistoryRouterPath.swift
+//  Sent
+//
+//  Created by MaraMincho on 8/30/24.
+//  Copyright © 2024 com.oksusu. All rights reserved.
+//
+
+import ComposableArchitecture
+import Foundation
+import SSEnvelope
+
+// MARK: - SpecificEnvelopeHistoryRouterPath
+
+@Reducer(state: .equatable, action: .equatable)
+enum SpecificEnvelopeHistoryRouterPath {
+  case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)
+  case specificEnvelopeHistoryDetail(SpecificEnvelopeDetailReducer)
+  case specificEnvelopeHistoryEdit(SpecificEnvelopeEditReducer)
+}

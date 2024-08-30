@@ -15,12 +15,10 @@ import SSNetwork
 // MARK: - SentSearchNetwork
 
 struct SentSearchNetwork {
-  @Dependency(\.sentMainNetwork) var searchAmountEnvelopeNetwork
-  @Dependency(\.sentMainNetwork) var searchEnvelopeNetwork
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func searchFriendsBy(name: String) async throws -> [SentSearchItem] {
+  var searchFriendsByName: @Sendable (_ name: String) async throws -> [SentSearchItem]
+  @Sendable private static func _searchFriendByName(name: String) async throws -> [SentSearchItem] {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: name))
     return data.data.compactMap { dto -> SentSearchItem? in
       guard let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
@@ -36,29 +34,70 @@ struct SentSearchNetwork {
     }
   }
 
-  func searchEnvelopeBy(amount: Int64) async throws -> [SentSearchItem] {
-    return try await searchAmountEnvelopeNetwork.requestSearchFriends(amount)
+  var requestSearchFriendsByAmount: @Sendable (_ amount: Int64) async throws -> [SentSearchItem]
+  @Sendable private static func _requestSearchFriendsByAmount(_ amount: Int64) async throws -> [SentSearchItem] {
+    let data: PageResponseDtoSearchEnvelopeResponse = try await provider
+      .request(
+        .searchEnvelope(
+          .init(
+            types: [.SENT],
+            include: [.CATEGORY, .FRIEND, .RELATIONSHIP],
+            fromAmount: amount,
+            toAmount: amount,
+            size: 5
+          )
+        )
+      )
+    return data.data.compactMap { dto -> SentSearchItem? in
+      guard let friendID = dto.friend?.id,
+            let friendName = dto.friend?.name,
+            let dateString = CustomDateFormatter.getYearAndMonthDateString(from: dto.envelope.handedOverAt),
+            let relationshipName = dto.relationship?.relation
+      else {
+        return nil
+      }
+      return .init(id: friendID, title: friendName, firstContentDescription: relationshipName, secondContentDescription: dateString)
+    }
   }
 
-  func getEnvelopePropertyBy(id: Int64) async throws -> EnvelopeProperty? {
-    try await searchEnvelopeNetwork.requestSearchFriends(SearchFriendsParameter(friendIds: [id])).first
-  }
+  var getEnvelopePropertyByID: @Sendable (_ id: Int64) async throws -> EnvelopeProperty?
 }
 
 // MARK: DependencyKey
 
 extension SentSearchNetwork: DependencyKey {
-  static var liveValue: SentSearchNetwork = .init()
+  private enum SentSearchNetworkDefault {
+    static let getEnvelopePropertyByID: (@Sendable (_ id: Int64) async throws -> EnvelopeProperty?) = { id in
+      return try await SentMainNetwork.liveValue.requestSearchFriends(.init(friendIds: [id])).first
+    }
+  }
+
+  static var liveValue: SentSearchNetwork = .init(
+    searchFriendsByName: _searchFriendByName,
+    requestSearchFriendsByAmount: _requestSearchFriendsByAmount,
+    getEnvelopePropertyByID: SentSearchNetworkDefault.getEnvelopePropertyByID
+  )
 
   enum Network: SSNetworkTargetType {
     case searchFriend(name: String?)
+    case searchEnvelope(SearchEnvelopeURLParameter)
 
     var additionalHeader: [String: String]? { nil }
-    var path: String { "friends" }
+    var path: String {
+      switch self {
+      case .searchFriend:
+        "friends"
+      case .searchEnvelope:
+        "envelopes"
+      }
+    }
+
     var method: Moya.Method {
       switch self {
       case .searchFriend:
-        return .get
+        .get
+      case .searchEnvelope:
+        .get
       }
     }
 
@@ -69,6 +108,11 @@ extension SentSearchNetwork: DependencyKey {
           return .requestParameters(parameters: ["name": name], encoding: URLEncoding.queryString)
         }
         return .requestPlain
+      case let .searchEnvelope(searchEnvelopeURLParameter):
+        return .requestParameters(
+          parameters: searchEnvelopeURLParameter.makeParameter(),
+          encoding: URLEncoding(arrayEncoding: .noBrackets)
+        )
       }
     }
   }
