@@ -15,14 +15,17 @@ public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyI
   @State var sheetHeight: CGFloat = 0
   var cellCount: Int
   var bottomView: (() -> any View)?
+  var availableFullScreenMode: Bool
   public init(
     store: Binding<StoreOf<SSSelectableBottomSheetReducer<Item>>?>,
     cellCount: Int = 0,
+    availableFullScreenMode: Bool,
     bottomView: (() -> any View)? = nil
   ) {
     _store = store
     self.bottomView = bottomView
     self.cellCount = cellCount
+    self.availableFullScreenMode = availableFullScreenMode
   }
 
   @Binding var store: StoreOf<SSSelectableBottomSheetReducer<Item>>?
@@ -31,7 +34,7 @@ public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyI
     content
       .sheet(item: $store) { store in
         SSSelectableBottomSheetView<Item>(store: store)
-          .presentationDetents([.height(sheetHeight), .medium, .large])
+          .presentationDetents(presentationDetents)
           .presentationContentInteraction(.scrolls)
           .presentationDragIndicator(.hidden)
           .safeAreaInset(edge: .bottom) {
@@ -51,21 +54,41 @@ public struct SSSelectableBottomSheetModifier<Item: SSSelectBottomSheetPropertyI
           }
       }
   }
+
+  var presentationDetents: Set<PresentationDetent> {
+    let defaultHeight: PresentationDetent = .height(sheetHeight)
+    return availableFullScreenMode ? [defaultHeight, PresentationDetent.large] : [defaultHeight]
+  }
 }
 
 public extension View {
   func selectableBottomSheet(
     store: Binding<StoreOf<SSSelectableBottomSheetReducer<some SSSelectBottomSheetPropertyItemable>>?>,
-    cellCount: Int = 4
+    cellCount: Int = 4,
+    availableFullScreenMode: Bool = false
   ) -> some View {
-    modifier(SSSelectableBottomSheetModifier(store: store, cellCount: cellCount))
+    modifier(
+      SSSelectableBottomSheetModifier(
+        store: store,
+        cellCount: cellCount,
+        availableFullScreenMode: availableFullScreenMode
+      )
+    )
   }
 
   func selectableBottomSheetWithBottomView(
     store: Binding<StoreOf<SSSelectableBottomSheetReducer<some SSSelectBottomSheetPropertyItemable>>?>,
     cellCount: Int = 4,
+    availableFullScreenMode: Bool = false,
     @ViewBuilder content: @escaping () -> some View
   ) -> some View {
-    modifier(SSSelectableBottomSheetModifier(store: store, cellCount: cellCount, bottomView: content))
+    modifier(
+      SSSelectableBottomSheetModifier(
+        store: store,
+        cellCount: cellCount,
+        availableFullScreenMode: availableFullScreenMode,
+        bottomView: content
+      )
+    )
   }
 }
