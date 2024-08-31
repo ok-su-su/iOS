@@ -264,7 +264,7 @@ extension [SelectYearBottomSheetItem] {
 
 extension SelectYearBottomSheetItem {
   static var notSelectedItem: Self {
-    let notSelectedID = Int(CustomDateFormatter.getYear(from: .now))! + 1
+    let notSelectedID = Int.min
     return SelectYearBottomSheetItem(description: "미선택", id: notSelectedID)
   }
 }

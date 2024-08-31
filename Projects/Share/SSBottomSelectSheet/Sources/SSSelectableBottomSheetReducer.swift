@@ -17,7 +17,11 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
     var isOnAppear = false
 
     var items: [Item]
-    @Shared var selectedItem: Item?
+    @Shared fileprivate var selectedItem: Item?
+    var currentSelectedItem: Item? {
+      return selectedItem == nil ? deselectItem : selectedItem
+    }
+
     var deselectItem: Item? = nil
     public init(items: [Item], selectedItem: Shared<Item?>, deselectItem: Item? = nil) {
       self.items = items
