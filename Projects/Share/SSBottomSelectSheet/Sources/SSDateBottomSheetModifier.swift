@@ -87,7 +87,7 @@ public extension View {
 
 private extension View {
   func addBottomSheetSettings(contentHeight: CGFloat = 343) -> some View {
-    presentationDetents([.height(contentHeight), .medium, .large])
+    presentationDetents([.height(contentHeight)])
       .presentationContentInteraction(.scrolls)
       .presentationDragIndicator(.automatic)
       .presentationDragIndicator(.hidden)

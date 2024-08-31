@@ -102,7 +102,7 @@ extension BottomSheetYearItem {
   }
 
   static var deselectItem: Self {
-    let notSelectedID = Int(getYear(from: .now))! + 1
+    let notSelectedID = Int.min
     return .init(description: "미선택", id: notSelectedID)
   }
 

@@ -134,7 +134,11 @@ struct MyPageEditView: View {
       store.send(.view(.onAppear(true)))
     }
     .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
-    .selectableBottomSheet(store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet), cellCount: 5)
+    .selectableBottomSheet(
+      store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet),
+      cellCount: 5,
+      availableFullScreenMode: true
+    )
   }
 
   private enum Metrics {
