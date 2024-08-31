@@ -111,7 +111,7 @@ struct WriteVote {
     case let .editedVoteTextContent(text):
       state.helper.voteTextContent = text
       return ToastRegexManager.isShowToastVoteContent(text)
-      ? .send(.scope(.toast(.showToastMessage(Constants.textFieldOverFlowToastMessage))))
+        ? .send(.scope(.toast(.showToastMessage(Constants.textFieldOverFlowToastMessage))))
         : .none
 
     case .tappedAddSectionItemButton:
@@ -122,9 +122,10 @@ struct WriteVote {
     case .tappedCreateButton:
       switch state.type {
       case .create:
-          return .send(.async(.writeVote))
-      case .editOnlyContent, .editAll:
-          return .send(.async(.updateVote))
+        return .send(.async(.writeVote))
+      case .editAll,
+           .editOnlyContent:
+        return .send(.async(.updateVote))
       }
     case .tappedUnavailableEditSectionItem:
       return .send(.scope(.toast(.showToastMessage(Constants.unavailableButtonToastMessage))))
