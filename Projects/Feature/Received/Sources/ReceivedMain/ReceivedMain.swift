@@ -32,11 +32,6 @@ struct ReceivedMain {
     @Shared var sortProperty: SortHelperProperty
     @Shared var filterProperty: FilterHelperProperty
     @Presents var presentDestination: ReceivedMainPresentationDestination.State?
-//    @Presents var search: ReceivedSearch.State?
-//    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
-//    @Presents var filter: ReceivedFilter.State?
-//    @Presents var detail: LedgerDetailRouter.State?
-//    @Presents var createLedger: CreateLedgerRouter.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 

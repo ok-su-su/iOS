@@ -22,7 +22,6 @@ struct ReceivedMainNetwork {
   }
 
   var getLedgerByID: @Sendable (_ id: Int64) async throws -> LedgerBoxProperty
-
   @Sendable private static func _getLedgerByID(_ id: Int64) async throws -> LedgerBoxProperty {
     let dto: LedgerDetailResponse = try await provider.request(.searchLedger(ledgerID: id))
     return .init(ledgerDetailResponse: dto)
