@@ -22,10 +22,11 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
   @ViewBuilder
   private func makeCellContentView() -> some View {
     ForEach(store.items) { item in
+      let isSelected = store.currentSelectedItem == item
       Text(item.description)
         .applySSFont(.title_xxs)
         .padding(.vertical, itemVerticalSpacing)
-        .foregroundStyle(store.selectedItem == item ? SSColor.gray100 : SSColor.gray30)
+        .foregroundStyle(isSelected ? SSColor.gray100 : SSColor.gray30)
         .frame(maxWidth: .infinity)
         .onTapGesture {
           store.send(.tapped(item: item))
@@ -45,7 +46,7 @@ public struct SSSelectableBottomSheetView<Item: SSSelectBottomSheetPropertyItema
             makeCellContentView()
               .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) {
-                  value.scrollTo(store.selectedItem?.id, anchor: .center)
+                  value.scrollTo(store.currentSelectedItem?.id, anchor: .center)
                 }
               }
           }
