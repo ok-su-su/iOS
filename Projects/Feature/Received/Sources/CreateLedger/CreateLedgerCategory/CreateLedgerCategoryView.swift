@@ -27,17 +27,16 @@ struct CreateLedgerCategoryView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(alignment: .leading, spacing: 32) {
-      Text("어떤 경조사였나요?")
-        .foregroundStyle(SSColor.gray100)
-        .modifier(SSTypoModifier(.title_m))
-
-      ScrollView {
+    ScrollView(showsIndicators: false) {
+      VStack(alignment: .leading, spacing: 32) {
+        Text("어떤 경조사였나요?")
+          .foregroundStyle(SSColor.gray100)
+          .modifier(SSTypoModifier(.title_m))
         SSSelectableItemsView(store: store.scope(state: \.selection, action: \.scope.selection))
+          .padding(.bottom, 24)
       }
-      .scrollIndicators(.hidden)
-      Spacer()
-    }.padding(.horizontal, 16)
+      .padding(.horizontal, 16)
+    }
   }
 
   @ViewBuilder

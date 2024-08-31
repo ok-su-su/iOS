@@ -15,11 +15,10 @@ import SSNetwork
 // MARK: - ReceivedSearchNetwork
 
 struct ReceivedSearchNetwork {
-  private init() {}
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func searchLedgersByName(_ name: String) async throws -> [ReceivedSearchItem] {
+  var searchLedgersByName: @Sendable (_ name: String) async throws -> [ReceivedSearchItem]
+  @Sendable private static func _searchLedgersByName(_ name: String) async throws -> [ReceivedSearchItem] {
     let response: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgersByName(name))
     return response.data.map { val in
       let dateDescription: String?
@@ -48,7 +47,9 @@ struct ReceivedSearchNetwork {
 // MARK: DependencyKey
 
 extension ReceivedSearchNetwork: DependencyKey {
-  static var liveValue: ReceivedSearchNetwork = .init()
+  static var liveValue: ReceivedSearchNetwork = .init(
+    searchLedgersByName: _searchLedgersByName
+  )
 
   private enum Network: SSNetworkTargetType {
     case searchLedgersByName(String)

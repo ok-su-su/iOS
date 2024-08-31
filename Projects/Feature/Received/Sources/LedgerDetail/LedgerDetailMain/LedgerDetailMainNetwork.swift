@@ -22,23 +22,27 @@ extension DependencyValues {
 // MARK: - LedgerDetailMainNetwork
 
 struct LedgerDetailMainNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
-  func getLedgerDetail(ledgerID: Int64) async throws -> LedgerDetailProperty {
+  var getLedgerDetailByLedgerID: @Sendable (_ ledgerID: Int64) async throws -> LedgerDetailProperty
+  @Sendable private static func _getLedgerDetailByLedgerID(_ ledgerID: Int64) async throws -> LedgerDetailProperty {
     let data: LedgerDetailResponse = try await provider.request(.searchLedgerDetail(ledgerID: ledgerID))
     return .init(ledgerDetailResponse: data)
   }
 
-  func deleteLedger(id: Int64) async throws {
+  var deleteLedger: @Sendable (_ id: Int64) async throws -> Void
+  @Sendable private static func _deleteLedger(id: Int64) async throws {
     try await provider.request(.deletedLedger(ID: id))
   }
 
-  func getCategories() async throws -> [CategoryModel] {
+  var getCategories: @Sendable () async throws -> [CategoryModel]
+  @Sendable private static func _getCategories() async throws -> [CategoryModel] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
     return data.categories.sorted(by: { $0.seq < $1.seq })
   }
 
-  func getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
+  var getEnvelopes: @Sendable (_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty]
+  @Sendable private static func _getEnvelopes(_ param: GetEnvelopesRequestParameter) async throws -> [EnvelopeViewForLedgerMainProperty] {
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.searchEnvelope(param))
     return data.data.compactMap { cur -> EnvelopeViewForLedgerMainProperty? in
       let envelope = cur.envelope
@@ -58,7 +62,8 @@ struct LedgerDetailMainNetwork {
     }
   }
 
-  func getEnvelope(_ envelopeID: Int64) async throws -> EnvelopeViewForLedgerMainProperty {
+  var getEnvelopeByEnvelopeID: @Sendable (_ id: Int64) async throws -> EnvelopeViewForLedgerMainProperty
+  @Sendable private static func _getEnvelopeByEnvelopeID(_ envelopeID: Int64) async throws -> EnvelopeViewForLedgerMainProperty {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
     return .init(
       id: data.envelope.id,
@@ -70,7 +75,8 @@ struct LedgerDetailMainNetwork {
     )
   }
 
-  func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
+  var requestFilterItems: () async throws -> [FilterSelectableItemProperty]
+  @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
     var res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
     return res
@@ -80,7 +86,14 @@ struct LedgerDetailMainNetwork {
 // MARK: DependencyKey
 
 extension LedgerDetailMainNetwork: DependencyKey {
-  static var liveValue: LedgerDetailMainNetwork = .init()
+  static var liveValue: LedgerDetailMainNetwork = .init(
+    getLedgerDetailByLedgerID: _getLedgerDetailByLedgerID,
+    deleteLedger: _deleteLedger,
+    getCategories: _getCategories,
+    getEnvelopes: _getEnvelopes,
+    getEnvelopeByEnvelopeID: _getEnvelopeByEnvelopeID,
+    requestFilterItems: _requestFilterItems
+  )
   private enum Network: SSNetworkTargetType {
     case searchEnvelope(GetEnvelopesRequestParameter)
     case searchLedgerDetail(ledgerID: Int64)
@@ -154,7 +167,7 @@ struct GetEnvelopesRequestParameter {
 }
 
 extension GetEnvelopesRequestParameter {
-  static let defaultSize = 20
+  static let defaultSize = 100
 
   func getParameter() -> [String: Any] {
     var res: [String: Any] = [:]

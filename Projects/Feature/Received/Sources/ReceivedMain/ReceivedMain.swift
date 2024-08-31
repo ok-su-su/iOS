@@ -31,11 +31,7 @@ struct ReceivedMain {
     var tabBar = SSTabBarFeature.State(tabbarType: .received)
     @Shared var sortProperty: SortHelperProperty
     @Shared var filterProperty: FilterHelperProperty
-    @Presents var search: ReceivedSearch.State?
-    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItem>.State?
-    @Presents var filter: ReceivedFilter.State?
-    @Presents var detail: LedgerDetailRouter.State?
-    @Presents var createLedger: CreateLedgerRouter.State?
+    @Presents var presentDestination: ReceivedMainPresentationDestination.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
 
@@ -97,13 +93,14 @@ struct ReceivedMain {
 
   @CasePathable
   enum ScopeAction: Equatable {
+    case presentDestination(PresentationAction<ReceivedMainPresentationDestination.Action>)
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-    case search(PresentationAction<ReceivedSearch.Action>)
-    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
-    case filter(PresentationAction<ReceivedFilter.Action>)
-    case detail(PresentationAction<LedgerDetailRouter.Action>)
-    case createLedger(PresentationAction<CreateLedgerRouter.Action>)
+//    case search(PresentationAction<ReceivedSearch.Action>)
+//    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
+//    case filter(PresentationAction<ReceivedFilter.Action>)
+//    case detail(PresentationAction<LedgerDetailRouter.Action>)
+//    case createLedger(PresentationAction<CreateLedgerRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -122,7 +119,7 @@ struct ReceivedMain {
       )
 
     case .tappedAddLedgerButton:
-      state.createLedger = .init()
+      state.presentDestination = .createLedger(.init())
       return .none
 
     case .tappedFilteredDateButton:
@@ -130,7 +127,7 @@ struct ReceivedMain {
       return .none
 
     case .tappedFilterButton:
-      state.filter = .init(state.$filterProperty)
+      state.presentDestination = .filter(.init(state.$filterProperty))
       return .none
 
     case let .tappedFilteredPersonButton(id: id):
@@ -138,11 +135,17 @@ struct ReceivedMain {
       return .send(.async(.getLedgersInitialPage))
 
     case .tappedSortButton:
-      state.sort = .init(items: state.sortProperty.defaultItems, selectedItem: state.$sortProperty.selectedFilterDial)
+      state.presentDestination =
+        .sort(
+          .init(
+            items: state.sortProperty.defaultItems,
+            selectedItem: state.$sortProperty.selectedFilterDial
+          )
+        )
       return .none
 
     case .tappedFloatingButton:
-      state.createLedger = .init()
+      state.presentDestination = .createLedger(.init())
       return .none
 
     case let .onAppearedLedger(property):
@@ -152,7 +155,7 @@ struct ReceivedMain {
       return .none
 
     case let .tappedLedgerBox(property):
-      state.detail = .init(.init(ledgerID: property.id))
+      state.presentDestination = .detail(.init(.init(ledgerID: property.id)))
       return .none
 
     case .pullRefreshButton:
@@ -164,10 +167,10 @@ struct ReceivedMain {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case .header(.tappedSearchButton):
-      state.search = .init()
+      state.presentDestination = .search(.init())
       return .none
 
     case .header:
@@ -176,25 +179,13 @@ struct ReceivedMain {
     case .tabBar:
       return .none
 
-    case .search:
-      return .none
-
-    case .sort(.presented(.changedItem)):
+    case .presentDestination(.presented(.sort(.changedItem))):
       return .send(.async(.getLedgersInitialPage))
 
-    case .sort:
-      return .none
-
-    case .filter(.presented(.view(.tappedConfirmButton))):
+    case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
       return .send(.async(.getLedgersInitialPage))
 
-    case .filter:
-      return .none
-
-    case .detail:
-      return .none
-
-    case .createLedger:
+    case .presentDestination:
       return .none
     }
   }
@@ -266,7 +257,7 @@ struct ReceivedMain {
 
     case let .updateLedger(id):
       return .run { send in
-        let ledgerProperty = try await network.getLedger(id: id)
+        let ledgerProperty = try await network.getLedgerByID(id)
         await send(.inner(.overwriteLedgers([ledgerProperty])))
       }
     }
@@ -321,24 +312,21 @@ extension ReceivedMain {
 
 extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Action {
   func addFeatures() -> some ReducerOf<Self> {
-    ifLet(\.$search, action: \.scope.search) {
-      ReceivedSearch()
-    }
-    .ifLet(\.$sort, action: \.scope.sort) {
-      SSSelectableBottomSheetReducer()
-    }
-    .ifLet(\.$filter, action: \.scope.filter) {
-      ReceivedFilter()
-    }
-    .ifLet(\.$detail, action: \.scope.detail) {
-      LedgerDetailRouter()
-    }
-    .addFeatures2()
-  }
-
-  private func addFeatures2() -> some ReducerOf<Self> {
-    ifLet(\.$createLedger, action: \.scope.createLedger) {
-      CreateLedgerRouter()
-    }
+    ifLet(\.$presentDestination, action: \.scope.presentDestination)
+//    ifLet(\.$search, action: \.scope.search) {
+//      ReceivedSearch()
+//    }
+//    .ifLet(\.$sort, action: \.scope.sort) {
+//      SSSelectableBottomSheetReducer()
+//    }
+//    .ifLet(\.$filter, action: \.scope.filter) {
+//      ReceivedFilter()
+//    }
+//    .ifLet(\.$detail, action: \.scope.detail) {
+//      LedgerDetailRouter()
+//    }
+    //    ifLet(\.$createLedger, action: \.scope.createLedger) {
+    //      CreateLedgerRouter()
+    //    }
   }
 }

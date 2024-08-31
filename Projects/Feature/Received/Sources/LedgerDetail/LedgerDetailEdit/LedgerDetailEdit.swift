@@ -144,7 +144,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
         endAt: CustomDateFormatter.getFullDateString(from: endDate)
       )
       return .run { _ in
-        let response = try await network.saveLedger(id: id, body: body)
+        let response = try await network.saveLedger(id, body)
         let updatedLedgerID = response.ledger.id
         updateLedgerDetailPublisher.updateLedgerDetail()
         await dismiss()

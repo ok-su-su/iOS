@@ -15,25 +15,21 @@ import SSNetwork
 // MARK: - ReceivedFilterNetwork
 
 struct ReceivedFilterNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func requestFilterItems() async throws -> [FilterSelectableItemProperty] {
+  var requestFilterItems: () async throws -> [FilterSelectableItemProperty]
+  @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    var res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
+    let res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
     return res
   }
 }
 
-extension DependencyValues {
-  var receivedFilterNetwork: ReceivedFilterNetwork {
-    get { self[ReceivedFilterNetwork.self] }
-    set { self[ReceivedFilterNetwork.self] = newValue }
-  }
-}
-
-// MARK: - ReceivedFilterNetwork + DependencyKey
+// MARK: DependencyKey
 
 extension ReceivedFilterNetwork: DependencyKey {
-  static var liveValue: ReceivedFilterNetwork = .init()
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static var liveValue: ReceivedFilterNetwork = .init(
+    requestFilterItems: _requestFilterItems
+  )
 
   private enum Network: SSNetworkTargetType {
     case getFilterItems
@@ -45,5 +41,12 @@ extension ReceivedFilterNetwork: DependencyKey {
     var method: Moya.Method { .get }
 
     var task: Moya.Task { .requestPlain }
+  }
+}
+
+extension DependencyValues {
+  var receivedFilterNetwork: ReceivedFilterNetwork {
+    get { self[ReceivedFilterNetwork.self] }
+    set { self[ReceivedFilterNetwork.self] = newValue }
   }
 }

@@ -15,10 +15,10 @@ import SSNetwork
 // MARK: - LedgerDetailEditNetwork
 
 struct LedgerDetailEditNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  func getLedgerProperty() async throws {}
+  /// 첫번쨰 인자인 LedgerID와 두번쨰 인자인 CreateAndUpdateLedgerRequestDTO를 통해 API을 요청합니다.
+  var saveLedger: @Sendable (_ id: Int64, _ body: CreateAndUpdateLedgerRequestDTO) async throws -> CreateAndUpdateLedgerResponse
 
-  func saveLedger(id: Int64, body: CreateAndUpdateLedgerRequestDTO) async throws -> CreateAndUpdateLedgerResponse {
+  @Sendable private static func _saveLedger(id: Int64, body: CreateAndUpdateLedgerRequestDTO) async throws -> CreateAndUpdateLedgerResponse {
     let data = try JSONEncoder.default.encode(body)
     return try await provider.request(.saveLedger(id: id, body: data))
   }
@@ -27,10 +27,12 @@ struct LedgerDetailEditNetwork {
 // MARK: DependencyKey
 
 extension LedgerDetailEditNetwork: DependencyKey {
-  static var liveValue: LedgerDetailEditNetwork = .init()
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static var liveValue: LedgerDetailEditNetwork = .init(
+    saveLedger: _saveLedger
+  )
 
   private enum Network: SSNetworkTargetType {
-    case getLedgerDetailProperty(id: Int64)
     case saveLedger(id: Int64, body: Data)
 
     /// SSNetworkTargetType
@@ -38,8 +40,6 @@ extension LedgerDetailEditNetwork: DependencyKey {
 
     var path: String {
       switch self {
-      case let .getLedgerDetailProperty(id):
-        "ledgers/\(id)"
       case let .saveLedger(id, _):
         "ledgers/\(id)"
       }
@@ -47,8 +47,6 @@ extension LedgerDetailEditNetwork: DependencyKey {
 
     var method: Moya.Method {
       switch self {
-      case .getLedgerDetailProperty:
-        .get
       case .saveLedger:
         .patch
       }
@@ -56,8 +54,6 @@ extension LedgerDetailEditNetwork: DependencyKey {
 
     var task: Moya.Task {
       switch self {
-      case .getLedgerDetailProperty:
-        .requestPlain
       case let .saveLedger(_, body):
         .requestData(body)
       }

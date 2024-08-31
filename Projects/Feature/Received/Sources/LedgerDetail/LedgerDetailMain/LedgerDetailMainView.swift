@@ -233,10 +233,10 @@ struct LedgerDetailMainView: View {
         store.sendViewAction(.dismissCreateEnvelope(data))
       }
     }
-    .fullScreenCover(item: $store.scope(state: \.filter, action: \.scope.filter)) { store in
+    .fullScreenCover(item: $store.scope(state: \.presentDestination?.filter, action: \.scope.presentDestination.filter)) { store in
       LedgerDetailFilterView(store: store)
     }
-    .selectableBottomSheet(store: $store.scope(state: \.sort, action: \.scope.sort), cellCount: 4)
+    .selectableBottomSheet(store: $store.scope(state: \.presentDestination?.sort, action: \.scope.presentDestination.sort), cellCount: 4)
     .navigationBarBackButtonHidden()
   }
 
