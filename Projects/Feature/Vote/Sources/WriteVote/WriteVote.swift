@@ -23,6 +23,7 @@ struct WriteVote {
     var helper: WriteVoteProperty = .init()
     /// TextFieldWithTCA Reducer.State
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
+    let type: WriteVoteType
 
     var isCreatable: Bool { helper.isCreatable }
     var mutex: TCATaskManager = .init()
@@ -39,18 +40,21 @@ struct WriteVote {
       header = .init(.init(title: "새 투표 작성", type: .depth2Default))
       isEditMode = false
       selectableItems = .init(uniqueElements: [])
+      type = .create
       helper.updateHeaderSectionItem(items: sectionHeaderItems)
       setSelectableItemsState()
     }
 
     /// EditVote State Initial Function
     init(
+      type: WriteVoteType,
       voteId: Int64,
       sectionHeaderItems: [VoteSectionHeaderItem],
       selectedHeaderItemID: Int,
       content: String,
       selectableItemsProperty: [TextFieldButtonWithTCAProperty]
     ) {
+      self.type = type
       voteID = voteId
       header = .init(.init(title: "투표 편집", type: .depth2Default))
       isEditMode = true
@@ -226,6 +230,12 @@ private extension Reducer where State == WriteVote.State, Action == WriteVote.Ac
 // MARK: - WriteVote.Constants
 
 extension WriteVote {
+  enum WriteVoteType {
+    case create
+    case editOnlyContent
+    case editAll
+  }
+
   private enum Constants {
     static let textFieldOverFlowToastMessage = "글은 200자 이내로 등록할 수 있어요!"
     static let unavailableButtonToastMessage = "시작된 투표는 보기를 편집할 수 없어요"

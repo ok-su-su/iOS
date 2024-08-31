@@ -232,13 +232,11 @@ struct VoteDetailReducer {
       return .send(.view(.showReport(true)))
 
     case .header(.tappedDoubleTextButton(.leading)):
-      let isEditable = state.voteDetailProperty?.count == 0
-      if !isEditable {
-        return .send(.scope(.toast(.onAppear(true))))
-      }
+      let isEditableAllContent = state.voteDetailProperty?.count == 0 && state.selectedVotedID == nil
       if let voteDetailProperty = state.voteDetailProperty,
          let sectionHeaderItems: [VoteSectionHeaderItem] = VoteMemoryCache.value() {
         let voteEditInitialState: WriteVote.State = .init(
+          type: isEditableAllContent ? .editAll : .editOnlyContent,
           voteId: voteDetailProperty.id,
           sectionHeaderItems: sectionHeaderItems,
           selectedHeaderItemID: Int(voteDetailProperty.board.id),
