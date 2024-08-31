@@ -189,7 +189,7 @@ struct LedgerDetailFilter {
       return .run { send in
         await send(.inner(.isLoading(true)))
         // 초기 친구 검색
-        let items = try await network.getInitialData(ledgerID: id)
+        let items = try await network.getInitialDataByLedgerID(id)
         await send(.inner(.updateItems(items)))
         await send(.inner(.isLoading(false)))
       }
@@ -199,7 +199,7 @@ struct LedgerDetailFilter {
         return .none
       }
       return .run { send in
-        let items = try await network.findFriendsBy(name: name, ledgerID: id)
+        let items = try await network.findFriendsBy(.init(name: name, ledgerID: id))
         await send(.inner(.updateItems(items)))
       }
     case .getInitialMaxPriceValue:

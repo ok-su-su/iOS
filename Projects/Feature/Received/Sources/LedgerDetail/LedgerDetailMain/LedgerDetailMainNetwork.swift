@@ -167,7 +167,7 @@ struct GetEnvelopesRequestParameter {
 }
 
 extension GetEnvelopesRequestParameter {
-  static let defaultSize = 20
+  static let defaultSize = 100
 
   func getParameter() -> [String: Any] {
     var res: [String: Any] = [:]

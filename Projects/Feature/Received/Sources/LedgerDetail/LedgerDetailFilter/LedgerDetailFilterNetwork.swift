@@ -16,9 +16,8 @@ import SSNetwork
 // MARK: - LedgerDetailFilterNetwork
 
 struct LedgerDetailFilterNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func getInitialData(ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
+  var getInitialDataByLedgerID: @Sendable (_ id: Int64) async throws -> [LedgerFilterItemProperty]
+  @Sendable private static func _getInitialDataByLedgerID(_ ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
     let param = GetEnvelopesRequestParameter(ledgerId: ledgerID, size: 150)
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
 
@@ -32,10 +31,11 @@ struct LedgerDetailFilterNetwork {
     }
   }
 
-  func findFriendsBy(name _: String, ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
-    let param = GetEnvelopesRequestParameter(ledgerId: ledgerID)
+  var findFriendsBy: @Sendable (_ param: FindFriendsRequestParam) async throws -> [LedgerFilterItemProperty]
+  @Sendable private static func _findFriendsBy(_ param: FindFriendsRequestParam) async throws -> [LedgerFilterItemProperty] {
+    // TOOD: BackEnd에 말해서 API Request Param Model 수정
+    let param = GetEnvelopesRequestParameter(ledgerId: param.ledgerID)
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
-
     return data.data.compactMap { data -> LedgerFilterItemProperty? in
       guard let id = data.friend?.id,
             let name = data.friend?.name
@@ -46,7 +46,8 @@ struct LedgerDetailFilterNetwork {
     }
   }
 
-  func getMaximumSentValue() async throws -> Int64 {
+  var getMaximumSentValue: @Sendable () async throws -> Int64
+  @Sendable private static func _getMaximumSentValue() async throws -> Int64 {
     let data: SearchFilterEnvelopeResponse = try await provider.request(.getFilterConfig)
     return data.maxReceivedAmount
   }
@@ -62,11 +63,17 @@ extension DependencyValues {
 // MARK: - LedgerDetailFilterNetwork + DependencyKey
 
 extension LedgerDetailFilterNetwork: DependencyKey {
-  static var liveValue: LedgerDetailFilterNetwork = .init()
+  static var liveValue: LedgerDetailFilterNetwork = .init(
+    getInitialDataByLedgerID: _getInitialDataByLedgerID,
+    findFriendsBy: _findFriendsBy,
+    getMaximumSentValue: _getMaximumSentValue
+  )
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case getEnvelopeFriends(GetEnvelopesRequestParameter)
     case getFilterConfig
+    case getFriends(name: String)
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
@@ -75,6 +82,8 @@ extension LedgerDetailFilterNetwork: DependencyKey {
         "envelopes"
       case .getFilterConfig:
         "envelopes/configs/search-filter"
+      case .getFriends:
+        "friends"
       }
     }
 
@@ -85,25 +94,16 @@ extension LedgerDetailFilterNetwork: DependencyKey {
         .requestPlain
       case let .getEnvelopeFriends(param):
         .requestParameters(parameters: param.getParameter(), encoding: URLEncoding(arrayEncoding: .noBrackets))
+      case let .getFriends(name):
+        .requestParameters(parameters: ["name": name], encoding: URLEncoding(arrayEncoding: .brackets))
       }
     }
   }
 }
 
-// MARK: - SearchFilterEnvelopeResponse
+// MARK: - FindFriendsRequestParam
 
-struct SearchFilterEnvelopeResponse: Decodable {
-  let minReceivedAmount: Int64
-  let maxReceivedAmount: Int64
-  let minSentAmount: Int64
-  let maxSentAmount: Int64
-  let totalAmount: Int64
-
-  enum CodingKeys: CodingKey {
-    case minReceivedAmount
-    case maxReceivedAmount
-    case minSentAmount
-    case maxSentAmount
-    case totalAmount
-  }
+struct FindFriendsRequestParam {
+  let name: String
+  let ledgerID: Int64
 }
