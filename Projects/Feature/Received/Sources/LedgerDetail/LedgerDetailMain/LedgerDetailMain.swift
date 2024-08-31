@@ -40,12 +40,13 @@ struct LedgerDetailMain {
     var envelopeItems: [EnvelopeViewForLedgerMainProperty] = []
 
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
+    @Presents var presentDestination: LedgerDetailMainPresentationDestination.State?
     @Shared var sortProperty: SortHelperForLedgerEnvelope
-    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.State?
+    ///    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.State?
     var showMessageAlert = false
 
     @Shared var filterProperty: LedgerDetailFilterProperty
-    @Presents var filter: LedgerDetailFilter.State?
+//    @Presents var filter: LedgerDetailFilter.State?
 
     var isFilteredItem: Bool {
       !filterProperty.selectedItems.isEmpty ||
@@ -93,13 +94,15 @@ struct LedgerDetailMain {
   func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .tappedFilterButton:
-      state.filter = .init(state.$filterProperty)
+      state.presentDestination = .filter(.init(state.$filterProperty))
       return .none
 
     case .tappedSortButton:
-      state.sort = .init(
-        items: state.sortProperty.defaultItems,
-        selectedItem: state.$sortProperty.selectedFilterDial
+      state.presentDestination = .sort(
+        .init(
+          items: state.sortProperty.defaultItems,
+          selectedItem: state.$sortProperty.selectedFilterDial
+        )
       )
       return .none
 
@@ -292,8 +295,9 @@ struct LedgerDetailMain {
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)
     case presentCreateEnvelope(Bool)
-    case filter(PresentationAction<LedgerDetailFilter.Action>)
-    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.Action>)
+    case presentDestination(PresentationAction<LedgerDetailMainPresentationDestination.Action>)
+//    case filter(PresentationAction<LedgerDetailFilter.Action>)
+//    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {
@@ -329,16 +333,12 @@ struct LedgerDetailMain {
       state.presentCreateEnvelope = present
       return .none
 
-    case .filter(.presented(.view(.tappedConfirmButton))):
+    case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
+      return .send(.inner(.getEnvelopesInitialPage))
+    case .presentDestination(.presented(.sort(.tapped))):
       return .send(.inner(.getEnvelopesInitialPage))
 
-    case .filter:
-      return .none
-
-    case .sort(.presented(.tapped)):
-      return .send(.inner(.getEnvelopesInitialPage))
-
-    case .sort:
+    case .presentDestination:
       return .none
     }
   }
@@ -402,11 +402,6 @@ extension LedgerDetailMain: FeatureViewAction, FeatureScopeAction, FeatureInnerA
 
 extension Reducer where State == LedgerDetailMain.State, Action == LedgerDetailMain.Action {
   func addFeatures() -> some ReducerOf<Self> {
-    ifLet(\.$filter, action: \.scope.filter) {
-      LedgerDetailFilter()
-    }
-    .ifLet(\.$sort, action: \.scope.sort) {
-      SSSelectableBottomSheetReducer()
-    }
+    ifLet(\.$presentDestination, action: \.scope.presentDestination)
   }
 }
