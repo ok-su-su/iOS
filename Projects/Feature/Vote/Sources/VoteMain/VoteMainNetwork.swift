@@ -16,8 +16,7 @@ import SSNetwork
 
 struct VoteMainNetwork {
   var getPopularItems: @Sendable () async throws -> [PopularVoteItem]
-  @Sendable
-  private static func _getPopularItems() async throws -> [PopularVoteItem] {
+  @Sendable private static func _getPopularItems() async throws -> [PopularVoteItem] {
     let datum: [VoteWithCountResponse] = try await provider.request(.getPopularItems)
     return datum.map { .init(
       id: $0.id,
@@ -31,8 +30,7 @@ struct VoteMainNetwork {
 
   var getVoteItems: @Sendable (_ param: GetVoteRequestQueryParameter?) async throws -> VoteNetworkResponse
   var getInitialVoteItems: @Sendable () async throws -> VoteNetworkResponse
-  @Sendable
-  private static func _getVoteItems(_ param: GetVoteRequestQueryParameter?) async throws -> VoteNetworkResponse {
+  @Sendable private static func _getVoteItems(_ param: GetVoteRequestQueryParameter?) async throws -> VoteNetworkResponse {
     let param = param ?? .init()
     let response: SliceResponseDtoVoteAndOptionsWithCountResponse = try await provider.request(.getVoteItems(param))
     return .init(
@@ -44,23 +42,20 @@ struct VoteMainNetwork {
   }
 
   var getVoteCategory: @Sendable () async throws -> [VoteSectionHeaderItem]
-  @Sendable
-  private static func _getVoteCategory() async throws -> [VoteSectionHeaderItem] {
+  @Sendable private static func _getVoteCategory() async throws -> [VoteSectionHeaderItem] {
     let models: [BoardModel] = try await provider.request(.getVoteConfig)
     return models.sorted { $0.seq < $1.seq }.map { $0.convertVoteSectionHeaderItem() }
   }
 
   var reportVote: @Sendable (_ boardID: Int64) async throws -> Void
-  @Sendable
-  private static func _reportVote(_ boardID: Int64) async throws {
+  @Sendable private static func _reportVote(_ boardID: Int64) async throws {
     let property = ReportCreateRequest(metadataId: 1, targetId: boardID, targetType: .post)
     let data = try JSONEncoder.default.encode(property)
     try await provider.request(.reportVote(ReportCreateRequestData: data))
   }
 
   var blockUser: @Sendable (_ userID: Int64) async throws -> Void
-  @Sendable
-  private static func _blockUser(_ userID: Int64) async throws {
+  @Sendable private static func _blockUser(_ userID: Int64) async throws {
     let property = CreateBlockRequest(targetId: userID, targetType: .user)
     let data = try JSONEncoder.default.encode(property)
     try await provider.request(.blockUser(CreateBlockRequestData: data))

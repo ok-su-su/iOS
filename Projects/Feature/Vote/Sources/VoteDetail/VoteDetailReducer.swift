@@ -38,7 +38,7 @@ struct VoteDetailReducer {
     var isRefreshVoteList: Bool = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "누군가가 투표한 게시물은 수정할 수 없어요.", trailingType: .none))
 
-    fileprivate var taskManager: TCAMutexManager = .init()
+    fileprivate var taskManager: TCATaskManager = .init()
 
     init(id: Int64) {
       self.id = id

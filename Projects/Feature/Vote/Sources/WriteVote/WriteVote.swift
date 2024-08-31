@@ -25,8 +25,8 @@ struct WriteVote {
     var selectableItems: IdentifiedArrayOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>.State>
 
     var isCreatable: Bool { helper.isCreatable }
-    var mutex: TCAMutexManager = .init()
-    var toast: SSToastReducer.State = .init(.init(toastMessage: "글은 200자 이내로 등록할 수 있어요!", trailingType: .none))
+    var mutex: TCATaskManager = .init()
+    var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
     var isEditMode: Bool
 
@@ -220,5 +220,14 @@ private extension Reducer where State == WriteVote.State, Action == WriteVote.Ac
     forEach(\.selectableItems, action: \.scope.selectableItems) {
       TextFieldButtonWithTCA()
     }
+  }
+}
+
+// MARK: - WriteVote.Constants
+
+extension WriteVote {
+  private enum Constants {
+    static let textFieldOverFlowToastMessage = "글은 200자 이내로 등록할 수 있어요!"
+    static let unavailableButtonToastMessage = "시작된 투표는 보기를 편집할 수 없어요"
   }
 }
