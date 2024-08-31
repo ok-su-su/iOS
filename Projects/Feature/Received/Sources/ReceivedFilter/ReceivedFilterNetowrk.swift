@@ -23,7 +23,7 @@ struct ReceivedFilterNetwork {
   }
 }
 
-// MARK: - ReceivedFilterNetwork + DependencyKey
+// MARK: DependencyKey
 
 extension ReceivedFilterNetwork: DependencyKey {
   private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))

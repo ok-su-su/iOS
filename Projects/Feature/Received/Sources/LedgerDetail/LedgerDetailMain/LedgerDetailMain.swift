@@ -147,7 +147,7 @@ struct LedgerDetailMain {
       let id = state.ledgerID
       return .run { send in
         await send(.inner(.isLoading(true)))
-        try await network.deleteLedger(id: id)
+        try await network.deleteLedger(id)
         await send(.inner(.isLoading(false)))
         receivedMainUpdatePublisher.deleteLedger(ledgerID: id)
         await dismiss()
@@ -253,7 +253,7 @@ struct LedgerDetailMain {
     case .getLedgerDetailProperty:
       return .run { [id = state.ledgerID] send in
         await send(.inner(.isLoading(true)))
-        let ledgerProperty = try await network.getLedgerDetail(ledgerID: id)
+        let ledgerProperty = try await network.getLedgerDetailByLedgerID(id)
         await send(.inner(.updateLedgerDetailProperty(ledgerProperty)))
         await send(.inner(.isLoading(false)))
       }
@@ -281,7 +281,7 @@ struct LedgerDetailMain {
     case let .updateEnvelope(envelopeID):
       state.isUpdateLedgerDetail = true
       return .run { send in
-        let envelope = try await network.getEnvelope(envelopeID)
+        let envelope = try await network.getEnvelopeByEnvelopeID(envelopeID)
         await send(.inner(.overwriteEnvelopes([envelope])))
         await send(.async(.getLedgerDetailProperty))
       }
