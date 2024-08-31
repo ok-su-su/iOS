@@ -15,14 +15,15 @@ import SSNetwork
 // MARK: - ReceivedMainNetwork
 
 struct ReceivedMainNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-
-  func getLedgers(_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty] {
+  var getLedgers: @Sendable (_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty]
+  @Sendable private static func _getLedgers(_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty] {
     let dto: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgers(param))
     return dto.data.map { .init($0) }
   }
 
-  func getLedger(id: Int64) async throws -> LedgerBoxProperty {
+  var getLedgerByID: @Sendable (_ id: Int64) async throws -> LedgerBoxProperty
+
+  @Sendable private static func _getLedgerByID(_ id: Int64) async throws -> LedgerBoxProperty {
     let dto: LedgerDetailResponse = try await provider.request(.searchLedger(ledgerID: id))
     return .init(ledgerDetailResponse: dto)
   }
@@ -38,7 +39,11 @@ extension DependencyValues {
 // MARK: - ReceivedMainNetwork + DependencyKey
 
 extension ReceivedMainNetwork: DependencyKey {
-  static var liveValue: ReceivedMainNetwork = .init()
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static var liveValue: ReceivedMainNetwork = .init(
+    getLedgers: _getLedgers,
+    getLedgerByID: _getLedgerByID
+  )
 
   private enum Network: SSNetworkTargetType {
     case searchLedgers(SearchLedgersRequestParameter)

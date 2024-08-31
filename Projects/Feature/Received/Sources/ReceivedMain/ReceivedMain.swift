@@ -186,14 +186,9 @@ struct ReceivedMain {
 
     case .presentDestination(.presented(.sort(.changedItem))):
       return .send(.async(.getLedgersInitialPage))
-      //    case .sort(.presented(.changedItem)):
-      //      return .send(.async(.getLedgersInitialPage))
 
     case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
       return .send(.async(.getLedgersInitialPage))
-
-      //    case .filter(.presented(.view(.tappedConfirmButton))):
-      //      return .send(.async(.getLedgersInitialPage))
 
     case .presentDestination:
       return .none
@@ -267,7 +262,7 @@ struct ReceivedMain {
 
     case let .updateLedger(id):
       return .run { send in
-        let ledgerProperty = try await network.getLedger(id: id)
+        let ledgerProperty = try await network.getLedgerByID(id)
         await send(.inner(.overwriteLedgers([ledgerProperty])))
       }
     }
