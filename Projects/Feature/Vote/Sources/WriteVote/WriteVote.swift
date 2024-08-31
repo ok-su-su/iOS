@@ -29,8 +29,6 @@ struct WriteVote {
     var mutex: TCATaskManager = .init()
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
 
-    var isEditMode: Bool
-
     /// 만약 Edit Mode일 경우 Initial 함수를 통해서 입력받습니다..
     fileprivate let voteID: Int64?
 
@@ -38,7 +36,6 @@ struct WriteVote {
     init(sectionHeaderItems: [VoteSectionHeaderItem]) {
       voteID = nil
       header = .init(.init(title: "새 투표 작성", type: .depth2Default))
-      isEditMode = false
       selectableItems = .init(uniqueElements: [])
       type = .create
       helper.updateHeaderSectionItem(items: sectionHeaderItems)
@@ -57,7 +54,6 @@ struct WriteVote {
       self.type = type
       voteID = voteId
       header = .init(.init(title: "투표 편집", type: .depth2Default))
-      isEditMode = true
       selectableItems = .init(uniqueElements: [])
       helper.updateHeaderSectionItem(items: sectionHeaderItems, selectedID: selectedHeaderItemID)
       helper.voteTextContent = content
@@ -99,6 +95,7 @@ struct WriteVote {
     case editedVoteTextContent(String)
     case tappedAddSectionItemButton
     case tappedCreateButton
+    case tappedUnavailableEditSectionItem
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -114,7 +111,7 @@ struct WriteVote {
     case let .editedVoteTextContent(text):
       state.helper.voteTextContent = text
       return ToastRegexManager.isShowToastVoteContent(text)
-        ? .send(.scope(.toast(.onAppear(true))))
+      ? .send(.scope(.toast(.showToastMessage(Constants.textFieldOverFlowToastMessage))))
         : .none
 
     case .tappedAddSectionItemButton:
@@ -123,10 +120,14 @@ struct WriteVote {
       return .none
 
     case .tappedCreateButton:
-
-      return state.isEditMode
-        ? .send(.async(.updateVote))
-        : .send(.async(.writeVote))
+      switch state.type {
+      case .create:
+          return .send(.async(.writeVote))
+      case .editOnlyContent, .editAll:
+          return .send(.async(.updateVote))
+      }
+    case .tappedUnavailableEditSectionItem:
+      return .send(.scope(.toast(.showToastMessage(Constants.unavailableButtonToastMessage))))
     }
   }
 
@@ -230,7 +231,7 @@ private extension Reducer where State == WriteVote.State, Action == WriteVote.Ac
 // MARK: - WriteVote.Constants
 
 extension WriteVote {
-  enum WriteVoteType {
+  enum WriteVoteType: Equatable {
     case create
     case editOnlyContent
     case editAll

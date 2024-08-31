@@ -67,14 +67,18 @@ struct WriteVoteView: View {
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 
-      // 글 쓰기
-      if !store.isEditMode {
-        makeCreateVoteSectionItems()
-      }
-      // 글 편집
-      else {
-        makeEditVoteSectionItems()
-      }
+      makeVoteSelectionItems() 
+    }
+  }
+
+  @ViewBuilder
+  private func makeVoteSelectionItems() -> some View {
+    switch store.type {
+    case .create,
+         .editAll:
+      makeCreateVoteSectionItems()
+    case .editOnlyContent:
+      makeEditVoteSectionItems()
     }
   }
 
@@ -119,6 +123,10 @@ struct WriteVoteView: View {
           .padding(.vertical, 12)
           .background(SSColor.orange10)
           .clipShape(RoundedRectangle(cornerRadius: 4))
+          .contentShape(Rectangle())
+          .onTapGesture {
+            store.sendViewAction(.tappedUnavailableEditSectionItem)
+          }
       }
     }
     .padding(.horizontal, 16)
