@@ -271,6 +271,15 @@
       }
     },
     {
+      "identity" : "swiftasyncmutex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MaraMincho/SwiftAsyncMutex",
+      "state" : {
+        "revision" : "bed90db219695d1660c03a8e3d9fa1e48bcc7a31",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "swiftui-navigation",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swiftui-navigation",

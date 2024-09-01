@@ -9,6 +9,7 @@ let project = Project.makeModule(
     product: .framework,
     dependencies: [
       .thirdParty(.ComposableArchitecture),
+      .thirdParty(.SwiftAsyncMutex),
     ]
   )
 )

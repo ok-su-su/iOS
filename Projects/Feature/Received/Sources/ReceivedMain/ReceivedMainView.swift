@@ -167,8 +167,8 @@ struct ReceivedMainView: View {
           .ssLoading(store.isLoading)
       } content: {
         makeLedgersView()
-      } refreshAction: {
-        store.sendViewAction(.pullRefreshButton)
+      } refreshAction: { @MainActor in
+        store.send(.view(.pullRefreshButton))
       }
     }
   }

@@ -33,6 +33,7 @@ struct SentMain {
     var isEndOfPage: Bool = false
     var isRefresh = false
 
+    var mutexManager: TCAMutexManager = .init()
     var presentCreateEnvelope = false
     @Presents var presentDestination: SentMainPresentationDestination.State?
     @Shared var sentMainProperty: SentMainProperty

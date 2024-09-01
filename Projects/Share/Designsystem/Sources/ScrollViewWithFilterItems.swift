@@ -5,7 +5,7 @@
 //  Created by MaraMincho on 7/16/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import OSLog
+import Combine
 import SwiftUI
 
 // MARK: - ScrollOffsetPreferenceKey
@@ -56,12 +56,12 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
 
   var header: Header
   var content: Content
-  var refreshAction: () -> Void
+  var refreshAction: () async -> Void
 
   public init(
     @ViewBuilder header: () -> Header,
     @ViewBuilder content: () -> Content,
-    refreshAction: @escaping () -> Void
+    refreshAction: @escaping () async -> Void
   ) {
     self.header = header()
     self.content = content()
@@ -117,30 +117,36 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       .coordinateSpace(name: "scroll")
     }
     .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-      let offsetChange = value.topValue - scrollOffset
-      defer {
-        scrollOffset = value.topValue
+      scrollAction(value)
+    }
+  }
+
+  var scrollActionPublisher: PassthroughSubject<ScrollOffsetPreferenceElement, Never> = .init()
+
+  func scrollAction(_ value: ScrollOffsetPreferenceElement) {
+    let offsetChange = value.topValue - scrollOffset
+    defer {
+      scrollOffset = value.topValue
+    }
+    if headerSize + value.topValue >= 0 {
+      showingHeader = false
+    }
+
+    if value.bottomValue > -50 || value.topValue > -50 {
+      return
+    }
+
+    // 스크롤 분기
+    if (-1 ... 1) ~= offsetChange {
+      return
+    } else if offsetChange >= 0 {
+      withAnimation {
+        showingHeader = true
       }
-      if headerSize + value.topValue >= 0 {
+
+    } else {
+      withAnimation {
         showingHeader = false
-      }
-
-      if value.bottomValue > -50 || value.topValue > -50 {
-        return
-      }
-
-      // 스크롤 분기
-      if (-1 ... 1) ~= offsetChange {
-        return
-      } else if offsetChange >= 0 {
-        withAnimation {
-          showingHeader = true
-        }
-
-      } else {
-        withAnimation {
-          showingHeader = false
-        }
       }
     }
   }
@@ -152,11 +158,14 @@ public struct ScrollViewWithFilterItems<Header: View, Content: View>: View {
       }
       makeHeaderView()
     }
+    .onReceive(
+      scrollActionPublisher.throttle(for: 0.16, scheduler: RunLoop.main, latest: false)
+    ) { value in
+      scrollAction(value)
+    }
     .refreshable {
-      DispatchQueue.main.async {
-        refreshAction()
-        showingHeader = true
-      }
+      await refreshAction()
+      showingHeader = true
     }
     .scrollIndicators(.hidden)
   }
