@@ -191,8 +191,9 @@ struct LedgerDetailMainView: View {
       } content: {
         makeEnvelopesView()
           .ssLoading(store.isLoading)
-      } refreshAction: {
-        store.sendViewAction(.pullRefreshButton)
+      } refreshAction: { @MainActor in
+        store.send(.view(.pullRefreshButton))
+        await store.mutexManager.waitForFinish()
       }
       .padding(.horizontal, 16)
       .background(SSColor.gray15)

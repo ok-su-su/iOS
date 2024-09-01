@@ -21,5 +21,6 @@ let package = Package(
     .package(url: "https://github.com/kakao/kakao-ios-sdk", exact: "2.22.0"),
     .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.4.3"),
     .package(url: "https://github.com/firebase/firebase-ios-sdk", exact: "10.29.0"),
+    .package(url: "https://github.com/MaraMincho/SwiftAsyncMutex", .upToNextMajor(from: "1.0.0")),
   ]
 )

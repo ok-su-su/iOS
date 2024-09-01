@@ -25,7 +25,6 @@ struct LedgerDetailMain {
     var ledgerID: Int64
     var ledgerProperty: LedgerDetailProperty
     var isLoading = true
-    var isRefresh = false
     var isOnAppear = false
     var presentCreateEnvelope = false
 
@@ -42,11 +41,9 @@ struct LedgerDetailMain {
     var header = HeaderViewFeature.State(.init(title: "", type: .depth2DoubleText("편집", "삭제")))
     @Presents var presentDestination: LedgerDetailMainPresentationDestination.State?
     @Shared var sortProperty: SortHelperForLedgerEnvelope
-    ///    @Presents var sort: SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.State?
-    var showMessageAlert = false
-
     @Shared var filterProperty: LedgerDetailFilterProperty
-//    @Presents var filter: LedgerDetailFilter.State?
+    var showMessageAlert = false
+    var mutexManager = TCAMutex(mutexCount: 2)
 
     var isFilteredItem: Bool {
       !filterProperty.selectedItems.isEmpty ||
@@ -111,7 +108,8 @@ struct LedgerDetailMain {
         return .none
       }
       state.isOnAppear = val
-      return .concatenate(
+      return .merge(
+        .send(.inner(.waitMutexFree)),
         .send(.async(.getLedgerDetailProperty)),
         .send(.inner(.getEnvelopesInitialPage)),
         sinkPublisher()
@@ -148,10 +146,8 @@ struct LedgerDetailMain {
     // 장부 삭제 플로우
     case .tappedDeleteLedgerButton:
       let id = state.ledgerID
-      return .run { send in
-        await send(.inner(.isLoading(true)))
+      return .run { _ in
         try await network.deleteLedger(id)
-        await send(.inner(.isLoading(false)))
         receivedMainUpdatePublisher.deleteLedger(ledgerID: id)
         await dismiss()
       }
@@ -175,11 +171,10 @@ struct LedgerDetailMain {
       return .none
 
     case .pullRefreshButton:
-      return .concatenate(
-        .send(.inner(.isRefresh(true))),
+      return .merge(
+        .send(.inner(.waitMutexFree)),
         .send(.async(.getLedgerDetailProperty)),
-        .send(.inner(.getEnvelopesInitialPage)),
-        .send(.inner(.isRefresh(false)))
+        .send(.inner(.getEnvelopesInitialPage))
       )
     }
   }
@@ -192,7 +187,7 @@ struct LedgerDetailMain {
     case getEnvelopesInitialPage
     case getEnvelopesNextPage
     case deleteEnvelope(id: Int64)
-    case isRefresh(Bool)
+    case waitMutexFree
   }
 
   func innerAction(_ state: inout State, _ action: InnerAction) -> ComposableArchitecture.Effect<Action> {
@@ -237,9 +232,11 @@ struct LedgerDetailMain {
       state.envelopeItems.removeAll(where: { $0.id == id })
       return .send(.async(.updateLedgerDetailProperty))
 
-    case let .isRefresh(val):
-      state.isRefresh = val
-      return .none
+    case .waitMutexFree:
+      return .run { [mutex = state.mutexManager] send in
+        await mutex.waitForFinish()
+        await send(.inner(.isLoading(false)))
+      }
     }
   }
 
@@ -253,16 +250,15 @@ struct LedgerDetailMain {
 
   func asyncAction(_ state: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
-    case .getLedgerDetailProperty:
-      return .run { [id = state.ledgerID] send in
-        await send(.inner(.isLoading(true)))
-        let ledgerProperty = try await network.getLedgerDetailByLedgerID(id)
-        await send(.inner(.updateLedgerDetailProperty(ledgerProperty)))
-        await send(.inner(.isLoading(false)))
-      }
     case .updateLedgerDetailProperty:
       state.isUpdateLedgerDetail = true
       return .send(.async(.getLedgerDetailProperty))
+
+    case .getLedgerDetailProperty:
+      return .runWithTCAMutex(state.mutexManager) { [id = state.ledgerID] send in
+        let ledgerProperty = try await network.getLedgerDetailByLedgerID(id)
+        await send(.inner(.updateLedgerDetailProperty(ledgerProperty)))
+      }
 
     case .getEnvelopes:
       let parameter = GetEnvelopesRequestParameter(
@@ -275,11 +271,9 @@ struct LedgerDetailMain {
       )
       state.page += 1
 
-      return .run { send in
-        await send(.inner(.isLoading(true)))
+      return .runWithTCAMutex(state.mutexManager) { send in
         let envelopes = try await network.getEnvelopes(parameter)
         await send(.inner(.updateEnvelopes(envelopes)))
-        await send(.inner(.isLoading(false)))
       }
     case let .updateEnvelope(envelopeID):
       state.isUpdateLedgerDetail = true

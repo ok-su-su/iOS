@@ -14,6 +14,7 @@ import OSLog
 import SSBottomSelectSheet
 import SSCreateEnvelope
 import SSNotification
+import SwiftAsyncMutex
 
 // MARK: - SentMain
 
@@ -33,6 +34,7 @@ struct SentMain {
     var isEndOfPage: Bool = false
     var isRefresh = false
 
+    var mutexManager: AsyncMutexManager = .init()
     var presentCreateEnvelope = false
     @Presents var presentDestination: SentMainPresentationDestination.State?
     @Shared var sentMainProperty: SentMainProperty
@@ -122,9 +124,7 @@ struct SentMain {
 
     case .pullRefreshButton:
       return .concatenate(
-        .send(.inner(.isRefresh(true))),
-        .send(.async(.updateEnvelopesByFilterInitialPage)),
-        .send(.inner(.isRefresh(false)))
+        .send(.async(.updateEnvelopesByFilterInitialPage))
       )
       .cancellable(id: CancelID.refresh, cancelInFlight: true)
     }
@@ -217,10 +217,13 @@ struct SentMain {
         page: 0,
         sort: state.sentMainProperty.selectedFilterDial ?? .latest
       )
-      return .run { send in
-        await send(.inner(.isLoading(true)))
+
+      // isLoading
+      state.isLoading = true
+      return .runWithTCAMutex(state.mutexManager) { send in
         let envelopeProperties = try await network.requestSearchFriends(urlParameter)
         await send(.inner(.updateEnvelopes(envelopeProperties)))
+      } endOperation: { send in
         await send(.inner(.isLoading(false)))
       }
 
@@ -406,4 +409,11 @@ extension SentMain: FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, F
       }
     )
   }
+
+//  @Sendable func refreshWillRun(_ state: inout State) -> Effect<Action> {
+//    Task {
+//      await state.mutexManager.willTask()
+//    }
+//    return .none
+//  }
 }
