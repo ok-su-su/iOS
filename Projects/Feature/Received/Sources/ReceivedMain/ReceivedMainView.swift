@@ -169,6 +169,7 @@ struct ReceivedMainView: View {
         makeLedgersView()
       } refreshAction: { @MainActor in
         store.send(.view(.pullRefreshButton))
+        await store.mutexManager.waitForFinish()
       }
     }
   }

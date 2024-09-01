@@ -13,6 +13,7 @@ import Foundation
 import OSLog
 import SSBottomSelectSheet
 import SSNotification
+import SwiftAsyncMutex
 
 // MARK: - ReceivedMain
 
@@ -34,6 +35,8 @@ struct ReceivedMain {
     @Presents var presentDestination: ReceivedMainPresentationDestination.State?
 
     var ledgersProperty: [LedgerBoxProperty] = []
+
+    var mutexManager = AsyncMutexManager()
 
     var isFilteredItem: Bool {
       if (!filterProperty.selectedLedgers.isEmpty) ||
@@ -96,11 +99,6 @@ struct ReceivedMain {
     case presentDestination(PresentationAction<ReceivedMainPresentationDestination.Action>)
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
-//    case search(PresentationAction<ReceivedSearch.Action>)
-//    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItem>.Action>)
-//    case filter(PresentationAction<ReceivedFilter.Action>)
-//    case detail(PresentationAction<LedgerDetailRouter.Action>)
-//    case createLedger(PresentationAction<CreateLedgerRouter.Action>)
   }
 
   enum DelegateAction: Equatable {}
@@ -159,11 +157,7 @@ struct ReceivedMain {
       return .none
 
     case .pullRefreshButton:
-      return .concatenate(
-        .send(.inner(.isRefresh(true))),
-        .send(.async(.getLedgersInitialPage)),
-        .send(.inner(.isRefresh(false)))
-      )
+      return .send(.async(.getLedgersInitialPage))
     }
   }
 
@@ -248,10 +242,11 @@ struct ReceivedMain {
         page: state.page,
         sort: state.sortProperty.selectedFilterDial ?? .latest
       )
-      return .run { send in
-        await send(.inner(.isLoading(true)))
+      state.isLoading = true
+      return .runWithTCAMutex(state.mutexManager) { send in
         let property = try await network.getLedgers(param)
         await send(.inner(.updateLedgers(property)))
+      } endOperation: { send in
         await send(.inner(.isLoading(false)))
       }
 
