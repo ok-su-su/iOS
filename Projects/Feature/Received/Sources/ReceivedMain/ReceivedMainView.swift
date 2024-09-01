@@ -164,9 +164,9 @@ struct ReceivedMainView: View {
 
       ScrollViewWithFilterItems {
         makeFilterSection()
-          .ssLoading(store.isLoading)
       } content: {
         makeLedgersView()
+          .ssLoading(store.isLoading)
       } refreshAction: { @MainActor in
         store.send(.view(.pullRefreshButton))
         await store.mutexManager.waitForFinish()
