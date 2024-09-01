@@ -156,7 +156,8 @@ struct SentMainView: View {
         makeEnvelope()
           .ssLoading(store.isLoading)
       } refreshAction: { @MainActor in
-        await store.send(.view(.pullRefreshButton)).finish()
+        store.send(.view(.pullRefreshButton))
+        await store.mutexManager.waitForFinish()
       }
       .padding(.horizontal, 16)
 

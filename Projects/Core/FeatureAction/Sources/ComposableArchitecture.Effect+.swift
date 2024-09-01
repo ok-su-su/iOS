@@ -1,5 +1,5 @@
 //
-//  Combine.Effect+.swift
+//  ComposableArchitecture.Effect+.swift
 //  FeatureAction
 //
 //  Created by MaraMincho on 8/23/24.

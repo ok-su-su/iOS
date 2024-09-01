@@ -9,4 +9,4 @@
 import Foundation
 import SwiftAsyncMutex
 
-typealias TCAMutex = AsyncMutexManager
+public typealias TCAMutex = AsyncMutexManager

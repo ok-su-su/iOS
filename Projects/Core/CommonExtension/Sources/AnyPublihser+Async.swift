@@ -10,7 +10,7 @@ import Combine
 import Foundation
 
 public extension AnyPublisher {
-  public func async() async throws -> Output {
+  func async() async throws -> Output {
     try await withCheckedThrowingContinuation { continuation in
       var cancellable: AnyCancellable?
 
