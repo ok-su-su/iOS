@@ -67,14 +67,18 @@ struct WriteVoteView: View {
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
 
-      // 글 쓰기
-      if !store.isEditMode {
-        makeCreateVoteSectionItems()
-      }
-      // 글 편집
-      else {
-        makeEditVoteSectionItems()
-      }
+      makeVoteSelectionItems()
+    }
+  }
+
+  @ViewBuilder
+  private func makeVoteSelectionItems() -> some View {
+    switch store.type {
+    case .create,
+         .editAll:
+      makeCreateVoteSectionItems()
+    case .editOnlyContent:
+      makeEditVoteSectionItems()
     }
   }
 
@@ -109,16 +113,20 @@ struct WriteVoteView: View {
   @ViewBuilder
   private func makeEditVoteSectionItems() -> some View {
     // VoteItem
-    VStack(spacing: 8) {
+    VStack(alignment: .leading, spacing: 8) {
       ForEach(store.helper.selectableItem.elements) { item in
         Text(item.title)
           .modifier(SSTypoModifier(.title_xxs))
           .foregroundStyle(SSColor.gray100)
-          .frame(maxWidth: .infinity)
+          .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .background(SSColor.orange10)
           .clipShape(RoundedRectangle(cornerRadius: 4))
+          .contentShape(Rectangle())
+          .onTapGesture {
+            store.sendViewAction(.tappedUnavailableEditSectionItem)
+          }
       }
     }
     .padding(.horizontal, 16)
@@ -130,11 +138,11 @@ struct WriteVoteView: View {
       store.sendViewAction(.tappedCreateButton)
     } label: {
       Text("등록")
-        .foregroundStyle(SSColor.gray100)
         .applySSFont(.title_xxs)
         .foregroundStyle(store.isCreatable ? SSColor.gray100 : SSColor.gray40)
         .padding(.horizontal, 16)
     }
+    .disabled(!store.isCreatable)
   }
 
   var body: some View {

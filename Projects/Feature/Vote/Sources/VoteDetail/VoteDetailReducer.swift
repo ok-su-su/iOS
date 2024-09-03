@@ -38,7 +38,7 @@ struct VoteDetailReducer {
     var isRefreshVoteList: Bool = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "누군가가 투표한 게시물은 수정할 수 없어요.", trailingType: .none))
 
-    fileprivate var taskManager: TCAMutexManager = .init()
+    fileprivate var taskManager: TCATaskManager = .init()
 
     init(id: Int64) {
       self.id = id
@@ -231,14 +231,12 @@ struct VoteDetailReducer {
     case .header(.tappedSearchButton):
       return .send(.view(.showReport(true)))
 
+    // Tapped Edit
     case .header(.tappedDoubleTextButton(.leading)):
-      let isEditable = state.voteDetailProperty?.count == 0
-      if !isEditable {
-        return .send(.scope(.toast(.onAppear(true))))
-      }
       if let voteDetailProperty = state.voteDetailProperty,
          let sectionHeaderItems: [VoteSectionHeaderItem] = VoteMemoryCache.value() {
         let voteEditInitialState: WriteVote.State = .init(
+          type: .editOnlyContent,
           voteId: voteDetailProperty.id,
           sectionHeaderItems: sectionHeaderItems,
           selectedHeaderItemID: Int(voteDetailProperty.board.id),
@@ -249,6 +247,7 @@ struct VoteDetailReducer {
       }
       return .none
 
+    // Tapped Alert
     case .header(.tappedDoubleTextButton(.trailing)):
       return .send(.view(.showDeleteAlert(true)))
 

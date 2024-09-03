@@ -1,5 +1,5 @@
 //
-//  TCAMutexManager.swift
+//  TCATaskManager.swift
 //  FeatureAction
 //
 //  Created by MaraMincho on 8/23/24.
@@ -8,9 +8,9 @@
 
 import Foundation
 
-// MARK: - TCAMutexManager
+// MARK: - TCATaskManager
 
-public struct TCAMutexManager: Equatable {
+public struct TCATaskManager: Equatable {
   private let originalTaskCount: Int
   private var taskCount: Int
   public init(taskCount: Int) {

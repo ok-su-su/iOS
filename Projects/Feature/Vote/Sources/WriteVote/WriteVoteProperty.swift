@@ -55,12 +55,11 @@ struct WriteVoteProperty: Equatable {
   var selectableItemPrompt = "선택지를 입력하세요"
 
   var isCreatable: Bool {
-    isTextFieldValid &&
-      isItemValid
+    isTextFieldValid && isItemValid
   }
 
   var isTextFieldValid: Bool { RegexManager.isValidVoteContent(voteTextContent) }
-  var isItemValid: Bool { selectableItem.filter(\.isSaved).count >= 2 }
+  var isItemValid: Bool { selectableItem.filter { $0.isSaved == true }.count >= 2 }
 
   init() {
     _selectableItem = .init(.init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
