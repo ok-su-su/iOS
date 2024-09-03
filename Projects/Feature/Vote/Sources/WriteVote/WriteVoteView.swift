@@ -64,8 +64,13 @@ struct WriteVoteView: View {
         axis: .vertical
       )
       .font(.custom(.text_xxs))
+      .lineSpacing(SSFont.text_xxs.sizeTypes.lineHeight - SSFont.text_xxs.sizeTypes.fontSize)
+      .frame(minHeight: 30) // TextField버그 때문에 minHeight 직접 지정... ㅠ_ㅠ
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
+      .getSize { val in
+        print(val.height)
+      }
 
       makeVoteSelectionItems()
     }

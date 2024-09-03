@@ -46,7 +46,7 @@ public enum SSFont {
   case text_xxxs
   case text_xxxxs
 
-  var sizeTypes: SizeTypes {
+  public var sizeTypes: SizeTypes {
     return switch self {
     case .text_xxxxl,
          .title_xxxxl
@@ -86,7 +86,7 @@ public enum SSFont {
     }
   }
 
-  var weightType: WeightType {
+  public var weightType: WeightType {
     return switch self {
     case .title_l,
          .title_m,
@@ -140,7 +140,7 @@ public enum SSFont {
 
 // MARK: - SizeTypes
 
-enum SizeTypes {
+public enum SizeTypes {
   case xxxxl
   case xxxl
   case xxl
@@ -153,7 +153,7 @@ enum SizeTypes {
   case xxxs
   case xxxxs
 
-  var lineHeight: CGFloat {
+  public var lineHeight: CGFloat {
     switch self {
     case .xxxxl:
       56
@@ -180,7 +180,7 @@ enum SizeTypes {
     }
   }
 
-  var fontSize: CGFloat {
+  public var fontSize: CGFloat {
     return switch self {
     case .xxxxl:
       40
@@ -210,7 +210,7 @@ enum SizeTypes {
 
 // MARK: - WeightType
 
-enum WeightType {
+public enum WeightType {
   case title
   case text
 }
