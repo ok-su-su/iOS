@@ -93,7 +93,7 @@ struct VoteDetailProgressView: View {
   private func makeProgressBarView(_ item: VoteDetailProgressBarProperty) -> some View {
     let isSelected = property.selectedVotedID == item.id
     ZStack(alignment: .leading) {
-      HStack(alignment: .center, spacing: 0) {
+      HStack(alignment: .center, spacing: 4) {
         // if voted, add check image
         if isSelected {
           SSImage
