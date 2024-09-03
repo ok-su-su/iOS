@@ -20,7 +20,7 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
   case vote
   case mypage
 
-  var title: String {
+  public var title: String {
     switch self {
     case .envelope:
       return "보내요"

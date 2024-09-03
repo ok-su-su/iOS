@@ -1,6 +1,7 @@
 import Combine
 import ComposableArchitecture
 import Designsystem
+import FirebaseAnalytics
 import KakaoLogin
 import MyPage
 import Onboarding
@@ -120,6 +121,7 @@ public struct ContentView: View {
           contentViewObject.type = .envelope
         }
       }
+      .analyticsScreen(name: contentViewObject.type.title)
   }
 
   @ViewBuilder
