@@ -21,22 +21,28 @@ struct VoteMainView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    ScrollView(.vertical) {
-      VStack(spacing: 0) {
-        makePopularSection()
+    ScrollViewReader { proxy in
+      ScrollView(.vertical) {
+        VStack(spacing: 0) {
+          makePopularSection()
 
-        SSColor.gray20
-          .frame(height: 8)
+          SSColor.gray20
+            .frame(height: 8)
 
-        LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
-          Section {
-            // Bottom Vote Content
-            makeBottomVoteListFilter()
-            makeVoteList()
-          } header: {
-            makeHeaderSection()
+          LazyVStack(alignment: .leading, spacing: 0, pinnedViews: [.sectionHeaders]) {
+            Section {
+              // Bottom Vote Content
+              makeBottomVoteListFilter()
+              makeVoteList()
+            } header: {
+              makeHeaderSection()
+            }
           }
+          .id("LazyVStack")
         }
+      }
+      .onChange(of: store.voteMainProperty.selectedVoteSectionItem) { _, _ in
+        proxy.scrollTo("LazyVStack", anchor: .top)
       }
     }
     .refreshable { @MainActor in
@@ -55,6 +61,7 @@ struct VoteMainView: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
+      .ssLoading(store.isItemLoading)
     }
     // // 만약 VotePreviews가 값이 없는 경우
     else {
