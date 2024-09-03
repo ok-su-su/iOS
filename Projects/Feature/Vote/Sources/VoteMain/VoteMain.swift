@@ -185,6 +185,7 @@ struct VoteMain {
     case deleteVote(Int64)
     case waitMutex
     case finishItemLoading
+    case reflectVoteCount(id: Int64, count: Int64)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
@@ -224,6 +225,12 @@ struct VoteMain {
 
     case .finishItemLoading:
       state.isItemLoading = false
+      return .none
+
+    case let .reflectVoteCount(id, count):
+      if let firstIndex = state.voteMainProperty.votePreviews.firstIndex(where: { $0.id == id }) {
+        state.voteMainProperty.votePreviews[firstIndex].participateCount += count
+      }
       return .none
     }
   }
@@ -325,8 +332,26 @@ struct VoteMain {
     case header(HeaderViewFeature.Action)
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func voteDetailPathAction(_: inout State, _ action: VotePathReducer.PublisherAction) -> Effect<Action> {
     switch action {
+    case let .updateVoteDetail(voteDetailDeferNetworkRequest):
+      let boardID = voteDetailDeferNetworkRequest.boardID
+      switch voteDetailDeferNetworkRequest.type {
+      case .just:
+        return .send(.inner(.reflectVoteCount(id: boardID, count: 1)))
+      case .cancel:
+        return .send(.inner(.reflectVoteCount(id: boardID, count: -1)))
+      case .none,
+           .overwrite:
+        return .none
+      }
+    }
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case let .votePath(.publisherAction(currentAction)):
+      return voteDetailPathAction(&state, currentAction)
     case .votePath:
       return .none
 
