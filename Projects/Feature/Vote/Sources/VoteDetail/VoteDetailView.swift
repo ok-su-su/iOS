@@ -44,7 +44,7 @@ struct VoteDetailView: View {
         TopContentWithProfileAndText(
           property: .init(
             userImage: nil,
-            userName: property.creatorProfile.name,
+            userName: Constants.defaultCreatorNickName,
             userText: property.content
           )
         )
@@ -126,6 +126,8 @@ struct VoteDetailView: View {
   private enum Metrics {}
 
   private enum Constants {
+    static let defaultCreatorNickName: String = "익명 수수"
+
     enum Report {
       static let reportAlertTitle = "해당 글을 신고할까요?"
       static let reportAlertDescription = """
