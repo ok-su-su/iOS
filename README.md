@@ -41,6 +41,17 @@
 | ETC           | Apple Login, Kakao SDK, Firebase Crashlytics, Firebase Analytics, Swift-Dependencies |
 
 
+
+
+<br/><br/>
+
+
+## Developer
+|iOS|
+|:-:|
+| <img src="https://github.com/MaraMincho.png" width=400px alt="정다함"/>|
+|[정다함](https://github.com/MaraMincho)|
+
 <br/><br/>
 
 ## Architcture
@@ -80,10 +91,4 @@
 ![Image](https://raw.githubusercontent.com/ok-su-su/iOS/Develop/graph.png)
 
 <br/><br/>
-
-## Developer
-|iOS|
-|:-:|
-| <img src="https://github.com/MaraMincho.png" width=400px alt="정다함"/>|
-|[정다함](https://github.com/MaraMincho)|
 

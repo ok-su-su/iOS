@@ -15,7 +15,7 @@ struct TopContentWithProfileAndText: View {
   var property: TopContentWithProfileAndTextProperty
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
-      HStack(alignment: .top, spacing: 8) {
+      HStack(alignment: .center, spacing: 8) {
         // Profile Image
         property
           .image

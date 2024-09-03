@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSAlert
+import SwiftAsyncMutex
 
 // MARK: - VoteMain
 
@@ -24,13 +25,14 @@ struct VoteMain {
     var voteMainProperty = VoteMainProperty()
     var isPresentReport: Bool = false
     var isLoading: Bool = true
+    var isItemLoading: Bool = true
 
     fileprivate var votePath: VotePathReducer.State = .init()
     var path: StackState<VotePathDestination.State> {
       votePath.path
     }
 
-    fileprivate var taskManager: TCAMutexManager = .init(taskCount: 3)
+    fileprivate var taskManager: AsyncMutexManager = .init(mutexCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
     fileprivate var reportTargetUserID: Int64? = nil
@@ -97,19 +99,26 @@ struct VoteMain {
         return .none
       }
       state.isOnAppear = isAppear
-      return .concatenate(
-        .send(.inner(.isLoading(true))),
+      state.isLoading = true
+      return
         .merge(
           registerVoteReducerAndPublisher(),
           .send(.async(.getPopularVoteItems)),
           .send(.async(.getInitialVoteItems)),
-          .send(.async(.getVoteHeaderSectionItems))
+          .send(.async(.getVoteHeaderSectionItems)),
+          .send(.inner(.waitMutex))
         )
-      )
 
     case let .tappedSectionItem(item):
+      if item == state.voteMainProperty.selectedVoteSectionItem {
+        return .none
+      }
       state.voteMainProperty.selectedVoteSectionItem = item
-      return .send(.async(.getInitialVoteItems))
+      state.isItemLoading = true
+      return .merge(
+        .send(.inner(.waitMutex)),
+        .send(.async(.getInitialVoteItems))
+      )
 
     case .tappedOnlyMyPostButton:
       state.voteMainProperty.onlyMineVoteFilter.toggle()
@@ -139,8 +148,9 @@ struct VoteMain {
       state.reportTargetUserID = nil
       let boardID = state.reportTargetBoardID
       state.reportTargetBoardID = nil
+      state.isLoading = true
       return .merge(
-        .send(.inner(.isLoading(true))),
+        .send(.inner(.waitMutex)),
         .send(.async(.reportVote(boardID: boardID))),
         isChecked ? .send(.async(.blockUser(userID: userID))) : .none
       )
@@ -167,20 +177,22 @@ struct VoteMain {
   }
 
   enum InnerAction: Equatable {
-    case task(SingleTaskState)
-    case taskWithReport(SingleTaskState)
     case isLoading(Bool)
     case updatePopularItems([PopularVoteItem])
     case updateVoteItems(VoteNetworkResponse)
     case overwriteVoteItems(VoteNetworkResponse)
     case updateVoteHeaderCategory([VoteSectionHeaderItem])
     case deleteVote(Int64)
+    case waitMutex
+    case finishItemLoading
+    case reflectVoteCount(id: Int64, count: Int64)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .isLoading(val):
       state.isLoading = val
+      state.isItemLoading = val
       return .none
 
     case let .updatePopularItems(popularItems):
@@ -205,31 +217,21 @@ struct VoteMain {
       state.voteMainProperty.votePreviews.removeAll(where: { $0.id == id })
       return .none
 
-    case let .task(taskState):
-      switch taskState {
-      case .willRun:
-        state.taskManager.taskWillRun()
-        return .none
-      case .didFinish:
-        state.taskManager.taskDidFinish()
-        return state.taskManager.isRunningTask() ?
-          .none :
-          .send(.inner(.isLoading(false))).debounce(id: CancelID.checkIsLoading, for: 0.2, scheduler: RunLoop.main)
+    case .waitMutex:
+      return .run { [taskManager = state.taskManager] send in
+        await taskManager.waitForFinish()
+        await send(.inner(.isLoading(false)))
       }
-    case let .taskWithReport(taskState):
-      switch taskState {
-      case .willRun:
-        state.taskManager.taskWillRun()
-        return .none
-      case .didFinish:
-        state.taskManager.taskDidFinish()
-        return state.taskManager.isRunningTask() ?
-          .none :
-          runWithVoteMutex { send in
-            await send(.async(.getInitialVoteItems))
-          }
-          .debounce(id: CancelID.report, for: 0.4, scheduler: RunLoop.main)
+
+    case .finishItemLoading:
+      state.isItemLoading = false
+      return .none
+
+    case let .reflectVoteCount(id, count):
+      if let firstIndex = state.voteMainProperty.votePreviews.firstIndex(where: { $0.id == id }) {
+        state.voteMainProperty.votePreviews[firstIndex].participateCount += count
       }
+      return .none
     }
   }
 
@@ -246,34 +248,16 @@ struct VoteMain {
 
   private func runWithVoteMutex(
     priority: TaskPriority? = nil,
+    state: inout State,
     operation: @escaping @Sendable (Send<Action>) async throws -> Void,
     catch handler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void)? = nil
   ) -> Effect<Action> {
-    let startOperation: @Sendable (Send<Action>) async throws -> Void = { send in
-      await send(.inner(.task(.willRun)))
+    let taskManager = state.taskManager
+    let startOperation: @Sendable (Send<Action>) async throws -> Void = { _ in
+      await taskManager.willTask()
     }
-    let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
-      await send(.inner(.task(.didFinish)))
-    }
-    return .runWithStartFinishAction(
-      priority: priority,
-      operation: operation,
-      startOperation: startOperation,
-      endOperation: endOperation,
-      catch: handler
-    )
-  }
-
-  private func runWithVoteReportMutex(
-    priority: TaskPriority? = nil,
-    operation: @escaping @Sendable (Send<Action>) async throws -> Void,
-    catch handler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void)? = nil
-  ) -> Effect<Action> {
-    let startOperation: @Sendable (Send<Action>) async throws -> Void = { send in
-      await send(.inner(.taskWithReport(.willRun)))
-    }
-    let endOperation: @Sendable (Send<Action>) async throws -> Void = { send in
-      await send(.inner(.taskWithReport(.didFinish)))
+    let endOperation: @Sendable (Send<Action>) async throws -> Void = { _ in
+      await taskManager.didTask()
     }
     return .runWithStartFinishAction(
       priority: priority,
@@ -291,7 +275,7 @@ struct VoteMain {
       state.hasNext = true
       let param = state.voteRequestParam
       state.currentPage = 1
-      return runWithVoteMutex { send in
+      return runWithVoteMutex(state: &state) { send in
         let response = try await network.getVoteItems(param)
         await send(.inner(.updateVoteItems(response)))
       }
@@ -302,19 +286,19 @@ struct VoteMain {
       }
       let param = state.voteRequestParam
       state.currentPage += 1
-      return runWithVoteMutex { send in
+      return runWithVoteMutex(state: &state) { send in
         let response = try await network.getVoteItems(param)
         await send(.inner(.overwriteVoteItems(response)))
       }
 
     case .getPopularVoteItems:
-      return runWithVoteMutex { send in
+      return runWithVoteMutex(state: &state) { send in
         let items = try await network.getPopularItems()
         await send(.inner(.updatePopularItems(items)))
       }
 
     case .getVoteHeaderSectionItems:
-      return runWithVoteMutex { send in
+      return runWithVoteMutex(state: &state) { send in
         let response = try await network.getVoteCategory()
         VoteMemoryCache.save(value: response)
         await send(.inner(.updateVoteHeaderCategory(response)))
@@ -323,16 +307,20 @@ struct VoteMain {
       guard let boardID else {
         return .none
       }
-      return runWithVoteReportMutex { _ in
+      return .run { [taskManager = state.taskManager] _ in
+        await taskManager.willTask()
         try await network.reportVote(boardID)
+        await taskManager.didTask()
       }
 
     case let .blockUser(userID):
       guard let userID else {
         return .none
       }
-      return runWithVoteReportMutex { _ in
+      return .run { [taskManager = state.taskManager] _ in
+        await taskManager.willTask()
         try await network.blockUser(userID)
+        await taskManager.didTask()
       }
     }
   }
@@ -344,8 +332,26 @@ struct VoteMain {
     case header(HeaderViewFeature.Action)
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func voteDetailPathAction(_: inout State, _ action: VotePathReducer.PublisherAction) -> Effect<Action> {
     switch action {
+    case let .updateVoteDetail(voteDetailDeferNetworkRequest):
+      let boardID = voteDetailDeferNetworkRequest.boardID
+      switch voteDetailDeferNetworkRequest.type {
+      case .just:
+        return .send(.inner(.reflectVoteCount(id: boardID, count: 1)))
+      case .cancel:
+        return .send(.inner(.reflectVoteCount(id: boardID, count: -1)))
+      case .none,
+           .overwrite:
+        return .none
+      }
+    }
+  }
+
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case let .votePath(.publisherAction(currentAction)):
+      return voteDetailPathAction(&state, currentAction)
     case .votePath:
       return .none
 

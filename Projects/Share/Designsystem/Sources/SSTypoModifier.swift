@@ -75,10 +75,10 @@ public struct SSTypoModifier: ViewModifier {
     let lineSpacing = designSystemFont.lineHeight - designSystemFont.sizeTypes.fontSize
     let linePadding = lineSpacing / 2
     content
-      .font(designSystemFont.font)
       .tracking(ssLetterSpacing)
       .padding(.vertical, linePadding)
       .lineSpacing(lineSpacing)
+      .font(designSystemFont.font)
   }
 }
 

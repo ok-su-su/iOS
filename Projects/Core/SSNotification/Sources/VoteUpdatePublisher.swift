@@ -42,6 +42,15 @@ public final class VoteUpdatePublisher: DependencyKey {
   public func createdVote(ID id: Int64) {
     _createdVotePublisher.send(id)
   }
+
+  private var _reflectVoteCountPublisher: PassthroughSubject<(ID: Int64, Count: Int64), Never> = .init()
+  public var reflectVoteCountPublisher: AnyPublisher<(ID: Int64, Count: Int64), Never> {
+    _reflectVoteCountPublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
+  }
+
+  public func updateVoteCount(voteID: Int64, count: Int64) {
+    _reflectVoteCountPublisher.send((voteID, count))
+  }
 }
 
 public extension DependencyValues {

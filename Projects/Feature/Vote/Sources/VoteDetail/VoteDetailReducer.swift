@@ -22,13 +22,22 @@ struct VoteDetailReducer {
   struct State: Equatable {
     var id: Int64
     var isOnAppear = false
+    /// 과어에 투표한 VoteID입니다.
     var isPrevVoteID: Int64? = nil
+    /// 현재 선택한 VoteID입니다.
     var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "", type: .depth2CustomIcon(.reportIcon)))
     var presentReportAlert: Bool = false
 
+    /// 총 참여자 수 입니다.
     var participantsCount: Int64 {
-      (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
+      let myVoteWeight = calculateWeightOfMyVote(prevVote: isPrevVoteID != nil, nowSelect: selectedVotedID != nil)
+      return (voteDetailProperty?.count ?? 0) + myVoteWeight
+//      if isPrevVoteID != nil {
+//        return voteDetailProperty?.count ?? 0
+//      } else {
+//        return (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
+//      }
     }
 
     var voteDetailProperty: VoteDetailProperty? = nil
@@ -38,7 +47,7 @@ struct VoteDetailReducer {
     var isRefreshVoteList: Bool = false
     var toast: SSToastReducer.State = .init(.init(toastMessage: "누군가가 투표한 게시물은 수정할 수 없어요.", trailingType: .none))
 
-    fileprivate var taskManager: TCAMutexManager = .init()
+    fileprivate var taskManager: TCATaskManager = .init()
 
     init(id: Int64) {
       self.id = id
@@ -231,14 +240,12 @@ struct VoteDetailReducer {
     case .header(.tappedSearchButton):
       return .send(.view(.showReport(true)))
 
+    // Tapped Edit
     case .header(.tappedDoubleTextButton(.leading)):
-      let isEditable = state.voteDetailProperty?.count == 0
-      if !isEditable {
-        return .send(.scope(.toast(.onAppear(true))))
-      }
       if let voteDetailProperty = state.voteDetailProperty,
          let sectionHeaderItems: [VoteSectionHeaderItem] = VoteMemoryCache.value() {
         let voteEditInitialState: WriteVote.State = .init(
+          type: .editOnlyContent,
           voteId: voteDetailProperty.id,
           sectionHeaderItems: sectionHeaderItems,
           selectedHeaderItemID: Int(voteDetailProperty.board.id),
@@ -249,6 +256,7 @@ struct VoteDetailReducer {
       }
       return .none
 
+    // Tapped Alert
     case .header(.tappedDoubleTextButton(.trailing)):
       return .send(.view(.showDeleteAlert(true)))
 
@@ -292,4 +300,17 @@ extension Reducer where State == VoteDetailReducer.State, Action == VoteDetailRe
 //      VoteProgressBarReducer()
 //    }
 //  }
+}
+
+private func calculateWeightOfMyVote(prevVote: Bool, nowSelect: Bool) -> Int64 {
+  switch (prevVote, nowSelect) {
+  case (true, true):
+    0
+  case (true, false):
+    -1
+  case (false, true):
+    1
+  case (false, false):
+    0
+  }
 }
