@@ -23,7 +23,7 @@ struct VoteMainView: View {
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
       VStack(spacing: 0) {
-        makeFavoriteSection()
+        makePopularSection()
 
         SSColor.gray20
           .frame(height: 8)
@@ -227,11 +227,12 @@ struct VoteMainView: View {
   }
 
   @ViewBuilder
-  private func makeFavoriteSection() -> some View {
+  private func makePopularSection() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(Constants.favoriteVoteTitleText)
         .modifier(SSTypoModifier(.title_xxs))
         .foregroundStyle(SSColor.gray100)
+        .padding(.horizontal, 16)
 
       ScrollView(.horizontal) {
         LazyHStack(spacing: 16) {
@@ -240,11 +241,12 @@ struct VoteMainView: View {
           }
         }
         .scrollTargetLayout()
+        .padding(.horizontal, 16)
       }
       .scrollTargetBehavior(.viewAligned)
       .scrollIndicators(.hidden)
     }
-    .padding(.all, 16)
+    .padding(.vertical, 16)
   }
 
   @ViewBuilder
