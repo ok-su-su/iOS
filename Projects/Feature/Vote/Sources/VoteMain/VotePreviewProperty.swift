@@ -33,7 +33,7 @@ extension VotePreviewProperty {
   }
 
   private enum Constants {
-    static let participantsSubfixString: String = "명 참여중"
+    static let participantsSubfixString: String = "명 참여"
     static let defaultParticipantsLabel: String = ""
   }
 }
