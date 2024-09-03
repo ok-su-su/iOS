@@ -22,7 +22,7 @@ struct WriteVoteView: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     ScrollView(.vertical) {
-      VStack(spacing: 0) {
+      VStack(spacing: 16) {
         makeHeaderSection()
         makeWritableVoteContent()
       }
@@ -64,8 +64,13 @@ struct WriteVoteView: View {
         axis: .vertical
       )
       .font(.custom(.text_xxs))
+      .lineSpacing(SSFont.text_xxs.sizeTypes.lineHeight - SSFont.text_xxs.sizeTypes.fontSize)
+      .frame(minHeight: 30) // TextField버그 때문에 minHeight 직접 지정... ㅠ_ㅠ
       .foregroundStyle(SSColor.gray100)
       .padding(.horizontal, 16)
+      .getSize { val in
+        print(val.height)
+      }
 
       makeVoteSelectionItems()
     }
@@ -84,25 +89,30 @@ struct WriteVoteView: View {
 
   @ViewBuilder
   private func makeCreateVoteSectionItems() -> some View {
-    // SelectableItems
-    VStack(spacing: 8) {
-      ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
-        TextFieldButtonWithTCAView(
-          size: .mh52,
-          prompt: store.helper.voteTextContentPrompt,
-          store: scopedStore
-        )
+    VStack(alignment: .center, spacing: 16) {
+      // SelectableItems
+      VStack(spacing: 8) {
+        ForEach(store.scope(state: \.selectableItems, action: \.scope.selectableItems)) { scopedStore in
+          TextFieldButtonWithTCAView(
+            size: .mh52,
+            prompt: store.helper.voteTextContentPrompt,
+            store: scopedStore
+          )
+        }
       }
+      .padding(.horizontal, 16)
+      makeAddTextFieldButtonView()
     }
-    .padding(.horizontal, 16)
+  }
 
-    // Add Button
+  /// Add Button
+  @ViewBuilder
+  private func makeAddTextFieldButtonView() -> some View {
     Button {
       store.send(.view(.tappedAddSectionItemButton))
     } label: {
       SSImage
         .commonAdd
-        .resizable()
         .frame(width: 24, height: 24)
         .padding(4)
         .background(SSColor.orange60)
