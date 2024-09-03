@@ -22,13 +22,22 @@ struct VoteDetailReducer {
   struct State: Equatable {
     var id: Int64
     var isOnAppear = false
+    /// 과어에 투표한 VoteID입니다.
     var isPrevVoteID: Int64? = nil
+    /// 현재 선택한 VoteID입니다.
     var selectedVotedID: Int64? = nil
     var header: HeaderViewFeature.State = .init(.init(title: "", type: .depth2CustomIcon(.reportIcon)))
     var presentReportAlert: Bool = false
 
+    /// 총 참여자 수 입니다.
     var participantsCount: Int64 {
-      (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
+      let myVoteWeight = calculateWeightOfMyVote(prevVote: isPrevVoteID != nil, nowSelect: selectedVotedID != nil)
+      return (voteDetailProperty?.count ?? 0) + myVoteWeight
+//      if isPrevVoteID != nil {
+//        return voteDetailProperty?.count ?? 0
+//      } else {
+//        return (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
+//      }
     }
 
     var voteDetailProperty: VoteDetailProperty? = nil
@@ -291,4 +300,17 @@ extension Reducer where State == VoteDetailReducer.State, Action == VoteDetailRe
 //      VoteProgressBarReducer()
 //    }
 //  }
+}
+
+private func calculateWeightOfMyVote(prevVote: Bool, nowSelect: Bool) -> Int64 {
+  switch (prevVote, nowSelect) {
+  case (true, true):
+    0
+  case (true, false):
+    -1
+  case (false, true):
+    1
+  case (false, false):
+    0
+  }
 }
