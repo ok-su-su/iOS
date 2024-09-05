@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 // MARK: - SentMarketingModule
 
 public enum SentMarketingModule: CustomStringConvertible, Equatable {
@@ -15,6 +16,7 @@ public enum SentMarketingModule: CustomStringConvertible, Equatable {
   case search
   case specific
   case envelope(EnvelopeMarketingModule)
+  case createEnvelope(CreateEnvelopeMarketingModule)
   public var description: String {
     switch self {
     case .main:
@@ -26,6 +28,8 @@ public enum SentMarketingModule: CustomStringConvertible, Equatable {
     case .specific:
       "인물봉투"
     case let .envelope(current):
+      current.description
+    case let .createEnvelope(current):
       current.description
     }
   }

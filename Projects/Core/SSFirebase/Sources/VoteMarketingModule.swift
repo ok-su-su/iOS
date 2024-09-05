@@ -8,8 +8,6 @@
 
 import Foundation
 
-
-
 // MARK: - VoteMarketingModule
 
 public enum VoteMarketingModule: CustomStringConvertible, Equatable {

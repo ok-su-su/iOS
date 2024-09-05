@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 // MARK: - StatisticsMarketingModule
 
 public enum StatisticsMarketingModule: CustomStringConvertible, Equatable {

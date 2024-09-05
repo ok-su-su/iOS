@@ -8,9 +8,9 @@
 import ComposableArchitecture
 import Designsystem
 import SSEnvelope
+import SSFirebase
 import SSSearch
 import SwiftUI
-import SSFirebase
 
 struct SentSearchView: View {
   // MARK: Reducer
@@ -50,10 +50,13 @@ struct SentSearchView: View {
       switch store.case {
       case let .specificEnvelopeHistoryDetail(store):
         SpecificEnvelopeDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.detail)))
       case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.specific))
       case let .specificEnvelopeHistoryEdit(store):
         SpecificEnvelopeEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.edit)))
       }
     }
   }

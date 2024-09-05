@@ -8,8 +8,8 @@
 import ComposableArchitecture
 import Designsystem
 import SSAlert
-import SwiftUI
 import SSFirebase
+import SwiftUI
 
 struct SpecificEnvelopeHistoryListView: View {
   @State private var position = 0

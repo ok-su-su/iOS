@@ -9,11 +9,11 @@
 import Foundation
 
 public enum EnvelopeMarketingModule: CustomStringConvertible, Equatable {
-  case specific
+  case detail
   case edit
   public var description: String {
     switch self {
-    case .specific:
+    case .detail:
       "봉투 상세"
     case .edit:
       "봉투 수정"
