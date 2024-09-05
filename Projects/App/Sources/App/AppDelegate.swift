@@ -17,7 +17,9 @@ class MyAppDelegate: NSObject, UIApplicationDelegate {
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     Font.registerFont()
-    FirebaseApp.configure()
+    #if !DEBUG
+      FirebaseApp.configure()
+    #endif
     return true
   }
 
