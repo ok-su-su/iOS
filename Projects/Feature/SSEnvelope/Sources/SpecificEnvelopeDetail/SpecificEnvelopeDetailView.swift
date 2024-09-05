@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import SSAlert
 import SwiftUI
+import SSFirebase
 
 public struct SpecificEnvelopeDetailView: View {
   // MARK: Reducer

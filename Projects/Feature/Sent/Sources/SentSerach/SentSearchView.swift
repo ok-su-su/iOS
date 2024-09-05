@@ -10,6 +10,7 @@ import Designsystem
 import SSEnvelope
 import SSSearch
 import SwiftUI
+import SSFirebase
 
 struct SentSearchView: View {
   // MARK: Reducer
@@ -43,6 +44,7 @@ struct SentSearchView: View {
             .padding(.horizontal, 16)
         }
       }
+      .ssAnalyticsScreen(moduleName: .Sent(.search))
 
     } destination: { store in
       switch store.case {
