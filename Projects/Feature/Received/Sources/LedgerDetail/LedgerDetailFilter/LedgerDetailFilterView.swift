@@ -52,7 +52,6 @@ struct LedgerDetailFilterView: View {
         .frame(width: 8)
 
       TextField("", text: $store.textFieldText.sending(\.view.changeTextField), prompt: Constants.prompt.foregroundStyle(SSColor.gray60))
-        .modifier(SSTypoModifier(.text_xxs))
         .frame(maxWidth: .infinity)
         .foregroundStyle(SSColor.gray100)
 
@@ -69,7 +68,7 @@ struct LedgerDetailFilterView: View {
     }
     .padding(.horizontal, 12)
     .padding(.vertical, 6)
-    .frame(maxWidth: .infinity, maxHeight: 44)
+    .frame(maxWidth: .infinity, idealHeight: 36)
     .background(SSColor.gray20)
     .clipShape(RoundedRectangle(cornerRadius: 4))
   }

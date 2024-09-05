@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 7/1/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -39,12 +40,7 @@ struct LedgerDetailFilter {
       return minimumTextValue == 0 && maximumTextValue == sliderEndValue
     }
 
-    var filterByTextField: [LedgerFilterItemProperty] {
-      guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
-        return []
-      }
-      return prevProperty.selectableItems.filter { $0.title.contains(regex) }
-    }
+    var filterByTextField: [LedgerFilterItemProperty] = []
 
     mutating func updateSliderValueProperty() {
       minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
@@ -98,6 +94,10 @@ struct LedgerDetailFilter {
 
   @Dependency(\.dismiss) var dismiss
 
+  private enum CancelID {
+    case searchTextField
+  }
+
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
@@ -123,12 +123,11 @@ struct LedgerDetailFilter {
     case let .changeTextField(text):
       state.textFieldText = text
       return .send(.async(.searchFriendsBy(name: text)))
+        .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: RunLoop.main, latest: true)
 
     case .closeButtonTapped:
-      state.property = state.prevProperty
-      return .run { _ in
-        await dismiss()
-      }
+      state.textFieldText = ""
+      return .none
 
     case .tappedConfirmButton:
       if !state.isInitialState {
@@ -157,6 +156,13 @@ struct LedgerDetailFilter {
     }
   }
 
+  private func filterItems(_ state: inout State) {
+    guard let regex: Regex = try? .init("[\\w\\p{L}]*\(state.textFieldText)[\\w\\p{L}]*") else {
+      return
+    }
+    state.filterByTextField = state.property.selectableItems.filter { $0.title.contains(regex) }
+  }
+
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .isLoading(val):
@@ -166,6 +172,7 @@ struct LedgerDetailFilter {
     case let .updateItems(items):
       let uniqueItem = (state.property.selectableItems + items).uniqued()
       state.property.selectableItems = uniqueItem
+      filterItems(&state)
       return .none
 
     case let .updateMaximumReceivedValue(price):
