@@ -290,8 +290,6 @@ struct LedgerDetailMain {
     case header(HeaderViewFeature.Action)
     case presentCreateEnvelope(Bool)
     case presentDestination(PresentationAction<LedgerDetailMainPresentationDestination.Action>)
-//    case filter(PresentationAction<LedgerDetailFilter.Action>)
-//    case sort(PresentationAction<SSSelectableBottomSheetReducer<SortDialItemForLedgerEnvelopeItem>.Action>)
   }
 
   func scopeAction(_ state: inout State, _ action: ScopeAction) -> ComposableArchitecture.Effect<Action> {

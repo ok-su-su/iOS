@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import SSEnvelope
 import SwiftUI
+import SSFirebase
 
 struct LedgerDetailRouterView: View {
   // MARK: Reducer
@@ -36,16 +37,21 @@ struct LedgerDetailRouterView: View {
         .onAppear {
           store.send(.onAppear(true))
         }
+        .ssAnalyticsScreen(moduleName: .Received(.ledger(.main)))
     } destination: { store in
       switch store.case {
       case let .main(store):
         LedgerDetailMainView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.main)))
       case let .envelopeDetail(store):
         SpecificEnvelopeDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.envelope(.detail))))
       case let .envelopeEdit(store):
         SpecificEnvelopeEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.envelope(.edit))))
       case let .edit(store):
         LedgerDetailEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.edit))
       }
     }
   }
