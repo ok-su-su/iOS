@@ -1,6 +1,6 @@
 //
 //  CreateLedgerMarketingModule.swift
-//  Designsystem
+//  SSFirebase
 //
 //  Created by MaraMincho on 9/5/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.

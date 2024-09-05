@@ -8,8 +8,8 @@
 import ComposableArchitecture
 import Designsystem
 import SSEnvelope
-import SwiftUI
 import SSFirebase
+import SwiftUI
 
 struct LedgerDetailRouterView: View {
   // MARK: Reducer
@@ -51,7 +51,7 @@ struct LedgerDetailRouterView: View {
           .ssAnalyticsScreen(moduleName: .Received(.ledger(.envelope(.edit))))
       case let .edit(store):
         LedgerDetailEditView(store: store)
-          .ssAnalyticsScreen(moduleName: .Received(.edit))
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.edit)))
       }
     }
   }
