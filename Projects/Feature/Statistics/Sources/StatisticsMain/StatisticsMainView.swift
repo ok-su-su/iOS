@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSFirebase
 import SwiftUI
 
 struct StatisticsMainView: View {
@@ -24,8 +25,10 @@ struct StatisticsMainView: View {
       switch store.helper.selectedStepperType {
       case .my:
         MyStatisticsView(store: store.scope(state: \.myStatistics, action: \.scope.myStatistics))
+          .ssAnalyticsScreen(moduleName: .Statistics(.mine))
       case .other:
         OtherStatisticsView(store: store.scope(state: \.otherStatistics, action: \.scope.otherStatistics))
+          .ssAnalyticsScreen(moduleName: .Statistics(.other))
       }
     }
   }

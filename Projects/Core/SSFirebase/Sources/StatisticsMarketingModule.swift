@@ -11,11 +11,14 @@ import Foundation
 // MARK: - StatisticsMarketingModule
 
 public enum StatisticsMarketingModule: CustomStringConvertible, Equatable {
-  case main
+  case mine
+  case other
   public var description: String {
     switch self {
-    case .main:
-      "메인"
+    case .mine:
+      "나의"
+    case .other:
+      "수수"
     }
   }
 }
