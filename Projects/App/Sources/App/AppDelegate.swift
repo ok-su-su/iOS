@@ -17,10 +17,14 @@ class MyAppDelegate: NSObject, UIApplicationDelegate {
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     Font.registerFont()
+    registerFirebase()
+    return true
+  }
+
+  func registerFirebase() {
     #if !DEBUG
       FirebaseApp.configure()
     #endif
-    return true
   }
 
   func application(
