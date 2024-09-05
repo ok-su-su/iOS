@@ -154,38 +154,4 @@ extension LedgerDetailMainNetwork: DependencyKey {
 
 // MARK: - GetEnvelopesRequestParameter
 
-struct GetEnvelopesRequestParameter {
-  var friendIds: [Int64] = []
-  var ledgerId: Int64
-  let types: String = "RECEIVED"
-  var include: [String] = []
-  var fromAmount: Int64?
-  var toAmount: Int64?
-  var page = 0
-  var size = GetEnvelopesRequestParameter.defaultSize
-  var sort: String?
-}
-
-extension GetEnvelopesRequestParameter {
-  static let defaultSize = 100
-
-  func getParameter() -> [String: Any] {
-    var res: [String: Any] = [:]
-    res["friendIds"] = friendIds
-    res["ledgerId"] = ledgerId
-    res["types"] = types
-
-    res["include"] = include.isEmpty ? ["RELATIONSHIP", "FRIEND"] : include
-    if let fromAmount {
-      res["fromAmount"] = fromAmount
-    }
-    if let toAmount {
-      res["toAmount"] = toAmount
-    }
-    res["size"] = size
-    res["page"] = page
-    res["sort"] = sort
-
-    return res
-  }
-}
+typealias GetEnvelopesRequestParameter = PageResponseDtoSearchEnvelopeRequest

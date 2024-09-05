@@ -34,7 +34,11 @@ struct LedgerDetailFilterNetwork {
   var findFriendsBy: @Sendable (_ param: FindFriendsRequestParam) async throws -> [LedgerFilterItemProperty]
   @Sendable private static func _findFriendsBy(_ param: FindFriendsRequestParam) async throws -> [LedgerFilterItemProperty] {
     // TOOD: BackEnd에 말해서 API Request Param Model 수정
-    let param = GetEnvelopesRequestParameter(ledgerId: param.ledgerID)
+    let param = GetEnvelopesRequestParameter(
+      friendName: param.name,
+      ledgerId: param.ledgerID,
+      include: [.friend]
+    )
     let data: PageResponseDtoSearchEnvelopeResponse = try await provider.request(.getEnvelopeFriends(param))
     return data.data.compactMap { data -> LedgerFilterItemProperty? in
       guard let id = data.friend?.id,
