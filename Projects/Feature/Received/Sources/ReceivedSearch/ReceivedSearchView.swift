@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSEnvelope
+import SSFirebase
 import SSSearch
 import SSToast
 import SwiftUI
@@ -56,19 +57,24 @@ struct ReceivedSearchView: View {
       .onAppear {
         store.send(.view(.onAppear(true)))
       }
+      .ssAnalyticsScreen(moduleName: .Received(.search))
     } destination: { store in
       switch store.case {
       case let .main(store):
         LedgerDetailMainView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.main)))
 
       case let .envelopeDetail(store):
         SpecificEnvelopeDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.envelope(.detail))))
 
       case let .envelopeEdit(store):
         SpecificEnvelopeEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.envelope(.edit))))
 
       case let .edit(store):
         LedgerDetailEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Received(.ledger(.edit)))
       }
     }
   }

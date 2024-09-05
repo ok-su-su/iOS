@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSAlert
+import SSFirebase
 import SwiftUI
 
 struct SpecificEnvelopeHistoryListView: View {
@@ -128,6 +129,7 @@ struct SpecificEnvelopeHistoryListView: View {
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+    .ssAnalyticsScreen(moduleName: .Sent(.specific))
   }
 
   private enum Metrics {

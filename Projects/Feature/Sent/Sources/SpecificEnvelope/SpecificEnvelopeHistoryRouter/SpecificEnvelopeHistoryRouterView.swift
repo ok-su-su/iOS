@@ -35,12 +35,15 @@ struct SpecificEnvelopeHistoryRouterView: View {
       switch store.case {
       case let .specificEnvelopeHistoryEdit(store):
         SpecificEnvelopeEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.edit)))
 
       case let .specificEnvelopeHistoryDetail(store):
         SpecificEnvelopeDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.detail)))
 
       case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.specific))
       }
     }
   }

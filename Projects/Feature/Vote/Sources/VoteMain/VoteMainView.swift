@@ -9,6 +9,7 @@ import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import SSAlert
+import SSFirebase
 import SwiftUI
 
 struct VoteMainView: View {
@@ -330,18 +331,23 @@ struct VoteMainView: View {
       switch store.case {
       case let .write(store):
         WriteVoteView(store: store)
+          .ssAnalyticsScreen(moduleName: .Vote(.write))
 
       case let .search(store):
         VoteSearchView(store: store)
+          .ssAnalyticsScreen(moduleName: .Vote(.search))
 
       case let .edit(store):
         WriteVoteView(store: store)
+          .ssAnalyticsScreen(moduleName: .Vote(.edit))
 
       case let .detail(store):
         VoteDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Vote(.detail))
 
       case let .createVoteAndPushDetail(store):
         VoteDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Vote(.detail))
       }
     }
   }
@@ -389,6 +395,7 @@ struct VoteMainView: View {
   var body: some View {
     makeVoteNavigationStackView {
       makeVoteRootView()
+        .ssAnalyticsScreen(moduleName: .Received(.main))
     }
   }
 

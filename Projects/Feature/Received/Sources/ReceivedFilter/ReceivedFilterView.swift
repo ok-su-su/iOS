@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
+import SSFirebase
 import SSLayout
 import SwiftUI
 
@@ -184,6 +185,7 @@ struct ReceivedFilterView: View {
     }
     .navigationBarBackButtonHidden()
     .showDatePicker(store: $store.scope(state: \.datePicker, action: \.scope.datePicker))
+    .ssAnalyticsScreen(moduleName: .Received(.filter))
   }
 
   private enum Constants {

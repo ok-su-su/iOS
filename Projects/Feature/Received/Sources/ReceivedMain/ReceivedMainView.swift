@@ -206,6 +206,7 @@ struct ReceivedMainView: View {
       ReceivedFilterView(store: store)
     }
     .navigationBarBackButtonHidden()
+    .ssAnalyticsScreen(moduleName: .Received(.main))
   }
 
   /// Box Size +  horizontal Spacing

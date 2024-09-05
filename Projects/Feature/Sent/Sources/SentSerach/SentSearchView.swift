@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSEnvelope
+import SSFirebase
 import SSSearch
 import SwiftUI
 
@@ -43,15 +44,19 @@ struct SentSearchView: View {
             .padding(.horizontal, 16)
         }
       }
+      .ssAnalyticsScreen(moduleName: .Sent(.search))
 
     } destination: { store in
       switch store.case {
       case let .specificEnvelopeHistoryDetail(store):
         SpecificEnvelopeDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.detail)))
       case let .specificEnvelopeHistoryList(store):
         SpecificEnvelopeHistoryListView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.specific))
       case let .specificEnvelopeHistoryEdit(store):
         SpecificEnvelopeEditView(store: store)
+          .ssAnalyticsScreen(moduleName: .Sent(.envelope(.edit)))
       }
     }
   }

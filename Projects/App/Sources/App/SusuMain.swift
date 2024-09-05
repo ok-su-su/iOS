@@ -2,6 +2,8 @@ import Designsystem
 import KakaoLogin
 import SwiftUI
 
+// MARK: - SusuApp
+
 @main
 struct SusuApp: App {
   init() {

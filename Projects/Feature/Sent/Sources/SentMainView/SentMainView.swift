@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import SSBottomSelectSheet
 import SSCreateEnvelope
+import SSFirebase
 import SwiftUI
 
 // MARK: - SentMainView
@@ -190,6 +191,7 @@ struct SentMainView: View {
       store.send(.view(.onAppear(true)))
     }
     .modifier(DestinationsModifier(store: store))
+    .ssAnalyticsScreen(moduleName: .Sent(.main))
   }
 
   private enum Constants {

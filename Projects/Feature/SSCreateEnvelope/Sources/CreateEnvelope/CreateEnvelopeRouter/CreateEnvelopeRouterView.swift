@@ -7,7 +7,12 @@
 //
 import ComposableArchitecture
 import Designsystem
+import FirebaseAnalytics
+import SSEnvelope
+import SSFirebase
 import SwiftUI
+
+// MARK: - CreateEnvelopeRouterView
 
 struct CreateEnvelopeRouterView: View {
   private var completion: (Data) -> Void
@@ -29,28 +34,39 @@ struct CreateEnvelopeRouterView: View {
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
-    } destination: { store in
-      switch store.case {
-      case let .createEnvelopePrice(store):
-        CreateEnvelopePriceView(store: store)
-      case let .createEnvelopeName(store):
-        CreateEnvelopeNameView(store: store)
-      case let .createEnvelopeRelation(store):
-        CreateEnvelopeRelationView(store: store)
-      case let .createEnvelopeEvent(store):
-        CreateEnvelopeCategoryView(store: store)
-      case let .createEnvelopeDate(store):
-        CreateEnvelopeDateView(store: store)
-      case let .createEnvelopeAdditionalSection(store):
-        CreateEnvelopeAdditionalSectionView(store: store)
-      case let .createEnvelopeAdditionalMemo(store):
-        CreateEnvelopeAdditionalMemoView(store: store)
-      case let .createEnvelopeAdditionalContact(store):
-        CreateEnvelopeAdditionalContactView(store: store)
-      case let .createEnvelopeAdditionalIsGift(store):
-        CreateEnvelopeAdditionalIsGiftView(store: store)
-      case let .createEnvelopeAdditionalIsVisitedEvent(store):
-        CreateEnvelopeAdditionalIsVisitedEventView(store: store)
+        .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .price))
+    } destination: { nextStore in
+      switch nextStore.case {
+      case let .createEnvelopePrice(childStore):
+        CreateEnvelopePriceView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .price))
+      case let .createEnvelopeName(childStore):
+        CreateEnvelopeNameView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .name))
+      case let .createEnvelopeRelation(childStore):
+        CreateEnvelopeRelationView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .relation))
+      case let .createEnvelopeEvent(childStore):
+        CreateEnvelopeCategoryView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .category))
+      case let .createEnvelopeDate(childStore):
+        CreateEnvelopeDateView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .date))
+      case let .createEnvelopeAdditionalSection(childStore):
+        CreateEnvelopeAdditionalSectionView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .additionalSection))
+      case let .createEnvelopeAdditionalMemo(childStore):
+        CreateEnvelopeAdditionalMemoView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .memo))
+      case let .createEnvelopeAdditionalContact(childStore):
+        CreateEnvelopeAdditionalContactView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .contact))
+      case let .createEnvelopeAdditionalIsGift(childStore):
+        CreateEnvelopeAdditionalIsGiftView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .gift))
+      case let .createEnvelopeAdditionalIsVisitedEvent(childStore):
+        CreateEnvelopeAdditionalIsVisitedEventView(store: childStore)
+          .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .isVisited))
       }
     }
     .onDisappear {
@@ -82,4 +98,24 @@ struct CreateEnvelopeRouterView: View {
   private enum Metrics {}
 
   private enum Constants {}
+}
+
+private extension CreateType {
+  func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
+    switch self {
+    case .received:
+      .Received(.createEnvelope(viewType))
+    case .sent:
+      .Sent(.createEnvelope(viewType))
+    }
+  }
+}
+
+private func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
+  switch createType {
+  case .sent:
+    .Sent(.createEnvelope(viewType))
+  case .received:
+    .Received(.createEnvelope(viewType))
+  }
 }

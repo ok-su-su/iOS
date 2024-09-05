@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSAlert
+import SSFirebase
 import SwiftUI
 
 public struct SpecificEnvelopeDetailView: View {

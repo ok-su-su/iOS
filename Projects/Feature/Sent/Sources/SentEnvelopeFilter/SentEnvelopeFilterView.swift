@@ -7,7 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
-import OSLog
+import SSFirebase
 import SSLayout
 import SwiftUI
 
@@ -214,6 +214,7 @@ struct SentEnvelopeFilterView: View {
     .onAppear {
       store.send(.onAppear(true))
     }
+    .ssAnalyticsScreen(moduleName: .Sent(.filter))
   }
 
   // MARK: Init

@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSFirebase
 import SwiftUI
 
 struct CreateLedgerRouterView: View {
@@ -27,6 +28,7 @@ struct CreateLedgerRouterView: View {
   private func makeContentView() -> some View {
     VStack(spacing: 0) {
       CreateLedgerCategoryView(store: store.scope(state: \.root, action: \.root))
+        .ssAnalyticsScreen(moduleName: .Received(.createLedger(.category)))
     }
     .navigationBarBackButtonHidden()
     .onAppear {
@@ -49,10 +51,13 @@ struct CreateLedgerRouterView: View {
           switch store.case {
           case let .category(store):
             CreateLedgerCategoryView(store: store)
+              .ssAnalyticsScreen(moduleName: .Received(.createLedger(.category)))
           case let .name(store):
             CreateLedgerNameView(store: store)
+              .ssAnalyticsScreen(moduleName: .Received(.createLedger(.name)))
           case let .date(store):
             CreateLedgerDateView(store: store)
+              .ssAnalyticsScreen(moduleName: .Received(.createLedger(.date)))
           }
         }
       }
