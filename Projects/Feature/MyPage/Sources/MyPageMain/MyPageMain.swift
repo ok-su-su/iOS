@@ -7,12 +7,12 @@
 //
 import AppleLogin
 import Combine
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
 import OSLog
-import SSAlert
 import SSNetwork
 import SSNotification
 import SSPersistancy
@@ -21,8 +21,6 @@ import SSPersistancy
 
 @Reducer
 struct MyPageMain {
-  var routingPublisher: PassthroughSubject<Routing, Never> = .init()
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -40,9 +38,6 @@ struct MyPageMain {
     var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
-    var showMessageAlert = false
-    var showResignAlert = false
-
     var pathState: MyPageRouterAndPathReducer.State = .init()
 
     init() {}
@@ -54,7 +49,6 @@ struct MyPageMain {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
-    case route(Routing)
   }
 
   @CasePathable
@@ -62,26 +56,144 @@ struct MyPageMain {
     case onAppear(Bool)
     case tappedFeedbackButton
     case tappedMyPageInformationSection
-    case showAlert(Bool)
-    case showResignAlert(Bool)
     case tappedLogOut
     case tappedResignButton
   }
 
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
+    switch action {
+    case .tappedFeedbackButton:
+      MyPageRouterPublisher.route(.feedBack)
+      return .none
+
+    case .tappedMyPageInformationSection:
+      let myPageInformationState = MyPageInformation.State()
+      return .send(.scope(.pathAction(.push(.myPageInfo(myPageInformationState)))))
+
+    case let .onAppear(isAppear):
+      state.isOnAppear = isAppear
+      return .merge(
+        .send(.async(.getMyInformation)),
+        .send(.scope(.pathAction(.sinkPublisher)))
+      )
+
+    case .tappedLogOut:
+      return .send(.async(.logout))
+
+    case .tappedResignButton:
+      return .send(.async(.resign))
+    }
+  }
+
   enum InnerAction: Equatable {
-    case topSection(TopPageListSection)
-    case middleSection(MiddlePageSectionType)
-    case bottomSection(BottomPageSection)
+//    case middleSection(MiddlePageSectionType)
+//    case bottomSection(BottomPageSection)
     case updateMyInformation(UserInfoResponse)
     case isLoading(Bool)
     case pushOnboarding
     case updateIsShowUpdateSUSUVersion(String?)
   }
 
+  private func handleTopSection(_: inout State, section: TopPageListSection) -> Effect<Action> {
+    switch section {
+    case .privacyPolicy:
+      MyPageRouterPublisher.route(.privacyPolicy)
+      return .none
+    }
+  }
+
+  private func handleMiddleSection(_ state: inout State, section: MiddlePageSectionType) -> Effect<Action> {
+    switch section {
+    case .appVersion:
+      if !state.isLatestVersion {
+        SSCommonRouting.openAppStore()
+      }
+      return .none
+    }
+  }
+
+  private func handleBottomSection(_: inout State, section: BottomPageSection) -> Effect<Action> {
+    switch section {
+    case .logout:
+      MyPageRouterPublisher.route(.logout)
+      return .none
+    case .resign:
+      MyPageRouterPublisher.route(.resign)
+      return .none
+    }
+  }
+
+  /// InnerAction 처리 함수
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .updateMyInformation(dto):
+      state.userInfo = dto
+      return .none
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+    case .pushOnboarding:
+      NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
+      SSTokenManager.shared.removeToken()
+      return .none
+    case let .updateIsShowUpdateSUSUVersion(version):
+      state.isLatestVersion = (version == state.currentVersionText)
+      if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
+        let subtitle = state.isLatestVersion ? state.currentVersionText : "업데이트 하기"
+        return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(subtitle)))))
+      }
+      return .none
+    }
+  }
+
   enum AsyncAction: Equatable {
     case getMyInformation
     case logout
     case resign
+  }
+
+  /// AsyncAction 처리 함수
+  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+    switch action {
+    case .getMyInformation:
+      if let info = MyPageSharedState.shared.getMyUserInfoDTO() {
+        return .send(.inner(.updateMyInformation(info)))
+      }
+      return .run { send in
+        await send(.inner(.isLoading(true)))
+        let dto = try await network.getMyInformation()
+        MyPageSharedState.shared.setUserInfoResponseDTO(dto)
+        await send(.inner(.updateMyInformation(dto)))
+        let version = try await network.getAppstoreVersion()
+        await send(.inner(.updateIsShowUpdateSUSUVersion(version)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case .logout:
+      return .run { send in
+        try? await network.logout()
+        await send(.inner(.pushOnboarding))
+      }
+
+    case .resign:
+      return .run { send in
+        do {
+          let OAuthType = SSOAuthManager.getOAuthType() ?? .KAKAO
+          switch OAuthType {
+          case .APPLE:
+            let appleIdentityToken = LoginWithApple.identityToken
+            try await network.resignWithApple(identity: appleIdentityToken)
+          case .KAKAO:
+            try await network.resign()
+          case .GOOGLE:
+            break
+          }
+        } catch {
+          os_log(.fault, "\(error.localizedDescription)")
+        }
+        await send(.inner(.pushOnboarding))
+      }
+    }
   }
 
   @CasePathable
@@ -94,18 +206,47 @@ struct MyPageMain {
     case pathAction(MyPageRouterAndPathReducer.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  /// ScopeAction 처리 함수
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .pathAction:
+      return .none
 
-  enum Routing: Equatable {
-    case myPageInformation
-    case connectedSocialAccount
-    case exportExcel
-    case privacyPolicy
-    case appVersion
-    case logout
-    case resign
-    case feedBack
+    case .header,
+         .tabBar:
+      return .none
+
+    // TopSection
+    case let .topSectionList(.element(id: id, action: .tapped)):
+      if let currentSection = TopPageListSection(rawValue: id) {
+        return handleTopSection(&state, section: currentSection)
+      }
+      return .none
+
+    case .topSectionList:
+      return .none
+
+    case let .middleSectionList(.element(id: id, action: .tapped)):
+      if let currentSection = MiddlePageSectionType(rawValue: id) {
+        return handleMiddleSection(&state, section: currentSection)
+      }
+      return .none
+
+    // MiddleSectionList
+    case .middleSectionList:
+      return .none
+    case let .bottomSectionList(.element(id: id, action: .tapped)):
+      if let currentSection = BottomPageSection(rawValue: id) {
+        return handleBottomSection(&state, section: currentSection)
+      }
+      return .none
+
+    case .bottomSectionList:
+      return .none
+    }
   }
+
+  enum DelegateAction: Equatable {}
 
   @Dependency(\.myPageMainNetwork) var network
 
@@ -122,177 +263,14 @@ struct MyPageMain {
 
     Reduce { state, action in
       switch action {
-      case .scope(.pathAction):
-        return .none
-
-      case let .view(.onAppear(isAppear)):
-        state.isOnAppear = isAppear
-        return .send(.async(.getMyInformation))
-
-      case .scope(.tabBar):
-        return .none
-
-      case .scope(.header):
-        return .none
-
-      case let .scope(.topSectionList(.element(id: id, action: .tapped))):
-        if let currentSection = TopPageListSection(rawValue: id) {
-          return .send(.inner(.topSection(currentSection)))
-        }
-        return .none
-
-      case .scope(.topSectionList):
-        return .none
-
-      // TopSection Routing
-      case let .inner(.topSection(section)):
-        switch section {
-        case .privacyPolicy:
-          MyPageRouterPublisher.route(.privacyPolicy)
-          routingPublisher.send(.privacyPolicy)
-        }
-        return .none
-
-      case let .scope(.middleSectionList(.element(id: id, action: .tapped))):
-        if let currentSection = MiddlePageSectionType(rawValue: id) {
-          return .send(.inner(.middleSection(currentSection)))
-        }
-        return .none
-
-      case .scope(.middleSectionList):
-        return .none
-
-      // Middle Section Routing
-      case let .inner(.middleSection(currentSection)):
-        switch currentSection {
-        case .appVersion: // NavigationSomeSection
-          if !state.isLatestVersion {
-            routingPublisher.send(.appVersion)
-          }
-          return .none
-        }
-
-      case let .scope(.bottomSectionList(.element(id: id, action: .tapped))):
-        if let currentSection = BottomPageSection(rawValue: id) {
-          return .send(.inner(.bottomSection(currentSection)))
-        }
-        return .none
-
-      case .scope(.bottomSectionList):
-        return .none
-
-      // BottomSection Routing
-      case let .inner(.bottomSection(currentSection)):
-        switch currentSection {
-        case .logout:
-          state.showMessageAlert = true
-          return .none
-
-        case .resign:
-          state.showResignAlert = true
-          return .none
-        }
-
-      // TODO: Routing FeedBackPage
-      case .view(.tappedFeedbackButton):
-        routingPublisher.send(.feedBack)
-        return .none
-
-      case let .route(next):
-        routingPublisher.send(next)
-        return .none
-
-      case .view(.tappedMyPageInformationSection):
-        return .send(.route(.myPageInformation))
-
-      case let .inner(.updateMyInformation(dto)):
-        state.userInfo = dto
-        return .none
-
-      case .async(.getMyInformation):
-        if let info = MyPageSharedState.shared.getMyUserInfoDTO() {
-          return .send(.inner(.updateMyInformation(info)))
-        }
-        return .run { send in
-          await send(.inner(.isLoading(true)))
-
-          // UpdateMyPageInformation
-          let dto = try await network.getMyInformation()
-          MyPageSharedState.shared.setUserInfoResponseDTO(dto)
-          await send(.inner(.updateMyInformation(dto)))
-
-          // GetAppVersion
-          let version = try await network.getAppstoreVersion()
-          await send(.inner(.updateIsShowUpdateSUSUVersion(version)))
-
-          await send(.inner(.isLoading(false)))
-        }
-
-      case let .inner(.isLoading(val)):
-        state.isLoading = val
-        return .none
-      case let .view(.showAlert(bool)):
-        state.showMessageAlert = bool
-        return .none
-
-      case .view(.tappedLogOut):
-        return .send(.async(.logout))
-
-      case .async(.logout):
-        return .run { send in
-          do {
-            try await network.logout()
-          } catch {
-            os_log(.fault, "\(error.localizedDescription)")
-          }
-          await send(.inner(.pushOnboarding))
-        }
-
-      case .async(.resign):
-        return .run { send in
-          do {
-            let OAuthType = SSOAuthManager.getOAuthType() ?? .KAKAO
-            switch OAuthType {
-            case .APPLE:
-              let appleIdentityToken = LoginWithApple.identityToken
-              try await network.resignWithApple(identity: appleIdentityToken)
-            case .KAKAO:
-              try await network.resign()
-            case .GOOGLE:
-              break
-            }
-          } catch {
-            os_log(.fault, "\(error.localizedDescription)")
-          }
-
-          await send(.inner(.pushOnboarding))
-        }
-
-      case .inner(.pushOnboarding):
-        NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
-        SSTokenManager.shared.removeToken()
-        return .none
-
-      case .view(.tappedResignButton):
-        return .send(.async(.resign))
-
-      case let .inner(.updateIsShowUpdateSUSUVersion(version)):
-        os_log("현재 앱스토어 버전: \(version?.description ?? "")")
-        state.isLatestVersion = (version == state.currentVersionText)
-        if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
-          if !state.isLatestVersion {
-            let updateString = "업데이트 하기"
-            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(updateString)))))
-          } else {
-            let currentVersionString = state.currentVersionText
-            return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(currentVersionString)))))
-          }
-        }
-        return .none
-
-      case let .view(.showResignAlert(val)):
-        state.showResignAlert = val
-        return .none
+      case let .view(currentAction):
+        return viewAction(&state, currentAction)
+      case let .scope(currentAction):
+        return scopeAction(&state, currentAction)
+      case let .async(currentAction):
+        return asyncAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
       }
     }
     .subFeatures0()

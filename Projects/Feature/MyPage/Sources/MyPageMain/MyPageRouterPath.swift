@@ -12,14 +12,11 @@ import Foundation
 // MARK: - MyPageRouterPath
 
 enum MyPageRouterPath: Equatable {
-  case myPageInformation
-  case connectedSocialAccount
-  case exportExcel
+  case feedBack
   case privacyPolicy
   case appVersion
   case logout
   case resign
-  case feedBack
 }
 
 // MARK: - MyPageNavigationPath
