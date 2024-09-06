@@ -18,6 +18,7 @@ public struct MessageAlertProperty {
   let buttonMessage: ButtonMessage
   let animationDuration: TimeInterval
   let didTapCompletionButton: (Bool) -> Void
+  let dismissWhenTappedButton: Bool
 
   /// Alert에 표시할 정보들을 모아놓은 구조체 입니다.
   /// - Parameters:
@@ -30,12 +31,14 @@ public struct MessageAlertProperty {
   ///   - animationDuration: 얼럿이 나타날 떄 에니메이션의 시간을 입력받습니다.
   ///   - didTapCompletionButton: 확인 버튼이 눌렸을 때 실행되는 Callbcak입니다.
   ///   체크박스 탭 유무에 따라서 false true로 입력받습니다. 만약 checkbox를 사용하지 않는다면 false를 인자로 전달합니다.
+  ///   - dismissWhenTappedButton: 탭했을때 저절로 Alert이 제거되는지 여부를 결정합니다.
   public init(
     titleText: String,
     contentText: String,
     checkBoxMessage: CheckBoxMessage,
     buttonMessage: ButtonMessage,
     animationDuration: TimeInterval = 0.3,
+    dismissWhenTappedButton: Bool = true,
     didTapCompletionButton: @escaping (Bool) -> Void
   ) {
     self.titleText = titleText
@@ -43,6 +46,7 @@ public struct MessageAlertProperty {
     self.checkBoxMessage = checkBoxMessage
     self.buttonMessage = buttonMessage
     self.animationDuration = animationDuration
+    self.dismissWhenTappedButton = dismissWhenTappedButton
     self.didTapCompletionButton = didTapCompletionButton
   }
 
@@ -146,7 +150,9 @@ public struct MessageAlert: View {
         frame: .init(maxWidth: .infinity)
       ),
       onTap: {
-        dismiss()
+        if messageAlertProperty.dismissWhenTappedButton {
+          dismiss()
+        }
         messageAlertProperty.didTapCompletionButton(checkedCheckBox)
       }
     )
@@ -155,6 +161,7 @@ public struct MessageAlert: View {
   @ViewBuilder
   func doubleButtonView(_ leftButtonText: String, _ rightButtonText: String) -> some View {
     HStack(spacing: 8) {
+      // Leading Button
       Button {
         dismiss()
       } label: {
@@ -166,9 +173,12 @@ public struct MessageAlert: View {
       .frame(maxWidth: .infinity, maxHeight: 40)
       .disabled(!isTouchable)
 
+      // Trailing Button
       Button {
+        if messageAlertProperty.dismissWhenTappedButton {
+          dismiss()
+        }
         messageAlertProperty.didTapCompletionButton(checkedCheckBox)
-        dismiss()
       } label: {
         Text(rightButtonText)
           .applySSFont(.title_xxs)

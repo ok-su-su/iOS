@@ -6,12 +6,14 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import Dependencies
+import Foundation
+import OSLog
 import SSInterceptor
 import SSNetwork
 import SSPersistancy
-import OSLog
+
+// MARK: - LaunchScreenTokenNetwork
 
 struct LaunchScreenTokenNetwork {
   var checkTokenValid: () async -> EndedLaunchScreenStatus
@@ -43,13 +45,15 @@ struct LaunchScreenTokenNetwork {
   }
 }
 
+// MARK: DependencyKey
+
 extension LaunchScreenTokenNetwork: DependencyKey {
   static var liveValue: LaunchScreenTokenNetwork = .init(checkTokenValid: _checkTokenValid)
 }
 
 extension DependencyValues {
   var launchScreenTokenNetwork: LaunchScreenTokenNetwork {
-    get { self[LaunchScreenTokenNetwork.self ]}
-    set { self[LaunchScreenTokenNetwork.self] = newValue}
+    get { self[LaunchScreenTokenNetwork.self] }
+    set { self[LaunchScreenTokenNetwork.self] = newValue }
   }
 }

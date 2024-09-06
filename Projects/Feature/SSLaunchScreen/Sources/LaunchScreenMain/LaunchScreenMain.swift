@@ -13,13 +13,14 @@ struct LaunchScreenMain {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-
+    var showMandatoryUpdateAlert: Bool = false
     init() {}
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
     case runTask
+    case mandatoryUpdateAlert(Bool)
   }
 
   private var routingPublisher = SSLaunchScreenBuilderRouterPublisher.shared
@@ -38,25 +39,21 @@ struct LaunchScreenMain {
 
       case .runTask:
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        return .run { _ in
+        return .run { send in
           if await launchScreenNetwork.getIsMandatoryUpdate(appVersion) {
-            
+            await send(.mandatoryUpdateAlert(true))
             return
           }
 
-          /// Token 검사
+          // Token 검사
           let taskResult = await tokenNetwork.checkTokenValid()
           routingPublisher.send(.launchTaskDidRun(taskResult))
         }
+
+      case let .mandatoryUpdateAlert(val):
+        state.showMandatoryUpdateAlert = val
+        return .none
       }
     }
-  }
-}
-
-fileprivate enum Constants {
-  enum MandatoryUpdate {
-    static let mandatoryUpdateTitle: String = "업데이트가 필요해요"
-    static let mandatoryUpdateContent: String = "새로운 버전의 수수를 다운로드해주세요"
-    static let mandatoryUpdateButtonLabel: String = "새로운 버전의 수수를 다운로드해주세요"
   }
 }
