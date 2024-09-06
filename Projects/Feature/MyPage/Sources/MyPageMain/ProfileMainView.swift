@@ -121,7 +121,24 @@ struct MyPageMainView: View {
     }
   }
 
-  var body: some View {
+  @ViewBuilder
+  private func makeNavigationStackView(
+    @ViewBuilder root: () -> some View
+  ) -> some View {
+    NavigationStack(path: $store.scope(state: \.pathState.path, action: \.scope.pathAction.path)) {
+      root()
+    } destination: { store in
+      switch store.case {
+      case let .myPageInfo(store):
+        MyPageInformationView(store: store)
+      case let .editMyPage(store):
+        MyPageEditView(store: store)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func makeMyPageRootView() -> some View {
     ZStack {
       SSColor
         .gray20
@@ -144,10 +161,16 @@ struct MyPageMainView: View {
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
-    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
+  }
+
+  var body: some View {
+    makeNavigationStackView {
+      makeMyPageRootView()
+    }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .sSAlert(
       isPresented: $store.showMessageAlert.sending(\.view.showAlert),
       messageAlertProperty: .init(

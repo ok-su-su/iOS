@@ -43,6 +43,8 @@ struct MyPageMain {
     var showMessageAlert = false
     var showResignAlert = false
 
+    var pathState: MyPageRouterAndPathReducer.State = .init()
+
     init() {}
   }
 
@@ -89,6 +91,7 @@ struct MyPageMain {
     case topSectionList(IdentifiedActionOf<MyPageMainItemListCell<TopPageListSection>>)
     case middleSectionList(IdentifiedActionOf<MyPageMainItemListCell<MiddlePageSection>>)
     case bottomSectionList(IdentifiedActionOf<MyPageMainItemListCell<BottomPageSection>>)
+    case pathAction(MyPageRouterAndPathReducer.Action)
   }
 
   enum DelegateAction: Equatable {}
@@ -113,9 +116,15 @@ struct MyPageMain {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
     }
+    Scope(state: \.pathState, action: \.scope.pathAction) {
+      MyPageRouterAndPathReducer()
+    }
 
     Reduce { state, action in
       switch action {
+      case .scope(.pathAction):
+        return .none
+
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .send(.async(.getMyInformation))
@@ -138,11 +147,8 @@ struct MyPageMain {
       // TopSection Routing
       case let .inner(.topSection(section)):
         switch section {
-//        case .connectedSocialAccount:
-//          routingPublisher.send(.connectedSocialAccount)
-//        case .exportExcel:
-//          routingPublisher.send(.exportExcel)
         case .privacyPolicy:
+          MyPageRouterPublisher.route(.privacyPolicy)
           routingPublisher.send(.privacyPolicy)
         }
         return .none

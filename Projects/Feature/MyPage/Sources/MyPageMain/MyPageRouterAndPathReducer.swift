@@ -14,6 +14,8 @@ import Foundation
 struct MyPageRouterAndPathReducer {
   struct State: Equatable {
     var path: StackState<MyPageNavigationPath.State> = .init()
+    var presentFeedBack: Bool = false
+    var presentPrivacyPolicy: Bool = false
   }
 
   enum Action: Equatable {
@@ -21,24 +23,26 @@ struct MyPageRouterAndPathReducer {
     case sinkPublisher
     case push(MyPageNavigationPath.State)
     case routing(MyPageRouterPath)
+    case presentFeedBack(Bool)
+    case presentPrivacyPolicy(Bool)
   }
 
   private func sinkPublisher() -> Effect<Action> {
     return .merge(
-      .publisher{
+      .publisher {
         MyPageRouterPublisher
           .pathPublisher
-          .map{ .push($0) }
+          .map { .push($0) }
       },
-      .publisher{
+      .publisher {
         MyPageRouterPublisher
           .routingPublisher
-          .map{ .routing($0) }
+          .map { .routing($0) }
       }
     )
   }
 
-  private func routeAction(_ state: inout State, type: MyPageRouterPath) -> Effect<Action>  {
+  private func routeAction(_ state: inout State, type: MyPageRouterPath) -> Effect<Action> {
     switch type {
     case .myPageInformation: // 제거
       return .none
@@ -50,21 +54,21 @@ struct MyPageRouterAndPathReducer {
       return .none
 
     case .privacyPolicy:
-      //TODO: -
       return .none
+      
     case .appVersion:
       return .none
 
     case .logout:
-      //TODO: showAlert -
+      // TODO: showAlert -
       return .none
-
     case .resign:
-    //TODO: Show Alert -
+      // TODO: Show Alert -
+      return .none
     case .feedBack:
-      //TODO: Show Safari
+      // TODO: Show Safari
+      return .none
     }
-    return .none
   }
 
   var body: some ReducerOf<Self> {
@@ -72,13 +76,24 @@ struct MyPageRouterAndPathReducer {
       switch action {
       case .sinkPublisher:
         return .none
+
       case .path:
         return .none
+
       case let .push(pathState):
         state.path.append(pathState)
         return .none
+
       case let .routing(routeType):
         return routeAction(&state, type: routeType)
+
+      case let .presentPrivacyPolicy(present):
+        state.presentPrivacyPolicy = present
+        return .none
+
+      case let .presentFeedBack(present):
+        state.presentFeedBack = present
+        return .none
       }
     }
     .forEach(\.path, action: \.path)

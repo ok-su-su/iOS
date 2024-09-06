@@ -26,6 +26,6 @@ enum MyPageRouterPath: Equatable {
 
 @Reducer(state: .equatable, action: .equatable)
 enum MyPageNavigationPath {
-  case myPage(MyPageInformation)
+  case myPageInfo(MyPageInformation)
   case editMyPage(MyPageEdit)
 }
