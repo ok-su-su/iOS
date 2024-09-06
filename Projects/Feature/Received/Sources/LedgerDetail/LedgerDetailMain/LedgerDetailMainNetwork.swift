@@ -78,7 +78,7 @@ struct LedgerDetailMainNetwork {
   var requestFilterItems: () async throws -> [FilterSelectableItemProperty]
   @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    var res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
+    let res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
     return res
   }
 }

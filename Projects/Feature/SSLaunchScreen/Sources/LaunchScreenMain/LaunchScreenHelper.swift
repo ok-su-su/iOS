@@ -7,15 +7,15 @@
 //
 
 import Foundation
-import OSLog
+import Dependencies
 import SSInterceptor
 import SSNetwork
 import SSPersistancy
+import OSLog
 
-struct LaunchScreenHelper {
-  init() {}
-
-  func runAppInitTask() async -> EndedLaunchScreenStatus {
+struct LaunchScreenTokenNetwork {
+  var checkTokenValid: () async -> EndedLaunchScreenStatus
+  static func _checkTokenValid() async -> EndedLaunchScreenStatus {
     // 기존 유저인지 검사합니다.
     if !SSTokenManager.shared.isToken() {
       return .newUser
@@ -37,10 +37,19 @@ struct LaunchScreenHelper {
     }
   }
 
-  private func newUserRoutine() -> EndedLaunchScreenStatus {
+  private static func newUserRoutine() -> EndedLaunchScreenStatus {
     SSTokenManager.shared.removeToken()
     return .newUser
   }
+}
 
-  private func isValidToken() async throws {}
+extension LaunchScreenTokenNetwork: DependencyKey {
+  static var liveValue: LaunchScreenTokenNetwork = .init(checkTokenValid: _checkTokenValid)
+}
+
+extension DependencyValues {
+  var launchScreenTokenNetwork: LaunchScreenTokenNetwork {
+    get { self[LaunchScreenTokenNetwork.self ]}
+    set { self[LaunchScreenTokenNetwork.self] = newValue}
+  }
 }
