@@ -8,7 +8,7 @@ let project = Project.makeModule(
     .sSLaunchScreen,
     testingOptions: [.unitTest],
     dependencies: [
-      .share(.designsystem),
+      .share(.shareLayer),
       .core(.coreLayers),
     ],
     testDependencies: []
