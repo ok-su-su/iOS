@@ -13,7 +13,6 @@ import SwiftUI
 public struct SSLaunchScreenBuilderView: View {
   @State var store: StoreOf<LaunchScreenMain> = .init(initialState: .init()) {
     LaunchScreenMain()
-      .dependency(\.launchScreenNetwork, .init(getIsMandatoryUpdate: { _ in true }))
   }
 
   public init() {}

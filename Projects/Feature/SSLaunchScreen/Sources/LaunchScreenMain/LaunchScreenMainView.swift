@@ -10,6 +10,8 @@ import Designsystem
 import SSAlert
 import SwiftUI
 
+// MARK: - LaunchScreenMainView
+
 struct LaunchScreenMainView: View {
   // MARK: Reducer
 
@@ -45,6 +47,7 @@ struct LaunchScreenMainView: View {
         buttonMessage: .singleButton(Constants.MandatoryUpdate.mandatoryUpdateButtonLabel),
         dismissWhenTappedButton: false,
         didTapCompletionButton: { _ in
+          openAppStore()
         }
       )
     )
@@ -59,4 +62,14 @@ struct LaunchScreenMainView: View {
       static let mandatoryUpdateButtonLabel: String = "새로운 버전의 수수를 다운로드해주세요"
     }
   }
+}
+
+private func openAppStore() {
+  guard let appID = Bundle.main.infoDictionary?["AppstoreAPPID"] as? String,
+        let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)"),
+        UIApplication.shared.canOpenURL(appStoreURL)
+  else {
+    return
+  }
+  UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
 }

@@ -9,6 +9,7 @@
 import Dependencies
 import Foundation
 import Moya
+import OSLog
 import SSInterceptor
 import SSNetwork
 
@@ -18,10 +19,12 @@ struct LaunchScreenNetwork {
   var getIsMandatoryUpdate: (_ version: String?) async -> Bool
   private static func _getIsMandatoryUpdate(version: String?) async -> Bool {
     guard let version else {
+      os_log("버전이 올바르지 않습니다. ")
       return false
     }
     do {
       let data: CheckApplicationVersionResponse = try await provider.request(.checkVersion(version: version))
+      os_log("현재 어플리케이션 버전 : \(version), \(data.needForceUpdate ? "강제 업데이트가 필요합니다." : "강제 업데이트가 필요하지 않습니다.") ")
       return data.needForceUpdate
     }
     // network에러 발생시 일단 false 리턴을 통해 어플리케이션을 접근할 수 있도록 함
@@ -43,7 +46,7 @@ extension LaunchScreenNetwork: DependencyKey {
 
     var path: String {
       switch self {
-      case let .checkVersion(version):
+      case .checkVersion:
         "metadata/version"
       }
     }
