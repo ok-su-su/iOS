@@ -18,11 +18,3 @@ enum MyPageRouterPath: Equatable {
   case logout
   case resign
 }
-
-// MARK: - MyPageNavigationPath
-
-@Reducer(state: .equatable, action: .equatable)
-enum MyPageNavigationPath {
-  case myPageInfo(MyPageInformation)
-  case editMyPage(MyPageEdit)
-}
