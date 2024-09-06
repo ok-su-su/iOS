@@ -13,20 +13,22 @@ struct LaunchScreenMain {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
-
+    var showMandatoryUpdateAlert: Bool = false
     init() {}
   }
 
   enum Action: Equatable {
     case onAppear(Bool)
     case runTask
+    case mandatoryUpdateAlert(Bool)
   }
 
   private var routingPublisher = SSLaunchScreenBuilderRouterPublisher.shared
-  private var helper = LaunchScreenHelper()
 
   init() {}
 
+  @Dependency(\.launchScreenNetwork) var launchScreenNetwork
+  @Dependency(\.launchScreenTokenNetwork) var tokenNetwork
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -36,10 +38,21 @@ struct LaunchScreenMain {
         return .send(.runTask)
 
       case .runTask:
-        return .run { [helper, routingPublisher] _ in
-          let taskResult = await helper.runAppInitTask()
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        return .run { send in
+          if await launchScreenNetwork.getIsMandatoryUpdate(appVersion) {
+            await send(.mandatoryUpdateAlert(true))
+            return
+          }
+
+          // Token 검사
+          let taskResult = await tokenNetwork.checkTokenValid()
           routingPublisher.send(.launchTaskDidRun(taskResult))
         }
+
+      case let .mandatoryUpdateAlert(val):
+        state.showMandatoryUpdateAlert = val
+        return .none
       }
     }
   }
