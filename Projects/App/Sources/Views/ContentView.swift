@@ -103,7 +103,7 @@ public struct ContentView: View {
     .envelope: AnyView(SentBuilderView()),
     .received: AnyView(ReceivedBuilderView()),
     .vote: AnyView(VoteBuilder()),
-    .mypage: AnyView(ProfileNavigationView().ignoresSafeArea()),
+    .mypage: AnyView(MyPageBuilderView()),
     .statistics: AnyView(StatisticsBuilderView()),
   ]
 

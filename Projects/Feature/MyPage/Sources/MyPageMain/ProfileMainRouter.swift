@@ -37,8 +37,10 @@ final class MyPageMainRouter: UIHostingController<MyPageMainView> {
           self?.navigationController?.pushViewController(MyPageInformationRouter(), animated: true)
         case .connectedSocialAccount:
           return
+
         case .exportExcel:
           return
+
         case .privacyPolicy:
           guard let urlString = Constants.privateURLString,
                 let url = URL(string: urlString)
