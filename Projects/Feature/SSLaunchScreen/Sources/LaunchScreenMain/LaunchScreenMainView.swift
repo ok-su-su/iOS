@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import SSAlert
@@ -47,7 +48,7 @@ struct LaunchScreenMainView: View {
         buttonMessage: .singleButton(Constants.MandatoryUpdate.mandatoryUpdateButtonLabel),
         dismissWhenTappedButton: false,
         didTapCompletionButton: { _ in
-          openAppStore()
+          SSCommonRouting.openAppStore()
         }
       )
     )
@@ -59,17 +60,7 @@ struct LaunchScreenMainView: View {
     enum MandatoryUpdate {
       static let mandatoryUpdateTitle: String = "업데이트가 필요해요"
       static let mandatoryUpdateContent: String = "새로운 버전의 수수를 다운로드해주세요"
-      static let mandatoryUpdateButtonLabel: String = "새로운 버전의 수수를 다운로드해주세요"
+      static let mandatoryUpdateButtonLabel: String = "스토어로 이동하기"
     }
   }
-}
-
-private func openAppStore() {
-  guard let appID = Bundle.main.infoDictionary?["AppstoreAPPID"] as? String,
-        let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)"),
-        UIApplication.shared.canOpenURL(appStoreURL)
-  else {
-    return
-  }
-  UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
 }
