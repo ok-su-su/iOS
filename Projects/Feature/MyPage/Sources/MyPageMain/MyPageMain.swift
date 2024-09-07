@@ -165,7 +165,7 @@ struct MyPageMain {
           switch OAuthType {
           case .APPLE:
             let appleIdentityToken = LoginWithApple.identityToken
-            try await network.resignWithApple(identity: appleIdentityToken)
+            try await network.resignWithApple(appleIdentityToken)
           case .KAKAO:
             try await network.resign()
           case .GOOGLE:

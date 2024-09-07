@@ -53,7 +53,7 @@ struct MyPageMainNetwork {
     return currentVersion
   }
 
-  var _resignWithApple: (_ identity: String?) async throws -> Void
+  var resignWithApple: (_ identity: String?) async throws -> Void
   private static func _resignWithApple(identity: String?) async throws {
     guard let identity else {
       throw NSError(domain: "No apple IdentityToken its fatal error", code: 30)
@@ -78,7 +78,7 @@ extension MyPageMainNetwork: DependencyKey {
     logout: _logout,
     resign: _resign,
     getAppstoreVersion: _getAppstoreVersion,
-    _resignWithApple: _resignWithApple
+    resignWithApple: _resignWithApple
   )
 
   private enum AppstoreNetwork: TargetType {
