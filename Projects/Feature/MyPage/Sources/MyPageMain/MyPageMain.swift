@@ -86,30 +86,10 @@ struct MyPageMain {
   }
 
   enum InnerAction: Equatable {
-//    case middleSection(MiddlePageSectionType)
-//    case bottomSection(BottomPageSection)
     case updateMyInformation(UserInfoResponse)
     case isLoading(Bool)
     case pushOnboarding
     case updateIsShowUpdateSUSUVersion(String?)
-  }
-
-  private func handleTopSection(_: inout State, section: TopPageListSection) -> Effect<Action> {
-    switch section {
-    case .privacyPolicy:
-      MyPageRouterPublisher.route(.privacyPolicy)
-      return .none
-    }
-  }
-
-  private func handleMiddleSection(_ state: inout State, section: MiddlePageSectionType) -> Effect<Action> {
-    switch section {
-    case .appVersion:
-      if !state.isLatestVersion {
-        SSCommonRouting.openAppStore()
-      }
-      return .none
-    }
   }
 
   private func handleBottomSection(_: inout State, section: BottomPageSection) -> Effect<Action> {
@@ -129,13 +109,16 @@ struct MyPageMain {
     case let .updateMyInformation(dto):
       state.userInfo = dto
       return .none
+
     case let .isLoading(val):
       state.isLoading = val
       return .none
+
     case .pushOnboarding:
       NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
       SSTokenManager.shared.removeToken()
       return .none
+
     case let .updateIsShowUpdateSUSUVersion(version):
       state.isLatestVersion = (version == state.currentVersionText)
       if let appVersionStateID = state.middleSectionList.first(where: { $0.property.type == .appVersion })?.id {
@@ -153,14 +136,14 @@ struct MyPageMain {
   }
 
   /// AsyncAction 처리 함수
-  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getMyInformation:
       if let info = MyPageSharedState.shared.getMyUserInfoDTO() {
         return .send(.inner(.updateMyInformation(info)))
       }
+      state.isLoading = true
       return .run { send in
-        await send(.inner(.isLoading(true)))
         let dto = try await network.getMyInformation()
         MyPageSharedState.shared.setUserInfoResponseDTO(dto)
         await send(.inner(.updateMyInformation(dto)))
@@ -288,89 +271,22 @@ extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
   }
 }
 
-// MARK: MyPageMain.TopPageListSection
-
 extension MyPageMain {
-  enum TopPageListSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    ///    case connectedSocialAccount = 0
-    ///        case exportExcel
-    case privacyPolicy
-
-    var id: Int {
-      return rawValue
+  private func handleTopSection(_: inout State, section: TopPageListSection) -> Effect<Action> {
+    switch section {
+    case .privacyPolicy:
+      MyPageRouterPublisher.route(.privacyPolicy)
+      return .none
     }
-
-    var title: String {
-      switch self {
-//      case .connectedSocialAccount:
-//        "연결된 소셜 계정"
-//      case .exportExcel:
-//        "엑셀 파일 내보내기"
-      case .privacyPolicy:
-        "개인정보 처리 방침"
-      }
-    }
-
-    var subTitle: String? { nil }
   }
 
-  enum BottomPageSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-    case logout
-    case resign
-
-    var id: Int {
-      return rawValue
-    }
-
-    var title: String {
-      switch self {
-      case .logout:
-        "로그아웃"
-      case .resign:
-        "탈퇴하기"
-      }
-    }
-
-    var subTitle: String? { nil }
-  }
-}
-
-// MARK: - MiddlePageSection
-
-struct MiddlePageSection: Identifiable, Equatable, MyPageMainItemListCellItemable {
-  var id: Int { type.id }
-  var title: String { type.title }
-  var subTitle: String?
-  let type: MiddlePageSectionType
-
-  init(type: MiddlePageSectionType, subTitle: String) {
-    self.type = type
-    self.subTitle = subTitle
-  }
-
-  mutating func updateSubtitle(_ val: String) {
-    subTitle = val
-  }
-}
-
-extension MiddlePageSection {
-  static var `default`: [Self] {
-    [
-      .init(type: .appVersion, subTitle: ""),
-    ]
-  }
-}
-
-// MARK: - MiddlePageSectionType
-
-enum MiddlePageSectionType: Int {
-  case appVersion = 0
-  var title: String {
-    switch self {
+  private func handleMiddleSection(_ state: inout State, section: MiddlePageSectionType) -> Effect<Action> {
+    switch section {
     case .appVersion:
-      "앱 버전"
+      if !state.isLatestVersion {
+        SSCommonRouting.openAppStore()
+      }
+      return .none
     }
   }
-
-  var id: Int { rawValue }
 }
