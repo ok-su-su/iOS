@@ -1,5 +1,5 @@
 //
-//  MyPageRouterPublisher.swift
+//  MyPageRouterAndPathPublisher.swift
 //  MyPage
 //
 //  Created by MaraMincho on 9/6/24.
@@ -9,8 +9,8 @@
 import Combine
 import Foundation
 
-final class MyPageRouterPublisher {
-  private static var shared = MyPageRouterPublisher()
+final class MyPageRouterAndPathPublisher {
+  private static var shared = MyPageRouterAndPathPublisher()
   private init() {}
   private var _pathPublisher: PassthroughSubject<MyPageNavigationPath.State, Never> = .init()
   static var pathPublisher: AnyPublisher<MyPageNavigationPath.State, Never> {

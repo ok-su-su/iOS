@@ -39,12 +39,12 @@ struct MyPageRouterAndPathReducer {
   private func sinkPublisher() -> Effect<Action> {
     return .merge(
       .publisher {
-        MyPageRouterPublisher
+        MyPageRouterAndPathPublisher
           .pathPublisher
           .map { .push($0) }
       },
       .publisher {
-        MyPageRouterPublisher
+        MyPageRouterAndPathPublisher
           .routingPublisher
           .map { .routing($0) }
       }

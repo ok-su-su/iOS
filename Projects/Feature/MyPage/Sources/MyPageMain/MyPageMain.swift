@@ -63,7 +63,7 @@ struct MyPageMain {
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case .tappedFeedbackButton:
-      MyPageRouterPublisher.route(.feedBack)
+      MyPageRouterAndPathPublisher.route(.feedBack)
       return .none
 
     case .tappedMyPageInformationSection:
@@ -95,10 +95,10 @@ struct MyPageMain {
   private func handleBottomSection(_: inout State, section: BottomPageSection) -> Effect<Action> {
     switch section {
     case .logout:
-      MyPageRouterPublisher.route(.logout)
+      MyPageRouterAndPathPublisher.route(.logout)
       return .none
     case .resign:
-      MyPageRouterPublisher.route(.resign)
+      MyPageRouterAndPathPublisher.route(.resign)
       return .none
     }
   }
@@ -275,7 +275,7 @@ extension MyPageMain {
   private func handleTopSection(_: inout State, section: TopPageListSection) -> Effect<Action> {
     switch section {
     case .privacyPolicy:
-      MyPageRouterPublisher.route(.privacyPolicy)
+      MyPageRouterAndPathPublisher.route(.privacyPolicy)
       return .none
     }
   }
