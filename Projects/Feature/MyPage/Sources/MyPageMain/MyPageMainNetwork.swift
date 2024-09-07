@@ -15,28 +15,33 @@ import SSNetwork
 
 // MARK: - MyPageMainNetwork
 
-final class MyPageMainNetwork {
-  private let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  private let networkProvider = MoyaProvider<AppstoreNetwork>()
+struct MyPageMainNetwork {
+  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private static let appStoreNetworkProvider = MoyaProvider<AppstoreNetwork>()
 
-  func getMyInformation() async throws -> UserInfoResponse {
+  var getMyInformation: () async throws -> UserInfoResponse
+  private static func _getMyInformation() async throws -> UserInfoResponse {
     return try await provider.request(.myPageInformation)
   }
 
-  func updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponse {
+  var updateUserInformation: (_ userID: Int64, _ body: UpdateUserProfileRequestBody) async throws -> UserInfoResponse
+  private static func _updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponse {
     return try await provider.request(.updateMyProfile(userID: userID, body: requestBody))
   }
 
-  func logout() async throws {
+  var logout: () async throws -> Void
+  private static func _logout() async throws {
     try await provider.request(.logout)
   }
 
-  func resign() async throws {
+  var resign: () async throws -> Void
+  private static func _resign() async throws {
     try await provider.request(.withdraw)
   }
 
-  func getAppstoreVersion() async throws -> String? {
-    let data = try await networkProvider.request(.getSUSUAppstoreVersion)
+  var getAppstoreVersion: () async throws -> String?
+  private static func _getAppstoreVersion() async throws -> String? {
+    let data = try await appStoreNetworkProvider.request(.getSUSUAppstoreVersion)
     let jsonObject = try JSONSerialization.jsonObject(with: data)
     guard let json = jsonObject as? [String: Any],
           let results = json["results"] as? [[String: Any]],
@@ -48,7 +53,8 @@ final class MyPageMainNetwork {
     return currentVersion
   }
 
-  func resignWithApple(identity: String?) async throws {
+  var resignWithApple: (_ identity: String?) async throws -> Void
+  private static func _resignWithApple(identity: String?) async throws {
     guard let identity else {
       throw NSError(domain: "No apple IdentityToken its fatal error", code: 30)
     }
@@ -66,7 +72,14 @@ extension DependencyValues {
 // MARK: - MyPageMainNetwork + DependencyKey
 
 extension MyPageMainNetwork: DependencyKey {
-  static var liveValue: MyPageMainNetwork = .init()
+  static var liveValue: MyPageMainNetwork = .init(
+    getMyInformation: _getMyInformation,
+    updateUserInformation: _updateUserInformation,
+    logout: _logout,
+    resign: _resign,
+    getAppstoreVersion: _getAppstoreVersion,
+    resignWithApple: _resignWithApple
+  )
 
   private enum AppstoreNetwork: TargetType {
     case getSUSUAppstoreVersion

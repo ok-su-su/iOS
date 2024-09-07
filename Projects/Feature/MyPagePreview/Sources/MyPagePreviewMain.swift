@@ -20,7 +20,7 @@ struct MyPagePreviewMain: App {
 
   var body: some Scene {
     WindowGroup {
-      ProfileNavigationView()
+      MyPageBuilderView()
         .ignoresSafeArea()
     }
   }

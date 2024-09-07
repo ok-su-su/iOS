@@ -229,7 +229,7 @@ struct MyPageEdit {
           birth: birth
         )
         return .run { [id = state.userInfo.id] send in
-          let dto = try await network.updateUserInformation(userID: id, requestBody: requestBody)
+          let dto = try await network.updateUserInformation(id, requestBody)
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await send(.route(.dismiss))
         }
