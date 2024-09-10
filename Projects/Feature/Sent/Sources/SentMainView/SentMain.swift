@@ -409,11 +409,4 @@ extension SentMain: FeatureViewAction, FeatureAsyncAction, FeatureInnerAction, F
       }
     )
   }
-
-//  @Sendable func refreshWillRun(_ state: inout State) -> Effect<Action> {
-//    Task {
-//      await state.mutexManager.willTask()
-//    }
-//    return .none
-//  }
 }

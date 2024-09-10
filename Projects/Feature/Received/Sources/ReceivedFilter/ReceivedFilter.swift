@@ -137,12 +137,12 @@ struct ReceivedFilter {
     case getSelectableItems
   }
 
-  func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
+  func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getSelectableItems:
+      state.isLoading = true
       return .run { send in
-        await send(.inner(.isLoading(true)))
-        let items = try await network.requestFilterItems().filter { $0.isMiscCategory == false }
+        let items = try await network.requestFilterItems().filter { $0.isCustom == false }
         await send(.inner(.updateSelectableItems(items)))
         await send(.inner(.isLoading(false)))
       }

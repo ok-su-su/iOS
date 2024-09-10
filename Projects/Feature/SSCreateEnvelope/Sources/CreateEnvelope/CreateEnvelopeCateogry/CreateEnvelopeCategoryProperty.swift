@@ -57,13 +57,11 @@ struct CreateEnvelopeCategoryPropertyHelper: Equatable {
     return nil
   }
 
-  /// 마지막에는 기타 Item이 와야 합니다. 기타 Item을 자동으로 없애줍니다.
   mutating func updateItems(_ items: [CreateEnvelopeCategoryProperty]) {
-    let customItem = items.first(where: { $0.isMiscCategory })
-    let items = items.filter { $0.isMiscCategory == false }
+    let customItem = items.first(where: { $0.isCustom })
+    let defaultItems = items.filter { $0.isCustom == false }
 
-    // TODO: API로직 바꿔달라고 말 하기
-    defaultEvent = items
+    defaultEvent = defaultItems
     customEvent = customItem
   }
 

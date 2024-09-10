@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Foundation
 
@@ -38,7 +39,7 @@ struct LaunchScreenMain {
         return .send(.runTask)
 
       case .runTask:
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let appVersion = InfoPlistConstants.appVersion
         return .run { send in
           if await launchScreenNetwork.getIsMandatoryUpdate(appVersion) {
             await send(.mandatoryUpdateAlert(true))

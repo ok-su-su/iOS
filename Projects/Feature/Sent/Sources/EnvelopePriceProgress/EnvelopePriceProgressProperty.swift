@@ -35,8 +35,4 @@ struct EnvelopePriceProgressProperty: Equatable {
   var trailingPriceText: String {
     return CustomNumberFormatter.formattedByThreeZero(trailingPriceValue, subFixString: "원") ?? ""
   }
-
-  static func makeFakeData() -> Self {
-    EnvelopePriceProgressProperty(leadingPriceValue: 1500, trailingPriceValue: 50000)
-  }
 }
