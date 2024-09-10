@@ -36,7 +36,7 @@ public struct CategoryModel: Identifiable, Codable, Equatable {
     case isMiscCategory
   }
 
-  init(id: Int, seq: Int, name: String, style: String, isActive: Bool, isCustom: Bool, isMiscCategory: Bool) {
+  public init(id: Int, seq: Int, name: String, style: String, isActive: Bool, isCustom: Bool, isMiscCategory: Bool) {
     self.id = id
     self.seq = seq
     self.name = name
