@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Foundation
+import CommonExtension
 
 @Reducer
 struct LaunchScreenMain {
@@ -38,7 +39,7 @@ struct LaunchScreenMain {
         return .send(.runTask)
 
       case .runTask:
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let appVersion = InfoPlistConstants.appVersion
         return .run { send in
           if await launchScreenNetwork.getIsMandatoryUpdate(appVersion) {
             await send(.mandatoryUpdateAlert(true))
