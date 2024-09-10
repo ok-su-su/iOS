@@ -32,17 +32,20 @@ struct EnvelopeNetwork {
 
   var getSpecificEnvelopeHistoryEditHelperBy: @Sendable (_ envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper
   @Sendable private static func _getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
-    let (events, relations) = try await getCategoryAndRelationItem()
+    let (responseEvents, responseRelations) = try await getCategoryAndRelationItem()
+    let events = responseEvents.sorted{$0.seq < $1.seq }
+    let relations = responseRelations.sorted{$0.id < $1.id}
+
     let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
     let envelopeProperty = envelopeDetailResponse.convertToEnvelopeDetailLProperty()
 
-    guard var customCategoryItem = events.first(where: { $0.isMiscCategory }),
-          var customRelationItem = relations.first(where: { $0.id == 5 }) // TODO: 서버쪽 질의를 통한 로직 변경
+    guard var customCategoryItem = events.first(where: { $0.isCustom }),
+          var customRelationItem = relations.first(where: { $0.isCustom })
     else {
       throw NSError(domain: "", code: 3)
     }
-    let targetCategoryItems = events.filter { $0.isMiscCategory == false }
-    let targetRelationItems = relations.filter { $0.id != 5 }
+    let targetCategoryItems = events.filter { $0.isCustom == false }
+    let targetRelationItems = relations.filter { $0.isCustom == false }
 
     customCategoryItem.title = envelopeDetailResponse.category.customCategory ?? ""
     customRelationItem.title = envelopeDetailResponse.friendRelationship.customRelation ?? ""
