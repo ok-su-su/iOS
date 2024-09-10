@@ -5,9 +5,9 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Foundation
-import CommonExtension
 
 @Reducer
 struct LaunchScreenMain {

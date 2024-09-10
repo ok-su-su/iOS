@@ -17,16 +17,20 @@ public struct RelationshipModel: Codable, Equatable, Identifiable {
   public var relation: String
   /// 관계 설명
   public let description: String?
+  /// 커스텀 모델의 여부
+  public let isCustom: Bool
 
   enum CodingKeys: String, CodingKey {
     case id
     case relation
     case description
+    case isCustom
   }
 
-  public init(id: Int, relation: String, description: String?) {
+  public init(id: Int, relation: String, description: String?, isCustom: Bool) {
     self.id = id
     self.relation = relation
     self.description = description
+    self.isCustom = isCustom
   }
 }

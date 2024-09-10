@@ -1,5 +1,5 @@
 //
-//  InfoplistConstatns.swift
+//  InfoPlistConstants.swift
 //  CommonExtension
 //
 //  Created by MaraMincho on 9/10/24.
