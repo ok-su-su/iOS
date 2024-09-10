@@ -78,7 +78,9 @@ public struct SpecificEnvelopeEditView: View {
   private func makeSubContents() -> some View {
     VStack(spacing: 0) {
       // Section
-      makeEventEditableSection()
+      if store.isShowCategory {
+        makeEventEditableSection()
+      }
 
       // name
       makeNameEditableSection()

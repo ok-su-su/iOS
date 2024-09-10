@@ -26,8 +26,10 @@ public struct SpecificEnvelopeDetailReducer {
     var envelopeDetailProperty: EnvelopeDetailProperty
     var envelopeID: Int64
     var isUpdateEnvelope: Bool = false
-    public init(envelopeID: Int64) {
+    let isShowCategory: Bool
+    public init(envelopeID: Int64, isShowCategory: Bool = true) {
       self.envelopeID = envelopeID
+      self.isShowCategory = isShowCategory
       envelopeDetailProperty = .init(
         id: -1, type: "", price: 0, eventName: "", eventID: 0, friendID: 0, name: "", relation: "", relationID: 0, date: .now, isVisited: false
       )

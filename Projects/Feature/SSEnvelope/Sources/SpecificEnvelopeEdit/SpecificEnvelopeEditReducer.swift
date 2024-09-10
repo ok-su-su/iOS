@@ -30,8 +30,10 @@ public struct SpecificEnvelopeEditReducer {
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isLoading = false
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State? = nil
+    let isShowCategory: Bool
 
-    init(editHelper: SpecificEnvelopeEditHelper) {
+    init(editHelper: SpecificEnvelopeEditHelper, isShowCategory: Bool = true) {
+      self.isShowCategory = isShowCategory
       _editHelper = .init(editHelper)
       let initialVisited: VisitedSelectButtonItem? =
         if let isVisited = editHelper.envelopeDetailProperty.isVisited {
@@ -53,10 +55,10 @@ public struct SpecificEnvelopeEditReducer {
       )
     }
 
-    public init(envelopeID: Int64) async throws {
+    public init(envelopeID: Int64, isShowCategory: Bool = true) async throws {
       let network = EnvelopeNetwork.liveValue
       let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID)
-      self.init(editHelper: helper)
+      self.init(editHelper: helper, isShowCategory: isShowCategory)
     }
 
     var isValidToSave: Bool {

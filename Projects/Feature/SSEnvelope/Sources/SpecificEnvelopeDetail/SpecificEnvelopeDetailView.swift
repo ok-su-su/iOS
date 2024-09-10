@@ -37,7 +37,7 @@ public struct SpecificEnvelopeDetailView: View {
 
         ScrollView(showsIndicators: false) {
           LazyVStack(spacing: 0) {
-            let listViewContent = store.envelopeDetailProperty.makeListContent
+            let listViewContent = store.envelopeDetailProperty.makeListContent(isShowCategory: store.isShowCategory)
             ForEach(0 ..< listViewContent.count, id: \.self) { ind in
               let (title, description) = listViewContent[ind]
               makeListView(title: title, description: description)

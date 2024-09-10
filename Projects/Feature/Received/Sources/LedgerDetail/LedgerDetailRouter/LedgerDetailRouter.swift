@@ -57,7 +57,7 @@ struct LedgerDetailRouter {
     switch action {
     case let .tappedEnvelopeEditButton(property):
       return .run { [id = property.id] _ in
-        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id, isShowCategory: false)
         LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
       }
     }

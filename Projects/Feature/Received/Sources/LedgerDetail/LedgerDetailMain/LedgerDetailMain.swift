@@ -167,7 +167,7 @@ struct LedgerDetailMain {
       return .none
 
     case let .tappedEnvelope(id):
-      LedgerDetailRouterPublisher.send(.envelopeDetail(.init(envelopeID: id)))
+      LedgerDetailRouterPublisher.send(.envelopeDetail(.init(envelopeID: id, isShowCategory: false)))
       return .none
 
     case .pullRefreshButton:
