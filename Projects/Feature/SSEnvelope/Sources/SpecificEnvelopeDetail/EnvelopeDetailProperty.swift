@@ -64,12 +64,16 @@ public struct EnvelopeDetailProperty: Equatable, Identifiable {
   var contactTitle = "연락처"
   var memoTitle = "메모"
 
-  var makeListContent: [(String, String)] { [
-    (eventNameTitle, eventName),
-    (nameTitle, name),
-    (relationTitle, relation),
-    (dateTitle, dateText),
-  ] + makeOptionalListContent() }
+  func makeListContent(isShowCategory: Bool) -> [(String, String)] {
+    var res = isShowCategory ? [(eventNameTitle, eventName)] : []
+    res.append(contentsOf: [
+      (nameTitle, name),
+      (relationTitle, relation),
+      (dateTitle, dateText),
+    ])
+    res.append(contentsOf: makeOptionalListContent())
+    return res
+  }
 
   func makeOptionalListContent() -> [(String, String)] {
     var res: [(String, String)] = []

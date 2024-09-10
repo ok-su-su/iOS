@@ -36,7 +36,10 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
 
     var isValid: Bool { editProperty.isValid }
 
-    init(ledgerProperty: LedgerDetailProperty, ledgerDetailEditProperty: LedgerDetailEditProperty) {
+    init(
+      ledgerProperty: LedgerDetailProperty,
+      ledgerDetailEditProperty: LedgerDetailEditProperty
+    ) {
       self.ledgerProperty = ledgerProperty
       _editProperty = .init(ledgerDetailEditProperty)
       categorySection = .init(
