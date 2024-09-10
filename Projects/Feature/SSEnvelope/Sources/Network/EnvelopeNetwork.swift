@@ -33,8 +33,8 @@ struct EnvelopeNetwork {
   var getSpecificEnvelopeHistoryEditHelperBy: @Sendable (_ envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper
   @Sendable private static func _getSpecificEnvelopeHistoryEditHelperBy(envelopeID: Int64) async throws -> SpecificEnvelopeEditHelper {
     let (responseEvents, responseRelations) = try await getCategoryAndRelationItem()
-    let events = responseEvents.sorted{$0.seq < $1.seq }
-    let relations = responseRelations.sorted{$0.id < $1.id}
+    let events = responseEvents.sorted { $0.seq < $1.seq }
+    let relations = responseRelations.sorted { $0.id < $1.id }
 
     let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
     let envelopeProperty = envelopeDetailResponse.convertToEnvelopeDetailLProperty()

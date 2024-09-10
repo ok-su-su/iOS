@@ -74,13 +74,6 @@ struct LedgerDetailMainNetwork {
       amount: data.envelope.amount
     )
   }
-
-  var requestFilterItems: () async throws -> [FilterSelectableItemProperty]
-  @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
-    let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    let res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
-    return res
-  }
 }
 
 // MARK: DependencyKey
@@ -91,8 +84,7 @@ extension LedgerDetailMainNetwork: DependencyKey {
     deleteLedger: _deleteLedger,
     getCategories: _getCategories,
     getEnvelopes: _getEnvelopes,
-    getEnvelopeByEnvelopeID: _getEnvelopeByEnvelopeID,
-    requestFilterItems: _requestFilterItems
+    getEnvelopeByEnvelopeID: _getEnvelopeByEnvelopeID
   )
   private enum Network: SSNetworkTargetType {
     case searchEnvelope(GetEnvelopesRequestParameter)

@@ -308,20 +308,5 @@ extension ReceivedMain {
 extension Reducer where State == ReceivedMain.State, Action == ReceivedMain.Action {
   func addFeatures() -> some ReducerOf<Self> {
     ifLet(\.$presentDestination, action: \.scope.presentDestination)
-//    ifLet(\.$search, action: \.scope.search) {
-//      ReceivedSearch()
-//    }
-//    .ifLet(\.$sort, action: \.scope.sort) {
-//      SSSelectableBottomSheetReducer()
-//    }
-//    .ifLet(\.$filter, action: \.scope.filter) {
-//      ReceivedFilter()
-//    }
-//    .ifLet(\.$detail, action: \.scope.detail) {
-//      LedgerDetailRouter()
-//    }
-    //    ifLet(\.$createLedger, action: \.scope.createLedger) {
-    //      CreateLedgerRouter()
-    //    }
   }
 }
