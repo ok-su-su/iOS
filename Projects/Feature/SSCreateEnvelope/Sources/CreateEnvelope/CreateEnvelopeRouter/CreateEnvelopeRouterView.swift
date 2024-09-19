@@ -100,7 +100,7 @@ struct CreateEnvelopeRouterView: View {
 }
 
 private extension CreateType {
-  func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
+  func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
     switch self {
     case .received:
       .Received(.createEnvelope(viewType))
@@ -110,7 +110,7 @@ private extension CreateType {
   }
 }
 
-private func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
+private func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
   switch createType {
   case .sent:
     .Sent(.createEnvelope(viewType))

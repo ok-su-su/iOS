@@ -1,27 +1,15 @@
 //
-//  SSFireBase.swift
+//  MarketiongModule.swift
 //  SSFirebase
 //
-//  Created by MaraMincho on 9/5/24.
+//  Created by MaraMincho on 9/19/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import FirebaseAnalytics
-import SwiftUI
-
-public extension View {
-  func ssAnalyticsScreen(
-    moduleName name: MarketingModules,
-    class: String = "View",
-    extraParameters: [String: Any] = [:]
-  ) -> some View {
-    analyticsScreen(name: name.description, class: `class`, extraParameters: extraParameters)
-  }
-}
-
+import Foundation
 // MARK: - MarketingModules
 
-public enum MarketingModules: CustomStringConvertible, Equatable {
+public enum MarketingModulesMain: CustomStringConvertible, Equatable {
   case Onboarding(OnboardingMarketingModule)
   case Sent(SentMarketingModule)
   case Received(ReceivedMarketingModule)
