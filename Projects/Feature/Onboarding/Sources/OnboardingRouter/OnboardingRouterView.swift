@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSFirebase
 import SwiftUI
 
 struct OnboardingRouterView: View {
@@ -32,16 +33,22 @@ struct OnboardingRouterView: View {
       switch store.case {
       case let .vote(store):
         OnboardingVoteView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.initialVote))
       case let .login(store):
         OnboardingLoginView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.login))
       case let .terms(store):
         AgreeToTermsAndConditionsView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.agreeToTerms))
       case let .termDetail(store):
         TermsAndConditionDetailView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.termDetail))
       case let .registerName(store):
         OnboardingRegisterNameView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.registerName))
       case let .additional(store):
         OnboardingAdditionalView(store: store)
+          .ssAnalyticsScreen(moduleName: .Onboarding(.additional))
       }
     }
     .navigationViewStyle(.stack)

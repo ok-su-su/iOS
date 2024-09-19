@@ -22,6 +22,7 @@ public extension View {
 // MARK: - MarketingModules
 
 public enum MarketingModules: CustomStringConvertible, Equatable {
+  case Onboarding(OnboardingMarketingModule)
   case Sent(SentMarketingModule)
   case Received(ReceivedMarketingModule)
   case Statistics(StatisticsMarketingModule)
@@ -30,16 +31,42 @@ public enum MarketingModules: CustomStringConvertible, Equatable {
 
   public var description: String {
     switch self {
-    case let .Sent(subModule):
-      "보내요 / \(subModule.description) 화면"
-    case let .Received(subModule):
-      "받아요 / \(subModule.description) 화면"
-    case let .Statistics(subModule):
-      "통계 / \(subModule.description) 화면"
-    case let .Vote(subModule):
-      "투표 / \(subModule.description) 화면"
-    case let .MyPage(subModule):
-      "투표 / \(subModule.description) 화면"
+    case let .Onboarding(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
+    case let .Sent(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
+    case let .Received(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
+    case let .Statistics(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
+    case let .Vote(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
+    case let .MyPage(view):
+      Self.descriptionMaker(moduleName: moduleName, viewName: view.description)
     }
+  }
+
+  var moduleName: String {
+    switch self {
+    case .Onboarding:
+      "온보딩"
+    case .Sent:
+      "보내요"
+    case .Received:
+      "받아요"
+    case .Statistics:
+      "통계"
+    case .Vote:
+      "투표"
+    case .MyPage:
+      "마이페이지"
+    }
+  }
+
+  private static func descriptionMaker(moduleName: String, viewName: String) -> String {
+    let loggerIdentifier = "iOS Application"
+    let viewName = viewName + "화면"
+    let forJoinString = " / "
+    return [loggerIdentifier, moduleName, viewName].joined(separator: forJoinString)
   }
 }
