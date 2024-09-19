@@ -206,7 +206,7 @@ struct SentEnvelopeFilter {
         }
 
       case .tappedSlider:
-        ssLogEvent(.Sent(.filter), eventName: " 금액 슬라이더", eventType: .tapped)
+        ssLogEvent(.Sent(.filter), eventName: "금액 슬라이더", eventType: .tapped)
         return .none
       }
     }
