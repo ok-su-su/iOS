@@ -34,6 +34,10 @@ public enum MarketingModulesMain: CustomStringConvertible, Equatable {
     }
   }
 
+  public func eventLogName(_ eventName: String) -> String{
+    description + " / 이벤트: \(eventName)"
+  }
+
   var moduleName: String {
     switch self {
     case .Onboarding:
