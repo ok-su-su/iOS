@@ -145,6 +145,7 @@ struct CreateEnvelopeRouter {
         return .none
 
       case let .pushAdditionalScreen(screenType):
+        ssLogEvent(state.type, lastPathState: state.path.last, eventType: .none)
         switch screenType {
         case .selectSection:
           state.createEnvelopeProperty.additionalSectionHelper.startPush()
@@ -206,6 +207,7 @@ struct CreateEnvelopeRouter {
         return .none
 
       case let .push(pathState):
+        ssLogEvent(state.type, lastPathState: state.path.last, eventType: .none)
         state.path.append(pathState)
         return .send(.changeProgress)
 

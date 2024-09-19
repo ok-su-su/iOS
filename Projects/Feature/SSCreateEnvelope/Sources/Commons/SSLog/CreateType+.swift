@@ -62,8 +62,9 @@ extension CreateEnvelopeMarketingModule {
       .gift
     case .createEnvelopeAdditionalIsVisitedEvent:
       .isVisited
+    // 첫 화면에서 요청한 경우 price로 넘어가게 됩니다.
     case .none:
-      .error
+      .price
     }
   }
 }
