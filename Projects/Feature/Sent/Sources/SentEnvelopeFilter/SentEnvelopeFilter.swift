@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import OSLog
+import SSFirebase
 import SSLayout
 import SwiftUI
 
@@ -75,6 +76,7 @@ struct SentEnvelopeFilter {
     case updateMaximumSentValue(Int64)
     case changedSliderProperty
     case tappedSliderValueResetButton
+    case tappedSlider
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -104,6 +106,7 @@ struct SentEnvelopeFilter {
         state.sliderProperty.reset()
         state.updateSliderValueProperty()
         return .none
+
       case let .updateMaximumSentValue(val):
         state.sliderEndValue = val
         state.updateSliderValueProperty()
@@ -120,6 +123,7 @@ struct SentEnvelopeFilter {
           await dismiss()
         }
       case let .tappedPerson(person):
+        ssLogEvent(.Sent(.filter), eventName: " 친구 버튼", eventType: .tapped)
         state.filterHelper.select(sentPerson: person)
         return .none
 
@@ -152,6 +156,11 @@ struct SentEnvelopeFilter {
               .map { _ in
                 return .changedSliderProperty
               }
+          },
+          .publisher {
+            state.sliderProperty
+              .tapPublisher
+              .map { _ in return .tappedSlider }
           }
         )
 
@@ -183,6 +192,7 @@ struct SentEnvelopeFilter {
       case let .update(items):
         state.filterHelper.updateSentPeople(items)
         return .none
+
       case let .getFriendsDataByName(name):
         return .run { send in
           await send(.isLoading(true))
@@ -194,6 +204,10 @@ struct SentEnvelopeFilter {
           await send(.update(data))
           await send(.isLoading(false))
         }
+
+      case .tappedSlider:
+        ssLogEvent(.Sent(.filter), eventName: " 금액 슬라이더", eventType: .tapped)
+        return .none
       }
     }
   }
