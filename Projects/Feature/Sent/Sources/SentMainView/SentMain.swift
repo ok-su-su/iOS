@@ -15,6 +15,7 @@ import SSBottomSelectSheet
 import SSCreateEnvelope
 import SSNotification
 import SwiftAsyncMutex
+import SSFirebase
 
 // MARK: - SentMain
 
@@ -88,6 +89,8 @@ struct SentMain {
       return .none
 
     case .tappedFilterButton:
+      let eventName = "정렬 버튼"
+      ssLogEvent(.Sent(.main), eventName: eventName, eventType: .tapped)
       state.presentDestination = .filter(.init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper))
       return .none
 
@@ -262,6 +265,9 @@ struct SentMain {
       return .none
 
     case .presentDestination(.presented(.filterBottomSheet(.tapped))):
+      let description = "정렬" + (state.sentMainProperty.selectedFilterDial?.description ?? "") + "버튼"
+      ssLogEvent(.Sent(.main), eventName: description, eventType: .tapped)
+
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case .presentDestination(.presented(.filter(.tappedConfirmButton))):
