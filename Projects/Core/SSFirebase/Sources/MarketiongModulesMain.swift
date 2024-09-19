@@ -1,5 +1,5 @@
 //
-//  MarketiongModule.swift
+//  MarketiongModulesMain.swift
 //  SSFirebase
 //
 //  Created by MaraMincho on 9/19/24.
@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 // MARK: - MarketingModules
 
 public enum MarketingModulesMain: CustomStringConvertible, Equatable {
@@ -34,7 +35,7 @@ public enum MarketingModulesMain: CustomStringConvertible, Equatable {
     }
   }
 
-  public func eventLogName(_ eventName: String) -> String{
+  public func eventLogName(_ eventName: String) -> String {
     description + " / 이벤트: \(eventName)"
   }
 

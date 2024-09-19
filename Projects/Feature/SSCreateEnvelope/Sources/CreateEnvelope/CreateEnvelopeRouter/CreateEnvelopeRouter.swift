@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import Foundation
-import OSLog
+import SSFirebase
 
 // MARK: - CreateEnvelopeRouter
 
@@ -136,7 +136,9 @@ struct CreateEnvelopeRouter {
           .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
 
       case .dismissScreen:
-        _ = state.path.popLast()
+        let createType = state.type
+        let lastPath = state.path.popLast()
+        ssLogEvent(createType, eventName: "뒤로가기 버튼", lastPathState: lastPath, eventType: .tapped)
         return .send(.changeProgress, animation: .easeIn(duration: 0.8))
 
       case .header:
@@ -163,6 +165,8 @@ struct CreateEnvelopeRouter {
         // MARK: Additional Section 분기
 
       case .pushCreateEnvelopeAdditional:
+        let createType = state.type
+        let lastPath = state.path.last
         // API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
           return .run { send in
@@ -177,6 +181,8 @@ struct CreateEnvelopeRouter {
 
             CreateFriendRequestShared.reset()
             CreateEnvelopeRequestShared.reset()
+
+            ssLogEvent(createType, lastPathState: lastPath, eventType: .none)
             await send(.dismiss(true))
           }
         }
