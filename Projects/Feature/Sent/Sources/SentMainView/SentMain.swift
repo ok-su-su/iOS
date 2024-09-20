@@ -13,6 +13,7 @@ import Foundation
 import OSLog
 import SSBottomSelectSheet
 import SSCreateEnvelope
+import SSFirebase
 import SSNotification
 import SwiftAsyncMutex
 
@@ -84,10 +85,12 @@ struct SentMain {
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case .tappedSortButton:
+      ssLogEvent(.Sent(.main), eventName: "정렬 버튼", eventType: .tapped)
       state.presentDestination = .filterBottomSheet(.init(items: .default, selectedItem: state.$sentMainProperty.selectedFilterDial))
       return .none
 
     case .tappedFilterButton:
+      ssLogEvent(.Sent(.main), eventName: "필터 버튼", eventType: .tapped)
       state.presentDestination = .filter(.init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper))
       return .none
 
@@ -262,9 +265,13 @@ struct SentMain {
       return .none
 
     case .presentDestination(.presented(.filterBottomSheet(.tapped))):
+      let description = "정렬" + (state.sentMainProperty.selectedFilterDial?.description ?? "") + "버튼"
+      ssLogEvent(.Sent(.main), eventName: description, eventType: .tapped)
+
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case .presentDestination(.presented(.filter(.tappedConfirmButton))):
+      ssLogEvent(.Sent(.main), eventName: "필터 적용 버튼", eventType: .tapped)
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .envelopes(.element(id: uuid, action: .isOnAppear(true))):

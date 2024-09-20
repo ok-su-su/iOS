@@ -57,12 +57,16 @@ public struct SliderView: View {
           y: midHeight
         )
         .simultaneousGesture(
-          DragGesture().onChanged { value in
-            let currentLocation = value.location
-            let currentPercentage = currentLocation.x / width
-            let percentage = min(max(0, currentPercentage), slider.highHandle.currentPercentage.wrappedValue)
-            slider.lowHandle.updateCurrentPercentage(percentage)
-          }
+          DragGesture()
+            .onChanged { value in
+              let currentLocation = value.location
+              let currentPercentage = currentLocation.x / width
+              let percentage = min(max(0, currentPercentage), slider.highHandle.currentPercentage.wrappedValue)
+              slider.lowHandle.updateCurrentPercentage(percentage)
+            }
+            .onEnded { _ in
+              slider._tapPublisher.send()
+            }
         )
 
       SliderHandleView(handle: slider.highHandle)
@@ -71,12 +75,16 @@ public struct SliderView: View {
           y: midHeight
         )
         .simultaneousGesture(
-          DragGesture().onChanged { value in
-            let currentLocation = value.location
-            let currentPercentage = currentLocation.x / width
-            let percentage = max(min(1, currentPercentage), slider.lowHandle.currentPercentage.wrappedValue)
-            slider.highHandle.updateCurrentPercentage(percentage)
-          }
+          DragGesture()
+            .onChanged { value in
+              let currentLocation = value.location
+              let currentPercentage = currentLocation.x / width
+              let percentage = max(min(1, currentPercentage), slider.lowHandle.currentPercentage.wrappedValue)
+              slider.highHandle.updateCurrentPercentage(percentage)
+            }
+            .onEnded { _ in
+              slider._tapPublisher.send()
+            }
         )
     }
   }

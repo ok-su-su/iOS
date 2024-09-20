@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import Foundation
+import SSFirebase
 
 @Reducer
 struct Envelope {
@@ -59,6 +60,7 @@ struct Envelope {
         return .send(.pushEnvelopeDetail(state.envelopeProperty))
 
       case .getEnvelopeDetail:
+        ssLogEvent(.MyPage(.main), eventName: "인물 봉투 전체보기 버튼", eventType: .tapped)
         return .run { [id = state.envelopeProperty.id] send in
           await send(.isLoading(true))
           let value = try await network.getEnvelope(.init(friendID: id, page: 0))

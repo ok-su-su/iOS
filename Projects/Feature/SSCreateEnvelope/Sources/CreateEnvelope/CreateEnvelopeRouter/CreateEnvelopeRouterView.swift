@@ -98,23 +98,3 @@ struct CreateEnvelopeRouterView: View {
 
   private enum Constants {}
 }
-
-private extension CreateType {
-  func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
-    switch self {
-    case .received:
-      .Received(.createEnvelope(viewType))
-    case .sent:
-      .Sent(.createEnvelope(viewType))
-    }
-  }
-}
-
-private func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModules {
-  switch createType {
-  case .sent:
-    .Sent(.createEnvelope(viewType))
-  case .received:
-    .Received(.createEnvelope(viewType))
-  }
-}

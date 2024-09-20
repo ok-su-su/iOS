@@ -19,6 +19,7 @@ public enum CreateEnvelopeMarketingModule: CustomStringConvertible, Equatable {
   case contact
   case gift
   case isVisited
+  case error
 
   public var description: String {
     switch self {
@@ -42,6 +43,8 @@ public enum CreateEnvelopeMarketingModule: CustomStringConvertible, Equatable {
       "선물"
     case .isVisited:
       "방문 여부"
+    case .error:
+      "오류"
     }
   }
 }

@@ -54,6 +54,10 @@ public class CustomSlider: ObservableObject, Equatable {
     lhs === rhs
   }
 
+  /// For GA
+  let _tapPublisher: PassthroughSubject<Void, Never> = .init()
+  public var tapPublisher: AnyPublisher<Void, Never> { _tapPublisher.eraseToAnyPublisher() }
+
   /// Slider Size
   let lineWidth: CGFloat = 8
 
