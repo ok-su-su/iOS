@@ -16,8 +16,6 @@ import SSNetwork
 
 @Reducer
 struct MyPageInformation: Reducer {
-  var routingPublisher: PassthroughSubject<Routing, Never> = .init()
-
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -36,7 +34,6 @@ struct MyPageInformation: Reducer {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
-    case route(Routing)
   }
 
   enum ViewAction: Equatable {
@@ -89,7 +86,8 @@ struct MyPageInformation: Reducer {
         return .send(.inner(.updateCellItems))
 
       case .scope(.header(.tappedTextButton)):
-        return .send(.route(.editProfile))
+        MyPageRouterAndPathPublisher.push(.editMyPage(.init()))
+        return .none
 
       case .scope(.header):
         return .none
@@ -98,10 +96,6 @@ struct MyPageInformation: Reducer {
         return .none
 
       case .scope(.tabBar):
-        return .none
-
-      case let .route(destination):
-        routingPublisher.send(destination)
         return .none
 
       case .async(.getMyInformation):

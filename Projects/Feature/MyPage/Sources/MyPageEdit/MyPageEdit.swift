@@ -20,7 +20,6 @@ import SSToast
 
 @Reducer
 struct MyPageEdit {
-  var routingPublisher: PassthroughSubject<Routing, Never> = .init()
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -92,7 +91,6 @@ struct MyPageEdit {
     case async(AsyncAction)
     case scope(ScopeAction)
     case delegate(DelegateAction)
-    case route(Routing)
   }
 
   @CasePathable
@@ -188,10 +186,6 @@ struct MyPageEdit {
       case .scope(.tabBar):
         return .none
 
-      case let .route(destination):
-        routingPublisher.send(destination)
-        return .none
-
       case .scope(.toast):
         return .none
 
@@ -228,10 +222,10 @@ struct MyPageEdit {
           gender: gender,
           birth: birth
         )
-        return .run { [id = state.userInfo.id] send in
+        return .run { [id = state.userInfo.id] _ in
           let dto = try await network.updateUserInformation(id, requestBody)
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
-          await send(.route(.dismiss))
+          await dismiss()
         }
 
       case .scope(.genderSection(_)):
