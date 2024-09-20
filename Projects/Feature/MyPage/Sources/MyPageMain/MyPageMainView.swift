@@ -177,6 +177,7 @@ struct MyPageMainView: View {
       if let privacyURLString = Constants.privacyURLString,
          let url = URL(string: privacyURLString) {
         SafariWebView(url: url)
+          .ignoresSafeArea()
       }
     }
     .fullScreenCover(
@@ -184,6 +185,7 @@ struct MyPageMainView: View {
         if let feedBackString = Constants.feedBackURLString,
            let url = URL(string: feedBackString) {
           SafariWebView(url: url)
+            .ignoresSafeArea()
         }
     }
   }
