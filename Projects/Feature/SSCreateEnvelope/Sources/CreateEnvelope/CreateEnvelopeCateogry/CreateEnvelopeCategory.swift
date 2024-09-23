@@ -87,8 +87,7 @@ public struct CreateEnvelopeCategory {
       if let customName = state.createEnvelopeProperty.eventHelper.getSelectedCustomItemName() {
         CreateEnvelopeRequestShared.setCustomEvent(customName)
       }
-
-      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
+      CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopeEvent(state))
       return .none
 
     case let .isLoading(val):

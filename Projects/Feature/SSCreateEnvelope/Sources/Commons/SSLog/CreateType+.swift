@@ -20,6 +20,19 @@ extension CreateType {
   }
 }
 
+extension CreateEnvelopeInitialType {
+  func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
+    switch self {
+    case let .sentWithFriendID(int64):
+      .Sent(.createEnvelope(viewType))
+    case .sent:
+      .Sent(.createEnvelope(viewType))
+    case .received:
+      .Received(.createEnvelope(viewType))
+    }
+  }
+}
+
 func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
   switch createType {
   case .sent:

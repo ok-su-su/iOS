@@ -107,7 +107,7 @@ public struct CreateEnvelopePrice {
       if let amount = Int64(state.textFieldText) {
         CreateEnvelopeRequestShared.setAmount(amount)
       }
-      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(state.$createEnvelopeProperty)))
+      CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopePrice(state))
       return .none
 
     case let .addPrice(value):

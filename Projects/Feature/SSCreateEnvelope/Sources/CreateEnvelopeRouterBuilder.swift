@@ -26,12 +26,12 @@ public struct CreateEnvelopeRouterBuilder: View {
   ///   - initialCreateEnvelopeRequestBody: Set InitialOfCreateEnvelopeBody Value
   ///   - completion: run when createEnvelopeRouterBuild dismiss
   public init(
-    currentType: CreateType,
+    currentType: CreateEnvelopeInitialType,
     initialCreateEnvelopeRequestBody: CreateEnvelopeRequestBody,
     completion: @escaping (Data) -> Void
   ) {
     CreateEnvelopeRequestShared.setBody(initialCreateEnvelopeRequestBody)
-    self.currentType = currentType
+    self.currentType = currentType.toCreateType
     self.completion = completion
     store = .init(
       initialState: .init(type: currentType)) {
@@ -41,6 +41,24 @@ public struct CreateEnvelopeRouterBuilder: View {
 
   public var body: some View {
     CreateEnvelopeRouterView(store: store, completion: completion)
+  }
+}
+
+// MARK: - CreateEnvelopeInitialType
+
+public enum CreateEnvelopeInitialType: Equatable {
+  case sentWithFriendID(Int64)
+  case sent
+  case received
+
+  var toCreateType: CreateType {
+    switch self {
+    case .sent,
+         .sentWithFriendID:
+      .sent
+    case .received:
+      .received
+    }
   }
 }
 
