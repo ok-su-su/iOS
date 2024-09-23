@@ -105,7 +105,7 @@ public struct CreateEnvelopeDate {
         )
       case .inner(.push):
         CreateEnvelopeRequestShared.setDate(state.selectedDate)
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(state.$createEnvelopeProperty)))
+        CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopeDate(state))
         return .none
 
       case .scope(.datePicker):

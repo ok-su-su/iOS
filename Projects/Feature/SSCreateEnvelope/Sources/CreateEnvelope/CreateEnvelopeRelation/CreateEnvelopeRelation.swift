@@ -94,7 +94,7 @@ public struct CreateEnvelopeRelation {
         CreateFriendRequestShared.setCustomRelation(name: customRelationName)
       }
       // 화면전환을 Router객체로 전환
-      CreateEnvelopeRouterPublisher.shared.ended(.createEnvelopeRelation(state))
+      CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopeRelation(state))
       return .none
 
     case let .isLoading(bool):

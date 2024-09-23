@@ -33,7 +33,7 @@ struct CreateEnvelopeRouterView: View {
   private func makeNavigationView() -> some View {
     NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       CreateEnvelopePriceView(store: store.scope(state: \.createPrice, action: \.createPrice))
-        .ssAnalyticsScreen(moduleName: store.type.convertMarktingModuleName(viewType: .price))
+        .ssAnalyticsScreen(moduleName: store.type.toCreateType.convertMarktingModuleName(viewType: .price))
     } destination: { nextStore in
       switch nextStore.case {
       case let .createEnvelopePrice(childStore):

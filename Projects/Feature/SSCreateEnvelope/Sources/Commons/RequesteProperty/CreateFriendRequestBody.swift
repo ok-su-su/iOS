@@ -16,12 +16,14 @@ struct CreateFriendRequestBody: Codable, Equatable {
   var phoneNumber: String? = nil
   var relationshipId: Int? = nil
   var customRelation: String? = nil
+  var friendID: Int64? = nil
 
   enum CodingKeys: CodingKey {
     case name
     case phoneNumber
     case relationshipId
     case customRelation
+    case friendID
   }
 }
 

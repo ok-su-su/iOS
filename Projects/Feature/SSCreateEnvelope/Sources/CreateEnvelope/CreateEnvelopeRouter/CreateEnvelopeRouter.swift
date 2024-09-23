@@ -19,7 +19,7 @@ struct CreateEnvelopeRouter {
 
   @ObservableState
   struct State: Equatable {
-    var type: CreateType
+    var type: CreateEnvelopeInitialType
     var isOnAppear = false
     var path = StackState<CreateEnvelopePath.State>()
     var header = HeaderViewFeature.State(.init(type: .depthProgressBar(12 / 96)), enableDismissAction: false)
@@ -31,10 +31,13 @@ struct CreateEnvelopeRouter {
 
     var createPrice: CreateEnvelopePrice.State
 
-    init(type: CreateType) {
+    init(type: CreateEnvelopeInitialType) {
       self.type = type
       _createEnvelopeProperty = Shared(.init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
+      if case let .sentWithFriendID(friendID) = type {
+        CreateEnvelopeRequestShared.setFriendID(id: friendID)
+      }
     }
   }
 
@@ -47,11 +50,11 @@ struct CreateEnvelopeRouter {
     case pushCreateEnvelopeAdditional
     case changeProgress
     case createPrice(CreateEnvelopePrice.Action)
-    case screenEnded(CreateEnvelopePath.State)
     case dismiss(Bool)
     case updateDismissData(Data)
     case isLoading(Bool)
     case dismissScreen
+    case none
   }
 
   private enum CancelID {
@@ -64,22 +67,63 @@ struct CreateEnvelopeRouter {
 
   init() {}
 
-  func endedScreenHandler(_ pathState: CreateEnvelopePath.State, state: State) -> Effect<Action> {
-    switch pathState {
-    // SENT or RECEIVED에 따라서 접근하는 화면 분기가 달라야 함.
-    case .createEnvelopeRelation:
-      switch state.type {
-      case .sent:
-        // SentItem
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
-        return .none
-      case .received:
-        // CustomItem
-        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(state.$createEnvelopeProperty)))
-        return .none
+  private func requestCreateEnvelope() -> Effect<Action> {
+    return .run { send in
+      let friendProperty = CreateFriendRequestShared.getBody()
+      await send(.isLoading(true))
+      if CreateEnvelopeRequestShared.getFriendID() == nil {
+        let friendID = try await network.getFriendID(friendProperty)
+        CreateEnvelopeRequestShared.setFriendID(id: friendID)
       }
+
+      let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
+      let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
+      await send(.updateDismissData(envelopeData))
+      await send(.isLoading(false))
+
+      CreateFriendRequestShared.reset()
+      CreateEnvelopeRequestShared.reset()
+
+      await send(.dismiss(true))
+    }
+  }
+
+  private func pushWithCrateTypeAndState(
+    _ type: CreateEnvelopeInitialType,
+    fromState state: CreateEnvelopePath.State,
+    createEnvelopeProperty: Shared<CreateEnvelopeProperty>
+  ) {
+    switch state {
+    case .createEnvelopePrice:
+      switch type {
+      case .sentWithFriendID:
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(createEnvelopeProperty)))
+      case .received,
+           .sent:
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(createEnvelopeProperty)))
+      }
+
+    case .createEnvelopeName:
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeRelation(.init(createEnvelopeProperty)))
+
+    case .createEnvelopeRelation:
+      switch type {
+      case .sent,
+           .sentWithFriendID:
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(createEnvelopeProperty)))
+
+      case .received:
+        CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(createEnvelopeProperty)))
+      }
+
+    case .createEnvelopeEvent:
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(createEnvelopeProperty)))
+
+    case .createEnvelopeDate:
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(createEnvelopeProperty)))
+
     default:
-      return .none
+      break
     }
   }
 
@@ -93,6 +137,9 @@ struct CreateEnvelopeRouter {
 
     Reduce { state, action in
       switch action {
+      case .none:
+        return .none
+
       case let .dismiss(val):
         state.dismiss = val
         return .none
@@ -102,6 +149,8 @@ struct CreateEnvelopeRouter {
           return .none
         }
         state.isOnAppear = val
+        let createEnvelopeProperty = state.$createEnvelopeProperty
+        let type = state.type
         return .merge(
           .publisher {
             CreateEnvelopeRouterPublisher
@@ -110,21 +159,21 @@ struct CreateEnvelopeRouter {
               .receive(on: RunLoop.main)
               .map { val in .push(val) }
           },
-
+          .publisher {
+            CreateEnvelopeRouterPublisher
+              .shared
+              .nextPublisher()
+              .map { fromState in
+                pushWithCrateTypeAndState(type, fromState: fromState, createEnvelopeProperty: createEnvelopeProperty)
+                return .none
+              }
+          },
           .publisher {
             CreateAdditionalRouterPublisher
               .shared
               .publisher()
               .receive(on: RunLoop.main)
               .map { val in .pushAdditionalScreen(val) }
-          },
-
-          .publisher {
-            CreateEnvelopeRouterPublisher
-              .shared
-              .endedPublisher()
-              .receive(on: RunLoop.main)
-              .map { val in .screenEnded(val) }
           }
         )
 
@@ -136,7 +185,7 @@ struct CreateEnvelopeRouter {
           .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
 
       case .dismissScreen:
-        let createType = state.type
+        let createType = state.type.toCreateType
         let lastPath = state.path.popLast()
         ssLogEvent(createType, eventName: "뒤로가기 버튼", lastPathState: lastPath, eventType: .tapped)
         return .send(.changeProgress, animation: .easeIn(duration: 0.8))
@@ -145,7 +194,7 @@ struct CreateEnvelopeRouter {
         return .none
 
       case let .pushAdditionalScreen(screenType):
-        ssLogEvent(state.type, lastPathState: state.path.last, eventType: .none)
+        ssLogEvent(state.type.toCreateType, lastPathState: state.path.last, eventType: .none)
         switch screenType {
         case .selectSection:
           state.createEnvelopeProperty.additionalSectionHelper.startPush()
@@ -168,24 +217,11 @@ struct CreateEnvelopeRouter {
       case .pushCreateEnvelopeAdditional:
         let createType = state.type
         let lastPath = state.path.last
+
         // API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          return .run { send in
-            let friendProperty = CreateFriendRequestShared.getBody()
-            await send(.isLoading(true))
-            let friendID = try await network.getFriendID(friendProperty)
-            CreateEnvelopeRequestShared.setFriendID(id: friendID)
-            let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
-            let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
-            await send(.updateDismissData(envelopeData))
-            await send(.isLoading(false))
-
-            CreateFriendRequestShared.reset()
-            CreateEnvelopeRequestShared.reset()
-
-            ssLogEvent(createType, lastPathState: lastPath, eventType: .none)
-            await send(.dismiss(true))
-          }
+          ssLogEvent(createType.toCreateType, lastPathState: lastPath, eventType: .none)
+          return requestCreateEnvelope()
         }
 
         switch currentSection {
@@ -207,7 +243,7 @@ struct CreateEnvelopeRouter {
         return .none
 
       case let .push(pathState):
-        ssLogEvent(state.type, lastPathState: state.path.last, eventType: .none)
+        ssLogEvent(state.type.toCreateType, lastPathState: state.path.last, eventType: .none)
         state.path.append(pathState)
         return .send(.changeProgress)
 
@@ -221,9 +257,6 @@ struct CreateEnvelopeRouter {
 
       case .createPrice:
         return .none
-
-      case let .screenEnded(currentState):
-        return endedScreenHandler(currentState, state: state)
 
       case let .updateDismissData(data):
         state.currentCreateEnvelopeData = data

@@ -35,21 +35,21 @@ public final class CreateEnvelopeRouterPublisher {
   private init() {}
 
   private var _publisher: PassthroughSubject<CreateEnvelopePath.State, Never> = .init()
-  private var _endedPublisher: PassthroughSubject<CreateEnvelopePath.State, Never> = .init()
+  private var _nextPublisher: PassthroughSubject<CreateEnvelopePath.State, Never> = .init()
 
   public func publisher() -> AnyPublisher<CreateEnvelopePath.State, Never> {
     return _publisher.eraseToAnyPublisher()
   }
 
-  public func endedPublisher() -> AnyPublisher<CreateEnvelopePath.State, Never> {
-    return _endedPublisher.eraseToAnyPublisher()
-  }
-
-  public func ended(_ val: CreateEnvelopePath.State) {
-    _endedPublisher.send(val)
+  public func nextPublisher() -> AnyPublisher<CreateEnvelopePath.State, Never> {
+    return _nextPublisher.eraseToAnyPublisher()
   }
 
   public func push(_ val: CreateEnvelopePath.State) {
     _publisher.send(val)
+  }
+
+  public func next(from val: CreateEnvelopePath.State) {
+    _nextPublisher.send(val)
   }
 }

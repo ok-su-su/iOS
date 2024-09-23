@@ -45,6 +45,12 @@ enum CreateFriendRequestShared {
     return SharedContainer.getValue(CreateFriendRequestBody.self) ?? .init()
   }
 
+  static func setFriendID(_ id: Int64) {
+    var body = getBody()
+    body.friendID = id
+    setBody(body)
+  }
+
   static func setBody(_ val: CreateFriendRequestBody) {
     SharedContainer.setValue(val)
   }
