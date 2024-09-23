@@ -50,6 +50,6 @@ public final class CreateEnvelopeRouterPublisher {
   }
 
   public func next(from val: CreateEnvelopePath.State) {
-    _publisher.send(val)
+    _nextPublisher.send(val)
   }
 }

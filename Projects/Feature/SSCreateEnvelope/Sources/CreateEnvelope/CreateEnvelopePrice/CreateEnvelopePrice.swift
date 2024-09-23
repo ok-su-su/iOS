@@ -144,10 +144,13 @@ public struct CreateEnvelopePrice {
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
+
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
+
       case .delegate(.dismissCreateFlow):
         return .none
+
       case .binding:
         return .none
 

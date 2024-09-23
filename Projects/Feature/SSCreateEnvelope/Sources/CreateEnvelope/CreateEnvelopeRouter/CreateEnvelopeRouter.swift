@@ -71,7 +71,6 @@ struct CreateEnvelopeRouter {
   ) {
     switch state {
     case .createEnvelopePrice:
-
       switch type {
       case .sentWithFriendID:
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(createEnvelopeProperty)))
