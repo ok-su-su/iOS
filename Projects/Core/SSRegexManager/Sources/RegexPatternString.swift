@@ -38,7 +38,7 @@ public enum RegexPatternString {
     case .contacts:
       "^[\\d]{11}$"
     case .voteContents:
-      "^.{1,200}$"
+      "^(.|\n){1,200}$"
     }
   }
 }
