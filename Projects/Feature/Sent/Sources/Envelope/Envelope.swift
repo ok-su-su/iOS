@@ -64,17 +64,22 @@ struct Envelope {
         return .run { [id = state.envelopeProperty.id] send in
           await send(.isLoading(true))
           let value = try await network.getEnvelope(.init(friendID: id, page: 0))
-          await send(.updateEnvelopeContent(value))
+          let threeEnvelopes = Array(value.prefix(3))
+          await send(.updateEnvelopeContent(threeEnvelopes))
           await send(.isLoading(false))
         }
+
       case let .isLoading(val):
         state.isLoading = val
         return .none
+
       case let .updateEnvelopeContent(val):
         state.envelopeProperty.envelopeContents = val
         return .none
+
       case .pushEnvelopeDetail:
         return .none
+
       case let .isOnAppear(appeared):
         if state.isAppear {
           return .none
