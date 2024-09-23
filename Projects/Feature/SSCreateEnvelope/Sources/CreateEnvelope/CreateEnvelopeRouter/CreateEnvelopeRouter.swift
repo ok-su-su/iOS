@@ -35,6 +35,9 @@ struct CreateEnvelopeRouter {
       self.type = type
       _createEnvelopeProperty = Shared(.init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
+      if case let .sentWithFriendID(friendID) = type {
+        CreateEnvelopeRequestShared.setFriendID(id: friendID)
+      }
     }
   }
 
@@ -63,6 +66,27 @@ struct CreateEnvelopeRouter {
   @Dependency(\.mainQueue) var mainQueue
 
   init() {}
+
+  private func requestCreateEnvelope() -> Effect<Action> {
+    return .run { send in
+      let friendProperty = CreateFriendRequestShared.getBody()
+      await send(.isLoading(true))
+      if CreateEnvelopeRequestShared.getFriendID() == nil {
+        let friendID = try await network.getFriendID(friendProperty)
+        CreateEnvelopeRequestShared.setFriendID(id: friendID)
+      }
+
+      let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
+      let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
+      await send(.updateDismissData(envelopeData))
+      await send(.isLoading(false))
+
+      CreateFriendRequestShared.reset()
+      CreateEnvelopeRequestShared.reset()
+
+      await send(.dismiss(true))
+    }
+  }
 
   private func pushWithCrateTypeAndState(
     _ type: CreateEnvelopeInitialType,
@@ -97,6 +121,7 @@ struct CreateEnvelopeRouter {
 
     case .createEnvelopeDate:
       CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(createEnvelopeProperty)))
+
     default:
       break
     }
@@ -192,24 +217,11 @@ struct CreateEnvelopeRouter {
       case .pushCreateEnvelopeAdditional:
         let createType = state.type
         let lastPath = state.path.last
+
         // API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          return .run { send in
-            let friendProperty = CreateFriendRequestShared.getBody()
-            await send(.isLoading(true))
-            let friendID = try await network.getFriendID(friendProperty)
-            CreateEnvelopeRequestShared.setFriendID(id: friendID)
-            let createEnvelopeProperty = CreateEnvelopeRequestShared.getBody()
-            let envelopeData = try await network.createEnvelope(createEnvelopeProperty)
-            await send(.updateDismissData(envelopeData))
-            await send(.isLoading(false))
-
-            CreateFriendRequestShared.reset()
-            CreateEnvelopeRequestShared.reset()
-
-            ssLogEvent(createType.toCreateType, lastPathState: lastPath, eventType: .none)
-            await send(.dismiss(true))
-          }
+          ssLogEvent(createType.toCreateType, lastPathState: lastPath, eventType: .none)
+          return requestCreateEnvelope()
         }
 
         switch currentSection {
