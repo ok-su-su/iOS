@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Designsystem
 import SSAlert
+import SSCreateEnvelope
 import SSFirebase
 import SwiftUI
 
@@ -125,6 +126,17 @@ struct SpecificEnvelopeHistoryListView: View {
         }
       )
     )
+    .ssFloatingButton {
+      store.sendViewAction(.tappedFloatingButton)
+    }
+    .fullScreenCover(isPresented: $store.isPresentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
+      CreateEnvelopeRouterBuilder(
+        currentType: .sentWithFriendID(store.envelopeProperty.id),
+        initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
+      ) { data in
+        store.sendViewAction(.finishedCreateEnvelopes(data))
+      }
+    }
     .navigationBarBackButtonHidden()
     .onAppear {
       store.send(.view(.onAppear(true)))

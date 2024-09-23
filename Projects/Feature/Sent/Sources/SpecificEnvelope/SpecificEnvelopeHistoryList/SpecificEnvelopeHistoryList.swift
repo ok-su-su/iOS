@@ -12,6 +12,7 @@ import FeatureAction
 import Foundation
 import OSLog
 import SSAlert
+import SSCreateEnvelope
 import SSNotification
 
 // MARK: - SpecificEnvelopeHistoryList
@@ -35,6 +36,8 @@ struct SpecificEnvelopeHistoryList {
     var isLoading: Bool = false
     var page = 0
     var isEndOfPage: Bool = false
+    var isPresentCreateEnvelope: Bool = false
+    var createEnvelopeProperty: CreateEnvelopeRequestBody = .init(type: .sent)
 
     /// This is a variable that decides whether or not to perform \
     /// an envelope update when the view is dismissed.
@@ -61,6 +64,9 @@ struct SpecificEnvelopeHistoryList {
     case tappedSpecificEnvelope(EnvelopeContent)
     case tappedAlertConfirmButton
     case onAppearDetail(EnvelopeContent)
+    case presentCreateEnvelope(Bool)
+    case finishedCreateEnvelopes(Data)
+    case tappedFloatingButton
   }
 
   func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
@@ -91,6 +97,18 @@ struct SpecificEnvelopeHistoryList {
         return .send(.async(.getEnvelopeDetail))
           .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
       }
+      return .none
+
+    case .finishedCreateEnvelopes:
+      return .send(.async(.updateEnvelopeInitialPage))
+
+    case let .presentCreateEnvelope(val):
+      state.isPresentCreateEnvelope = val
+      state.isUpdateEnvelopePropertyAtMain = true
+      return .none
+
+    case .tappedFloatingButton:
+      state.isPresentCreateEnvelope = true
       return .none
     }
   }
@@ -142,6 +160,7 @@ struct SpecificEnvelopeHistoryList {
     case deleteFriend
     case updateEnvelope(id: Int64)
     case updateEnvelopeProperty
+    case updateEnvelopeInitialPage
   }
 
   func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
@@ -153,6 +172,17 @@ struct SpecificEnvelopeHistoryList {
         await send(.inner(.isLoading(true)))
         let envelopeContents = try await network.getEnvelope(.init(friendID: id, page: page))
         await send(.inner(.updateEnvelopeContents(envelopeContents)))
+        await send(.inner(.isLoading(false)))
+      }
+
+    case .updateEnvelopeInitialPage:
+      let page = 0
+      state.page = 1
+      return .run { [id = state.envelopeProperty.id] send in
+        await send(.inner(.isLoading(true)))
+        let envelopeContents = try await network.getEnvelope(.init(friendID: id, page: page))
+        await send(.inner(.updateEnvelopeContents(envelopeContents)))
+        await send(.async(.updateEnvelopeProperty))
         await send(.inner(.isLoading(false)))
       }
 
