@@ -50,10 +50,6 @@ struct MyPageInformation: Reducer {
     case getMyInformation
   }
 
-  enum Routing {
-    case editProfile
-  }
-
   @CasePathable
   enum ScopeAction: Equatable {
     case header(HeaderViewFeature.Action)

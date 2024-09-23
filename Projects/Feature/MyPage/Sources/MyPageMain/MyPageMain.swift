@@ -71,6 +71,9 @@ struct MyPageMain {
       return .send(.scope(.pathAction(.push(.myPageInfo(myPageInformationState)))))
 
     case let .onAppear(isAppear):
+      if state.isOnAppear {
+        return .none
+      }
       state.isOnAppear = isAppear
       return .merge(
         .send(.async(.getMyInformation)),

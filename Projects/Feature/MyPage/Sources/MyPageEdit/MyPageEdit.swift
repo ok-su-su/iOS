@@ -105,7 +105,6 @@ struct MyPageEdit {
   enum InnerAction: Equatable {
     /// 초기 TextField, BirthField, GenderField를 설정합니다.
     case updateInitialProperty
-    case updateUserInformation
   }
 
   enum AsyncAction: Equatable {
@@ -155,7 +154,7 @@ struct MyPageEdit {
       return .none
 
     case .tappedEditConfirmButton:
-      return .send(.inner(.updateUserInformation))
+      return .send(.async(.updateUserInformation))
     }
   }
 
@@ -210,9 +209,6 @@ struct MyPageEdit {
         state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty, initialSelectedID: currentGenderID)
         return .none
 
-      case .inner(.updateUserInformation):
-        return .send(.async(.updateUserInformation))
-
       case .async(.updateUserInformation):
         let updateName = state.nameTextFieldText
         let gender = state.selectedGender?.genderIdentifierString
@@ -228,7 +224,7 @@ struct MyPageEdit {
           await dismiss()
         }
 
-      case .scope(.genderSection(_)):
+      case .scope(.genderSection):
         return .none
       }
     }

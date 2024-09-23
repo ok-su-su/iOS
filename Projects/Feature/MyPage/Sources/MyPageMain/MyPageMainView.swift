@@ -168,6 +168,7 @@ struct MyPageMainView: View {
           .modifier(SSLoadingModifier(isLoading: store.isLoading))
       }
     }
+    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .onAppear {
       store.send(.view(.onAppear(true)))
     }
@@ -194,7 +195,6 @@ struct MyPageMainView: View {
     makeNavigationStackView {
       makeMyPageRootView()
     }
-    .addSSTabBar(store.scope(state: \.tabBar, action: \.scope.tabBar))
     .sSAlert(
       isPresented: $store.pathState.presentLogoutAlert.sending(\.scope.pathAction.present.presentLogoutAlert),
       messageAlertProperty: .init(
