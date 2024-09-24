@@ -8,7 +8,7 @@
 </a>
    <br/><br/>
 
-## 😉 프로젝트 소개
+## 😉 Project introdution
 
 <hr>
 <img src="https://github.com/YAPP-Github/oksusu-susu-android/assets/69582122/ed04eee2-7c77-42b2-98e7-21154975418b"/>
@@ -27,6 +27,16 @@
 [//]: # (발표 ppt 내용 보고 추가 예정)
 
 
+## [SUSU Posts](https://maramincho.tistory.com/147)
+- [iOS 4개월치 회고, 열길 물속은 알아도 한길 사람속은 모른다.](https://maramincho.tistory.com/150)
+- [“UIKit이 좋아 SwiftUI가 좋아?”, “평소에? 아니면 오늘?” (수수 TCA + SwiftUI 적용기)](https://disquiet.io/@daham0514/makerlog/ui-kit이-좋아-swift-ui가-좋아-평소에-아니면-오늘-수수-tca-swift-ui-적용기?commentId=69128)
+- [TCA로 여러개의 병렬로 Network요청 보내고 한번에 View Update 하기 (Using Isolated Task Manager)](https://maramincho.tistory.com/147)
+
+
+
+
+
+<br/><br/>
 
 ## TechStack
 
@@ -56,7 +66,6 @@
 
 ## Architcture
 
-### TCA + With SUSU (View and Reducer)
 
 
 ![image](https://github.com/user-attachments/assets/3815d5c4-c1af-4b47-90c7-d5a7f3ab1a82)
@@ -66,12 +75,9 @@
 
 ## Navigation 
 
-### MyPage(use NavigationController)
-![image](https://github.com/user-attachments/assets/9f38f52d-67fa-45f2-a9a8-1f74be493d30)
+### Combine and Navigation Rreducer
 
-<br/><br/>
-
-### Others(use Combine and Navigation Rreducer)
+<br/>
 
 ![image](https://github.com/user-attachments/assets/60dd5bea-a9c1-4ee8-b8e2-c0b0da033427)
 
