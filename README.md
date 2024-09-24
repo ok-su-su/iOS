@@ -8,7 +8,7 @@
 </a>
    <br/><br/>
 
-## 😉 Project introdution
+## 😉 Project introduction
 
 <hr>
 <img src="https://github.com/YAPP-Github/oksusu-susu-android/assets/69582122/ed04eee2-7c77-42b2-98e7-21154975418b"/>
