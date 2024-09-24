@@ -42,8 +42,6 @@ struct SentMain {
 
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
-    var createEnvelopeProperty: CreateEnvelopeRequestBody = .init(type: .sent)
-
     var isFilteredHeaderButtonItem: Bool {
       return !(sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.sentPeopleFilterHelper.isFilteredAmount)
     }

@@ -37,7 +37,6 @@ struct SpecificEnvelopeHistoryList {
     var page = 0
     var isEndOfPage: Bool = false
     var isPresentCreateEnvelope: Bool = false
-    var createEnvelopeProperty: CreateEnvelopeRequestBody = .init(type: .sent)
 
     /// This is a variable that decides whether or not to perform \
     /// an envelope update when the view is dismissed.

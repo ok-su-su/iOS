@@ -35,9 +35,6 @@ struct CreateEnvelopeRouter {
       self.type = type
       _createEnvelopeProperty = Shared(.init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
-      if case let .sentWithFriendID(friendID) = type {
-        CreateEnvelopeRequestShared.setFriendID(id: friendID)
-      }
     }
   }
 

@@ -11,7 +11,7 @@ import OSLog
 
 // MARK: - CreateEnvelopeRequestBody
 
-public struct CreateEnvelopeRequestBody: Codable, Equatable {
+struct CreateEnvelopeRequestBody: Codable, Equatable {
   /// 봉투의 SENT혹은 RECIVE를 통해 타입을 전달합니다.
   public var type: String
   /// 봉투의 친구 ID입니다.
@@ -35,7 +35,7 @@ public struct CreateEnvelopeRequestBody: Codable, Equatable {
     self.type = type.key
   }
 
-  public init(
+  init(
     type: String,
     friendID: Int64? = nil,
     ledgerID: Int64? = nil,
@@ -83,7 +83,7 @@ extension CreateEnvelopeRequestBody {
 
 // MARK: - CategoryRequestBody
 
-public struct CategoryRequestBody: Codable, Equatable {
+struct CategoryRequestBody: Codable, Equatable {
   var id: Int?
   var customCategory: String?
   var name: String?

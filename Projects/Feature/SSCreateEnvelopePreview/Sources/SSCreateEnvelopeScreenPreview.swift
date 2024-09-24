@@ -20,7 +20,7 @@ struct SSCreateEnvelopeScreenPreview: App {
 
   var body: some Scene {
     WindowGroup {
-      CreateEnvelopeRouterBuilder(currentType: .sent, initialCreateEnvelopeRequestBody: .init(type: .sent)) { _ in
+      CreateEnvelopeRouterBuilder(currentType: .sent) { _ in
       }
     }
   }

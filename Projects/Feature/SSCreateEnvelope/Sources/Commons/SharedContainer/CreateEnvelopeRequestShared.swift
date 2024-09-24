@@ -9,8 +9,8 @@
 import Foundation
 import OSLog
 
-public enum CreateEnvelopeRequestShared {
-  public static func getFriendID() -> Int64? {
+enum CreateEnvelopeRequestShared {
+  static func getFriendID() -> Int64? {
     return getBody().friendID
   }
 
@@ -21,15 +21,11 @@ public enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  public static func setEvent(id: Int, name: String) {
+  static func setEvent(id: Int, name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nid = \(id)")
     var body = getBody()
     body.category = .init(id: id, name: name)
     setBody(body)
-  }
-
-  public static func getEvent() -> String? {
-    return getBody().category?.name
   }
 
   static func setAmount(_ amount: Int64) {
@@ -39,7 +35,7 @@ public enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  public static func setCustomEvent(_ name: String) {
+  static func setCustomEvent(_ name: String) {
     os_log("CreateEnvelopeRequest의 Event을 저장합니다.\nEventName = \(name)")
     var body = getBody()
     body.category?.customCategory = name
@@ -90,7 +86,7 @@ public enum CreateEnvelopeRequestShared {
     setBody(body)
   }
 
-  public static func setCreateType(_ type: CreateType) {
+  static func setCreateType(_ type: CreateType) {
     SharedContainer.setValue(key: String(describing: CreateType.self), type.key)
     var body = getBody()
     body.type = type.key
@@ -108,7 +104,7 @@ public enum CreateEnvelopeRequestShared {
     return .sent
   }
 
-  public static func setLedger(id: Int64) {
+  static func setLedger(id: Int64) {
     var body = getBody()
     body.ledgerID = id
     setBody(body)
@@ -120,6 +116,20 @@ public enum CreateEnvelopeRequestShared {
 
   static func getBody() -> CreateEnvelopeRequestBody {
     return SharedContainer.getValue(CreateEnvelopeRequestBody.self) ?? .init(type: "NONE")
+  }
+
+  private static let categoryNameKey: String = "CategoryNameKey"
+  static func getCategoryName() -> String? {
+    // sent
+    if let sentCategoryName = getBody().category?.name {
+      return sentCategoryName
+    }
+    // received
+    return SharedContainer.getValue(key: categoryNameKey)
+  }
+
+  static func setCategoryName(_ name: String) {
+    SharedContainer.setValue(key: categoryNameKey, name)
   }
 
   static func setBody(_ val: CreateEnvelopeRequestBody) {
