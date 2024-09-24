@@ -214,7 +214,7 @@ struct LedgerDetailMainView: View {
     .sSAlert(
       isPresented: $store.showMessageAlert.sending(\.view.showAlert),
       messageAlertProperty: .init(
-        titleText: " 장부를 삭제할까요?",
+        titleText: "장부를 삭제할까요?",
         contentText: "삭제한 장부와 봉투는 다시 복구할 수 없어요",
         checkBoxMessage: .none,
         buttonMessage: .doubleButton(left: "취소", right: "삭제"),
@@ -228,8 +228,7 @@ struct LedgerDetailMainView: View {
     }
     .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.scope.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(
-        currentType: .received,
-        initialCreateEnvelopeRequestBody: store.createEnvelopeProperty
+        currentType: .received(ledgerID: store.ledgerID, categoryName: store.ledgerProperty.category)
       ) { data in
         store.sendViewAction(.dismissCreateEnvelope(data))
       }

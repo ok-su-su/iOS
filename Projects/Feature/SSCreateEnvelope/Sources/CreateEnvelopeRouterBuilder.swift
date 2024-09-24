@@ -23,20 +23,31 @@ public struct CreateEnvelopeRouterBuilder: View {
   /// CreateEnvelopeView
   /// - Parameters:
   ///   - currentType: Sent, Received
-  ///   - initialCreateEnvelopeRequestBody: Set InitialOfCreateEnvelopeBody Value
   ///   - completion: run when createEnvelopeRouterBuild dismiss
   public init(
     currentType: CreateEnvelopeInitialType,
-    initialCreateEnvelopeRequestBody: CreateEnvelopeRequestBody,
     completion: @escaping (Data) -> Void
   ) {
-    CreateEnvelopeRequestShared.setBody(initialCreateEnvelopeRequestBody)
     self.currentType = currentType.toCreateType
     self.completion = completion
     store = .init(
       initialState: .init(type: currentType)) {
         CreateEnvelopeRouter()
       }
+
+    CreateEnvelopeRequestShared.setBody(.init(type: currentType.toCreateType))
+    switch currentType {
+    case let .sentWithFriendID(friendID, friendName):
+      CreateEnvelopeRequestShared.setFriendID(id: friendID)
+      CreateFriendRequestShared.setName(friendName)
+
+    case let .received(ledgerID, categoryName):
+      CreateEnvelopeRequestShared.setCategoryName(categoryName)
+      CreateEnvelopeRequestShared.setLedger(id: ledgerID)
+
+    case .sent:
+      break
+    }
   }
 
   public var body: some View {
@@ -47,9 +58,9 @@ public struct CreateEnvelopeRouterBuilder: View {
 // MARK: - CreateEnvelopeInitialType
 
 public enum CreateEnvelopeInitialType: Equatable {
-  case sentWithFriendID(Int64)
+  case sentWithFriendID(friendID: Int64, friendName: String)
   case sent
-  case received
+  case received(ledgerID: Int64, categoryName: String)
 
   var toCreateType: CreateType {
     switch self {
@@ -64,7 +75,7 @@ public enum CreateEnvelopeInitialType: Equatable {
 
 // MARK: - CreateType
 
-public enum CreateType: Equatable, CaseIterable {
+enum CreateType: Equatable, CaseIterable {
   case sent
   case received
 

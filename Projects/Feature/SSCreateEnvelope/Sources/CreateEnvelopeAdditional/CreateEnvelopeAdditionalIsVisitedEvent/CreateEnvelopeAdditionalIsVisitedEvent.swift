@@ -19,7 +19,7 @@ public struct CreateEnvelopeAdditionalIsVisitedEvent {
     @Shared var isVisitedEventHelper: CreateEnvelopeAdditionalIsVisitedEventHelper
 
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalIsVisitedEventProperty>.State
-    var eventName = CreateEnvelopeRequestShared.getEvent()
+    var eventName = CreateEnvelopeRequestShared.getCategoryName()
 
     init(isVisitedEventHelper: Shared<CreateEnvelopeAdditionalIsVisitedEventHelper>) {
       _isVisitedEventHelper = isVisitedEventHelper
