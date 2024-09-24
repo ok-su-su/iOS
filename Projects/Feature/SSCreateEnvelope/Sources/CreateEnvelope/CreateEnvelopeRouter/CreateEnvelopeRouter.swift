@@ -58,9 +58,11 @@ struct CreateEnvelopeRouter {
     case dismiss
     case publishNavigation
     case finishEnvelope
+    case onAppearCancelID
   }
 
   @Dependency(\.mainQueue) var mainQueue
+  @Dependency(\.dismiss) var dismiss
 
   init() {}
 
@@ -172,7 +174,7 @@ struct CreateEnvelopeRouter {
               .receive(on: RunLoop.main)
               .map { val in .pushAdditionalScreen(val) }
           }
-        )
+        ).cancellable(id: CancelID.onAppearCancelID, cancelInFlight: true)
 
       case .header(.tappedDismissButton):
         if state.path.isEmpty {
