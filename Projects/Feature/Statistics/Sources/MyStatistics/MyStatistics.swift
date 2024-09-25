@@ -87,7 +87,7 @@ struct MyStatistics {
   func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case .getStatistics:
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getMyStatistics()
         await send(.inner(.updateMyStatisticsResponse(property)))

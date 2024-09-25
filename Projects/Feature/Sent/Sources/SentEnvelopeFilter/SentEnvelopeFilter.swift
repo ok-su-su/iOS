@@ -113,12 +113,12 @@ struct SentEnvelopeFilter {
         return .none
 
       case .getMaximumSentValue:
-        return .run { send in
+        return .ssRun { send in
           let maximumValue = try await network.getMaximumSentValue()
           await send(.updateMaximumSentValue(maximumValue))
         }
       case .header(.tappedDismissButton):
-        return .run { send in
+        return .ssRun { send in
           await send(.reset)
           await dismiss()
         }
@@ -142,7 +142,7 @@ struct SentEnvelopeFilter {
         }
         state.isOnAppear = isAppear
         return .merge(
-          .run { send in
+          .ssRun { send in
             await send(.isLoading(true))
             let data = try await network.getInitialData()
             await send(.update(data))
@@ -183,7 +183,7 @@ struct SentEnvelopeFilter {
           state.filterHelper.lowestAmount = state.minimumTextValue
           state.filterHelper.highestAmount = state.maximumTextValue
         }
-        return .run { _ in await dismiss() }
+        return .ssRun { _ in await dismiss() }
 
       case let .isLoading(loading):
         state.isLoading = loading
@@ -194,7 +194,7 @@ struct SentEnvelopeFilter {
         return .none
 
       case let .getFriendsDataByName(name):
-        return .run { send in
+        return .ssRun { send in
           await send(.isLoading(true))
           let data: [SentPerson] = if let name {
             try await network.findFriendsByName(name)

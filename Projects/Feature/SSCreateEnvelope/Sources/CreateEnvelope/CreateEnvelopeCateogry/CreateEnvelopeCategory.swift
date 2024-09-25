@@ -107,7 +107,7 @@ public struct CreateEnvelopeCategory {
   func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case .getEventItems:
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let data = try await network.getEventItems()
         await send(.inner(.update(data)))

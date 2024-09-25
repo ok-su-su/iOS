@@ -8,6 +8,7 @@ let project = Project.makeModule(
     name: "FeatureAction",
     product: .framework,
     dependencies: [
+      .core(.sSNotification),
       .thirdParty(.ComposableArchitecture),
       .thirdParty(.SwiftAsyncMutex),
     ]

@@ -218,7 +218,7 @@ struct VoteMain {
       return .none
 
     case .waitMutex:
-      return .run { [taskManager = state.taskManager] send in
+      return .ssRun { [taskManager = state.taskManager] send in
         await taskManager.waitForFinish()
         await send(.inner(.isLoading(false)))
       }
@@ -307,7 +307,7 @@ struct VoteMain {
       guard let boardID else {
         return .none
       }
-      return .run { [taskManager = state.taskManager] _ in
+      return .ssRun { [taskManager = state.taskManager] _ in
         await taskManager.willTask()
         try await network.reportVote(boardID)
         await taskManager.didTask()
@@ -317,7 +317,7 @@ struct VoteMain {
       guard let userID else {
         return .none
       }
-      return .run { [taskManager = state.taskManager] _ in
+      return .ssRun { [taskManager = state.taskManager] _ in
         await taskManager.willTask()
         try await network.blockUser(userID)
         await taskManager.didTask()

@@ -218,7 +218,7 @@ struct MyPageEdit {
           gender: gender,
           birth: birth
         )
-        return .run { [id = state.userInfo.id] _ in
+        return .ssRun { [id = state.userInfo.id] _ in
           let dto = try await network.updateUserInformation(id, requestBody)
           MyPageSharedState.shared.setUserInfoResponseDTO(dto)
           await dismiss()

@@ -9,6 +9,7 @@ import OSLog
 import Received
 import Sent
 import SSAlert
+import SSFirebase
 import SSLaunchScreen
 import SSNotification
 import SSRoot
@@ -68,7 +69,10 @@ enum ScreenType {
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @ObservedObject var contentViewObject: ContentViewObject
+  @ObservedObject
+  var contentViewObject: ContentViewObject
+  @State
+  var isShowDefaultNetworkErrorAlert: Bool = false
 
   private var subscriptions: Set<AnyCancellable> = .init()
 
@@ -122,6 +126,23 @@ public struct ContentView: View {
         }
       }
       .analyticsScreen(name: contentViewObject.type.title)
+      .sSAlert(
+        isPresented: $isShowDefaultNetworkErrorAlert,
+        messageAlertProperty: .init(
+          titleText: "네트워크 에러",
+          contentText: "네트워크 오류가 발생했어요",
+          checkBoxMessage: .none,
+          buttonMessage: .singleButton("닫기"),
+          didTapCompletionButton: { _ in }
+        )
+      )
+      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.logError)) { errorObjectOutput in
+        let errorObject = errorObjectOutput.object as? [String: Any] ?? [:]
+        ssErrorLogEvent(parameters: errorObject)
+      }
+      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.showDefaultNetworkErrorAlert)) { _ in
+        isShowDefaultNetworkErrorAlert = true
+      }
   }
 
   @ViewBuilder

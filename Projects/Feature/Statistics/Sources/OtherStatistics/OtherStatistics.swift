@@ -165,7 +165,7 @@ struct OtherStatistics {
         relationshipId: .init(relationship),
         categoryId: .init(category)
       )
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
 
         let response = try await network.getSUSUStatistics(param)
@@ -175,7 +175,7 @@ struct OtherStatistics {
       }
 
     case .initialUpdateSUSUStatistics:
-      return .run { send in
+      return .ssRun { send in
         // update Value
         guard let birth = try await network.getMyBirth() else {
           return

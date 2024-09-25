@@ -146,7 +146,7 @@ struct MyPageMain {
         return .send(.inner(.updateMyInformation(info)))
       }
       state.isLoading = true
-      return .run { send in
+      return .ssRun { send in
         let dto = try await network.getMyInformation()
         MyPageSharedState.shared.setUserInfoResponseDTO(dto)
         await send(.inner(.updateMyInformation(dto)))
@@ -156,13 +156,13 @@ struct MyPageMain {
       }
 
     case .logout:
-      return .run { send in
+      return .ssRun { send in
         try? await network.logout()
         await send(.inner(.pushOnboarding))
       }
 
     case .resign:
-      return .run { send in
+      return .ssRun { send in
         do {
           let OAuthType = SSOAuthManager.getOAuthType() ?? .KAKAO
           switch OAuthType {

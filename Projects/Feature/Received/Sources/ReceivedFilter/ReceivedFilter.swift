@@ -78,7 +78,7 @@ struct ReceivedFilter {
       return .none
 
     case .tappedConfirmButton:
-      return .run { _ in
+      return .ssRun { _ in
         await dismiss()
       }
 
@@ -141,7 +141,7 @@ struct ReceivedFilter {
     switch action {
     case .getSelectableItems:
       state.isLoading = true
-      return .run { send in
+      return .ssRun { send in
         let items = try await network.requestFilterItems().filter { $0.isCustom == false }
         await send(.inner(.updateSelectableItems(items)))
         await send(.inner(.isLoading(false)))

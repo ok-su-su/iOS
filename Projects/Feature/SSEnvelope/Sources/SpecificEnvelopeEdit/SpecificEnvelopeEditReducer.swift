@@ -255,7 +255,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         customRelation: customRelation
       )
 
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let updatedFriendID = try await network.editFriends(friendID, friendRequestBody)
         await send(.async(.updateEnvelopes(friendID: updatedFriendID)))
@@ -290,7 +290,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       )
 
       let envelopeID = state.editHelper.envelopeDetailProperty.id
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
         UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)

@@ -63,7 +63,7 @@ public struct CreateEnvelopeRelation {
         return .none
       }
       state.isOnAppear = isAppear
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let defaultsItems = try await network.getRelationItems()
         await send(.inner(.update(defaultsItems)))

@@ -159,7 +159,7 @@ struct VoteDetailReducer {
       }
       return state.taskManager.isRunningTask() ?
         .none :
-        .run { _ in
+        .ssRun { _ in
           votePublisher.updateVoteList()
           await dismiss()
         }
@@ -199,13 +199,13 @@ struct VoteDetailReducer {
   func asyncAction(_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getVoteDetail:
-      return .run { [id = state.id] send in
+      return .ssRun { [id = state.id] send in
         let responseProperty = try await network.voteDetail(id)
         await send(.inner(.updateVoteDetail(responseProperty)))
       }
 
     case .deleteVote:
-      return .run { [id = state.id] _ in
+      return .ssRun { [id = state.id] _ in
         try await network.deleteVote(id)
         votePublisher.deleteVote(ID: id)
         await dismiss()

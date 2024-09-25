@@ -108,7 +108,7 @@ public struct SpecificEnvelopeDetailReducer {
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .deleteEnvelope:
-      return .run { [id = state.envelopeDetailProperty.id] _ in
+      return .ssRun { [id = state.envelopeDetailProperty.id] _ in
         try await network.deleteEnvelope(id)
         specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
@@ -118,7 +118,7 @@ public struct SpecificEnvelopeDetailReducer {
       return .send(.delegate(.tappedEnvelopeEditButton(property)))
 
     case .getEnvelopeDetailProperty:
-      return .run { [id = state.envelopeID] send in
+      return .ssRun { [id = state.envelopeID] send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getEnvelopeDetailPropertyByEnvelopeID(id)
         await send(.inner(.updateEnvelopeDetailProperty(property)))

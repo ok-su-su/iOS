@@ -20,4 +20,7 @@ public enum SSNotificationName {
 
   public static let goMyPageEditMyProfile = Notification.Name("goMyPageEditMyProfile")
   public static let goEditProfile = Notification.Name("goEditProfile")
+
+  public static let showDefaultNetworkErrorAlert = Notification.Name("ShowDefaultNetworkErrorAlert")
+  public static let logError = Notification.Name("ErrorLog")
 }

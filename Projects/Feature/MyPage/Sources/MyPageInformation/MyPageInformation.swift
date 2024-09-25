@@ -95,7 +95,7 @@ struct MyPageInformation: Reducer {
         return .none
 
       case .async(.getMyInformation):
-        return .run { send in
+        return .ssRun { send in
           await send(.inner(.isLoading(true)))
           let dto = try await network.getMyInformation()
           await send(.inner(.updateUserInfo(dto)))
