@@ -19,7 +19,7 @@ public struct CreateEnvelopeAdditionalSection {
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.State
     var pushable: Bool = true
 
-    public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
+    public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>, createType: CreateType = .default) {
       _createEnvelopeProperty = createEnvelopeProperty
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
@@ -27,6 +27,26 @@ public struct CreateEnvelopeAdditionalSection {
         isCustomItem: .init(nil),
         multipleSelectionCount: 20
       )
+      // Set View Defaults Item
+      updateDefaultsItem(createType)
+    }
+
+    private mutating func updateDefaultsItem(_ createType: CreateType) {
+      createEnvelopeProperty.additionalSectionHelper.updateAdditionalSectionItems(createType.toCreateEnvelopeAdditionalSectionProperty)
+    }
+
+    public enum CreateType: Equatable {
+      case `default`
+      case items([CreateEnvelopeAdditionalSectionSceneType])
+
+      var toCreateEnvelopeAdditionalSectionProperty: [CreateEnvelopeAdditionalSectionProperty] {
+        switch self {
+        case .default:
+          CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
+        case let .items(items):
+          items.map { .init(type: $0) }
+        }
+      }
     }
   }
 
