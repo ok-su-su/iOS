@@ -81,19 +81,28 @@ public final class SSTokenManager {
     SSKeychain.shared.delete(key: String(describing: SSToken.self))
   }
 
-  private let userIDKey: String = "UserID"
+  private let userIDKey: String = "SUSU_USER_ID"
   public func saveUserID(_ val: Int64) throws {
     let dataOfUserID = try encoder.encode(val)
-    try SSKeychain.shared.save(key: userIDKey, value: dataOfUserID)
+    SSKeychain.shared.save(key: userIDKey, data: dataOfUserID)
   }
 
   public func getUserID() -> Int64? {
-    guard let userIDData = SSKeychain.shared.load(key: userIDKey),
-          let userID = try? decoder.decode(Int64.self, from: userIDData)
+    guard let userIDData = SSKeychain.shared.load(key: userIDKey)
     else {
       return nil
     }
+    let userID = try? decoder.decode(Int64.self, from: userIDData)
     return userID
+  }
+
+  public func removeUserID() {
+    SSKeychain.shared.delete(key: userIDKey)
+  }
+
+  public func removeCurrentUserInformation() {
+    removeUserID()
+    removeToken()
   }
 
   private init() {}

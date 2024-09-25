@@ -34,15 +34,27 @@ public struct RefreshTokenTargetType: SSNetworkTargetType {
 // MARK: - ValidTokenTargetType
 
 public struct ValidTokenTargetType: SSNetworkTargetType {
-  public var additionalHeader: [String: String]? = nil
+  public let additionalHeader: [String: String]? = nil
 
-  public var path: String = "envelopes"
+  public let path: String = "envelopes"
 
-  public var method: Moya.Method = .get
+  public let method: Moya.Method = .get
 
-  public var task: Moya.Task {
-    .requestPlain
-  }
+  public let task: Moya.Task = .requestPlain
+  init() {}
+}
+
+// MARK: - MyInfoTargetType
+
+public struct MyInfoTargetType: SSNetworkTargetType {
+  public let additionalHeader: [String: String]? = nil
+
+  public let path: String = "users/my-info"
+
+  public let method: Moya.Method = .get
+
+  public let task: Moya.Task = .requestPlain
+  init() {}
 }
 
 // MARK: - RefreshResponseDTO

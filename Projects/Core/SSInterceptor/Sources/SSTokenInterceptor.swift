@@ -144,4 +144,17 @@ public extension SSTokenInterceptor {
       os_log("\(error)")
     }
   }
+
+  func setUserNameByAccessToken() async throws {
+    let provider = MoyaProvider<MyInfoTargetType>(session: .init(interceptor: Self.shared))
+    let response: UserInfoResponse = try await provider.request(.init())
+    let userID = response.id
+    try SSTokenManager.shared.saveUserID(userID)
+  }
+}
+
+// MARK: - UserInfoResponse
+
+private struct UserInfoResponse: Decodable {
+  let id: Int64
 }

@@ -119,7 +119,7 @@ struct MyPageMain {
 
     case .pushOnboarding:
       NotificationCenter.default.post(name: SSNotificationName.logout, object: nil)
-      SSTokenManager.shared.removeToken()
+      SSTokenManager.shared.removeCurrentUserInformation()
       return .none
 
     case let .updateIsShowUpdateSUSUVersion(version):
@@ -176,6 +176,7 @@ struct MyPageMain {
           }
         } catch {
           os_log(.fault, "\(error.localizedDescription)")
+          throw error
         }
         await send(.inner(.pushOnboarding))
       }
