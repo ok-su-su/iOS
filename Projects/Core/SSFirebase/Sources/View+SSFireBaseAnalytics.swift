@@ -20,11 +20,18 @@ public extension View {
 }
 
 public func ssLogEvent(
-  _: MarketingModulesMain,
+  _ viewType: MarketingModulesMain,
   eventName: String = "",
   eventType: SSLogEventType = .none,
   extraParameters: [String: Any] = [:]
 ) {
   let eventName = eventName + eventType.description
-  Analytics.logEvent(eventName.description, parameters: extraParameters)
+  Analytics.logEvent(viewType.eventLogName(eventName), parameters: extraParameters)
+}
+
+public func ssErrorLogEvent(
+  eventName: String = "ErrorEvent",
+  parameters: [String: Any]
+) {
+  Analytics.logEvent(eventName, parameters: parameters)
 }

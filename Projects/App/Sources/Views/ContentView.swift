@@ -9,6 +9,7 @@ import OSLog
 import Received
 import Sent
 import SSAlert
+import SSFirebase
 import SSLaunchScreen
 import SSNotification
 import SSRoot
@@ -68,7 +69,7 @@ enum ScreenType {
 // MARK: - ContentView
 
 public struct ContentView: View {
-  @ObservedObject 
+  @ObservedObject
   var contentViewObject: ContentViewObject
   @State
   var isShowDefaultNetworkErrorAlert: Bool = false
@@ -135,7 +136,9 @@ public struct ContentView: View {
           didTapCompletionButton: { _ in }
         )
       )
-      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.showDefaultNetworkErrorAlert)) { _ in
+      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.showDefaultNetworkErrorAlert)) { errorObject in
+        let errorObject = errorObject.object as? [String: Any] ?? [:]
+        ssErrorLogEvent(parameters: errorObject)
         isShowDefaultNetworkErrorAlert = true
       }
   }
