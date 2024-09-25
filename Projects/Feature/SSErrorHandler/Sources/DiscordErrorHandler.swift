@@ -11,6 +11,8 @@ import Foundation
 import OSLog
 import SSNotification
 
+// MARK: - DiscordErrorHandler
+
 public final class DiscordErrorHandler {
   public static let shared = DiscordErrorHandler()
   var subscription: AnyCancellable?
@@ -39,29 +41,45 @@ public final class DiscordErrorHandler {
       os_log("Discord Web Hook URL이 잘못되었습니다. 확인해주세요")
       return
     }
+    let messages = message.splitByLength(1500)
 
+    Task {
+      do {
+        for message in messages {
+          try await sendDiscordMessage(message, url: webhookURL)
+        }
+        os_log("Success to send discord message")
+      } catch {
+        os_log("Fail to send discord message")
+      }
+    }
+  }
+
+  @Sendable private static func sendDiscordMessage(_ message: String, url: URL) async throws {
     let payload: [String: Any] = ["content": message]
-    // JSON 데이터로 변환
     guard let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []) else {
       os_log("Json 직렬화가 불가능 합니다. 확인해주세요")
       return
     }
-
-    // URL 요청 설정
-    var request = URLRequest(url: webhookURL)
+    var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.httpBody = jsonData
+    _ = try await URLSession.shared.data(for: request)
+  }
+}
 
-    // URLSession을 통해 요청 전송
-    let task = URLSession.shared.dataTask(with: request) { _, _, error in
-      if let error {
-        os_log("Error sending message to Discord: \(error)")
-      } else {
-        os_log("Message sent successfully to Discord")
-      }
+private extension String {
+  func splitByLength(_ length: Int) -> [String] {
+    var result: [String] = []
+    var currentIndex = startIndex
+
+    while currentIndex < endIndex {
+      let nextIndex = index(currentIndex, offsetBy: length, limitedBy: endIndex) ?? endIndex
+      result.append(String(self[currentIndex ..< nextIndex]))
+      currentIndex = nextIndex
     }
 
-    task.resume()
+    return result
   }
 }

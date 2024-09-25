@@ -25,10 +25,13 @@ public extension Effect {
       NotificationCenter.default.post(name: SSNotificationName.showDefaultNetworkErrorAlert, object: nil)
     }
     return .run(priority: priority, operation: operation) { error, send in
+
+      var errorDescription = String(customDumping: error)
+
       // LogError
       let errorMessage =
         """
-        ErrorMessage: \(String(customDumping: error))
+        \(errorDescription)
         FileID: \(fileID.description)
         filePath: \(filePath.description)
         line: \(line.description)
@@ -57,5 +60,20 @@ public extension Effect {
         column: column
       )
     }
+  }
+}
+
+extension Array {
+  subscript(safe index: Int) -> Element? {
+    indices.contains(index) ? self[index] : nil
+  }
+
+  subscript(safeBounds bounds: Range<Int>) -> ArraySlice<Element>? {
+    let safeLowerBound = Swift.max(bounds.lowerBound, startIndex)
+    let safeUpperBound = Swift.min(bounds.upperBound, endIndex)
+    guard safeLowerBound < safeUpperBound else {
+      return nil
+    }
+    return self[safeLowerBound ..< safeUpperBound]
   }
 }
