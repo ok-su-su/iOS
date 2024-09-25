@@ -8,6 +8,7 @@
 
 import Designsystem
 import FirebaseCore
+import SSErrorHandler
 import SwiftUI
 import UIKit
 
@@ -18,6 +19,7 @@ class MyAppDelegate: NSObject, UIApplicationDelegate {
   ) -> Bool {
     Font.registerFont()
     registerFirebase()
+    DiscordErrorHandler.shared.registerDiscordLogSystem()
     return true
   }
 

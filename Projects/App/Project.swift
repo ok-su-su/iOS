@@ -20,6 +20,7 @@ let project = Project.makeModule(
       .feature(.onboarding),
       .feature(.sSLaunchScreen),
       .feature(.sSLogin),
+      .feature(.sSErrorHandler),
     ],
     testDependencies: [],
     infoPlist: [
@@ -27,7 +28,7 @@ let project = Project.makeModule(
       "UILaunchStoryboardName": "LaunchScreen",
       "BGTaskSchedulerPermittedIdentifiers": "com.oksusu.susu.app",
       "CFBundleShortVersionString": "1.0.5",
-      "CFBundleVersion": "2024092430",
+      "CFBundleVersion": "2024092531",
       "UIUserInterfaceStyle": "Light",
       "ITSAppUsesNonExemptEncryption": "No",
       "AppstoreAPPID": "6503701515",

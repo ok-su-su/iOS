@@ -15,7 +15,7 @@ import SSNetwork
 struct HealthCheck: SSNetworkTargetType {
   init() {}
   var additionalHeader: [String: String]? { nil }
-  var path: String { "healthh" }
+  var path: String { "health" }
   var method: Moya.Method { .get }
   var task: Moya.Task { .requestPlain }
 }

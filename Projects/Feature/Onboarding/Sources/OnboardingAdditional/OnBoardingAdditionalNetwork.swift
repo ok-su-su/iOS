@@ -7,30 +7,30 @@
 //
 
 import AppleLogin
+import Dependencies
 import Foundation
 import KakaoLogin
 import Moya
-import OSLog
+import SSInterceptor
 import SSNetwork
 
 // MARK: - OnBoardingAdditionalNetwork
 
-struct OnBoardingAdditionalNetwork: Equatable {
-  static func == (_: OnBoardingAdditionalNetwork, _: OnBoardingAdditionalNetwork) -> Bool {
-    return true
-  }
-
+struct OnBoardingAdditionalNetwork {
   enum Network: SSNetworkTargetType {
     case signupByKakao(SingUpBodyDTOData: Data, token: String)
     case signupByApple(SingUpBodyDTOData: Data, token: String)
+    case myInfo
 
     var additionalHeader: [String: String]? { nil }
     var path: String {
       switch self {
       case .signupByKakao:
-        return "oauth/KAKAO/sign-up"
+        "oauth/KAKAO/sign-up"
       case .signupByApple:
-        return "oauth/APPLE/sign-up"
+        "oauth/APPLE/sign-up"
+      case .myInfo:
+        "users/my-info"
       }
     }
 
@@ -41,16 +41,19 @@ struct OnBoardingAdditionalNetwork: Equatable {
     var task: Moya.Task {
       switch self {
       case let .signupByKakao(singUpBodyDTO, token):
-        return .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
+        .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
       case let .signupByApple(singUpBodyDTO, token):
-        return .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
+        .requestCompositeData(bodyData: singUpBodyDTO, urlParameters: ["accessToken": token])
+      case .myInfo:
+        .requestPlain
       }
     }
   }
 
-  private let provider: MoyaProvider<Network> = .init()
+  private static let provider: MoyaProvider<Network> = .init()
 
-  func requestSignUp(body: SignUpBodyProperty) async throws -> SignUpResponseDTO {
+  var requestSignUp: @Sendable (_ body: SignUpBodyProperty) async throws -> SignUpResponseDTO
+  @Sendable private static func _requestSignUp(_ body: SignUpBodyProperty) async throws -> SignUpResponseDTO {
     let bodyData = try body.makeBodyData()
     switch body.getLoginType() {
     case .KAKAO:
@@ -72,6 +75,29 @@ struct OnBoardingAdditionalNetwork: Equatable {
     case .none:
       throw OnboardingSignUpError.requestBodyIsInvalid
     }
+  }
+
+  var requestUserID: @Sendable () async throws -> Int64
+  @Sendable private static func _requestUserID() async throws -> Int64 {
+    let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+    let response: UserInfoResponse = try await provider.request(.myInfo)
+    return response.id
+  }
+}
+
+// MARK: DependencyKey
+
+extension OnBoardingAdditionalNetwork: DependencyKey {
+  static var liveValue: OnBoardingAdditionalNetwork = .init(
+    requestSignUp: _requestSignUp,
+    requestUserID: _requestUserID
+  )
+}
+
+extension DependencyValues {
+  var onboardingAdditionalNetwork: OnBoardingAdditionalNetwork {
+    get { self[OnBoardingAdditionalNetwork.self] }
+    set { self[OnBoardingAdditionalNetwork.self] = newValue }
   }
 }
 

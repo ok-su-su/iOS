@@ -11,6 +11,7 @@ let project = Project.makeModule(
       .core(.sSNotification),
       .thirdParty(.ComposableArchitecture),
       .thirdParty(.SwiftAsyncMutex),
+      .core(.sSPersistancy),
     ]
   )
 )

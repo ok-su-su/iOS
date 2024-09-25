@@ -26,6 +26,7 @@ public enum Feature: String {
   case sSEnvelope
   case sSEditSingleSelectButton
   case sSLogin
+  case sSErrorHandler
   public var targetName: String {
     return rawValue.prefix(1).capitalized + rawValue.dropFirst()
   }

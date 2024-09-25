@@ -9,9 +9,9 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
-import SSNotification
-
 import SSBottomSelectSheet
+import SSNotification
+import SSPersistancy
 
 // MARK: - OnboardingAdditional
 
@@ -23,7 +23,6 @@ struct OnboardingAdditional {
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
     var helper: OnboardingAdditionalProperty
-    let networkHelper = OnBoardingAdditionalNetwork()
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<BottomSheetYearItem>.State? = nil
 
     init() {
@@ -57,6 +56,8 @@ struct OnboardingAdditional {
   }
 
   enum DelegateAction: Equatable {}
+
+  @Dependency(\.onboardingAdditionalNetwork) var network
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -92,10 +93,17 @@ struct OnboardingAdditional {
         body.setGender(state.helper.selectedGenderItem)
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
-        return .ssRun { [helper = state.networkHelper] _ in
-          let response = try await helper.requestSignUp(body: body)
-          OnboardingAdditionalPersistence.saveToken(response)
-          NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
+        return .ssRun { _ in
+
+          // 화면 전환
+          defer {
+            NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
+          }
+          let response = try await network.requestSignUp(body)
+          try OnboardingAdditionalPersistence.saveToken(response)
+
+          let userID = try await network.requestUserID()
+          try await OnboardingAdditionalPersistence.saveUserID(userID)
         }
       case .scope(.bottomSheet):
         return .none

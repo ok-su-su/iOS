@@ -20,7 +20,6 @@ struct LaunchScreenMain {
 
   enum Action: Equatable {
     case onAppear(Bool)
-    case runTask
     case mandatoryUpdateAlert(Bool)
   }
 
@@ -36,10 +35,8 @@ struct LaunchScreenMain {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         routingPublisher.send(.launchTaskWillRun)
-        return .send(.runTask)
-
-      case .runTask:
         let appVersion = InfoPlistConstants.appVersion
+
         return .run { send in
           if await launchScreenNetwork.getIsMandatoryUpdate(appVersion) {
             await send(.mandatoryUpdateAlert(true))
