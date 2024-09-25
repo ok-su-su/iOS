@@ -81,6 +81,21 @@ public final class SSTokenManager {
     SSKeychain.shared.delete(key: String(describing: SSToken.self))
   }
 
+  private let userIDKey: String = "UserID"
+  public func saveUserID(_ val: Int64) throws {
+    let dataOfUserID = try encoder.encode(val)
+    try SSKeychain.shared.save(key: userIDKey, value: dataOfUserID)
+  }
+
+  public func getUserID() -> Int64? {
+    guard let userIDData = SSKeychain.shared.load(key: userIDKey),
+          let userID = try? decoder.decode(Int64.self, from: userIDData)
+    else {
+      return nil
+    }
+    return userID
+  }
+
   private init() {}
 
   private enum Constants: String {

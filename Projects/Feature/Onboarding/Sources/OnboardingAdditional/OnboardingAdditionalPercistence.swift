@@ -11,17 +11,17 @@ import OSLog
 import SSPersistancy
 
 enum OnboardingAdditionalPersistence {
-  static func saveToken(_ val: SignUpResponseDTO) {
+  static func saveToken(_ val: SignUpResponseDTO) throws {
     let token = SSToken(
       accessToken: val.accessToken,
       accessTokenExp: val.accessTokenExp,
       refreshToken: val.refreshToken,
       refreshTokenExp: val.refreshTokenExp
     )
-    do {
-      try SSTokenManager.shared.saveToken(token)
-    } catch {
-      os_log("토큰 저장에 실패하였습니다.")
-    }
+    try SSTokenManager.shared.saveToken(token)
+  }
+
+  static func saveUserID(_ val: Int64) async throws {
+    try SSTokenManager.shared.saveUserID(val)
   }
 }
