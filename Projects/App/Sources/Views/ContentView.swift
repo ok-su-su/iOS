@@ -136,7 +136,7 @@ public struct ContentView: View {
           didTapCompletionButton: { _ in }
         )
       )
-      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.logError)){ errorObjectOutput in
+      .onReceive(NotificationCenter.default.publisher(for: SSNotificationName.logError)) { errorObjectOutput in
         let errorObject = errorObjectOutput.object as? [String: Any] ?? [:]
         ssErrorLogEvent(parameters: errorObject)
       }
