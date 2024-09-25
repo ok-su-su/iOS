@@ -154,7 +154,7 @@ struct WriteVote {
         boardId: selectedSectionID
       )
 
-      return .run { _ in
+      return .ssRun { _ in
         let response = try await network.createVote(request)
         VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
       }
@@ -166,7 +166,7 @@ struct WriteVote {
       }
       let content = state.helper.voteTextContent
       let updateVoteRequestBody = UpdateVoteRequestBody(boardId: selectedSectionID, content: content)
-      return .run { _ in
+      return .ssRun { _ in
         let response = try await network.updateVote(voteID, updateVoteRequestBody)
         VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
       }

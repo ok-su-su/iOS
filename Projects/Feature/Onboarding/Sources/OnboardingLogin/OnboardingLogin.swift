@@ -68,7 +68,7 @@ struct OnboardingLogin {
       switch action {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
-        return .run { send in
+        return .ssRun { send in
           await send(.inner(.showPieChart))
           await send(.inner(.showPercentageAndPriceText))
         }
@@ -91,7 +91,7 @@ struct OnboardingLogin {
           .throttle(id: CancelID.AppleLogin, for: .seconds(4), scheduler: RunLoop.main, latest: false)
 
       case .async(.loginWithKakaoTalk):
-        return .run(priority: .high) { send in
+        return .ssRun(priority: .high) { send in
           let isSuccessLoginWithKAKAOTalk = await network.loginWithKakao()
           if isSuccessLoginWithKAKAOTalk {
             let kakaoToken = persistence.getToken(.KAKAO)
@@ -116,7 +116,7 @@ struct OnboardingLogin {
         }
         // 어떤 로그인을 통해서 들어왔는지 KeyChain에 저장
         SSOAuthManager.setOAuthType(loginType.OAuthType)
-        return .run { send in
+        return .ssRun { send in
           // 새로운 유저라면
           if await network.isNewUser(loginType: loginType, token: token) {
             await send(.inner(.initSignUpBodyPropertyInSharedStateContainer(loginType)))
@@ -127,7 +127,7 @@ struct OnboardingLogin {
           await send(.async(.loginWithSUSU(loginType: loginType, token: token)))
         }
       case let .async(.loginWithSUSU(loginType: loginType, token: token)):
-        return .run { _ in
+        return .ssRun { _ in
           await network.loginWithSUSU(loginType: loginType, token: token)
           NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
         }

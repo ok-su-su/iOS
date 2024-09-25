@@ -198,7 +198,7 @@ struct SentMain {
         page: page,
         sort: state.sentMainProperty.selectedFilterDial ?? .highestAmount
       )
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let envelopeProperties = try await network.requestSearchFriends(urlParameter)
         await send(.inner(.updateEnvelopes(envelopeProperties)))
@@ -231,7 +231,7 @@ struct SentMain {
     case let .updateEnvelopes(friendID):
       let urlParameter = SearchFriendsParameter(friendIds: [friendID])
       let targetEnvelopeID = state.envelopes.first(where: { $0.envelopeProperty.id == friendID })?.id
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let envelopeProperties = try await network.requestSearchFriends(urlParameter)
         await send(.inner(.overwriteEnvelopes(envelopeProperties)))

@@ -148,7 +148,7 @@ struct ReceivedSearch {
   func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case let .searchLedgerByName(name):
-      return .run { send in
+      return .ssRun { send in
         let items = try await network.searchLedgersByName(name)
         await send(.inner(.updateSearchItems(items)))
       }

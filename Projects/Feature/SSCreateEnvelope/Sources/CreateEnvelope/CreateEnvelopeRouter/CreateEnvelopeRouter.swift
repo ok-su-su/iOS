@@ -67,7 +67,7 @@ struct CreateEnvelopeRouter {
   init() {}
 
   private func requestCreateEnvelope() -> Effect<Action> {
-    return .run { send in
+    return .ssRun { send in
       let friendProperty = CreateFriendRequestShared.getBody()
       await send(.isLoading(true))
       if CreateEnvelopeRequestShared.getFriendID() == nil {
@@ -214,7 +214,7 @@ struct CreateEnvelopeRouter {
         case .memo:
           state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .memo)
         }
-        return .run { send in
+        return .ssRun { send in
           await send(.pushCreateEnvelopeAdditional, animation: .default)
         }
 

@@ -251,7 +251,7 @@ struct ReceivedMain {
       }
 
     case let .updateLedger(id):
-      return .run { send in
+      return .ssRun { send in
         let ledgerProperty = try await network.getLedgerByID(id)
         await send(.inner(.overwriteLedgers([ledgerProperty])))
       }

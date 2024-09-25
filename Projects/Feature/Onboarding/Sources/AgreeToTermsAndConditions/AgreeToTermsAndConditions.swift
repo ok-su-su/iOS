@@ -90,7 +90,7 @@ struct AgreeToTermsAndConditions {
         return .none
 
       case .view(.tappedNextScreenButton):
-        return .run { send in
+        return .ssRun { send in
           await send(.inner(.setSignUpBodyAtSharedStateContainer))
 
           // Navigation
@@ -102,13 +102,13 @@ struct AgreeToTermsAndConditions {
           return .none
         }
 
-        return .run { [helper = state.networkHelper, item] send in
+        return .ssRun { [helper = state.networkHelper, item] send in
           let description = try await helper.requestTermsInformationDetail(id: item.id).description
           await send(.inner(.showDetailTerms(id: id, description: description)))
         }
 
       case .async(.getRequestTermsInformation):
-        return .run(priority: .high) { [helper = state.networkHelper] send in
+        return .ssRun(priority: .high) { [helper = state.networkHelper] send in
           await send(.inner(.isLoading(true)))
           do {
             let dto = try await helper.requestTermsInformation()

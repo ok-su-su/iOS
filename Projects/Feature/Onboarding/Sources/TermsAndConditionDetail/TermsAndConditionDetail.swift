@@ -66,7 +66,7 @@ struct TermsAndConditionDetail {
 
       case .view(.tappedAgreeButton):
         state.item.isCheck = true
-        return .run { _ in
+        return .ssRun { _ in
           await dismiss()
         }
       }

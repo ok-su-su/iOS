@@ -116,7 +116,7 @@ public struct CreateEnvelopeName {
   private func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case let .searchName(val):
-      return .run { send in
+      return .ssRun { send in
         let prevEnvelopes = try await network.searchFriendByName(val)
         await send(.inner(.updateEnvelopes(prevEnvelopes)))
       }

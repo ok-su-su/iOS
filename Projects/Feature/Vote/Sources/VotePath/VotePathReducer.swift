@@ -37,15 +37,15 @@ struct VotePathReducer {
 
       switch type {
       case let .just(optionID): // 단일 투표
-        return .run { _ in
+        return .ssRun { _ in
           try await voteDetailNetwork.executeVote(boardID, optionID)
         }
       case let .overwrite(optionID): // overwrite투표
-        return .run { _ in
+        return .ssRun { _ in
           try await voteDetailNetwork.overwriteVote(boardID, optionID)
         }
       case let .cancel(optionID):
-        return .run { _ in
+        return .ssRun { _ in
           try await voteDetailNetwork.cancelVote(boardID, optionID)
         }
       case .none:

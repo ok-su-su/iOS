@@ -89,7 +89,7 @@ struct CreateLedgerCategory {
   func asyncAction(_: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .getCreateLedgerCategoryItem:
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let items = try await network.getCreateLedgerCategoryItem()
         await send(.inner(.updateItems(items)))

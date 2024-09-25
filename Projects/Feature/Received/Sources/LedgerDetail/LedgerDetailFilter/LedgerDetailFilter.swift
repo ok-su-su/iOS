@@ -134,7 +134,7 @@ struct LedgerDetailFilter {
         state.property.lowestAmount = state.minimumTextValue
         state.property.highestAmount = state.maximumTextValue
       }
-      return .run { _ in
+      return .ssRun { _ in
         await dismiss()
       }
 
@@ -193,7 +193,7 @@ struct LedgerDetailFilter {
       guard let id = state.ledgerProperty?.id else {
         return .none
       }
-      return .run { send in
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         // 초기 친구 검색
         let items = try await network.getInitialDataByLedgerID(id)
@@ -205,12 +205,12 @@ struct LedgerDetailFilter {
       guard let id = state.ledgerProperty?.id else {
         return .none
       }
-      return .run { send in
+      return .ssRun { send in
         let items = try await network.findFriendsBy(.init(name: name, ledgerID: id))
         await send(.inner(.updateItems(items)))
       }
     case .getInitialMaxPriceValue:
-      return .run { send in
+      return .ssRun { send in
         let price = try await network.getMaximumSentValue()
         await send(.inner(.updateMaximumReceivedValue(price)))
       }

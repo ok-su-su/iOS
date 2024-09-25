@@ -82,7 +82,7 @@ struct SentSearch {
       return .none
     case let .tappedSearchItem(id: id):
       let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
-      return .run { _ in
+      return .ssRun { _ in
         // 만약 id검색에 성공한다면 화면 푸쉬를 진행합니다.
         guard let envelopeProperty = try await network.getEnvelopePropertyByID(id) else {
           return
@@ -136,7 +136,7 @@ struct SentSearch {
 
       case .searchEnvelope:
         let currentTextFieldName = state.property.textFieldText
-        return .run { send in
+        return .ssRun { send in
           os_log("검색 시작합니다. \(currentTextFieldName)")
           // 이름을 통해 검색
           async let searchedEnvelopes = network.searchFriendsByName(currentTextFieldName)

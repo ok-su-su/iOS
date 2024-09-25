@@ -63,12 +63,12 @@ struct OnboardingVote {
         if item.title == "" {
           return .none
         }
-        return .run { send in
+        return .ssRun { send in
           await send(.inner(.saveVote))
           OnboardingRouterPublisher.shared.send(.login(.init()))
         }
       case .async(.getVoteItems):
-        return .run { [helper = state.networkHelper] send in
+        return .ssRun { [helper = state.networkHelper] send in
           let items = await helper.getOnboardingVoteItems()
           await send(.inner(.updateVoteItems(items)))
         }

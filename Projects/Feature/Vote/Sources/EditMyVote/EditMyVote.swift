@@ -77,7 +77,7 @@ struct EditMyVote {
       state.selectedHeaderSectionItem = item
       return .none
     case .tappedEditConfirmButton:
-      return .run { _ in
+      return .ssRun { _ in
         await dismiss()
       }
     }
@@ -109,7 +109,7 @@ struct EditMyVote {
   func asyncAction(_: inout State, _ action: Action.AsyncAction) -> Effect<Action> {
     switch action {
     case .getVoteHeaderSectionItems:
-      return .run { send in
+      return .ssRun { send in
         let items = try await network.getVoteCategory()
         await send(.inner(.updateSectionHeaderItems(items)))
         await send(.inner(.isLoading(false)))

@@ -139,7 +139,7 @@ struct LedgerDetailMain {
     // 장부 삭제 플로우
     case .tappedDeleteLedgerButton:
       let id = state.ledgerID
-      return .run { _ in
+      return .ssRun { _ in
         try await network.deleteLedger(id)
         receivedMainUpdatePublisher.deleteLedger(ledgerID: id)
         await dismiss()
@@ -226,7 +226,7 @@ struct LedgerDetailMain {
       return .send(.async(.updateLedgerDetailProperty))
 
     case .waitMutexFree:
-      return .run { [mutex = state.mutexManager] send in
+      return .ssRun { [mutex = state.mutexManager] send in
         await mutex.waitForFinish()
         await send(.inner(.isLoading(false)))
       }
@@ -270,7 +270,7 @@ struct LedgerDetailMain {
       }
     case let .updateEnvelope(envelopeID):
       state.isUpdateLedgerDetail = true
-      return .run { send in
+      return .ssRun { send in
         let envelope = try await network.getEnvelopeByEnvelopeID(envelopeID)
         await send(.inner(.overwriteEnvelopes([envelope])))
         await send(.async(.getLedgerDetailProperty))
@@ -290,7 +290,7 @@ struct LedgerDetailMain {
     // 편집 버튼
     case .header(.tappedDoubleTextButton(.leading)):
       let ledgerProperty = state.ledgerProperty
-      return .run { _ in
+      return .ssRun { _ in
         let category = try await network.getCategories()
         let categoryEditProperty = category.map { CategoryEditProperty(id: $0.id, title: $0.name, isMiscCategory: $0.isMiscCategory) }
         let editState = try LedgerDetailEdit.State(

@@ -46,7 +46,7 @@ struct CreateLedgerRouter {
   func endedScreen(_: inout State, _ endedScreenState: CreateLedgerRouterPath.State) -> Effect<Action> {
     switch endedScreenState {
     case .date:
-      return .run { _ in
+      return .ssRun { _ in
         let requestData = try CreateLedgerSharedState.getRequestBodyData()
         try await network.createLedgers(requestData)
         receivedMainUpdatePublisher.sendUpdatePage()
@@ -66,7 +66,7 @@ struct CreateLedgerRouter {
       switch action {
       case .header(.tappedDismissButton):
         if state.path.isEmpty {
-          return .run { _ in
+          return .ssRun { _ in
             await dismiss()
           }
         }

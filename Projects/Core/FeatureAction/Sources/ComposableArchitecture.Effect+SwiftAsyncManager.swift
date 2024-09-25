@@ -44,6 +44,6 @@ public extension ComposableArchitecture.Effect {
       await mutex.didTask()
     }
 
-    return .run(priority: priority, operation: currentOperation, catch: handler)
+    return .ssRun(priority: priority, operation: currentOperation, catch: handler)
   }
 }
