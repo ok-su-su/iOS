@@ -119,7 +119,14 @@ struct CreateEnvelopeRouter {
       CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(createEnvelopeProperty)))
 
     case .createEnvelopeDate:
-      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(.init(createEnvelopeProperty)))
+      let nextPathState: CreateEnvelopeAdditionalSection.State = switch type {
+      case .sentWithFriendID:
+        .init(createEnvelopeProperty, createType: .items([.isVisited, .gift, .memo]))
+      case .received,
+           .sent:
+        .init(createEnvelopeProperty, createType: .default)
+      }
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(nextPathState))
 
     default:
       break

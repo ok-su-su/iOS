@@ -20,6 +20,10 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
   var selectedID: [Int] = []
   var defaultItems: [Item] = CreateEnvelopeAdditionalSectionSceneType.allCases.map { .init(type: $0) }
 
+  mutating func updateAdditionalSectionItems(_ val: [Item]) {
+    defaultItems = val
+  }
+
   var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
 
   mutating func removeItem(_ id: Int) {
@@ -92,8 +96,8 @@ public struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, 
 
 // MARK: - CreateEnvelopeAdditionalSectionSceneType
 
-enum CreateEnvelopeAdditionalSectionSceneType: String, Equatable, CaseIterable, Identifiable {
-  var id: Int {
+public enum CreateEnvelopeAdditionalSectionSceneType: String, Equatable, CaseIterable, Identifiable {
+  public var id: Int {
     return Int(Self.allCases.firstIndex(of: self)!)
   }
 
