@@ -26,14 +26,15 @@ public extension Effect {
     }
     return .run(priority: priority, operation: operation) { error, send in
       // LogError
-      let errorObject: [String: Any] = [
-        "ErrorMessage": String(customDumping: error),
-        "FileID": fileID.description,
-        "filePath": filePath.description,
-        "line": line.description,
-        "column": column.description,
-      ]
-      NotificationCenter.default.post(name: SSNotificationName.logError, object: errorObject)
+      let errorMessage =
+        """
+        ErrorMessage: \(String(customDumping: error))
+        FileID: \(fileID.description)
+        filePath: \(filePath.description)
+        line: \(line.description)
+        column: \(column.description)
+        """
+      NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
 
       // Select Error Handler
       let currentErrorHandler = handler == nil ? defaultErrorHandler : handler!
