@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import Foundation
 import SSNotification
+import SSPersistancy
 
 public extension Effect {
   static func ssRun(
@@ -37,6 +38,7 @@ public extension Effect {
         line: \(line.description)
         column: \(column.description)
         date: \(Date.now.description)
+        userID: \(SSTokenManager.shared.getUserID()?.description ?? "Unknwon")
         """
       NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
 
