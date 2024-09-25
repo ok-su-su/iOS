@@ -33,6 +33,7 @@ public extension Effect {
         filePath: \(filePath.description)
         line: \(line.description)
         column: \(column.description)
+        date: \(Date.now.description)
         """
       NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
 
