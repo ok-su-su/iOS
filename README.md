@@ -27,10 +27,10 @@
 [//]: # (발표 ppt 내용 보고 추가 예정)
 
 
-## [SUSU Posts](https://maramincho.tistory.com/147)
+## [SUSU Posts](https://maramincho.tistory.com/category/프로젝트/수수-경조사비%20관리%20서비스)
+- [iOS에서 에러 Log를 Discord + FireBase로 전달](https://maramincho.tistory.com/151)
 - [iOS 4개월치 회고, 열길 물속은 알아도 한길 사람속은 모른다.](https://maramincho.tistory.com/150)
 - [“UIKit이 좋아 SwiftUI가 좋아?”, “평소에? 아니면 오늘?” (수수 TCA + SwiftUI 적용기)](https://disquiet.io/@daham0514/makerlog/ui-kit이-좋아-swift-ui가-좋아-평소에-아니면-오늘-수수-tca-swift-ui-적용기?commentId=69128)
-- [TCA로 여러개의 병렬로 Network요청 보내고 한번에 View Update 하기 (Using Isolated Task Manager)](https://maramincho.tistory.com/147)
 
 
 
