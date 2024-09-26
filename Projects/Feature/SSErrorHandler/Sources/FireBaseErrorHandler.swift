@@ -6,14 +6,13 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import Combine
+import FirebaseAnalytics
 import Foundation
 import OSLog
 import SSNotification
-import FirebaseAnalytics
 
-// MARK: - DiscordErrorHandler
+// MARK: - FireBaseErrorHandler
 
 public final class FireBaseErrorHandler {
   public static let shared = FireBaseErrorHandler()
