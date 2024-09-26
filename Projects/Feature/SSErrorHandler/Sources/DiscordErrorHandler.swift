@@ -41,7 +41,7 @@ public final class DiscordErrorHandler {
       os_log("Discord Web Hook URL이 잘못되었습니다. 확인해주세요")
       return
     }
-    let messages = message.splitByLength(1500)
+    let messages = message.splitByLength(1800)
 
     Task {
       do {
