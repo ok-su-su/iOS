@@ -281,6 +281,8 @@ extension MyPageMain {
     case .privacyPolicy:
       MyPageRouterAndPathPublisher.route(.privacyPolicy)
       return .none
+    case .exportFromExcel:
+      return .none
     }
   }
 
