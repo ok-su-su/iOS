@@ -296,7 +296,6 @@ extension MyPageMain {
       return .run { send in
         let excelData = try await network.downloadExcel()
         let savedExcelFileURL = try saveExcelData(excelData)
-        print(savedExcelFileURL)
         await send(.inner(.updateSavedExcelFileURL(savedExcelFileURL)))
         await send(.view(.isShowExcelActivityView(true)))
       }
