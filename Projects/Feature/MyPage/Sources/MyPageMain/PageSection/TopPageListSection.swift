@@ -9,8 +9,8 @@
 import Foundation
 
 enum TopPageListSection: Int, Identifiable, Equatable, CaseIterable, MyPageMainItemListCellItemable {
-  case privacyPolicy
   case exportFromExcel
+  case privacyPolicy
 
   var id: Int {
     return rawValue

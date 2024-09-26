@@ -195,6 +195,13 @@ struct MyPageMainView: View {
     makeNavigationStackView {
       makeMyPageRootView()
     }
+    .sheet(isPresented: $store.isShowExcelActivityView.sending(\.view.isShowExcelActivityView)) {
+      if let fileURL = store.downloadedExcelFileURL {
+        ActivityView(activityItems: [fileURL], applicationActivities: nil)
+          .padding(.top, 25)
+          .presentationDetents([.medium, .large])
+      }
+    }
     .sSAlert(
       isPresented: $store.pathState.presentLogoutAlert.sending(\.scope.pathAction.present.presentLogoutAlert),
       messageAlertProperty: .init(
