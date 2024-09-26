@@ -17,4 +17,5 @@ enum MyPageRouterPath: Equatable {
   case appVersion
   case logout
   case resign
+  case exportFromExcel
 }

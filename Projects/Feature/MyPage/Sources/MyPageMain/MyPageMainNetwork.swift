@@ -60,6 +60,12 @@ struct MyPageMainNetwork {
     }
     try await provider.request(.withdrawApple(identityToken: identity))
   }
+
+  var downloadExcel: () async throws -> Data
+  private static func _downloadExcel() async throws -> Data {
+    let data: Data = try await provider.request(.downloadExcel)
+    return data
+  }
 }
 
 extension DependencyValues {
@@ -78,7 +84,8 @@ extension MyPageMainNetwork: DependencyKey {
     logout: _logout,
     resign: _resign,
     getAppstoreVersion: _getAppstoreVersion,
-    resignWithApple: _resignWithApple
+    resignWithApple: _resignWithApple,
+    downloadExcel: _downloadExcel
   )
 
   private enum AppstoreNetwork: TargetType {
@@ -106,6 +113,7 @@ extension MyPageMainNetwork: DependencyKey {
     case logout
     case withdraw
     case withdrawApple(identityToken: String)
+    case downloadExcel
 
     var additionalHeader: [String: String]? { return nil }
     var path: String {
@@ -119,6 +127,8 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         "auth/withdraw"
+      case .downloadExcel:
+        "excel/all-envelopes"
       }
     }
 
@@ -133,6 +143,8 @@ extension MyPageMainNetwork: DependencyKey {
       case .withdraw,
            .withdrawApple:
         .post
+      case .downloadExcel:
+        .get
       }
     }
 
@@ -147,6 +159,8 @@ extension MyPageMainNetwork: DependencyKey {
         .requestPlain
       case let .withdrawApple(token):
         .requestParameters(parameters: ["appleAccessToken": token], encoding: URLEncoding.queryString)
+      case .downloadExcel:
+        .requestPlain
       }
     }
   }

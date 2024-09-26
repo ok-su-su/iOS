@@ -38,6 +38,9 @@ struct MyPageMain {
     var bottomSectionList: IdentifiedArrayOf<MyPageMainItemListCell<BottomPageSection>.State>
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
+    var isShowExcelActivityView: Bool = false
+    var downloadedExcelFileURL: URL? = nil
+
     var pathState: MyPageRouterAndPathReducer.State = .init()
 
     init() {}
@@ -58,6 +61,7 @@ struct MyPageMain {
     case tappedMyPageInformationSection
     case tappedLogOut
     case tappedResignButton
+    case isShowExcelActivityView(Bool)
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -85,6 +89,10 @@ struct MyPageMain {
 
     case .tappedResignButton:
       return .send(.async(.resign))
+
+    case let .isShowExcelActivityView(val):
+      state.isShowExcelActivityView = val
+      return .none
     }
   }
 
@@ -93,17 +101,7 @@ struct MyPageMain {
     case isLoading(Bool)
     case pushOnboarding
     case updateIsShowUpdateSUSUVersion(String?)
-  }
-
-  private func handleBottomSection(_: inout State, section: BottomPageSection) -> Effect<Action> {
-    switch section {
-    case .logout:
-      MyPageRouterAndPathPublisher.route(.logout)
-      return .none
-    case .resign:
-      MyPageRouterAndPathPublisher.route(.resign)
-      return .none
-    }
+    case updateSavedExcelFileURL(URL)
   }
 
   /// InnerAction 처리 함수
@@ -128,6 +126,10 @@ struct MyPageMain {
         let subtitle = state.isLatestVersion ? state.currentVersionText : "업데이트 하기"
         return .send(.scope(.middleSectionList(.element(id: appVersionStateID, action: .updateSubtitle(subtitle)))))
       }
+      return .none
+
+    case let .updateSavedExcelFileURL(url):
+      state.downloadedExcelFileURL = url
       return .none
     }
   }
@@ -276,11 +278,27 @@ extension Reducer where State == MyPageMain.State, Action == MyPageMain.Action {
 }
 
 extension MyPageMain {
+  private static let excelFileName: String = "경조사비(수수)기록 엑셀 파일.xlsx"
+  private func saveExcelData(_ data: Data) throws -> URL {
+    let tempDirectory = FileManager.default.temporaryDirectory
+    let fileURL = tempDirectory.appendingPathComponent(Self.excelFileName)
+    try data.write(to: fileURL)
+    return fileURL
+  }
+
   private func handleTopSection(_: inout State, section: TopPageListSection) -> Effect<Action> {
     switch section {
     case .privacyPolicy:
       MyPageRouterAndPathPublisher.route(.privacyPolicy)
       return .none
+
+    case .exportFromExcel:
+      return .run { send in
+        let excelData = try await network.downloadExcel()
+        let savedExcelFileURL = try saveExcelData(excelData)
+        await send(.inner(.updateSavedExcelFileURL(savedExcelFileURL)))
+        await send(.view(.isShowExcelActivityView(true)))
+      }
     }
   }
 
@@ -290,6 +308,17 @@ extension MyPageMain {
       if !state.isLatestVersion {
         SSCommonRouting.openAppStore()
       }
+      return .none
+    }
+  }
+
+  private func handleBottomSection(_: inout State, section: BottomPageSection) -> Effect<Action> {
+    switch section {
+    case .logout:
+      MyPageRouterAndPathPublisher.route(.logout)
+      return .none
+    case .resign:
+      MyPageRouterAndPathPublisher.route(.resign)
       return .none
     }
   }

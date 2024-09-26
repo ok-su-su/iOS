@@ -70,6 +70,9 @@ struct MyPageRouterAndPathReducer {
     case .feedBack:
       state.presentFeedBack = true
       return .none
+
+    case .exportFromExcel:
+      return .none
     }
   }
 
