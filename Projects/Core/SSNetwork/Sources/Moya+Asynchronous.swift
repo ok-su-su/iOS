@@ -61,14 +61,20 @@ public extension MoyaProvider {
           continuation.resume(with: .failure(MoyaError.statusCode(response)))
 
         case let .failure(error):
+          let willSendError: Error
           switch error {
           case let .statusCode(response):
             let requestData = String(data: response.request?.httpBody, encoding: .utf8)
-            let susuError = SUSUError(response: response, requestData: requestData)
-            continuation.resume(throwing: error)
+            willSendError = SUSUError(error: error, response: response, requestData: requestData)
+
+          case let .underlying(error, response):
+            let requestData = String(data: response?.request?.httpBody, encoding: .utf8)
+            willSendError = SUSUError(error: error, response: response, requestData: requestData)
+
           default:
-            continuation.resume(throwing: error)
+            willSendError = error
           }
+          continuation.resume(throwing: willSendError)
         }
       }
     }
@@ -115,10 +121,19 @@ public extension MoyaProvider {
       }
     }
   }
+}
 
-  struct SUSUError: LocalizedError {
-    let response: Moya.Response
-    let requestData: String?
+// MARK: - SUSUError
+
+public struct SUSUError<E: Error>: LocalizedError {
+  let error: E
+  let response: Moya.Response?
+  let requestData: String?
+
+  public init(error: E, response: Moya.Response?, requestData: String?) {
+    self.error = error
+    self.response = response
+    self.requestData = requestData
   }
 }
 
@@ -129,7 +144,7 @@ struct SUSUErrorResponseDTO: Decodable {
   let reason: String
 }
 
-fileprivate extension String {
+private extension String {
   init?(data: Data?, encoding: String.Encoding) {
     guard let data else {
       return nil
