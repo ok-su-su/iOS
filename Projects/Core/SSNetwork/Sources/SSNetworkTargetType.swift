@@ -53,11 +53,14 @@ enum XCConfigKey: String {
 
 enum DefaultHeaderValue: String, CaseIterable {
   case contentType
+  case AcceptEncoding
 
   var value: String {
     switch self {
     case .contentType:
       return "application/json"
+    case .AcceptEncoding:
+      return "Accept-Encoding"
     }
   }
 
@@ -65,6 +68,8 @@ enum DefaultHeaderValue: String, CaseIterable {
     switch self {
     case .contentType:
       return "Content-type"
+    case .AcceptEncoding:
+      return "gzip"
     }
   }
 }
