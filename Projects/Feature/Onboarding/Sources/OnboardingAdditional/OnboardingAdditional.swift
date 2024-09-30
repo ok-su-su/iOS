@@ -94,7 +94,6 @@ struct OnboardingAdditional {
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
         return .ssRun { _ in
-
           // 화면 전환
           defer {
             NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)

@@ -35,7 +35,12 @@ struct OnBoardingAdditionalNetwork {
     }
 
     var method: Moya.Method {
-      .post
+      switch self {
+      case .myInfo:
+        .get
+      default:
+        .post
+      }
     }
 
     var task: Moya.Task {
