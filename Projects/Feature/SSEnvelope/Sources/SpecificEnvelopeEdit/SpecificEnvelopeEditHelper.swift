@@ -13,6 +13,20 @@ import SSRegexManager
 // MARK: - SpecificEnvelopeEditHelper
 
 public struct SpecificEnvelopeEditHelper: Equatable {
+  var envelopeEditProperties: [EnvelopeEditPropertiable] {
+    [
+      priceProperty,
+      eventSectionButtonHelper,
+      relationSectionButtonHelper,
+      nameEditProperty,
+      dateEditProperty,
+      visitedSectionButtonHelper,
+      giftEditProperty,
+      contactEditProperty,
+      memoEditProperty,
+    ]
+  }
+
   var envelopeDetailProperty: EnvelopeDetailProperty
 
   var priceProperty: PriceEditProperty
@@ -154,15 +168,9 @@ public struct SpecificEnvelopeEditHelper: Equatable {
   }
 
   func isValidToSave() -> Bool {
-    (priceProperty.isValid) &&
-      (eventSectionButtonHelper.isValid()) &&
-      (nameEditProperty.isValid) &&
-      (relationSectionButtonHelper.isValid()) &&
-      (memoEditProperty.isValid) &&
-      (contactEditProperty.isValid) &&
-      (giftEditProperty.isValid) &&
-      (visitedEditProperty.isValid)
-    // 데이트는 항상 참이니까 제외
+    let isChanged = !envelopeEditProperties.filter(\.isChanged).isEmpty
+    let isValid = envelopeEditProperties.filter { $0.isValid == false }.isEmpty
+    return isValid && isChanged
   }
 }
 
@@ -172,5 +180,22 @@ private extension EnvelopeDetailProperty {
       return nil
     }
     return hasVisited ? VisitedSelectButtonItem.yes.id : VisitedSelectButtonItem.no.id
+  }
+}
+
+// MARK: - SingleSelectButtonHelper + EnvelopeEditPropertiable
+
+extension SingleSelectButtonHelper: EnvelopeEditPropertiable {
+  var isValid: Bool {
+    isValid()
+  }
+
+  var isChanged: Bool {
+    // 커스텀 아이템이 되었고, 과거에 커스텀 아이템 타이틀이 존재했다면
+    if let initialCustomTitle = initialSelectedCustomTitle, isCustomItemSelected {
+      return initialCustomTitle != selectedItem?.title
+    }
+    // 커스텀 아이템이 선택되지 않았다면
+    return initialSelectedID != selectedItem?.id
   }
 }

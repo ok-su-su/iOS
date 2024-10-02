@@ -21,6 +21,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
   public var customTextFieldPrompt: String?
   public var isSaved: Bool = false
   public var isEssentialProperty = true
+  public let initialSelectedCustomTitle: String?
   public let initialSelectedID: Item.ID?
 
   public var allItems: [Item] {
@@ -42,6 +43,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     self.titleText = titleText
     self.items = items
     self.isCustomItem = isCustomItem
+    initialSelectedCustomTitle = isCustomItem?.title
     self.initialSelectedID = initialSelectedID
     self.customTextFieldPrompt = customTextFieldPrompt
     self.isEssentialProperty = isEssentialProperty
