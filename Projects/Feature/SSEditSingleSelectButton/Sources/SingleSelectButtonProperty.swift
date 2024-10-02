@@ -86,6 +86,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
   }
 
   public mutating func resetCustomTextField() {
+    selectedItem = nil
     isCustomItem?.title = ""
     isSaved = false
     isStartedAddingNewCustomItem = false
