@@ -59,7 +59,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
 
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = customRelationItem
-    relationSectionButtonCustomItem.relation = envelopeDetailProperty.relationship.isCustom ? envelopeDetailProperty.relationship.relation : ""
+    relationSectionButtonCustomItem.relation = envelopeDetailProperty.friendRelationship.customRelation ?? ""
     relationSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.relationTitle,
       items: relationItems,

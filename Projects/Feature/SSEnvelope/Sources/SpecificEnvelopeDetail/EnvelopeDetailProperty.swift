@@ -32,10 +32,11 @@ extension EnvelopeDetailProperty {
 
   func makeListContent(isShowCategory: Bool) -> [(String, String)] {
     let categoryName = category.customCategory ?? category.category
+    let relationName = friendRelationship.customRelation ?? relationship.relation
     var res = isShowCategory ? [(eventNameTitle, categoryName)] : []
     res.append(contentsOf: [
       (nameTitle, friend.name),
-      (relationTitle, relationship.relation),
+      (relationTitle, relationName),
       (dateTitle, dateText),
     ])
     res.append(contentsOf: makeOptionalListContent())

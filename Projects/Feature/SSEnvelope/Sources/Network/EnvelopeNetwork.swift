@@ -38,8 +38,8 @@ struct EnvelopeNetwork {
 
     let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
 
-    var customCategoryItem = events.first(where: { $0.isCustom }) ?? .editCustomDefault
-    var customRelationItem = relations.first(where: { $0.isCustom }) ?? .editCustomDefault
+    let customCategoryItem = events.first(where: { $0.isCustom }) ?? .editCustomDefault
+    let customRelationItem = relations.first(where: { $0.isCustom }) ?? .editCustomDefault
 
     let targetCategoryItems = events.filter { $0.isCustom == false }
     let targetRelationItems = relations.filter { $0.isCustom == false }
