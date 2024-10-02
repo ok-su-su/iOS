@@ -45,45 +45,48 @@ public struct SpecificEnvelopeEditHelper: Equatable {
   ) {
     self.envelopeDetailProperty = envelopeDetailProperty
 
-    priceProperty = .init(price: envelopeDetailProperty.price)
+    priceProperty = .init(price: envelopeDetailProperty.envelope.amount)
 
     eventSectionButtonCustomItem = customEventItem
+    eventSectionButtonCustomItem.name = envelopeDetailProperty.category.customCategory ?? ""
     eventSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.eventNameTitle,
       items: eventItems,
       isCustomItem: eventSectionButtonCustomItem,
+      initialSelectedID: envelopeDetailProperty.category.id,
       customTextFieldPrompt: "경조사 이름"
     )
 
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = customRelationItem
-
+    relationSectionButtonCustomItem.relation = envelopeDetailProperty.relationship.isCustom ? envelopeDetailProperty.relationship.relation : ""
     relationSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.relationTitle,
       items: relationItems,
       isCustomItem: relationSectionButtonCustomItem,
+      initialSelectedID: envelopeDetailProperty.relationship.id,
       customTextFieldPrompt: "관계 이름"
     )
 
-    nameEditProperty = .init(textFieldText: envelopeDetailProperty.name)
+    nameEditProperty = .init(textFieldText: envelopeDetailProperty.friend.name)
+    let date = CustomDateFormatter.getDate(from: envelopeDetailProperty.envelope.handedOverAt) ?? .now
+    dateEditProperty = .init(date: date)
 
-    dateEditProperty = .init(date: envelopeDetailProperty.date)
-
+    // has visited?
     visitedSectionButtonHelper = .init(
       titleText: envelopeDetailProperty.visitedTitle,
       items: VisitedSelectButtonItem.defaultItems(),
       isCustomItem: nil,
+      initialSelectedID: envelopeDetailProperty.hasVisitedID,
       customTextFieldPrompt: nil,
       isEssentialProperty: false
     )
 
-    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited)
-
-    giftEditProperty = .init(gift: envelopeDetailProperty.gift ?? "")
-
-    contactEditProperty = .init(contact: envelopeDetailProperty.contacts ?? "")
-
-    memoEditProperty = .init(memo: envelopeDetailProperty.memo ?? "")
+    // Additional Property initialize
+    visitedEditProperty = .init(isVisited: envelopeDetailProperty.envelope.hasVisited)
+    giftEditProperty = .init(gift: envelopeDetailProperty.envelope.gift)
+    contactEditProperty = .init(contact: envelopeDetailProperty.friend.phoneNumber)
+    memoEditProperty = .init(memo: envelopeDetailProperty.envelope.memo)
   }
 
   mutating func changeName(_ name: String) {
@@ -160,5 +163,14 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       (giftEditProperty.isValid) &&
       (visitedEditProperty.isValid)
     // 데이트는 항상 참이니까 제외
+  }
+}
+
+private extension EnvelopeDetailProperty {
+  var hasVisitedID: VisitedSelectButtonItem.ID? {
+    guard let hasVisited = envelope.hasVisited else {
+      return nil
+    }
+    return hasVisited ? VisitedSelectButtonItem.yes.id : VisitedSelectButtonItem.no.id
   }
 }

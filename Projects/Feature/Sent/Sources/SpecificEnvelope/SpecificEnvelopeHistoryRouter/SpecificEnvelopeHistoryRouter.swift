@@ -51,7 +51,7 @@ struct SpecificEnvelopeHistoryRouter {
   func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
     switch action {
     case let .tappedEnvelopeEditButton(property):
-      return .ssRun { [id = property.id] _ in
+      return .ssRun { [id = property.envelope.id] _ in
         let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
         SpecificEnvelopeHistoryRouterPublisher.push(.specificEnvelopeHistoryEdit(editState))
       }

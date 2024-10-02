@@ -21,6 +21,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
   public var customTextFieldPrompt: String?
   public var isSaved: Bool = false
   public var isEssentialProperty = true
+  public let initialSelectedID: Item.ID?
 
   public var allItems: [Item] {
     return (items + [isCustomItem]).compactMap { $0 }
@@ -30,10 +31,18 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     return selectedItem?.id == isCustomItem?.id
   }
 
-  public init(titleText: String, items: [Item], isCustomItem: Item?, customTextFieldPrompt: String?, isEssentialProperty: Bool = true) {
+  public init(
+    titleText: String,
+    items: [Item],
+    isCustomItem: Item?,
+    initialSelectedID: Item.ID?,
+    customTextFieldPrompt: String?,
+    isEssentialProperty: Bool = true
+  ) {
     self.titleText = titleText
     self.items = items
     self.isCustomItem = isCustomItem
+    self.initialSelectedID = initialSelectedID
     self.customTextFieldPrompt = customTextFieldPrompt
     self.isEssentialProperty = isEssentialProperty
   }

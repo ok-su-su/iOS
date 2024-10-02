@@ -35,24 +35,9 @@ public struct SpecificEnvelopeEditReducer {
     init(editHelper: SpecificEnvelopeEditHelper, isShowCategory: Bool = true) {
       self.isShowCategory = isShowCategory
       _editHelper = .init(editHelper)
-      let initialVisited: VisitedSelectButtonItem? =
-        if let isVisited = editHelper.envelopeDetailProperty.isVisited {
-          isVisited ? .yes : .no
-        } else {
-          nil
-        }
-      eventSection = .init(
-        singleSelectButtonHelper: _editHelper.eventSectionButtonHelper,
-        initialSelectedID: editHelper.envelopeDetailProperty.eventID
-      )
-      relationSection = .init(
-        singleSelectButtonHelper: _editHelper.relationSectionButtonHelper,
-        initialSelectedID: editHelper.envelopeDetailProperty.relationID
-      )
-      visitedSection = .init(
-        singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper,
-        initialSelectedID: initialVisited?.id
-      )
+      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
+      relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
+      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
     }
 
     public init(envelopeID: Int64, isShowCategory: Bool = true) async throws {
@@ -247,7 +232,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       let customRelation = selectedItemID == customItem.id ? customItem.title : nil
       let phoneNumber = state.editHelper.contactEditProperty.contact
 
-      let friendID = state.editHelper.envelopeDetailProperty.friendID
+      let friendID = state.editHelper.envelopeDetailProperty.friend.id
       let friendRequestBody = CreateAndUpdateFriendRequest(
         name: state.editHelper.nameEditProperty.textFieldText,
         phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber,
@@ -278,9 +263,9 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       let queryMemoText: String? = memoText.isEmpty ? nil : memoText
 
       let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
-        type: state.editHelper.envelopeDetailProperty.type,
+        type: state.editHelper.envelopeDetailProperty.envelope.type,
         friendId: friendID,
-        ledgerId: state.editHelper.envelopeDetailProperty.ledgerID,
+        ledgerId: nil,
         amount: state.editHelper.priceProperty.price,
         gift: queryGiftText,
         memo: queryMemoText,
@@ -289,7 +274,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
         category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
       )
 
-      let envelopeID = state.editHelper.envelopeDetailProperty.id
+      let envelopeID = state.editHelper.envelopeDetailProperty.envelope.id
       return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)

@@ -23,16 +23,14 @@ public struct SpecificEnvelopeDetailReducer {
     var isDeleteAlertPresent = false
     var isLoading = false
     var header: HeaderViewFeature.State = .init(.init(type: .depth2DoubleText("편집", "삭제")))
-    var envelopeDetailProperty: EnvelopeDetailProperty
+    var envelopeDetailProperty: EnvelopeDetailProperty?
     var envelopeID: Int64
     var isUpdateEnvelope: Bool = false
     let isShowCategory: Bool
     public init(envelopeID: Int64, isShowCategory: Bool = true) {
       self.envelopeID = envelopeID
       self.isShowCategory = isShowCategory
-      envelopeDetailProperty = .init(
-        id: -1, type: "", price: 0, eventName: "", eventID: 0, friendID: 0, name: "", relation: "", relationID: 0, date: .now, isVisited: false
-      )
+      envelopeDetailProperty = nil
     }
   }
 
@@ -108,14 +106,21 @@ public struct SpecificEnvelopeDetailReducer {
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .deleteEnvelope:
-      return .ssRun { [id = state.envelopeDetailProperty.id] _ in
+
+      return .ssRun { [id = state.envelopeID] _ in
         try await network.deleteEnvelope(id)
         specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
       }
     case .pushEditing:
       let property = state.envelopeDetailProperty
-      return .send(.delegate(.tappedEnvelopeEditButton(property)))
+      return .ssRun { send in
+        guard let property else {
+          let errorMessage = "envelopeDetailProperty가 생성되지 않은 상태에서 edit화면으로 이동하려고 합니다."
+          throw SUSUError(error: NSError(), response: nil, requestData: errorMessage)
+        }
+        await send(.delegate(.tappedEnvelopeEditButton(property)))
+      }
 
     case .getEnvelopeDetailProperty:
       return .ssRun { [id = state.envelopeID] send in
