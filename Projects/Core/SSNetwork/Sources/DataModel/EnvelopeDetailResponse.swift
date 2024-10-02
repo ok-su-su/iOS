@@ -22,7 +22,13 @@ public struct EnvelopeDetailResponse: Decodable, Equatable {
     case friend
   }
 
-  public init(envelope: EnvelopeModel, category: CategoryWithCustomModel, relationship: RelationshipModel, friendRelationship: FriendRelationshipModel, friend: FriendModel) {
+  public init(
+    envelope: EnvelopeModel,
+    category: CategoryWithCustomModel,
+    relationship: RelationshipModel,
+    friendRelationship: FriendRelationshipModel,
+    friend: FriendModel
+  ) {
     self.envelope = envelope
     self.category = category
     self.relationship = relationship

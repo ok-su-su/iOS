@@ -178,29 +178,6 @@ private extension Date {
   }
 }
 
-private extension EnvelopeDetailResponse {
-//  func convertToEnvelopeDetailLProperty() -> EnvelopeDetailProperty {
-//    let data = self
-//    return .init(
-//      id: data.envelope.id,
-//      type: data.envelope.type,
-//      ledgerID: nil,
-//      price: data.envelope.amount,
-//      eventName: data.category.customCategory ?? data.category.category,
-//      eventID: data.category.id,
-//      friendID: data.friend.id,
-//      name: data.friend.name,
-//      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
-//      relationID: data.relationship.id,
-//      date: .getDate(from: data.envelope.handedOverAt) ?? .now,
-//      isVisited: data.envelope.hasVisited,
-//      gift: data.envelope.gift,
-//      contacts: data.friend.phoneNumber,
-//      memo: data.envelope.memo
-//    )
-//  }
-}
-
 private extension CreateEnvelopeEventProperty {
   static var editCustomDefault: Self {
     .init(id: 2048, seq: 2048, name: "", style: "blue60", isActive: true, isCustom: true, isMiscCategory: true)
