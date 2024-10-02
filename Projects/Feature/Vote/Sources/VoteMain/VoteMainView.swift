@@ -214,23 +214,28 @@ struct VoteMainView: View {
   /// Sticky Header
   @ViewBuilder
   private func makeHeaderSection() -> some View {
-    HStack(alignment: .top, spacing: 4) {
-      ForEach(store.voteMainProperty.voteSectionItems) { item in
-        let isSelected = store.voteMainProperty.selectedVoteSectionItem == item
-        SSButton(
-          .init(
-            size: .xsh28,
-            status: isSelected ? .active : .inactive,
-            style: .filled,
-            color: .black,
-            buttonText: item.title
-          )) {
-            store.send(.view(.tappedSectionItem(item)))
-          }
+    ScrollView(.horizontal) {
+      HStack(alignment: .top, spacing: 4) {
+        ForEach(store.voteMainProperty.voteSectionItems) { item in
+          let isSelected = store.voteMainProperty.selectedVoteSectionItem == item
+          SSButton(
+            .init(
+              size: .xsh28,
+              status: isSelected ? .active : .inactive,
+              style: .filled,
+              color: .black,
+              buttonText: item.title
+            )) {
+              store.send(.view(.tappedSectionItem(item)))
+            }
+        }
       }
     }
+    .scrollIndicators(.hidden)
+    .scrollBounceBehavior(.basedOnSize)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(16)
+    .padding(.vertical, 16)
+    .safeAreaPadding(.horizontal, 16)
     .background(SSColor.gray10)
   }
 

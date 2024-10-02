@@ -22,6 +22,6 @@ public extension ComposableArchitecture.Effect {
       try await operation(send)
       try await endOperation(send)
     }
-    return .run(priority: priority, operation: currentOperation, catch: handler)
+    return .ssRun(priority: priority, operation: currentOperation, catch: handler)
   }
 }
