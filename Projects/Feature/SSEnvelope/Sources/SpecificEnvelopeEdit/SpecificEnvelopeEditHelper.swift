@@ -55,13 +55,6 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       customTextFieldPrompt: "경조사 이름"
     )
 
-    eventSectionButtonHelper = .init(
-      titleText: envelopeDetailProperty.eventNameTitle,
-      items: eventItems,
-      isCustomItem: eventSectionButtonCustomItem,
-      customTextFieldPrompt: "경조사 이름"
-    )
-
     // 만약 현재 관계가 default 이벤트에 존재 하지 않는다면
     relationSectionButtonCustomItem = customRelationItem
 
@@ -84,7 +77,7 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       isEssentialProperty: false
     )
 
-    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited ?? true)
+    visitedEditProperty = .init(isVisited: envelopeDetailProperty.isVisited)
 
     giftEditProperty = .init(gift: envelopeDetailProperty.gift ?? "")
 
@@ -153,6 +146,10 @@ public struct SpecificEnvelopeEditHelper: Equatable {
     priceProperty.isShowToast
   }
 
+  func isChangedProperty() -> Bool {
+    false
+  }
+
   func isValidToSave() -> Bool {
     (priceProperty.isValid) &&
       (eventSectionButtonHelper.isValid()) &&
@@ -163,166 +160,5 @@ public struct SpecificEnvelopeEditHelper: Equatable {
       (giftEditProperty.isValid) &&
       (visitedEditProperty.isValid)
     // 데이트는 항상 참이니까 제외
-  }
-}
-
-// MARK: - PriceEditProperty
-
-struct PriceEditProperty: Equatable {
-  var price: Int64
-  var priceTextFieldText: String
-  var priceText: String
-
-  init(price: Int64) {
-    self.price = price
-    priceTextFieldText = price.description
-    priceText = CustomNumberFormatter.formattedByThreeZero(price, subFixString: "원") ?? ""
-  }
-
-  mutating func setPriceTextFieldText(_ text: String) {
-    priceTextFieldText = text.isEmpty ? "0" : text
-    guard let currentValue = Int64(priceTextFieldText) else {
-      return
-    }
-    price = currentValue
-    priceText = CustomNumberFormatter.formattedByThreeZero(currentValue, subFixString: "원") ?? ""
-  }
-
-  var isValid: Bool {
-    RegexManager.isValidPrice(priceTextFieldText)
-  }
-
-  var isShowToast: Bool {
-    ToastRegexManager.isShowToastByPrice(priceTextFieldText)
-  }
-}
-
-// MARK: - GiftEditProperty
-
-struct GiftEditProperty: Equatable {
-  var gift: String
-
-  init(gift: String) {
-    self.gift = gift
-  }
-
-  var isValid: Bool {
-    RegexManager.isValidGift(gift) || gift.isEmpty
-  }
-
-  var isShowToast: Bool {
-    ToastRegexManager.isShowToastByGift(gift)
-  }
-}
-
-// MARK: - ContactEditProperty
-
-struct ContactEditProperty: Equatable {
-  var contact: String
-
-  init(contact: String) {
-    self.contact = contact
-  }
-
-  var isValid: Bool {
-    RegexManager.isValidContacts(contact) || contact.isEmpty
-  }
-
-  var isShowToast: Bool {
-    ToastRegexManager.isShowToastByContacts(contact)
-  }
-}
-
-// MARK: - MemoEditProperty
-
-struct MemoEditProperty: Equatable {
-  var memo: String
-  init(memo: String) {
-    self.memo = memo
-  }
-
-  var isValid: Bool {
-    RegexManager.isValidMemo(memo) || memo.isEmpty
-  }
-
-  var isShowToast: Bool {
-    ToastRegexManager.isShowToastByMemo(memo)
-  }
-}
-
-// MARK: - VisitedEditProperty
-
-struct VisitedEditProperty: Equatable {
-  var isVisited: Bool
-
-  init(isVisited: Bool) {
-    self.isVisited = isVisited
-  }
-
-  var isValid: Bool {
-    return true
-  }
-}
-
-// MARK: - VisitedSelectButtonItem
-
-public struct VisitedSelectButtonItem: SingleSelectButtonItemable {
-  public var id: Int
-  public var title: String = ""
-  var isVisited: Bool
-  init(id: Int, title: String = "", isVisited: Bool) {
-    self.id = id
-    self.title = title
-    self.isVisited = isVisited
-  }
-
-  mutating func setTitle(by isVisited: Bool) {
-    title = isVisited ? "예" : "아니오"
-  }
-}
-
-extension VisitedSelectButtonItem {
-  static func defaultItems() -> [Self] {
-    return [
-      yes, no,
-    ]
-  }
-
-  static var yes: Self {
-    .init(id: 0, title: "예", isVisited: true)
-  }
-
-  static var no: Self {
-    .init(id: 1, title: "아니오", isVisited: false)
-  }
-}
-
-// MARK: - DateEditProperty
-
-struct DateEditProperty: Equatable {
-  var date: Date
-  var isInitialState = false
-
-  var dateText: String {
-    return CustomDateFormatter.getKoreanDateString(from: date)
-  }
-
-  init(date: Date) {
-    self.date = date
-  }
-}
-
-// MARK: - NameEditProperty
-
-/// EditName을 하기 위해 사용됩니다.
-struct NameEditProperty: Equatable {
-  var textFieldText: String
-
-  var isValid: Bool {
-    RegexManager.isValidName(textFieldText)
-  }
-
-  var isShowToast: Bool {
-    ToastRegexManager.isShowToastByName(textFieldText)
   }
 }
