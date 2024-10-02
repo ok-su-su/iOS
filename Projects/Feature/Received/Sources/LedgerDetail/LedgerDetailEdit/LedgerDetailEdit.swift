@@ -43,8 +43,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       self.ledgerProperty = ledgerProperty
       _editProperty = .init(ledgerDetailEditProperty)
       categorySection = .init(
-        singleSelectButtonHelper: _editProperty.categoryEditProperty,
-        initialSelectedID: ledgerProperty.categoryID
+        singleSelectButtonHelper: _editProperty.categoryEditProperty
       )
     }
   }
