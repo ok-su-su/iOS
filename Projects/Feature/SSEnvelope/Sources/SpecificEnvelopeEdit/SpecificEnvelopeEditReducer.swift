@@ -20,7 +20,7 @@ import SSToast
 @Reducer
 public struct SpecificEnvelopeEditReducer: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
     var eventSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.State
@@ -51,7 +51,7 @@ public struct SpecificEnvelopeEditReducer: Sendable {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -60,7 +60,7 @@ public struct SpecificEnvelopeEditReducer: Sendable {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case changePriceTextField(String)
     case changeNameTextField(String)
@@ -72,18 +72,18 @@ public struct SpecificEnvelopeEditReducer: Sendable {
     case tappedDatePickerSaveButton
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
   }
 
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable, Sendable {
     case editFriendsAndEnvelope
   }
 
   @Dependency(\.envelopeNetwork) var network
   @Dependency(\.dismiss) var dismiss
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case eventSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.Action)
     case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
@@ -92,7 +92,7 @@ public struct SpecificEnvelopeEditReducer: Sendable {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case tappedSaveButton(envelopeID: Int64)
   }
 

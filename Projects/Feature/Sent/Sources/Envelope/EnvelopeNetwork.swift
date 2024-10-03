@@ -58,8 +58,8 @@ struct EnvelopeNetwork: DependencyKey {
 }
 
 extension EnvelopeNetwork {
-  private static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
-  static var liveValue: EnvelopeNetwork = .init(
+  private nonisolated(unsafe) static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: EnvelopeNetwork = .init(
     getEnvelope: _getEnvelope,
     getEnvelopeByID: _getEnvelopeByID,
     deleteFriendByID: _deleteFriendByID,

@@ -16,9 +16,9 @@ import SSNotification
 // MARK: - SpecificEnvelopeDetailReducer
 
 @Reducer
-public struct SpecificEnvelopeDetailReducer {
+public struct SpecificEnvelopeDetailReducer: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var isDeleteAlertPresent = false
     var isLoading = false
@@ -34,7 +34,7 @@ public struct SpecificEnvelopeDetailReducer {
     }
   }
 
-  public enum Action: Equatable, FeatureAction, BindableAction {
+  public enum Action: Equatable, FeatureAction, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
@@ -43,7 +43,7 @@ public struct SpecificEnvelopeDetailReducer {
     case delegate(DelegateAction)
   }
 
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedAlertConfirmButton
   }
@@ -73,7 +73,7 @@ public struct SpecificEnvelopeDetailReducer {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case delete
     case updateEnvelopeDetailProperty(EnvelopeDetailProperty)
     case isLoading(Bool)
@@ -96,7 +96,7 @@ public struct SpecificEnvelopeDetailReducer {
     }
   }
 
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable, Sendable {
     case pushEditing
     case deleteEnvelope
     case getEnvelopeDetailProperty
@@ -133,7 +133,7 @@ public struct SpecificEnvelopeDetailReducer {
   }
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
   }
 
@@ -158,7 +158,7 @@ public struct SpecificEnvelopeDetailReducer {
     }
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case tappedEnvelopeEditButton(EnvelopeDetailProperty)
   }
 
