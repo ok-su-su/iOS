@@ -22,7 +22,7 @@ enum SentDestination {
 // MARK: - SentPublisher
 
 final class SentPublisher {
-  static let shared: SentPublisher = .init()
+  nonisolated(unsafe) static let shared: SentPublisher = .init()
   private var subscriptions: Set<AnyCancellable> = .init()
 
   private init() {
@@ -44,5 +44,3 @@ final class SentPublisher {
     _publisher.send(val)
   }
 }
-
-let t = SentPublisher.shared.publisher()

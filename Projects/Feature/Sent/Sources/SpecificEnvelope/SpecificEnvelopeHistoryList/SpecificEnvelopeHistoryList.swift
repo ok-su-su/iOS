@@ -18,9 +18,9 @@ import SSNotification
 // MARK: - SpecificEnvelopeHistoryList
 
 @Reducer
-struct SpecificEnvelopeHistoryList {
+struct SpecificEnvelopeHistoryList: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var envelopePriceProgressProperty: EnvelopePriceProgressProperty {
       .init(
@@ -48,7 +48,7 @@ struct SpecificEnvelopeHistoryList {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -57,7 +57,7 @@ struct SpecificEnvelopeHistoryList {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case presentAlert(Bool)
     case tappedSpecificEnvelope(EnvelopeContent)
@@ -94,7 +94,7 @@ struct SpecificEnvelopeHistoryList {
     case let .onAppearDetail(property):
       if property == state.envelopeContents.last && !state.isEndOfPage {
         return .send(.async(.getEnvelopeDetail))
-          .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: RunLoop.main, latest: false)
+          .throttle(id: ThrottleID.requestEnvelope, for: 2, scheduler: mainQueue, latest: false)
       }
       return .none
 
@@ -112,7 +112,7 @@ struct SpecificEnvelopeHistoryList {
     }
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
     case updateEnvelopeContents([EnvelopeContent])
     case overwriteEnvelopeContents([EnvelopeContent])
@@ -154,7 +154,7 @@ struct SpecificEnvelopeHistoryList {
     }
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getEnvelopeDetail
     case deleteFriend
     case updateEnvelope(id: Int64)
@@ -210,7 +210,7 @@ struct SpecificEnvelopeHistoryList {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
   }
 
@@ -236,10 +236,11 @@ struct SpecificEnvelopeHistoryList {
   @Dependency(\.envelopeNetwork) var network
   @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
   @Dependency(\.specificEnvelopePublisher) var specificEnvelopePublisher
+  @Dependency(\.mainQueue) var mainQueue
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  enum ThrottleID {
+  enum ThrottleID: Sendable {
     case requestEnvelope
   }
 

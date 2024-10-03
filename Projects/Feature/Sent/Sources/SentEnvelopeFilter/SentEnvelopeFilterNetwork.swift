@@ -16,7 +16,7 @@ import SSNetwork
 // MARK: - SentEnvelopeFilterNetwork
 
 struct SentEnvelopeFilterNetwork {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   var getInitialData: @Sendable () async throws -> [SentPerson]
   @Sendable private static func _getInitialData() async throws -> [SentPerson] {
@@ -48,7 +48,7 @@ extension DependencyValues {
 // MARK: - SentEnvelopeFilterNetwork + DependencyKey
 
 extension SentEnvelopeFilterNetwork: DependencyKey {
-  static var liveValue: SentEnvelopeFilterNetwork = .init(
+  static let liveValue: SentEnvelopeFilterNetwork = .init(
     getInitialData: _getInitialData,
     findFriendsByName: _findFriendsByName,
     getMaximumSentValue: _getMaximumSentValue

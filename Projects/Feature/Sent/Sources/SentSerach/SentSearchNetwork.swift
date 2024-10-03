@@ -15,7 +15,7 @@ import SSNetwork
 // MARK: - SentSearchNetwork
 
 struct SentSearchNetwork {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   var searchFriendsByName: @Sendable (_ name: String) async throws -> [SentSearchItem]
   @Sendable private static func _searchFriendByName(name: String) async throws -> [SentSearchItem] {
@@ -72,7 +72,7 @@ extension SentSearchNetwork: DependencyKey {
     }
   }
 
-  static var liveValue: SentSearchNetwork = .init(
+  static let liveValue: SentSearchNetwork = .init(
     searchFriendsByName: _searchFriendByName,
     requestSearchFriendsByAmount: _requestSearchFriendsByAmount,
     getEnvelopePropertyByID: SentSearchNetworkDefault.getEnvelopePropertyByID

@@ -9,11 +9,11 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-public struct SSSearchReducer<item: SSSearchPropertiable> {
+public struct SSSearchReducer<item: SSSearchPropertiable>: Sendable {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     @Shared var helper: item
     public init(helper: Shared<item>) {
@@ -21,7 +21,7 @@ public struct SSSearchReducer<item: SSSearchPropertiable> {
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case tappedCloseButton
     case changeTextField(String)

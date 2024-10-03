@@ -20,11 +20,11 @@ import SwiftAsyncMutex
 // MARK: - SentMain
 
 @Reducer
-struct SentMain {
+struct SentMain: Sendable {
   init() {}
 
   @ObservableState
-  struct State {
+  struct State: Equatable, Sendable {
     // MARK: - Scope
 
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
@@ -58,7 +58,7 @@ struct SentMain {
   @Dependency(\.sentMainNetwork) var network
   @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -67,7 +67,7 @@ struct SentMain {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case tappedSortButton
     case tappedFilterButton
     case tappedEmptyEnvelopeButton
@@ -132,7 +132,7 @@ struct SentMain {
   }
 
   @CasePathable
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case showCreateEnvelopRouter
     case updateEnvelopes([EnvelopeProperty])
     case overwriteEnvelopes([EnvelopeProperty])
@@ -180,7 +180,7 @@ struct SentMain {
   }
 
   @CasePathable
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case updateEnvelopesByFilter
     case updateEnvelopesByFilterInitialPage
     case updateEnvelopes(friendID: Int64)
@@ -244,7 +244,7 @@ struct SentMain {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
 
@@ -289,7 +289,7 @@ struct SentMain {
     }
   }
 
-  enum DelegateAction: Equatable {
+  enum DelegateAction: Equatable, Sendable {
     case pushFilter
   }
 
