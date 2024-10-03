@@ -7,7 +7,7 @@ import SSPersistancy
 
 // MARK: - TokenInterceptHelpable
 
-public protocol TokenInterceptHelpable {
+public protocol TokenInterceptHelpable: Sendable {
   func getToken() -> (accessToken: String, refreshToken: String)?
   func getTokenData() throws -> Data
   var accessTokenString: String { get }
@@ -16,7 +16,7 @@ public protocol TokenInterceptHelpable {
 
 // MARK: - TokenInterceptHelper
 
-final class TokenInterceptHelper: TokenInterceptHelpable {
+final class TokenInterceptHelper: TokenInterceptHelpable, Sendable {
   init() {}
 
   private let keyChainShared = SSKeychain.shared
@@ -45,7 +45,7 @@ final class TokenInterceptHelper: TokenInterceptHelpable {
 
 // MARK: - SSTokenInterceptor
 
-public struct SSTokenInterceptor: RequestInterceptor {
+public struct SSTokenInterceptor: RequestInterceptor, Sendable {
   public static let shared: SSTokenInterceptor = .init(helper: TokenInterceptHelper())
 
   var helper: TokenInterceptHelpable

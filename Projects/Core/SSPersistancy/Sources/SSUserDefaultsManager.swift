@@ -8,10 +8,10 @@
 
 import Foundation
 
-public final class SSUserDefaultsManager {
-  public static var shared = SSUserDefaultsManager()
+public final class SSUserDefaultsManager: Sendable {
+  public static let shared = SSUserDefaultsManager()
 
-  private let userDefaults: UserDefaults = .standard
+  private var userDefaults: UserDefaults { .standard }
 
   private let jsonDecoder = JSONDecoder()
   private let jsonEncoder = JSONEncoder()

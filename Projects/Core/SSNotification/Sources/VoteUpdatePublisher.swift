@@ -12,8 +12,8 @@ import Foundation
 
 // MARK: - VoteUpdatePublisher
 
-public final class VoteUpdatePublisher: DependencyKey {
-  public static var liveValue: VoteUpdatePublisher = .init()
+public final class VoteUpdatePublisher: DependencyKey, @unchecked Sendable {
+  public static let liveValue: VoteUpdatePublisher = .init()
   private init() {}
 
   private var _updateVoteListPublisher: PassthroughSubject<Void, Never> = .init()

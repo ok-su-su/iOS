@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: - ReceivedMainUpdatePublisher
 
-public final class ReceivedMainUpdatePublisher {
+public final class ReceivedMainUpdatePublisher: @unchecked Sendable {
   private init() {}
 
   private var _updatePublisher = PassthroughSubject<Void, Never>()

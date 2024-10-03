@@ -30,7 +30,7 @@ struct ScrollOffsetPreferenceElement: Equatable {
 // MARK: - ScrollOffsetPreferenceKey
 
 struct ScrollOffsetPreferenceKey: PreferenceKey {
-  static var defaultValue: ScrollOffsetPreferenceElement = .init(topValue: 0, bottomValue: 0)
+  static let defaultValue: ScrollOffsetPreferenceElement = .init(topValue: 0, bottomValue: 0)
 
   static func reduce(value: inout ScrollOffsetPreferenceElement, nextValue: () -> ScrollOffsetPreferenceElement) {
     value += nextValue()
@@ -40,7 +40,7 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 // MARK: - ScrollBottomOffsetPreferenceKey
 
 struct ScrollBottomOffsetPreferenceKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
+  static let defaultValue: CGFloat = 0
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
     value += nextValue()
   }

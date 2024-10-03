@@ -8,7 +8,8 @@
 
 import Foundation
 
-public enum RegexManager {
+@MainActor
+public enum RegexManager: Sendable {
   private static let nameRegex: Regex<Substring> = try! Regex(RegexPatternString.name.regexString)
 
   public static func isValidName(_ name: String) -> Bool {
@@ -58,6 +59,7 @@ public enum RegexManager {
   }
 
   private static let voteContentRegex: Regex<Substring> = try! Regex(RegexPatternString.voteContents.regexString)
+
   public static func isValidVoteContent(_ value: String) -> Bool {
     return value.contains(voteContentRegex)
   }

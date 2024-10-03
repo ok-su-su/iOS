@@ -10,6 +10,7 @@ import OSLog
 import UIKit
 
 public enum SSCommonRouting {
+  @MainActor
   public static func openAppStore() {
     guard let appID = Bundle.main.infoDictionary?["AppstoreAPPID"] as? String,
           let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)"),

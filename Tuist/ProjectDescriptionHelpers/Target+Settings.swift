@@ -9,10 +9,12 @@ import Foundation
 import ProjectDescription
 
 
+
 extension Settings {
   static var `default`: Self {
     .settings(
       base: [
+        "SWIFT_VERSION": "6.0",
         "DEVELOPMENT_TEAM": "2G5Z92682P",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
         "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier

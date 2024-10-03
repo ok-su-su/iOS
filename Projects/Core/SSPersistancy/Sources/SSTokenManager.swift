@@ -11,7 +11,7 @@ import OSLog
 
 // MARK: - SSTokenManager
 
-public final class SSTokenManager {
+public final class SSTokenManager: Sendable {
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
   private let isoFormatter: DateFormatter = {

@@ -12,8 +12,8 @@ import Foundation
 
 // MARK: - UpdateLedgerDetailPublisher
 
-public struct UpdateLedgerDetailPublisher: DependencyKey {
-  public static var liveValue: UpdateLedgerDetailPublisher = .init()
+public struct UpdateLedgerDetailPublisher: DependencyKey, @unchecked Sendable {
+  public static let liveValue: UpdateLedgerDetailPublisher = .init()
   private init() {}
 
   private var _updateLedgerDetailPublisher: PassthroughSubject<Void, Never> = .init()

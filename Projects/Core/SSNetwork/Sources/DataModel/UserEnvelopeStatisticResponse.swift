@@ -26,14 +26,16 @@ public struct UserEnvelopeStatisticResponse: Equatable, Decodable {
 }
 
 public extension UserEnvelopeStatisticResponse {
-  static var emptyState: Self = .init(
-    recentSpent: nil,
-    mostSpentMonth: nil,
-    mostRelationship: nil,
-    mostCategory: nil,
-    highestAmountReceived: nil,
-    highestAmountSent: nil
-  )
+  static var emptyState: Self {
+    .init(
+      recentSpent: nil,
+      mostSpentMonth: nil,
+      mostRelationship: nil,
+      mostCategory: nil,
+      highestAmountReceived: nil,
+      highestAmountSent: nil
+    )
+  }
 }
 
 // MARK: - TitleValueModelLong

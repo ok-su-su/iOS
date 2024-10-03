@@ -10,8 +10,8 @@ import Foundation
 
 // MARK: - SSOAuthManager
 
-public final class SSOAuthManager {
-  private static var shared = SSOAuthManager()
+public final class SSOAuthManager: Sendable {
+  private static let shared = SSOAuthManager()
   private init() {}
 
   public static func getOAuthType() -> OAuthType? {

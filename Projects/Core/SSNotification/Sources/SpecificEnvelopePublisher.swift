@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: - SpecificEnvelopePublisher
 
-public final class SpecificEnvelopePublisher {
+public final class SpecificEnvelopePublisher: @unchecked Sendable {
   private init() {}
 
   private let _updatePublisher: PassthroughSubject<Int64, Never> = .init()
@@ -37,7 +37,7 @@ public final class SpecificEnvelopePublisher {
 // MARK: DependencyKey
 
 extension SpecificEnvelopePublisher: DependencyKey {
-  public static var liveValue: SpecificEnvelopePublisher = .init()
+  public static let liveValue: SpecificEnvelopePublisher = .init()
 }
 
 public extension DependencyValues {

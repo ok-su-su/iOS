@@ -25,7 +25,7 @@ public protocol Keychaining {
 
 // MARK: - SSKeychain
 
-public final class SSKeychain: Keychaining {
+public final class SSKeychain: Keychaining, Sendable {
   public static let shared = SSKeychain()
 
   private init() {}
