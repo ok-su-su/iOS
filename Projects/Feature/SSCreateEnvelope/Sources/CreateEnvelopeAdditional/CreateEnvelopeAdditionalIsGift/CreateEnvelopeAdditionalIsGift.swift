@@ -12,7 +12,7 @@ import SSRegexManager
 import SSToast
 
 @Reducer
-public struct CreateEnvelopeAdditionalIsGift {
+public struct CreateEnvelopeAdditionalIsGift: Sendable {
   @ObservableState
   public struct State: Equatable, Sendable {
     var isOnAppear = false

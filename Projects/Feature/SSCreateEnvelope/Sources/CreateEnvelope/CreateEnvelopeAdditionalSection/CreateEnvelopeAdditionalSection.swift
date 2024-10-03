@@ -11,9 +11,9 @@ import Foundation
 import SSSelectableItems
 
 @Reducer
-public struct CreateEnvelopeAdditionalSection {
+public struct CreateEnvelopeAdditionalSection: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.State

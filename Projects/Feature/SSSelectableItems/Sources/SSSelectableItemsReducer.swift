@@ -10,7 +10,7 @@ import Foundation
 import SSRegexManager
 
 @Reducer
-public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
+public struct SSSelectableItemsReducer<Item: SSSelectableItemable>: Sendable {
   @ObservableState
   public struct State: Equatable, Sendable {
     var isOnAppear = false

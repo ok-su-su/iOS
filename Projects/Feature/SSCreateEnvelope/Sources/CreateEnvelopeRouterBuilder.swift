@@ -57,7 +57,7 @@ public struct CreateEnvelopeRouterBuilder: View {
 
 // MARK: - CreateEnvelopeInitialType
 
-public enum CreateEnvelopeInitialType: Equatable {
+public enum CreateEnvelopeInitialType: Equatable, Sendable {
   case sentWithFriendID(friendID: Int64, friendName: String)
   case sent
   case received(ledgerID: Int64, categoryName: String)

@@ -18,7 +18,7 @@ struct CreateEnvelopeRouter: Sendable {
   @Dependency(\.mainQueue) var queue
 
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var type: CreateEnvelopeInitialType
     var isOnAppear = false
     var path = StackState<CreateEnvelopePath.State>()
@@ -38,7 +38,7 @@ struct CreateEnvelopeRouter: Sendable {
     }
   }
 
-  enum Action: Equatable, @unchecked Sendable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case path(StackActionOf<CreateEnvelopePath>)
     case header(HeaderViewFeature.Action)

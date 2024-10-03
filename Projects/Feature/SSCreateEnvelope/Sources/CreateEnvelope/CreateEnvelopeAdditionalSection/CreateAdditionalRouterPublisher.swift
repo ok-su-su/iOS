@@ -28,7 +28,7 @@ final class CreateAdditionalRouterPublisher {
 
 // MARK: - AdditionalScreen
 
-enum AdditionalScreen {
+enum AdditionalScreen: Sendable {
   case selectSection
   case contact
   case gift

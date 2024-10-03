@@ -5,7 +5,6 @@
 //  Created by MaraMincho on 5/2/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Combine
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -17,11 +16,9 @@ import SSToast
 // MARK: - CreateEnvelopePrice
 
 @Reducer
-public struct CreateEnvelopePrice {
+public struct CreateEnvelopePrice: Sendable {
   @ObservableState
   public struct State: Equatable, Sendable {
-    var subscriptions: Set<AnyCancellable> = .init()
-
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
     var isFocused = false

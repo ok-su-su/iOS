@@ -13,10 +13,10 @@ import SwiftUI
 // MARK: - SSDateSelectBottomSheetReducer
 
 @Reducer
-public struct SSDateSelectBottomSheetReducer {
+public struct SSDateSelectBottomSheetReducer: Sendable {
   public init() {}
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     @Shared var selectedDate: Date
     @Shared var isInitialStateOfDate: Bool
     var initialStartDate = Date(timeIntervalSince1970: -1_230_886_800)
@@ -40,7 +40,7 @@ public struct SSDateSelectBottomSheetReducer {
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case reset
     case didTapConfirmButton

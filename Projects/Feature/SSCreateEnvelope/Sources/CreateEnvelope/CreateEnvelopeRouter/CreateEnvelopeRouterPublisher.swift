@@ -13,9 +13,8 @@ import SSFirebase
 
 // MARK: - CreateEnvelopePath
 
-@CasePathable
 @Reducer(state: .sendable, .equatable, action: .equatable, .sendable)
-public enum CreateEnvelopePath {
+public enum CreateEnvelopePath: Sendable {
   case createEnvelopePrice(CreateEnvelopePrice)
   case createEnvelopeName(CreateEnvelopeName)
   case createEnvelopeRelation(CreateEnvelopeRelation)
