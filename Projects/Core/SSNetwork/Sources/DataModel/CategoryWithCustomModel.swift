@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchEnvelopeResponseCategoryDTO
 
-public struct CategoryWithCustomModel: Codable, Equatable {
+public struct CategoryWithCustomModel: Codable, Equatable, Sendable {
   /// 카테고리 아이디
   public let id: Int
   ///

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - CategoryModel
 
-public struct CategoryModel: Identifiable, Codable, Equatable {
+public struct CategoryModel: Identifiable, Codable, Equatable, Sendable {
   /// 카테고리 아이디
   public let id: Int
   /// 카테고리 순서

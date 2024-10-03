@@ -13,7 +13,7 @@ import SSNotification
 
 // MARK: - DiscordErrorHandler
 
-public final class DiscordErrorHandler {
+public final class DiscordErrorHandler: @unchecked Sendable {
   public static let shared = DiscordErrorHandler()
   var subscription: AnyCancellable?
   private init() {}

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct EnvelopeDetailResponse: Decodable, Equatable {
+public struct EnvelopeDetailResponse: Decodable, Equatable, Sendable {
   public let envelope: EnvelopeModel
   public let category: CategoryWithCustomModel
   public let relationship: RelationshipModel

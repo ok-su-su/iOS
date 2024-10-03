@@ -13,7 +13,7 @@ import SSFirebase
 // MARK: - CreateEnvelopeRouter
 
 @Reducer
-struct CreateEnvelopeRouter {
+struct CreateEnvelopeRouter: Sendable {
   @Dependency(\.createEnvelopeNetwork) var network
   @Dependency(\.mainQueue) var queue
 
@@ -38,7 +38,7 @@ struct CreateEnvelopeRouter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, @unchecked Sendable {
     case onAppear(Bool)
     case path(StackActionOf<CreateEnvelopePath>)
     case header(HeaderViewFeature.Action)
@@ -54,7 +54,7 @@ struct CreateEnvelopeRouter {
     case none
   }
 
-  private enum CancelID {
+  private enum CancelID: Hashable, Sendable {
     case dismiss
     case publishNavigation
     case finishEnvelope

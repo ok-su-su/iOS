@@ -12,7 +12,7 @@ import SSSelectableItems
 
 // MARK: - CreateEnvelopeRelationItemPropertyHelper
 
-struct CreateEnvelopeRelationItemPropertyHelper: Equatable {
+struct CreateEnvelopeRelationItemPropertyHelper: Equatable, Sendable {
   var selectedID: [Int] = []
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
   var customRelation: CreateEnvelopeRelationItemProperty? = nil
@@ -50,7 +50,7 @@ public typealias CreateEnvelopeRelationItemProperty = RelationshipModel
 
 // MARK: SSSelectableItemable
 
-extension CreateEnvelopeRelationItemProperty: SSSelectableItemable {
+extension CreateEnvelopeRelationItemProperty: @retroactive SSSelectableItemable {
   public var title: String {
     get { relation }
     set { relation = newValue }

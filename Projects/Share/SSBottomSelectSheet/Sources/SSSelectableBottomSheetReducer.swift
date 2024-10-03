@@ -11,7 +11,7 @@ import Foundation
 // MARK: - SSSelectableBottomSheetReducer
 
 @Reducer
-public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyItemable> {
+public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyItemable>: Sendable {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false
@@ -64,4 +64,4 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
 
 // MARK: - SelectBottomSheetProperty
 
-public typealias SSSelectBottomSheetPropertyItemable = CustomStringConvertible & Equatable & Identifiable
+public typealias SSSelectBottomSheetPropertyItemable = CustomStringConvertible & Equatable & Identifiable & Sendable

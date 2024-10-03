@@ -8,13 +8,13 @@
 
 import Dependencies
 import Foundation
-import Moya
+@preconcurrency import Moya
 import SSInterceptor
 import SSNetwork
 
 // MARK: - CreateEnvelopeRelationAndEventNetwork
 
-struct CreateEnvelopeRelationAndEventNetwork {
+struct CreateEnvelopeRelationAndEventNetwork: Sendable {
   var getRelationItems: @Sendable () async throws -> [CreateEnvelopeRelationItemProperty]
   @Sendable private static func _getRelationItems() async throws -> [CreateEnvelopeRelationItemProperty] {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getItems)
@@ -31,7 +31,7 @@ struct CreateEnvelopeRelationAndEventNetwork {
 // MARK: DependencyKey
 
 extension CreateEnvelopeRelationAndEventNetwork: DependencyKey {
-  static var liveValue: CreateEnvelopeRelationAndEventNetwork = .init(
+  static let liveValue: CreateEnvelopeRelationAndEventNetwork = .init(
     getRelationItems: _getRelationItems,
     getEventItems: _getEventItems
   )

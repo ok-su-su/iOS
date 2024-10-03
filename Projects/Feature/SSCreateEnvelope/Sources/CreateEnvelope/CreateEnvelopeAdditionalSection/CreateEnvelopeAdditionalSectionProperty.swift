@@ -11,7 +11,7 @@ import SSSelectableItems
 
 // MARK: - CreateEnvelopeAdditionalSectionHelper
 
-struct CreateEnvelopeAdditionalSectionHelper: Equatable {
+struct CreateEnvelopeAdditionalSectionHelper: Equatable, Sendable {
   // TODO: DTO 변경
   typealias Item = CreateEnvelopeAdditionalSectionProperty
 
@@ -82,7 +82,7 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable {
 
 // MARK: - CreateEnvelopeAdditionalSectionProperty
 
-public struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, SSSelectableItemable {
+public struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, SSSelectableItemable, Sendable {
   public var id: Int
   public var title: String
 
@@ -96,7 +96,7 @@ public struct CreateEnvelopeAdditionalSectionProperty: Equatable, Identifiable, 
 
 // MARK: - CreateEnvelopeAdditionalSectionSceneType
 
-public enum CreateEnvelopeAdditionalSectionSceneType: String, Equatable, CaseIterable, Identifiable {
+public enum CreateEnvelopeAdditionalSectionSceneType: String, Equatable, CaseIterable, Identifiable, Sendable {
   public var id: Int {
     return Int(Self.allCases.firstIndex(of: self)!)
   }

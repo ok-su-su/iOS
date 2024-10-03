@@ -15,7 +15,7 @@ import SSToast
 // MARK: - CreateEnvelopeRelation
 
 @Reducer
-public struct CreateEnvelopeRelation {
+public struct CreateEnvelopeRelation: Sendable {
   @ObservableState
   public struct State: Equatable {
     var isOnAppear = false

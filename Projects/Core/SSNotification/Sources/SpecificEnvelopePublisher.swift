@@ -24,7 +24,7 @@ public final class SpecificEnvelopePublisher: @unchecked Sendable {
     _updatePublisher.send(ID)
   }
 
-  private var _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
+  private let _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
   public var deleteEnvelopePublisher: AnyPublisher<Int64, Never> {
     _deleteEnvelopePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }

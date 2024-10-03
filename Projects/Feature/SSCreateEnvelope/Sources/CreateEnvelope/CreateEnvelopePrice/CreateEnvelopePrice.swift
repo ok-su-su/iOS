@@ -19,7 +19,7 @@ import SSToast
 @Reducer
 public struct CreateEnvelopePrice {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var subscriptions: Set<AnyCancellable> = .init()
 
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
@@ -48,7 +48,7 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum Action: Equatable, FeatureAction, BindableAction {
+  public enum Action: Equatable, FeatureAction, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
@@ -58,7 +58,7 @@ public struct CreateEnvelopePrice {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedGuidValue(Int64)
     case changeText(String)
@@ -91,7 +91,7 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case convertPrice(String)
     case push
     case addPrice(Int64)
@@ -122,14 +122,14 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case toast(SSToastReducer.Action)
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case dismissCreateFlow
   }
 

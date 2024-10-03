@@ -11,7 +11,7 @@ import SwiftUI
 // MARK: - SafeAreaInsetsKey
 
 struct SafeAreaInsetsKey: PreferenceKey {
-  static var defaultValue = EdgeInsets()
+  static let defaultValue = EdgeInsets()
   static func reduce(value: inout EdgeInsets, nextValue: () -> EdgeInsets) {
     value = nextValue()
   }

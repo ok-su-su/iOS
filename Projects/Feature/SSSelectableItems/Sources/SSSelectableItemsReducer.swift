@@ -12,7 +12,7 @@ import SSRegexManager
 @Reducer
 public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
 
     let regexPatternString: String?
@@ -70,14 +70,14 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case delegate(DelegateAction)
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedItem(id: Int)
     case tappedAddCustomTextField
@@ -86,13 +86,13 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable> {
     case changeTextField(String)
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case multipleSelection(id: Int)
     case startAddCustomRelation
     case endAddCustomRelation
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case selected(id: [Int])
     case invalidText(String)
   }

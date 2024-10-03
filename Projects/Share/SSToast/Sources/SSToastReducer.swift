@@ -12,7 +12,7 @@ import Foundation
 @Reducer
 public struct SSToastReducer {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var sSToastProperty: SSToastProperty
     var toastMessage: String {
@@ -24,7 +24,7 @@ public struct SSToastReducer {
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case willFinishToast
     case finishToast

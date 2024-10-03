@@ -89,13 +89,17 @@ public struct CreateEnvelopeAdditionalSectionView: View {
     static let horizontalSpacing: CGFloat = 16
   }
 
+  @ViewBuilder
+  func addNewRelationTextFieldPromptText() -> some View {
+    Text(Constants.addNewRelationTextFieldPrompt)
+      .modifier(SSTypoModifier(.title_xs))
+      .foregroundStyle(SSColor.gray30)
+  }
+
   private enum Constants {
     static let titleText: String = "더 기록할 내용이 있다면 알려주세요"
     static let descriptionText: String = "복수로 선택하셔도 좋아요"
     static let makeAddCustomRelationButtonText = "직접 입력"
     static let addNewRelationTextFieldPrompt = "입력해주세요"
-    static let addNewRelationTextFieldPromptText: some View = Text(Constants.addNewRelationTextFieldPrompt)
-      .modifier(SSTypoModifier(.title_xs))
-      .foregroundStyle(SSColor.gray30)
   }
 }

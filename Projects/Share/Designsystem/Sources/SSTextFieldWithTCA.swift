@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - SSTextFieldReducerProperty
 
-public struct SSTextFieldReducerProperty: Equatable {
+public struct SSTextFieldReducerProperty: Equatable, Sendable {
   var text: String
   var maximumTextLength: Int
   var regexPattern: String
@@ -69,13 +69,13 @@ public struct SSTextFieldReducerProperty: Equatable {
     self.errorMessage = errorMessage
   }
 
-  public enum TextFieldStatus {
+  public enum TextFieldStatus: Sendable {
     case active
     case error
     case notDisplayError
   }
 
-  public enum LineStatus {
+  public enum LineStatus: Sendable {
     case gray
     case black
     case red

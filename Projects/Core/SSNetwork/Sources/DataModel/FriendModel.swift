@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - FriendModel
 
-public struct FriendModel: Codable, Equatable {
+public struct FriendModel: Codable, Equatable, Sendable {
   public let id: Int64
   public let name: String
   public let phoneNumber: String?

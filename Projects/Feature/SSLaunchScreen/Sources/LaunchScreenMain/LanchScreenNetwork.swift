@@ -8,16 +8,16 @@
 
 import Dependencies
 import Foundation
-import Moya
+@preconcurrency import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
 
 // MARK: - LaunchScreenNetwork
 
-struct LaunchScreenNetwork {
-  var getIsMandatoryUpdate: (_ version: String?) async -> Bool
-  private static func _getIsMandatoryUpdate(version: String?) async -> Bool {
+struct LaunchScreenNetwork: Sendable {
+  var getIsMandatoryUpdate: @Sendable (_ version: String?) async -> Bool
+  @Sendable private static func _getIsMandatoryUpdate(version: String?) async -> Bool {
     guard let version else {
       os_log("버전이 올바르지 않습니다. ")
       return false
@@ -37,7 +37,7 @@ struct LaunchScreenNetwork {
 // MARK: DependencyKey
 
 extension LaunchScreenNetwork: DependencyKey {
-  static var liveValue: LaunchScreenNetwork = .init(getIsMandatoryUpdate: _getIsMandatoryUpdate)
+  static let liveValue: LaunchScreenNetwork = .init(getIsMandatoryUpdate: _getIsMandatoryUpdate)
 
   private static let provider: MoyaProvider<Network> = .init()
   enum Network: SSNetworkTargetType {

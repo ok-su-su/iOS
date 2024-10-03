@@ -8,12 +8,12 @@
 
 import Foundation
 
-public struct SSToastProperty: Equatable {
+public struct SSToastProperty: Equatable, Sendable {
   var toastMessage: String
   var type: TrailingType
   var duration: Double
 
-  public enum TrailingType: Equatable {
+  public enum TrailingType: Equatable, Sendable {
     case none
     case text(String)
     case refresh

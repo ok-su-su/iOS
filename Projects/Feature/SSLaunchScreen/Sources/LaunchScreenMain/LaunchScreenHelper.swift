@@ -15,9 +15,9 @@ import SSPersistancy
 
 // MARK: - LaunchScreenTokenNetwork
 
-struct LaunchScreenTokenNetwork {
-  var checkTokenValid: () async -> EndedLaunchScreenStatus
-  private static func _checkTokenValid() async -> EndedLaunchScreenStatus {
+struct LaunchScreenTokenNetwork: Sendable {
+  var checkTokenValid: @Sendable () async -> EndedLaunchScreenStatus
+  @Sendable private static func _checkTokenValid() async -> EndedLaunchScreenStatus {
     // 기존 유저인지 검사합니다.
     if !SSTokenManager.shared.isToken() {
       return .newUser
@@ -43,7 +43,7 @@ struct LaunchScreenTokenNetwork {
   }
 
   /// 1.0.5 버전에 ACCESSTOKEN에 관한 로직입니다.
-  private static func prevUserNewFeature105() async {
+  @Sendable private static func prevUserNewFeature105() async {
     // 만약 USERID가 없을 경우에 로직을 실행합니다.
     if SSTokenManager.shared.getUserID() == nil {
       try? await SSTokenInterceptor.shared.setUserNameByAccessToken()
@@ -60,7 +60,7 @@ struct LaunchScreenTokenNetwork {
 // MARK: DependencyKey
 
 extension LaunchScreenTokenNetwork: DependencyKey {
-  static var liveValue: LaunchScreenTokenNetwork = .init(checkTokenValid: _checkTokenValid)
+  static let liveValue: LaunchScreenTokenNetwork = .init(checkTokenValid: _checkTokenValid)
 }
 
 extension DependencyValues {

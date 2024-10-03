@@ -8,7 +8,7 @@
 
 import Dependencies
 import Foundation
-import Moya
+@preconcurrency import Moya
 import SSInterceptor
 import SSNetwork
 
@@ -48,7 +48,7 @@ struct CreateEnvelopeNetwork {
 // MARK: DependencyKey
 
 extension CreateEnvelopeNetwork: DependencyKey {
-  static var liveValue: CreateEnvelopeNetwork = .init(
+  static let liveValue: CreateEnvelopeNetwork = .init(
     getFriendID: _getFriendID,
     createEnvelope: _createEnvelope
   )

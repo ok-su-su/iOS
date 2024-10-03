@@ -8,39 +8,39 @@
 
 import Dependencies
 import Foundation
-import Moya
+@preconcurrency import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
 
 // MARK: - MyPageMainNetwork
 
-struct MyPageMainNetwork {
+struct MyPageMainNetwork: Sendable {
   private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   private static let appStoreNetworkProvider = MoyaProvider<AppstoreNetwork>()
 
-  var getMyInformation: () async throws -> UserInfoResponse
+  var getMyInformation: @Sendable () async throws -> UserInfoResponse
   private static func _getMyInformation() async throws -> UserInfoResponse {
     return try await provider.request(.myPageInformation)
   }
 
-  var updateUserInformation: (_ userID: Int64, _ body: UpdateUserProfileRequestBody) async throws -> UserInfoResponse
+  var updateUserInformation: @Sendable (_ userID: Int64, _ body: UpdateUserProfileRequestBody) async throws -> UserInfoResponse
   private static func _updateUserInformation(userID: Int64, requestBody: UpdateUserProfileRequestBody) async throws -> UserInfoResponse {
     return try await provider.request(.updateMyProfile(userID: userID, body: requestBody))
   }
 
-  var logout: () async throws -> Void
-  private static func _logout() async throws {
+  var logout: @Sendable () async throws -> Void
+  @Sendable private static func _logout() async throws {
     try await provider.request(.logout)
   }
 
-  var resign: () async throws -> Void
-  private static func _resign() async throws {
+  var resign: @Sendable () async throws -> Void
+  @Sendable private static func _resign() async throws {
     try await provider.request(.withdraw)
   }
 
-  var getAppstoreVersion: () async throws -> String?
-  private static func _getAppstoreVersion() async throws -> String? {
+  var getAppstoreVersion: @Sendable () async throws -> String?
+  @Sendable private static func _getAppstoreVersion() async throws -> String? {
     let data = try await appStoreNetworkProvider.request(.getSUSUAppstoreVersion)
     let jsonObject = try JSONSerialization.jsonObject(with: data)
     guard let json = jsonObject as? [String: Any],
@@ -53,16 +53,16 @@ struct MyPageMainNetwork {
     return currentVersion
   }
 
-  var resignWithApple: (_ identity: String?) async throws -> Void
-  private static func _resignWithApple(identity: String?) async throws {
+  var resignWithApple: @Sendable (_ identity: String?) async throws -> Void
+  @Sendable private static func _resignWithApple(identity: String?) async throws {
     guard let identity else {
       throw NSError(domain: "No apple IdentityToken its fatal error", code: 30)
     }
     try await provider.request(.withdrawApple(identityToken: identity))
   }
 
-  var downloadExcel: () async throws -> Data
-  private static func _downloadExcel() async throws -> Data {
+  var downloadExcel: @Sendable () async throws -> Data
+  @Sendable private static func _downloadExcel() async throws -> Data {
     let data: Data = try await provider.request(.downloadExcel)
     return data
   }
@@ -78,7 +78,7 @@ extension DependencyValues {
 // MARK: - MyPageMainNetwork + DependencyKey
 
 extension MyPageMainNetwork: DependencyKey {
-  static var liveValue: MyPageMainNetwork = .init(
+  static let liveValue: MyPageMainNetwork = .init(
     getMyInformation: _getMyInformation,
     updateUserInformation: _updateUserInformation,
     logout: _logout,

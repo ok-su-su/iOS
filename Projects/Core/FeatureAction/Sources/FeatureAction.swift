@@ -11,12 +11,12 @@ import SwiftUI
 
 // MARK: - FeatureAction
 
-public protocol FeatureAction {
-  associatedtype ViewAction
-  associatedtype InnerAction
-  associatedtype AsyncAction
-  associatedtype ScopeAction
-  associatedtype DelegateAction
+public protocol FeatureAction: Sendable {
+  associatedtype ViewAction: Sendable
+  associatedtype InnerAction: Sendable
+  associatedtype AsyncAction: Sendable
+  associatedtype ScopeAction: Sendable
+  associatedtype DelegateAction: Sendable
 
   /// NOTE: view 에서 사용되는 Action 을 정의합니다.
   static func view(_: ViewAction) -> Self

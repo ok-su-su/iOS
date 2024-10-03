@@ -107,7 +107,7 @@ public struct SpecificEnvelopeDetailReducer {
     switch action {
     case .deleteEnvelope:
 
-      return .ssRun { [id = state.envelopeID] _ in
+      return .ssRun { [id = state.envelopeID, network, specificEnvelopePublisher, dismiss] _ in
         try await network.deleteEnvelope(id)
         specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
@@ -123,7 +123,7 @@ public struct SpecificEnvelopeDetailReducer {
       }
 
     case .getEnvelopeDetailProperty:
-      return .ssRun { [id = state.envelopeID] send in
+      return .ssRun { [id = state.envelopeID, network] send in
         await send(.inner(.isLoading(true)))
         let property = try await network.getEnvelopeDetailPropertyByEnvelopeID(id)
         await send(.inner(.updateEnvelopeDetailProperty(property)))

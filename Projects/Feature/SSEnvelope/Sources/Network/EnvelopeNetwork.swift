@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Dependencies
 import Foundation
-import Moya
+@preconcurrency import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
@@ -17,7 +17,7 @@ import SSNetwork
 // MARK: - EnvelopeNetwork
 
 struct EnvelopeNetwork {
-  static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  private static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
   var getEnvelopeDetailPropertyByEnvelopeID: @Sendable (_ id: Int64) async throws -> EnvelopeDetailProperty
   @Sendable static func _getEnvelopeDetailPropertyByEnvelopeID(_ id: Int64) async throws -> EnvelopeDetailProperty {
@@ -90,7 +90,7 @@ extension DependencyValues {
 // MARK: - EnvelopeNetwork + DependencyKey
 
 extension EnvelopeNetwork: DependencyKey {
-  static var liveValue: EnvelopeNetwork = .init(
+  static let liveValue: EnvelopeNetwork = .init(
     getEnvelopeDetailPropertyByEnvelopeID: _getEnvelopeDetailPropertyByEnvelopeID,
     deleteEnvelope: _deleteEnvelope,
     getSpecificEnvelopeHistoryEditHelperBy: _getSpecificEnvelopeHistoryEditHelperBy,

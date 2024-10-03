@@ -14,7 +14,7 @@ import SSNotification
 
 // MARK: - FireBaseErrorHandler
 
-public final class FireBaseErrorHandler {
+public final class FireBaseErrorHandler: @unchecked Sendable {
   public static let shared = FireBaseErrorHandler()
   var subscription: AnyCancellable?
   private init() {}

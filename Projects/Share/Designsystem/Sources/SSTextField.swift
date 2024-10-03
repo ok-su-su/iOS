@@ -11,7 +11,7 @@ import SwiftUI
 
 // MARK: - SSTextPlaceholderText
 
-public enum SSTextPlaceholderText {
+public enum SSTextPlaceholderText: Sendable {
   case signUp
   case account
   case amount

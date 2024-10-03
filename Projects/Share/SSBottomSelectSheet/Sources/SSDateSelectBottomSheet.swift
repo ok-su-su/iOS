@@ -58,7 +58,7 @@ public struct SSDateSelectBottomSheetReducer {
         return .none
       case .didTapConfirmButton:
         state.isInitialStateOfDate = false
-        return .run { _ in
+        return .run { [dismiss = dismiss] _ in
           await dismiss()
         }
       case let .didSelectedStartDate(date):
