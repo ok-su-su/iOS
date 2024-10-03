@@ -251,7 +251,10 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
 
       let memoText: String = state.editHelper.memoEditProperty.memo
       let queryMemoText: String? = memoText.isEmpty ? nil : memoText
-      let category: CreateCategoryAssignmentRequest = .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
+      let category: CreateCategoryAssignmentRequest = .init(
+        id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0,
+        customCategory: customCategory
+      )
 
       let envelopeID = state.editHelper.envelopeDetailProperty.envelope.id
       return .ssRun { send in

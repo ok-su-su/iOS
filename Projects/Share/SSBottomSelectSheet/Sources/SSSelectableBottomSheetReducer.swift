@@ -13,7 +13,7 @@ import Foundation
 @Reducer
 public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyItemable>: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
 
     var items: [Item]
@@ -30,7 +30,7 @@ public struct SSSelectableBottomSheetReducer<Item: SSSelectBottomSheetPropertyIt
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case tapped(item: Item)
     case changedItem(Item)

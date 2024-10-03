@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.susu. All rights reserved.
 //
 
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -24,7 +25,7 @@ struct SentMain: Sendable {
   init() {}
 
   @ObservableState
-  struct State: Equatable, Sendable {
+  struct State: Sendable {
     // MARK: - Scope
 
     var header = HeaderViewFeature.State(.init(title: "보내요", type: .defaultType))
@@ -57,6 +58,7 @@ struct SentMain: Sendable {
 
   @Dependency(\.sentMainNetwork) var network
   @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
+  @Dependency(\.mainQueue) var mainQueue
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -277,7 +279,7 @@ struct SentMain: Sendable {
         let isEndOfPage = state.isEndOfPage.description
         os_log("페이지를 요청합니다., \(isEndOfPage)")
         return .send(.async(.updateEnvelopesByFilter))
-          .throttle(id: ThrottleID.getFriendThrottleID, for: 2, scheduler: RunLoop.main, latest: false)
+          .throttle(id: ThrottleID.getFriendThrottleID, for: 2, scheduler: mainQueue, latest: false)
       }
       return .none
 

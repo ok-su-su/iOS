@@ -49,7 +49,7 @@ public class SliderHandle: ObservableObject {
 
 // MARK: - CustomSlider
 
-public class CustomSlider: ObservableObject, Equatable {
+public class CustomSlider: ObservableObject, Equatable, @unchecked Sendable {
   public static func == (lhs: CustomSlider, rhs: CustomSlider) -> Bool {
     lhs === rhs
   }

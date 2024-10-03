@@ -12,7 +12,7 @@ import SSEnvelope
 // MARK: - SpecificEnvelopeHistoryRouter
 
 @Reducer
-struct SpecificEnvelopeHistoryRouter {
+struct SpecificEnvelopeHistoryRouter: Sendable {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -23,7 +23,7 @@ struct SpecificEnvelopeHistoryRouter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case push(SpecificEnvelopeHistoryRouterPath.State)
     case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)

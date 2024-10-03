@@ -201,22 +201,26 @@ struct SentMainView: View {
     static let emptyEnvelopesText: String = "아직 보낸 봉투가 없습니다."
     static let addNewEnvelopeButtonText: String = "보낸 봉투 추가하기"
 
-    static let notSelectedFilterButtonProperty: SSButtonProperty = .init(
-      size: .sh32,
-      status: .active,
-      style: .ghost,
-      color: .black,
-      leftIcon: .icon(SSImage.commonFilter),
-      buttonText: "필터"
-    )
+    static var notSelectedFilterButtonProperty: SSButtonProperty {
+      .init(
+        size: .sh32,
+        status: .active,
+        style: .ghost,
+        color: .black,
+        leftIcon: .icon(SSImage.commonFilter),
+        buttonText: "필터"
+      )
+    }
 
-    static let emptyEnvelopeButtonProperty: SSButtonProperty = .init(
-      size: .sh40,
-      status: .active,
-      style: .ghost,
-      color: .black,
-      buttonText: addNewEnvelopeButtonText
-    )
+    static var emptyEnvelopeButtonProperty: SSButtonProperty {
+      .init(
+        size: .sh40,
+        status: .active,
+        style: .ghost,
+        color: .black,
+        buttonText: addNewEnvelopeButtonText
+      )
+    }
   }
 }
 

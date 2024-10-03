@@ -16,9 +16,9 @@ import SwiftUI
 // MARK: - SentEnvelopeFilter
 
 @Reducer
-struct SentEnvelopeFilter {
+struct SentEnvelopeFilter: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var isLoading = false
     @Shared var filterHelper: SentPeopleFilterHelper
@@ -62,7 +62,7 @@ struct SentEnvelopeFilter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case isLoading(Bool)
     case onAppear(Bool)
     case tappedPerson(SentPerson)

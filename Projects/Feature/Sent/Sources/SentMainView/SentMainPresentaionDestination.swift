@@ -11,7 +11,7 @@ import Foundation
 import SSBottomSelectSheet
 import SSSearch
 
-@Reducer(state: .equatable, action: .equatable)
+@Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 @CasePathable
 enum SentMainPresentationDestination {
   case filter(SentEnvelopeFilter)
