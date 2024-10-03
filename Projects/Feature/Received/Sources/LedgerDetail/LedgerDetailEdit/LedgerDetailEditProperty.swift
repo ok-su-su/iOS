@@ -38,6 +38,7 @@ struct LedgerDetailEditProperty: Equatable {
       titleText: "카테고리",
       items: category,
       isCustomItem: currentCustomItem,
+      initialSelectedID: ledgerDetailProperty.categoryID,
       customTextFieldPrompt: "경조사 이름",
       isEssentialProperty: true
     )

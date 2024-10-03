@@ -55,12 +55,12 @@ public extension MoyaProvider {
             continuation.resume(returning: res)
             return
           }
-          if let isSUSUError = String(data: response.data, encoding: .utf8) {
-            os_log("\(isSUSUError)")
-          }
           continuation.resume(with: .failure(MoyaError.statusCode(response)))
 
         case let .failure(error):
+          if let errorDescription = error.errorDescription {
+            os_log("errorDescription: \(errorDescription) \n localizedDescription: \(error.localizedDescription)")
+          }
           let willSendError: Error
           switch error {
           case let .statusCode(response):

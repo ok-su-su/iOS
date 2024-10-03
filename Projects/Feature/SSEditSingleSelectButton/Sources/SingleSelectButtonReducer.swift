@@ -20,11 +20,10 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
     @Shared var singleSelectButtonHelper: SingleSelectButtonProperty<Item>
     var customTextFieldText: String
 
-    public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>, initialSelectedID: Item.ID?) {
+    public init(singleSelectButtonHelper: Shared<SingleSelectButtonProperty<Item>>) {
       _singleSelectButtonHelper = singleSelectButtonHelper
       customTextFieldText = ""
-      self.initialSelectedID = initialSelectedID
-
+      initialSelectedID = singleSelectButtonHelper.wrappedValue.initialSelectedID
       setCustomTextField()
     }
 

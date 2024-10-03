@@ -22,7 +22,7 @@ struct EnvelopeNetwork {
   var getEnvelopeDetailPropertyByEnvelopeID: @Sendable (_ id: Int64) async throws -> EnvelopeDetailProperty
   @Sendable static func _getEnvelopeDetailPropertyByEnvelopeID(_ id: Int64) async throws -> EnvelopeDetailProperty {
     let data: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(id))
-    return data.convertToEnvelopeDetailLProperty()
+    return data
   }
 
   var deleteEnvelope: @Sendable (_ id: Int64) async throws -> Void
@@ -37,21 +37,15 @@ struct EnvelopeNetwork {
     let relations = responseRelations.sorted { $0.id < $1.id }
 
     let envelopeDetailResponse: EnvelopeDetailResponse = try await provider.request(.searchEnvelopeByID(envelopeID))
-    let envelopeProperty = envelopeDetailResponse.convertToEnvelopeDetailLProperty()
 
-    guard var customCategoryItem = events.first(where: { $0.isCustom }),
-          var customRelationItem = relations.first(where: { $0.isCustom })
-    else {
-      throw NSError(domain: "", code: 3)
-    }
+    let customCategoryItem = events.first(where: { $0.isCustom }) ?? .editCustomDefault
+    let customRelationItem = relations.first(where: { $0.isCustom }) ?? .editCustomDefault
+
     let targetCategoryItems = events.filter { $0.isCustom == false }
     let targetRelationItems = relations.filter { $0.isCustom == false }
 
-    customCategoryItem.title = envelopeDetailResponse.category.customCategory ?? ""
-    customRelationItem.title = envelopeDetailResponse.friendRelationship.customRelation ?? ""
-
     return .init(
-      envelopeDetailProperty: envelopeProperty,
+      envelopeDetailProperty: envelopeDetailResponse,
       eventItems: targetCategoryItems,
       customEventItem: customCategoryItem,
       relationItems: targetRelationItems,
@@ -70,21 +64,11 @@ struct EnvelopeNetwork {
     // TODO: 작업하기
     let dto: CreateAndUpdateEnvelopeResponse = try await provider.request(.editEnvelopes(id: id, body))
     return .init(
-      id: dto.envelope.id,
-      type: dto.envelope.type,
-      ledgerID: nil,
-      price: dto.envelope.amount,
-      eventName: dto.category.customCategory ?? dto.category.category,
-      eventID: dto.category.id,
-      friendID: dto.friend.id,
-      name: dto.friend.name,
-      relation: dto.friendRelationship.customRelation ?? dto.relationship.relation,
-      relationID: dto.relationship.id,
-      date: CustomDateFormatter.getDate(from: dto.envelope.handedOverAt) ?? .now,
-      isVisited: dto.envelope.hasVisited,
-      gift: dto.envelope.gift,
-      contacts: dto.friend.phoneNumber,
-      memo: dto.envelope.memo
+      envelope: dto.envelope,
+      category: dto.category,
+      relationship: dto.relationship,
+      friendRelationship: dto.friendRelationship,
+      friend: dto.friend
     )
   }
 
@@ -194,25 +178,14 @@ private extension Date {
   }
 }
 
-private extension EnvelopeDetailResponse {
-  func convertToEnvelopeDetailLProperty() -> EnvelopeDetailProperty {
-    let data = self
-    return .init(
-      id: data.envelope.id,
-      type: data.envelope.type,
-      ledgerID: nil,
-      price: data.envelope.amount,
-      eventName: data.category.customCategory ?? data.category.category,
-      eventID: data.category.id,
-      friendID: data.friend.id,
-      name: data.friend.name,
-      relation: data.friendRelationship.customRelation != nil ? data.friendRelationship.customRelation! : data.relationship.relation,
-      relationID: data.relationship.id,
-      date: .getDate(from: data.envelope.handedOverAt) ?? .now,
-      isVisited: data.envelope.hasVisited,
-      gift: data.envelope.gift,
-      contacts: data.friend.phoneNumber,
-      memo: data.envelope.memo
-    )
+private extension CreateEnvelopeEventProperty {
+  static var editCustomDefault: Self {
+    .init(id: 2048, seq: 2048, name: "", style: "blue60", isActive: true, isCustom: true, isMiscCategory: true)
+  }
+}
+
+extension CreateEnvelopeRelationItemProperty {
+  static var editCustomDefault: Self {
+    .init(id: 2048, relation: "", description: "", isCustom: true)
   }
 }

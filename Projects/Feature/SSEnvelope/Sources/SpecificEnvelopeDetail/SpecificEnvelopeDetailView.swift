@@ -25,19 +25,19 @@ public struct SpecificEnvelopeDetailView: View {
   // MARK: Content
 
   @ViewBuilder
-  private func makeContentView() -> some View {
+  private func makeContentView(_ envelopeDetailProperty: EnvelopeDetailProperty) -> some View {
     VStack(alignment: .leading) {
       Spacer()
         .frame(height: 24)
 
       VStack(alignment: .leading, spacing: 16) {
-        Text(store.envelopeDetailProperty.priceText)
+        Text(envelopeDetailProperty.priceText)
           .modifier(SSTypoModifier(.title_xxl))
           .foregroundStyle(SSColor.gray100)
 
         ScrollView(showsIndicators: false) {
           LazyVStack(spacing: 0) {
-            let listViewContent = store.envelopeDetailProperty.makeListContent(isShowCategory: store.isShowCategory)
+            let listViewContent = envelopeDetailProperty.makeListContent(isShowCategory: store.isShowCategory)
             ForEach(0 ..< listViewContent.count, id: \.self) { ind in
               let (title, description) = listViewContent[ind]
               makeListView(title: title, description: description)
@@ -74,8 +74,10 @@ public struct SpecificEnvelopeDetailView: View {
         .ignoresSafeArea()
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.scope.header))
-        makeContentView()
-          .padding(.horizontal, Metrics.horizontalSpacing)
+        if let envelopeDetailProperty = store.envelopeDetailProperty {
+          makeContentView(envelopeDetailProperty)
+            .padding(.horizontal, Metrics.horizontalSpacing)
+        }
       }
     }
     .navigationBarBackButtonHidden()

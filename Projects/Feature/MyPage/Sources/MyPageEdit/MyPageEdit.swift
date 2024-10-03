@@ -56,13 +56,16 @@ struct MyPageEdit {
     }
 
     init() {
-      userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: nil, birth: nil)
+      let userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: nil, birth: nil)
+      self.userInfo = userInfo
       _selectedBottomSheetItem = .init(nil)
+      let initialSelectedGenderItem = Gender.getGenderByKey(userInfo.gender)
       _genderSectionProperty = .init(
         .init(
           titleText: "성별",
           items: .default,
           isCustomItem: nil,
+          initialSelectedID: initialSelectedGenderItem?.id,
           customTextFieldPrompt: nil,
           isEssentialProperty: false
         )
@@ -72,11 +75,13 @@ struct MyPageEdit {
     init(_ userInfo: UserInfoResponse) {
       self.userInfo = userInfo
       _selectedBottomSheetItem = .init(nil)
+      let initialSelectedGenderItem = Gender.getGenderByKey(userInfo.gender)
       _genderSectionProperty = .init(
         .init(
           titleText: "성별",
           items: .default,
           isCustomItem: nil,
+          initialSelectedID: initialSelectedGenderItem?.id,
           customTextFieldPrompt: nil,
           isEssentialProperty: false
         )
@@ -174,7 +179,9 @@ struct MyPageEdit {
       SSToastReducer()
     }
 
-    Reduce { state, action in
+    Reduce {
+      state,
+        action in
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
@@ -206,7 +213,7 @@ struct MyPageEdit {
         let currentGenderID = Gender.getGenderByKey(genderString)?.id
 
         state.nameTextFieldText = state.userInfo.name
-        state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty, initialSelectedID: currentGenderID)
+        state.genderSection = .init(singleSelectButtonHelper: state.$genderSectionProperty)
         return .none
 
       case .async(.updateUserInformation):
@@ -267,3 +274,5 @@ struct SelectYearBottomSheetItem: SSSelectBottomSheetPropertyItemable {
   /// BottomSheet에 표시될 연도 입니다.
   var id: Int
 }
+
+private extension UserInfoResponse {}

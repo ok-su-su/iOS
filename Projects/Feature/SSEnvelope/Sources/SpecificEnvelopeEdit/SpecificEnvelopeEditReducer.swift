@@ -35,24 +35,9 @@ public struct SpecificEnvelopeEditReducer {
     init(editHelper: SpecificEnvelopeEditHelper, isShowCategory: Bool = true) {
       self.isShowCategory = isShowCategory
       _editHelper = .init(editHelper)
-      let initialVisited: VisitedSelectButtonItem? =
-        if let isVisited = editHelper.envelopeDetailProperty.isVisited {
-          isVisited ? .yes : .no
-        } else {
-          nil
-        }
-      eventSection = .init(
-        singleSelectButtonHelper: _editHelper.eventSectionButtonHelper,
-        initialSelectedID: editHelper.envelopeDetailProperty.eventID
-      )
-      relationSection = .init(
-        singleSelectButtonHelper: _editHelper.relationSectionButtonHelper,
-        initialSelectedID: editHelper.envelopeDetailProperty.relationID
-      )
-      visitedSection = .init(
-        singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper,
-        initialSelectedID: initialVisited?.id
-      )
+      eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
+      relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
+      visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
     }
 
     public init(envelopeID: Int64, isShowCategory: Bool = true) async throws {
@@ -93,7 +78,6 @@ public struct SpecificEnvelopeEditReducer {
 
   public enum AsyncAction: Equatable {
     case editFriendsAndEnvelope
-    case updateEnvelopes(friendID: Int64)
   }
 
   @Dependency(\.envelopeNetwork) var network
@@ -233,70 +217,62 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
     }
   }
 
+  func updateEnvelope(_ state: State, friendID: Int64, send: Send<Action>) async throws {
+    guard let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem else {
+      return
+    }
+
+    let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
+      state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
+
+    let giftText: String = state.editHelper.giftEditProperty.gift
+    let queryGiftText: String? = giftText.isEmpty ? nil : giftText
+
+    let memoText: String = state.editHelper.memoEditProperty.memo
+    let queryMemoText: String? = memoText.isEmpty ? nil : memoText
+
+    let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
+      type: state.editHelper.envelopeDetailProperty.envelope.type,
+      friendId: friendID,
+      ledgerId: nil,
+      amount: state.editHelper.priceProperty.price,
+      gift: queryGiftText,
+      memo: queryMemoText,
+      hasVisited: state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited,
+      handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
+      category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
+    )
+
+    let envelopeID = state.editHelper.envelopeDetailProperty.envelope.id
+
+    let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
+    UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
+    await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
+    await dismiss()
+  }
+
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .editFriendsAndEnvelope:
-      guard let selectedRelationItem = state.editHelper.relationSectionButtonHelper.selectedItem,
-            let customItem = state.editHelper.relationSectionButtonHelper.isCustomItem,
-            let selectedItemID = state.editHelper.relationSectionButtonHelper.selectedItem?.id
+      guard let selectedRelationItem = state.editHelper.relationSectionButtonHelper.selectedItem
       else {
         return .none
       }
-
-      // 만약 선택된 아이템이 customItem일 경우
-      let customRelation = selectedItemID == customItem.id ? customItem.title : nil
       let phoneNumber = state.editHelper.contactEditProperty.contact
-
-      let friendID = state.editHelper.envelopeDetailProperty.friendID
+      let customItemTitle = state.editHelper.relationSectionButtonHelper.isCustomItem?.relation
       let friendRequestBody = CreateAndUpdateFriendRequest(
         name: state.editHelper.nameEditProperty.textFieldText,
         phoneNumber: phoneNumber.isEmpty ? nil : phoneNumber,
         relationshipId: selectedRelationItem.id,
-        customRelation: customRelation
+        customRelation: customItemTitle
       )
 
-      return .ssRun { send in
+      let friendID = state.editHelper.envelopeDetailProperty.friend.id
+      return .ssRun { [state = state] send in
         await send(.inner(.isLoading(true)))
         let updatedFriendID = try await network.editFriends(friendID, friendRequestBody)
-        await send(.async(.updateEnvelopes(friendID: updatedFriendID)))
+        try await updateEnvelope(state, friendID: updatedFriendID, send: send)
         await send(.inner(.isLoading(false)))
-      }
-
-    case let .updateEnvelopes(friendID):
-      guard let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem
-      else {
-        return .none
-      }
-
-      let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
-        state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
-
-      let giftText: String = state.editHelper.giftEditProperty.gift
-      let queryGiftText: String? = giftText.isEmpty ? nil : giftText
-
-      let memoText: String = state.editHelper.memoEditProperty.memo
-      let queryMemoText: String? = memoText.isEmpty ? nil : memoText
-
-      let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
-        type: state.editHelper.envelopeDetailProperty.type,
-        friendId: friendID,
-        ledgerId: state.editHelper.envelopeDetailProperty.ledgerID,
-        amount: state.editHelper.priceProperty.price,
-        gift: queryGiftText,
-        memo: queryMemoText,
-        hasVisited: state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited,
-        handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
-        category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
-      )
-
-      let envelopeID = state.editHelper.envelopeDetailProperty.id
-      return .ssRun { send in
-        await send(.inner(.isLoading(true)))
-        let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
-        UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
-        await send(.inner(.isLoading(false)))
-        await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
-        await dismiss()
       }
     }
   }
