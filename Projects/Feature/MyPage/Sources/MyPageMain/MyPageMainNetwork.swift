@@ -8,7 +8,7 @@
 
 import Dependencies
 import Foundation
-@preconcurrency import Moya
+import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
@@ -16,8 +16,8 @@ import SSNetwork
 // MARK: - MyPageMainNetwork
 
 struct MyPageMainNetwork: Sendable {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  private static let appStoreNetworkProvider = MoyaProvider<AppstoreNetwork>()
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let appStoreNetworkProvider = MoyaProvider<AppstoreNetwork>()
 
   var getMyInformation: @Sendable () async throws -> UserInfoResponse
   private static func _getMyInformation() async throws -> UserInfoResponse {

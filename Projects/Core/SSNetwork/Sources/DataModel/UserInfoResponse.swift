@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - UserInfoResponseDTO
 
-public struct UserInfoResponse: Equatable, Decodable {
+public struct UserInfoResponse: Equatable, Decodable, Sendable {
   /// 내 아이디
   public let id: Int64
   /// 내 이름

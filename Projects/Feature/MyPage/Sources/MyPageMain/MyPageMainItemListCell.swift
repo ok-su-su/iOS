@@ -52,7 +52,7 @@ struct MyPageMainItemListCell<Item: MyPageMainItemListCellItemable> {
 
 // MARK: - MyPageMainItemListCellItemable
 
-protocol MyPageMainItemListCellItemable: Identifiable, Equatable {
+protocol MyPageMainItemListCellItemable: Identifiable, Equatable, Sendable {
   var id: Int { get }
   var title: String { get }
   var subTitle: String? { get }

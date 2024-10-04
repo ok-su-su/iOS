@@ -306,7 +306,9 @@ extension MyPageMain {
     switch section {
     case .appVersion:
       if !state.isLatestVersion {
-        SSCommonRouting.openAppStore()
+        Task.detached {
+          await SSCommonRouting.openAppStore()
+        }
       }
       return .none
     }

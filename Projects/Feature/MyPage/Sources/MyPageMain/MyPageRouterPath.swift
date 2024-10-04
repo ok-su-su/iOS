@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - MyPageRouterPath
 
-enum MyPageRouterPath: Equatable {
+enum MyPageRouterPath: Equatable, Sendable {
   case feedBack
   case privacyPolicy
   case appVersion
