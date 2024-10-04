@@ -134,12 +134,14 @@ struct MyStatisticsView: View {
     ZStack(alignment: .center) {
       makeContentView()
 
-      Color.clear
-        .contentShape(Rectangle())
-        .onTapGesture {
-          store.sendViewAction(.tappedScrollView)
-        }
-        .gesture(emptyStateDragGesture)
+      if store.helper.isEmptyState {
+        Color.clear
+          .contentShape(Rectangle())
+          .onTapGesture {
+            store.sendViewAction(.tappedScrollView)
+          }
+          .gesture(emptyStateDragGesture)
+      }
     }
     .navigationBarBackButtonHidden()
     .ssLoadingForInitialAnimation(store.isLoading)
