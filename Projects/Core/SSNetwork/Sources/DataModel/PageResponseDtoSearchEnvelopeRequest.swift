@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - PageResponseDtoSearchEnvelopeRequest
 
-public struct PageResponseDtoSearchEnvelopeRequest {
+public struct PageResponseDtoSearchEnvelopeRequest: Sendable {
   public var friendIds: [Int64] = []
   public var friendName: String?
   public var ledgerId: Int64?
@@ -46,13 +46,13 @@ public struct PageResponseDtoSearchEnvelopeRequest {
     self.sort = sort
   }
 
-  public enum CurrentTypes: String, CustomStringConvertible {
+  public enum CurrentTypes: String, CustomStringConvertible, Sendable {
     case received
     case sent
     public var description: String { rawValue.uppercased() }
   }
 
-  public enum IncludeType: String, CustomStringConvertible, CaseIterable {
+  public enum IncludeType: String, CustomStringConvertible, CaseIterable, Sendable {
     case category = "CATEGORY"
     case friend = "FRIEND"
     case relationship = "RELATIONSHIP"

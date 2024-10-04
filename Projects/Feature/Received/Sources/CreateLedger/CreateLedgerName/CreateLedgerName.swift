@@ -51,7 +51,7 @@ struct CreateLedgerName: Sendable {
 
   enum DelegateAction: Equatable, Sendable {}
 
-  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>  {
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -73,7 +73,7 @@ struct CreateLedgerName: Sendable {
     }
   }
 
-  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_: inout State, _: Action.ScopeAction) -> Effect<Action> {
     return .none
   }
 

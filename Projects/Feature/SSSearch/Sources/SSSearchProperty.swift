@@ -44,7 +44,7 @@ public enum SSSearchIconType: Equatable, CaseIterable, Sendable {
 
 // MARK: - SSSearchItemable
 
-public protocol SSSearchItemable: Equatable, Identifiable {
+public protocol SSSearchItemable: Equatable, Identifiable, Sendable {
   /// 검색시 표시될 아이디 입니다.
   var id: Int64 { get }
   /// 검색시 표시될 이름 입니다.

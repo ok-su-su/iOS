@@ -64,7 +64,7 @@ extension ReceivedSearchProperty {
 
 // MARK: - ReceivedSearchItem
 
-struct ReceivedSearchItem: SSSearchItemable, Codable, Hashable {
+struct ReceivedSearchItem: SSSearchItemable, Codable, Hashable, Sendable {
   /// 장부의 아이디 입니다.
   var id: Int64
   /// 장부의 이름 입니다.
