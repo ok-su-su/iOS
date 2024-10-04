@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - UserEnvelopeStatisticResponse
 
-public struct UserEnvelopeStatisticResponse: Equatable, Decodable {
+public struct UserEnvelopeStatisticResponse: Equatable, Decodable, Sendable {
   /// 최근 사용 금액
   public let recentSpent: [TitleValueModelLong]?
   /// 경조사를 가장 많이 쓴 달
@@ -40,7 +40,7 @@ public extension UserEnvelopeStatisticResponse {
 
 // MARK: - TitleValueModelLong
 
-public struct TitleValueModelLong: Equatable, Decodable {
+public struct TitleValueModelLong: Equatable, Decodable, Sendable {
   public let title: String
   public let value: Int64
 

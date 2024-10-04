@@ -12,7 +12,7 @@ import SSNetwork
 
 // MARK: - OtherStatisticsProperty
 
-struct OtherStatisticsProperty: Equatable {
+struct OtherStatisticsProperty: Equatable, Sendable {
   var toDecimal: (Int64) -> String? { CustomNumberFormatter.toDecimal }
 
   var relationProperty: StatisticsType2CardWithAnimationProperty

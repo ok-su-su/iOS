@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SUSUEnvelopeStatisticResponse
 
-public struct SUSUEnvelopeStatisticResponse: Decodable, Equatable {
+public struct SUSUEnvelopeStatisticResponse: Decodable, Equatable, Sendable {
   /// 평균 보낸 비용
   public let averageSent: Int64?
 

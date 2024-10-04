@@ -12,7 +12,7 @@ import SwiftUI
 
 // MARK: - StatisticsType2CardWithAnimationProperty
 
-struct StatisticsType2CardWithAnimationProperty: Equatable {
+struct StatisticsType2CardWithAnimationProperty: Equatable, Sendable {
   var title: String
   var leadingDescription: String
   private var trailingDescription: String

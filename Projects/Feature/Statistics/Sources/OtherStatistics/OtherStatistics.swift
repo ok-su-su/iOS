@@ -18,9 +18,9 @@ import SSToast
 // MARK: - OtherStatistics
 
 @Reducer
-struct OtherStatistics {
+struct OtherStatistics: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var price: Int = 3000
     var isLoading: Bool = true
@@ -36,7 +36,7 @@ struct OtherStatistics {
     var presentMyPageEditAlert: Bool = false
   }
 
-  enum Action: BindableAction, Equatable, FeatureAction {
+  enum Action: BindableAction, Equatable, FeatureAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
@@ -46,7 +46,7 @@ struct OtherStatistics {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedButton
     case tappedAgedButton
@@ -110,7 +110,7 @@ struct OtherStatistics {
     }
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateRelationItems([RelationBottomSheetItem])
     case updateCategoryItems([CategoryBottomSheetItem])
     case isLoading(Bool)
@@ -194,7 +194,7 @@ struct OtherStatistics {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case agedBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<Age>.Action>)
     case relationBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<RelationBottomSheetItem>.Action>)
     case categoryBottomSheet(PresentationAction<SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.Action>)
@@ -218,7 +218,7 @@ struct OtherStatistics {
     }
   }
 
-  enum DelegateAction: Equatable {
+  enum DelegateAction: Equatable, Sendable {
     case routeMyPage
   }
 

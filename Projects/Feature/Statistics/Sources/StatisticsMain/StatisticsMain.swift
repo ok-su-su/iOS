@@ -11,9 +11,9 @@ import FeatureAction
 import Foundation
 
 @Reducer
-struct StatisticsMain {
+struct StatisticsMain: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var tabBar: SSTabBarFeature.State = .init(tabbarType: .statistics)
     var header: HeaderViewFeature.State = .init(.init(title: "통계", type: .defaultNonIconType))
@@ -23,7 +23,7 @@ struct StatisticsMain {
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -31,24 +31,24 @@ struct StatisticsMain {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedStepper(StepperType)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable, Sendable {}
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case tabBar(SSTabBarFeature.Action)
     case header(HeaderViewFeature.Action)
     case myStatistics(MyStatistics.Action)
     case otherStatistics(OtherStatistics.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   func myStatisticsDelegateAction(_: inout State, _ action: MyStatistics.DelegateAction) -> Effect<Action> {
     switch action {
