@@ -14,7 +14,7 @@ import Foundation
 @Reducer
 public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Sendable {
   @ObservableState
-  public struct State: Equatable, @unchecked Sendable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     fileprivate var initialSelectedID: Item.ID?
     @Shared var singleSelectButtonHelper: SingleSelectButtonProperty<Item>
@@ -36,7 +36,7 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
   }
 
   /// uncheckedSendable because of Identifiable
-  public enum Action: Equatable, @unchecked Sendable {
+  public enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case tappedID(Item.ID?)
     case tappedAddCustomButton

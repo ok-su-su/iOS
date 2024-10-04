@@ -10,10 +10,7 @@ import Foundation
 
 // MARK: - SingleSelectButtonProperty
 
-/// SingleSelectButtonProperty입니다.
-///
-/// Unchecked Sendable인 이유는, Identifiable이 Sendable protocol을 만족하지 않기 때문입니다.
-public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equatable, @unchecked Sendable {
+public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equatable, Sendable {
   /// 타이틀 텍스트 이릅입니다.
   public var titleText: String
   /// 커스텀 아이템을 제외한 아이템들을 보관합니다.
