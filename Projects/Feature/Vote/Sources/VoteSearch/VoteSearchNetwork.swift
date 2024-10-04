@@ -14,7 +14,7 @@ import SSNetwork
 
 // MARK: - VoteSearchNetwork
 
-struct VoteSearchNetwork {
+struct VoteSearchNetwork: Sendable {
   var searchByVoteName: @Sendable (_ text: String) async throws -> [VoteSearchItem]
   @Sendable static func _searchByVoteName(_ name: String) async throws -> [VoteSearchItem] {
     let response: SliceResponseDtoVoteAndOptionsWithCountResponse = try await provider.request(.searchByVoteName(name))
@@ -25,8 +25,8 @@ struct VoteSearchNetwork {
 // MARK: DependencyKey
 
 extension VoteSearchNetwork: DependencyKey {
-  static var liveValue: VoteSearchNetwork = .init(searchByVoteName: _searchByVoteName)
-  static var provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: VoteSearchNetwork = .init(searchByVoteName: _searchByVoteName)
+  nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case searchByVoteName(String)

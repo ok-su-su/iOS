@@ -9,7 +9,7 @@
 import Foundation
 
 enum VoteMemoryCache {
-  private static var memoryCache: [String: Any] = [:]
+  private nonisolated(unsafe) static var memoryCache: [String: Any] = [:]
 
   static func save(key: String, value: Any) {
     memoryCache[key] = value

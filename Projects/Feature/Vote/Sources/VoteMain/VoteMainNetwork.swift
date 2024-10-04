@@ -14,7 +14,7 @@ import SSNetwork
 
 // MARK: - VoteMainNetwork
 
-struct VoteMainNetwork {
+struct VoteMainNetwork: Sendable {
   var getPopularItems: @Sendable () async throws -> [PopularVoteItem]
   @Sendable private static func _getPopularItems() async throws -> [PopularVoteItem] {
     let datum: [VoteWithCountResponse] = try await provider.request(.getPopularItems)
@@ -65,8 +65,8 @@ struct VoteMainNetwork {
 // MARK: DependencyKey
 
 extension VoteMainNetwork: DependencyKey {
-  static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
-  static var liveValue: VoteMainNetwork = .init(
+  nonisolated(unsafe) static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: VoteMainNetwork = .init(
     getPopularItems: _getPopularItems,
     getVoteItems: _getVoteItems,
     getInitialVoteItems: { try await _getVoteItems(nil) },

@@ -17,9 +17,9 @@ import SSToast
 // MARK: - VoteDetailReducer
 
 @Reducer
-struct VoteDetailReducer {
+struct VoteDetailReducer: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var id: Int64
     var isOnAppear = false
     /// 과어에 투표한 VoteID입니다.
@@ -33,11 +33,6 @@ struct VoteDetailReducer {
     var participantsCount: Int64 {
       let myVoteWeight = calculateWeightOfMyVote(prevVote: isPrevVoteID != nil, nowSelect: selectedVotedID != nil)
       return (voteDetailProperty?.count ?? 0) + myVoteWeight
-//      if isPrevVoteID != nil {
-//        return voteDetailProperty?.count ?? 0
-//      } else {
-//        return (selectedVotedID != nil ? 1 : 0) + (voteDetailProperty?.count ?? 0)
-//      }
     }
 
     var voteDetailProperty: VoteDetailProperty? = nil
@@ -66,7 +61,7 @@ struct VoteDetailReducer {
     case report
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -75,7 +70,7 @@ struct VoteDetailReducer {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case showReport(Bool)
     case showDeleteAlert(Bool)
@@ -115,7 +110,7 @@ struct VoteDetailReducer {
     }
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateVoteDetail(VoteDetailProperty)
     case updateSelectedVotedItem(optionID: Int64)
     case taskWithReport(SingleTaskState)
@@ -187,7 +182,7 @@ struct VoteDetailReducer {
     )
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getVoteDetail
     case deleteVote
     case reportVote
@@ -230,7 +225,7 @@ struct VoteDetailReducer {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case toast(SSToastReducer.Action)
   }
@@ -268,7 +263,7 @@ struct VoteDetailReducer {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {

@@ -9,22 +9,22 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-struct VotePathReducer {
+struct VotePathReducer: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var path: StackState<VotePathDestination.State> = .init()
 
     init() {}
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case registerReducer
     case path(StackActionOf<VotePathDestination>)
     case push(VotePathDestination.State)
     case publisherAction(PublisherAction)
   }
 
-  enum PublisherAction: Equatable {
+  enum PublisherAction: Equatable, Sendable {
     case updateVoteDetail(VoteDetailDeferNetworkRequest)
   }
 

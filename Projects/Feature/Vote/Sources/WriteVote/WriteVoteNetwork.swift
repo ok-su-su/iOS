@@ -17,7 +17,7 @@ typealias UpdateVoteRequestBody = UpdateVoteRequest
 
 // MARK: - WriteVoteNetwork
 
-struct WriteVoteNetwork {
+struct WriteVoteNetwork: Sendable {
   var createVote: @Sendable (CreateVoteRequestBody) async throws -> CreateAndUpdateVoteResponse
   @Sendable
   private static func _createVote(_ createVoteRequestBody: CreateVoteRequestBody) async throws -> CreateAndUpdateVoteResponse {
@@ -39,12 +39,12 @@ struct WriteVoteNetwork {
 // MARK: DependencyKey
 
 extension WriteVoteNetwork: DependencyKey {
-  static var liveValue: WriteVoteNetwork = .init(
+  static let liveValue: WriteVoteNetwork = .init(
     createVote: _createVote,
     updateVote: _updateVote
   )
 
-  static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   enum Network: SSNetworkTargetType {
     case createVote(CreateVoteRequestBodyToData: Data)
     case updateVote(id: Int64, UpdateVoteRequestBodyToData: Data)

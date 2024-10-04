@@ -9,7 +9,7 @@
 import Foundation
 
 extension Date {
-  private static var dateFormatter: DateFormatter = .init()
+  private nonisolated(unsafe) static var dateFormatter: DateFormatter = .init()
 
   /// 특정 날짜로부터 얼마나 시간이 지났는지 체크하는 함수
   func secondsSinceNow() -> Int {

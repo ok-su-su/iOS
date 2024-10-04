@@ -12,7 +12,7 @@ import Foundation
 // MARK: - VotePathPublisher
 
 final class VotePathPublisher {
-  static var shared: VotePathPublisher = .init()
+  nonisolated(unsafe) static var shared: VotePathPublisher = .init()
   private var publisher: PassthroughSubject<VotePathDestination.State, Never> = .init()
   func pathPublisher() -> AnyPublisher<VotePathDestination.State, Never> {
     return publisher.receive(on: RunLoop.main).eraseToAnyPublisher()

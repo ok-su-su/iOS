@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UserProfileModel: Equatable, Decodable {
+public struct UserProfileModel: Equatable, Decodable, Sendable {
   /// 유저 id
   public let id: Int64
   /// 이름

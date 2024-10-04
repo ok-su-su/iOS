@@ -152,11 +152,11 @@ struct VoteDetailProgressView: View {
   }
 
   enum Constants {
-    static var percentageLabel: (_ val: Int) -> String = { val in
+    static func percentageLabel(_ val: Int) -> String {
       return val.description + "%"
     }
 
-    static var participantsCountLabel: (_ val: Int64) -> String = { val in
+    static func participantsCountLabel(_ val: Int64) -> String {
       return val.description + "명"
     }
   }

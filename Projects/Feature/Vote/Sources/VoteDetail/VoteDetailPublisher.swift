@@ -12,7 +12,7 @@ import Foundation
 // MARK: - VoteDetailPublisher
 
 final class VoteDetailPublisher {
-  private static let shared: VoteDetailPublisher = .init()
+  private nonisolated(unsafe) static let shared: VoteDetailPublisher = .init()
   private init() {}
 
   private var _disappearPublisher: PassthroughSubject<VoteDetailDeferNetworkRequest, Never> = .init()

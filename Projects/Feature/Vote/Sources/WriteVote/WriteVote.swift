@@ -15,9 +15,9 @@ import SSToast
 // MARK: - WriteVote
 
 @Reducer
-struct WriteVote {
+struct WriteVote: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var header: HeaderViewFeature.State
     var helper: WriteVoteProperty = .init()
@@ -80,7 +80,7 @@ struct WriteVote {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -89,7 +89,7 @@ struct WriteVote {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedSection(VoteSectionHeaderItem)
     case editedVoteTextContent(String)
@@ -132,11 +132,11 @@ struct WriteVote {
     }
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable, Sendable {}
 
   @Dependency(\.writeVoteNetwork) var network
   @Dependency(\.dismiss) var dismiss
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case writeVote
     case updateVote
   }
@@ -165,7 +165,7 @@ struct WriteVote {
         return .none
       }
       let content = state.helper.voteTextContent
-      let updateVoteRequestBody = UpdateVoteRequestBody(boardId: selectedSectionID, content: content)
+      let updateVoteRequestBody = UpdateVoteRequestBody(boardID: selectedSectionID, content: content)
       return .ssRun { _ in
         let response = try await network.updateVote(voteID, updateVoteRequestBody)
         VotePathPublisher.shared.push(.createVoteAndPushDetail(.init(createdBoardID: response.id)))
@@ -174,7 +174,7 @@ struct WriteVote {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case selectableItems(IdentifiedActionOf<TextFieldButtonWithTCA<TextFieldButtonWithTCAProperty>>)
     case toast(SSToastReducer.Action)
@@ -195,7 +195,7 @@ struct WriteVote {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {

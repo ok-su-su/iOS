@@ -19,4 +19,4 @@ extension VoteDetailProperty {
 
 // MARK: - VoteOptionCountModel + Identifiable
 
-extension VoteOptionCountModel: Identifiable {}
+extension VoteOptionCountModel: @retroactive Identifiable {}
