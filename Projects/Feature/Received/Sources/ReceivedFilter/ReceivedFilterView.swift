@@ -189,7 +189,7 @@ struct ReceivedFilterView: View {
   }
 
   private enum Constants {
-    static let butonProperty: SSButtonPropertyState = .init(size: .xsh28, status: .active, style: .filled, color: .orange, buttonText: "   ")
+    nonisolated(unsafe) static let butonProperty: SSButtonPropertyState = .init(size: .xsh28, status: .active, style: .filled, color: .orange, buttonText: "   ")
   }
 
   private enum Spacing {

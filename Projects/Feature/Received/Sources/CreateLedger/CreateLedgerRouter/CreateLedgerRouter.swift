@@ -15,9 +15,9 @@ import SSNotification
 // MARK: - CreateLedgerRouter
 
 @Reducer
-struct CreateLedgerRouter {
+struct CreateLedgerRouter: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var path: StackState<CreateLedgerRouterPath.State> = .init()
     var root: CreateLedgerCategory.State = .init()
@@ -30,7 +30,7 @@ struct CreateLedgerRouter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case header(HeaderViewFeature.Action)
     case path(StackActionOf<CreateLedgerRouterPath>)

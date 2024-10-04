@@ -13,9 +13,9 @@ import SSBottomSelectSheet
 // MARK: - CreateLedgerDate
 
 @Reducer
-struct CreateLedgerDate {
+struct CreateLedgerDate: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var titleText: String
     var displayType: CreateLedgerDateDisplayDateType
@@ -46,7 +46,7 @@ struct CreateLedgerDate {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -54,7 +54,7 @@ struct CreateLedgerDate {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedChangeDisplayTypeButton
     case tappedStartDatePicker
@@ -63,24 +63,25 @@ struct CreateLedgerDate {
     case tappedDatePickerNextButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case pushNextScreen
   }
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
+  @Dependency(\.mainQueue) var mainQueue
   enum CancelID {
     case throttleID
   }
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -116,7 +117,7 @@ struct CreateLedgerDate {
     case .tappedNextButton:
 
       return .send(.inner(.pushNextScreen))
-        .throttle(id: CancelID.throttleID, for: .seconds(2), scheduler: RunLoop.main, latest: false)
+        .throttle(id: CancelID.throttleID, for: .seconds(2), scheduler: mainQueue, latest: false)
 
     case .tappedDatePickerNextButton:
       switch state.displayType {
@@ -141,7 +142,7 @@ struct CreateLedgerDate {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, action in
+  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
     case .datePicker(.presented(.didTapConfirmButton)):
       return .none

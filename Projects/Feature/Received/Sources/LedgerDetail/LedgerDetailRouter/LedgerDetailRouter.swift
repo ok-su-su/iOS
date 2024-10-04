@@ -13,9 +13,9 @@ import SSEnvelope
 // MARK: - LedgerDetailRouter
 
 @Reducer
-struct LedgerDetailRouter {
+struct LedgerDetailRouter: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var path: StackState<LedgerDetailPath.State> = .init()
     var ledgerDetailMain: LedgerDetailMain.State
@@ -24,7 +24,7 @@ struct LedgerDetailRouter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case ledgerDetailMain(LedgerDetailMain.Action)
     case path(StackActionOf<LedgerDetailPath>)

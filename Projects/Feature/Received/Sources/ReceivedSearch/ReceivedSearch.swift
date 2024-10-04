@@ -17,9 +17,9 @@ import SSToast
 // MARK: - ReceivedSearch
 
 @Reducer
-struct ReceivedSearch {
+struct ReceivedSearch: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
 
     // Scope State
@@ -34,7 +34,7 @@ struct ReceivedSearch {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -42,31 +42,31 @@ struct ReceivedSearch {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case push(LedgerDetailPath.State)
     case prevSearchItems
     case updateSearchItems([ReceivedSearchItem])
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case searchLedgerByName(String)
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case search(SSSearchReducer<ReceivedSearchProperty>.Action)
     case path(StackActionOf<LedgerDetailPath>)
     case header(HeaderViewFeature.Action)
     case toast(SSToastReducer.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {

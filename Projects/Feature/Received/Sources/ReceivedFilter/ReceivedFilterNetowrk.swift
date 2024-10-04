@@ -14,8 +14,8 @@ import SSNetwork
 
 // MARK: - ReceivedFilterNetwork
 
-struct ReceivedFilterNetwork {
-  var requestFilterItems: () async throws -> [FilterSelectableItemProperty]
+struct ReceivedFilterNetwork: Sendable {
+  var requestFilterItems: @Sendable () async throws -> [FilterSelectableItemProperty]
   @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
     let res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
@@ -26,8 +26,8 @@ struct ReceivedFilterNetwork {
 // MARK: DependencyKey
 
 extension ReceivedFilterNetwork: DependencyKey {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  static var liveValue: ReceivedFilterNetwork = .init(
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: ReceivedFilterNetwork = .init(
     requestFilterItems: _requestFilterItems
   )
 

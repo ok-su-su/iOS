@@ -11,7 +11,7 @@ import SSSearch
 
 // MARK: - ReceivedSearchProperty
 
-struct ReceivedSearchProperty: SSSearchPropertiable {
+struct ReceivedSearchProperty: SSSearchPropertiable, Sendable {
   typealias item = ReceivedSearchItem
   var prevSearchedItem: [ReceivedSearchItem]
   var nowSearchedItem: [ReceivedSearchItem]

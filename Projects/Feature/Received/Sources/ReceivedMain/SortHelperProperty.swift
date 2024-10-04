@@ -79,7 +79,7 @@ extension [SortDialItemForLedgerEnvelopeItem] {
 
 // MARK: - SortDialItem
 
-enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encodable {
+enum SortDialItem: Int, SSSelectBottomSheetPropertyItemable, CaseIterable, Encodable, Sendable {
   case latest = 0
   case oldest
   case highestAmount

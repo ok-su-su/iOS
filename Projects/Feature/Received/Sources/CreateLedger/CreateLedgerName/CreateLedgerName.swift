@@ -14,9 +14,9 @@ import SSToast
 // MARK: - CreateLedgerName
 
 @Reducer
-struct CreateLedgerName {
+struct CreateLedgerName: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var textFieldText: String = ""
     var isFocused = false
@@ -25,7 +25,7 @@ struct CreateLedgerName {
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -34,24 +34,24 @@ struct CreateLedgerName {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case changedTextField(String)
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable, Sendable {}
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case toast(SSToastReducer.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>  {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {
@@ -73,7 +73,7 @@ struct CreateLedgerName {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { _, _ in
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     return .none
   }
 

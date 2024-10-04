@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import Foundation
 
-@Reducer(state: .equatable, action: .equatable)
+@Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum CreateLedgerRouterPath {
   case category(CreateLedgerCategory)
   case name(CreateLedgerName)

@@ -10,7 +10,7 @@ import ComposableArchitecture
 import Foundation
 import SSBottomSelectSheet
 
-@Reducer(state: .equatable, action: .equatable)
+@Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum ReceivedMainPresentationDestination {
   case search(ReceivedSearch)
   case sort(SSSelectableBottomSheetReducer<SortDialItem>)
