@@ -14,9 +14,9 @@ import SSSearch
 // MARK: - VoteSearch
 
 @Reducer
-struct VoteSearch {
+struct VoteSearch: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     @Shared var helper: VoteSearchProperty
     var header: HeaderViewFeature.State = .init(.init(type: .depth2Default))
@@ -28,7 +28,7 @@ struct VoteSearch {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -36,7 +36,7 @@ struct VoteSearch {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
   }
 
@@ -54,7 +54,7 @@ struct VoteSearch {
     }
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateVoteSearchItem([VoteSearchItem])
   }
 
@@ -68,7 +68,7 @@ struct VoteSearch {
 
   @Dependency(\.voteSearchNetwork) var network
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case searchVoteByContent(String)
   }
 
@@ -83,7 +83,7 @@ struct VoteSearch {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case searchReducer(SSSearchReducer<VoteSearchProperty>.Action)
   }
@@ -127,7 +127,7 @@ struct VoteSearch {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.searchReducer, action: \.scope.searchReducer) {

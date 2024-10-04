@@ -229,6 +229,7 @@ public extension SSTextFieldButtonProperty {
     return targetColor
   }
 
+  @MainActor
   var buttonTextModifierProperty: SSTypoModifier {
     switch size {
     case .xsh28:

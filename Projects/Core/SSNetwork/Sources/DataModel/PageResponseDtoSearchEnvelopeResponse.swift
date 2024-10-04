@@ -8,6 +8,8 @@
 
 import Foundation
 
+// MARK: - PageResponseDtoSearchEnvelopeResponse
+
 public struct PageResponseDtoSearchEnvelopeResponse: Equatable, Codable {
   public let data: [SearchEnvelopeResponse]
   public let page: Int?

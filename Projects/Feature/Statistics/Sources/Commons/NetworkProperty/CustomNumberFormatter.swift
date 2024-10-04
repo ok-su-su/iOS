@@ -9,7 +9,7 @@
 import Foundation
 
 enum CustomNumberFormatter {
-  private static var numberFormatter = NumberFormatter()
+  private nonisolated(unsafe) static var numberFormatter = NumberFormatter()
 
   static func toDecimal(_ val: Int64?) -> String? {
     guard let val else {

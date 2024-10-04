@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - VotePreviewProperty
 
-struct VotePreviewProperty: Equatable, Identifiable {
+struct VotePreviewProperty: Equatable, Identifiable, Sendable {
   var categoryTitle: String
   var content: String
   // BoardID

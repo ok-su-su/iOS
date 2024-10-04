@@ -19,7 +19,7 @@ import Vote
 
 // MARK: - ContentViewObject
 
-final class ContentViewObject: ObservableObject {
+final class ContentViewObject: ObservableObject, @unchecked Sendable {
   @Published var nowScreenType: ScreenType = .launchScreen
   @Published var type: SSTabType = .envelope
 

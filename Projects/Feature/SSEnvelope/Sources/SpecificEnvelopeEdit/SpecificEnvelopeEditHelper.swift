@@ -12,7 +12,7 @@ import SSRegexManager
 
 // MARK: - SpecificEnvelopeEditHelper
 
-public struct SpecificEnvelopeEditHelper: Equatable {
+public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
   var envelopeEditProperties: [EnvelopeEditPropertiable] {
     [
       priceProperty,

@@ -16,7 +16,7 @@ public typealias CreateEnvelopeCategoryProperty = CategoryModel
 
 // MARK: SSSelectableItemable
 
-extension CreateEnvelopeCategoryProperty: SSSelectableItemable {
+extension CreateEnvelopeCategoryProperty: @retroactive SSSelectableItemable {
   public var title: String {
     get { name }
     set { name = newValue }

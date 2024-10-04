@@ -13,7 +13,7 @@ import Foundation
 
 final class CreateAdditionalRouterPublisher {
   private init() {}
-  static let shared = CreateAdditionalRouterPublisher()
+  nonisolated(unsafe) static let shared = CreateAdditionalRouterPublisher()
 
   let _publisher: PassthroughSubject<AdditionalScreen, Never> = .init()
 
@@ -28,7 +28,7 @@ final class CreateAdditionalRouterPublisher {
 
 // MARK: - AdditionalScreen
 
-enum AdditionalScreen {
+enum AdditionalScreen: Sendable {
   case selectSection
   case contact
   case gift

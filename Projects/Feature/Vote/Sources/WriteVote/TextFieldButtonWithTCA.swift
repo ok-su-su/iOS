@@ -11,9 +11,9 @@ import Foundation
 // MARK: - TextFieldButtonWithTCA
 
 @Reducer
-struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
+struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable>: Sendable {
   @ObservableState
-  struct State: Equatable, Identifiable {
+  struct State: Equatable, Identifiable, Sendable {
     @Shared var item: Item
     var isOnAppear: Bool = false
 
@@ -26,7 +26,7 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case changedTextfield(String)
     case tappedCloseButton
@@ -67,7 +67,7 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable> {
 
 // MARK: - TextFieldButtonWithTCAPropertiable
 
-protocol TextFieldButtonWithTCAPropertiable: Identifiable, Equatable {
+protocol TextFieldButtonWithTCAPropertiable: Identifiable, Equatable, Sendable {
   var id: Int { get }
   var title: String { get set }
   var isSaved: Bool { get set }

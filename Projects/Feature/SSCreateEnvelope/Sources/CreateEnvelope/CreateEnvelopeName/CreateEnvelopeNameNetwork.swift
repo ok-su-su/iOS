@@ -37,10 +37,10 @@ struct CreateEnvelopeNameNetwork {
 // MARK: DependencyKey
 
 extension CreateEnvelopeNameNetwork: DependencyKey {
-  static var liveValue: CreateEnvelopeNameNetwork = .init(
+  static let liveValue: CreateEnvelopeNameNetwork = .init(
     searchFriendByName: _searchFriendByName
   )
-  static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case searchFriend(name: String?)

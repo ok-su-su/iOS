@@ -11,7 +11,7 @@ import SSNetwork
 
 // MARK: - VoteSectionHeaderItem
 
-struct VoteSectionHeaderItem: Equatable, Identifiable {
+struct VoteSectionHeaderItem: Equatable, Identifiable, Sendable {
   var title: String
   var id: Int64
   var seq: Int32

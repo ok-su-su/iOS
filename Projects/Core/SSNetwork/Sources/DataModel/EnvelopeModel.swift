@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct EnvelopeModel: Codable, Equatable {
+public struct EnvelopeModel: Codable, Equatable, Sendable {
   ///  봉투 id
   public let id: Int64
   /// user id, 소유자

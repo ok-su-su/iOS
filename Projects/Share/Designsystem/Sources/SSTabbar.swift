@@ -13,7 +13,7 @@ import SwiftUI
 
 // MARK: - SSTabType
 
-public enum SSTabType: String, CaseIterable, Equatable, Hashable {
+public enum SSTabType: String, CaseIterable, Equatable, Hashable, Sendable {
   case envelope
   case received
   case statistics
@@ -77,11 +77,11 @@ public enum SSTabType: String, CaseIterable, Equatable, Hashable {
 // MARK: - SSTabBarFeature
 
 @Reducer
-public struct SSTabBarFeature {
+public struct SSTabBarFeature: Sendable {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var tabbarType: SSTabType
     var isAppear = true
 
@@ -90,7 +90,7 @@ public struct SSTabBarFeature {
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case tappedSection(SSTabType)
     case switchType(SSTabType)
   }
@@ -153,15 +153,6 @@ public struct SSTabbar: View {
   @ViewBuilder
   private func makeContentView() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      // 1차 배포 탭바
-      let items = SSTabType.allCases
-      //      ForEach(items, id: \.self) { tabbarType in
-      //        makeItem(type: tabbarType)
-      //          .frame(maxWidth: .infinity, maxHeight: 56)
-      //          .onTapGesture {
-      //            store.send(.tappedSection(tabbarType))
-      //          }
-      //      }
       // 전체 탭바
       ForEach(SSTabType.allCases, id: \.self) { tabbarType in
         makeItem(type: tabbarType)

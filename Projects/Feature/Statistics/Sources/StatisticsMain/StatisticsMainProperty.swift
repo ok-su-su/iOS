@@ -10,13 +10,13 @@ import Foundation
 
 // MARK: - StatisticsMainProperty
 
-struct StatisticsMainProperty: Equatable {
+struct StatisticsMainProperty: Equatable, Sendable {
   var selectedStepperType: StepperType = .my
 }
 
 // MARK: - StepperType
 
-enum StepperType: Int, Equatable, CaseIterable, Identifiable {
+enum StepperType: Int, Equatable, CaseIterable, Identifiable, Sendable {
   case my = 0
   case other
   var id: Int {

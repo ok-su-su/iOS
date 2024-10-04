@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - PopularVoteItem
 
-struct PopularVoteItem: Equatable, Identifiable {
+struct PopularVoteItem: Equatable, Identifiable, Sendable {
   var id: Int64
   var categoryTitle: String
   var content: String

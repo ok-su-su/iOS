@@ -13,8 +13,8 @@ import KakaoLogin
 
 // MARK: - OnboardingLoginPersistence
 
-final class OnboardingLoginPersistence: DependencyKey {
-  static var liveValue: OnboardingLoginPersistence = .init()
+final class OnboardingLoginPersistence: DependencyKey, @unchecked Sendable {
+  static let liveValue: OnboardingLoginPersistence = .init()
 
   func getToken(_ type: LoginType) -> String? {
     switch type {

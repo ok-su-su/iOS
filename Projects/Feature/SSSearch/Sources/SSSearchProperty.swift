@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SSSearchPropertiable
 
-public protocol SSSearchPropertiable: Equatable {
+public protocol SSSearchPropertiable: Equatable, Sendable {
   /// TextField에 표시될 Prompt Text입니다.
   var textFieldPromptText: String { get }
   /// 과거에 검색한 이력이 없을 경우 보여줄 Title 입니다.
@@ -36,7 +36,7 @@ public protocol SSSearchPropertiable: Equatable {
 
 // MARK: - SSSearchIconType
 
-public enum SSSearchIconType: Equatable, CaseIterable {
+public enum SSSearchIconType: Equatable, CaseIterable, Sendable {
   case sent
   case inventory
   case vote
@@ -44,7 +44,7 @@ public enum SSSearchIconType: Equatable, CaseIterable {
 
 // MARK: - SSSearchItemable
 
-public protocol SSSearchItemable: Equatable, Identifiable {
+public protocol SSSearchItemable: Equatable, Identifiable, Sendable {
   /// 검색시 표시될 아이디 입니다.
   var id: Int64 { get }
   /// 검색시 표시될 이름 입니다.

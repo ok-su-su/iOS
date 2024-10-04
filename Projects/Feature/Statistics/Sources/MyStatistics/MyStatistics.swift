@@ -14,9 +14,9 @@ import SSNetwork
 import SSNotification
 
 @Reducer
-struct MyStatistics {
+struct MyStatistics: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var helper: MyStatisticsProperty = .init()
     var isLoading: Bool = true
@@ -33,27 +33,27 @@ struct MyStatistics {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case isAlert(Bool)
     case tappedAlertCreateEnvelopeButton
     case tappedScrollView
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
     case updateMyStatistics
     case updateMyStatisticsResponse(UserEnvelopeStatisticResponse)
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getStatistics
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable, Sendable {}
 
-  enum DelegateAction: Equatable {
+  enum DelegateAction: Equatable, Sendable {
     case routeSentView
   }
 

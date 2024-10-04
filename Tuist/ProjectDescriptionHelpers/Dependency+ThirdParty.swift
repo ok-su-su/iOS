@@ -18,6 +18,7 @@ public enum ThirdParty: String, CaseIterable {
   case KakaoSDK
   case Lottie
   case SwiftAsyncMutex
+  case Alamofire
   public var targetName: String {
     switch self {
     default:

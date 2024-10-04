@@ -12,7 +12,7 @@ import Foundation
 // MARK: - SSLaunchScreenBuilderRouterPublisher
 
 /// 싱글톤 객체
-public final class SSLaunchScreenBuilderRouterPublisher {
+public final class SSLaunchScreenBuilderRouterPublisher: @unchecked Sendable {
   public static let shared: SSLaunchScreenBuilderRouterPublisher = .init()
   private init() {}
 

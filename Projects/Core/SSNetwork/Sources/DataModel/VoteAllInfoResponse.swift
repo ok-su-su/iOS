@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct VoteAllInfoResponse: Equatable, Decodable {
+public struct VoteAllInfoResponse: Equatable, Decodable, Sendable {
   /// 투표 id
   public let id: Int64
   /// 본인 소유 글 여부 / 내 글 : 1, 전체 글 : 0

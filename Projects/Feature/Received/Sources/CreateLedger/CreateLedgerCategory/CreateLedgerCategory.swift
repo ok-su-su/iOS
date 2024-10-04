@@ -15,9 +15,9 @@ import SSToast
 // MARK: - CreateLedgerCategory
 
 @Reducer
-struct CreateLedgerCategory {
+struct CreateLedgerCategory: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     @Shared var selectableItems: [CreateLedgerCategoryItem]
     @Shared var selectedItemsID: [Int]
@@ -42,7 +42,7 @@ struct CreateLedgerCategory {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -50,12 +50,12 @@ struct CreateLedgerCategory {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case pushNextScreen
     case isLoading(Bool)
     case updateItems([CreateLedgerCategoryItem])
@@ -82,7 +82,7 @@ struct CreateLedgerCategory {
   }
 
   @Dependency(\.createLedgerNetwork) var network
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getCreateLedgerCategoryItem
   }
 
@@ -99,7 +99,7 @@ struct CreateLedgerCategory {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case selection(SSSelectableItemsReducer<CreateLedgerCategoryItem>.Action)
     case toast(SSToastReducer.Action)
   }
@@ -118,9 +118,9 @@ struct CreateLedgerCategory {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
       if state.isOnAppear {

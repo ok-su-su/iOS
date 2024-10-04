@@ -15,9 +15,9 @@ import SSNetwork
 // MARK: - MyPageInformation
 
 @Reducer
-struct MyPageInformation: Reducer {
+struct MyPageInformation: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var isLoading = false
     var header: HeaderViewFeature.State = .init(.init(title: "내정보", type: .depth2Text("편집")))
@@ -28,7 +28,7 @@ struct MyPageInformation: Reducer {
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -36,28 +36,28 @@ struct MyPageInformation: Reducer {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateUserInfo(UserInfoResponse)
     case isLoading(Bool)
     case updateCellItems
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getMyInformation
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case listItems(IdentifiedActionOf<MyPageMainItemListCell<MyPageInformationListItem>>)
     case tabBar(SSTabBarFeature.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   @Dependency(\.myPageMainNetwork) var network
 
@@ -133,7 +133,7 @@ extension Reducer where State == MyPageInformation.State, Action == MyPageInform
 
 // MARK: - MyPageInformationListItem
 
-struct MyPageInformationListItem: MyPageMainItemListCellItemable, Equatable {
+struct MyPageInformationListItem: MyPageMainItemListCellItemable, Equatable, Sendable {
   var id: Int
   var title: String
   var subTitle: String?

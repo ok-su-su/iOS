@@ -39,11 +39,11 @@ struct SentMainNetwork: DependencyKey {
 }
 
 extension SentMainNetwork {
-  static var liveValue: SentMainNetwork = .init(
+  static let liveValue: SentMainNetwork = .init(
     requestSearchFriends: _requestSearchFriends
   )
 
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case searchFriendsByParameter(SearchFriendsParameter)

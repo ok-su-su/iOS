@@ -12,7 +12,7 @@ import SSPersistancy
 
 // MARK: - ReceivedSearchPersistence
 
-struct ReceivedSearchPersistence {
+struct ReceivedSearchPersistence: Sendable {
   private init() {}
   func getPrevSearchItems() -> [ReceivedSearchItem] {
     return SSUserDefaultsManager.shared.getValue(key: Self.key) ?? []
@@ -41,7 +41,7 @@ struct ReceivedSearchPersistence {
 // MARK: DependencyKey
 
 extension ReceivedSearchPersistence: DependencyKey {
-  static var liveValue: ReceivedSearchPersistence = .init()
+  static let liveValue: ReceivedSearchPersistence = .init()
 }
 
 extension DependencyValues {

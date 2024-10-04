@@ -14,8 +14,8 @@ import SSNetwork
 
 // MARK: - ReceivedSearchNetwork
 
-struct ReceivedSearchNetwork {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+struct ReceivedSearchNetwork: Sendable {
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   var searchLedgersByName: @Sendable (_ name: String) async throws -> [ReceivedSearchItem]
   @Sendable private static func _searchLedgersByName(_ name: String) async throws -> [ReceivedSearchItem] {
@@ -47,7 +47,7 @@ struct ReceivedSearchNetwork {
 // MARK: DependencyKey
 
 extension ReceivedSearchNetwork: DependencyKey {
-  static var liveValue: ReceivedSearchNetwork = .init(
+  static let liveValue: ReceivedSearchNetwork = .init(
     searchLedgersByName: _searchLedgersByName
   )
 

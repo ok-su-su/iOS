@@ -14,7 +14,7 @@ import SSNetwork
 
 // MARK: - LedgerDetailEditNetwork
 
-struct LedgerDetailEditNetwork {
+struct LedgerDetailEditNetwork: Sendable {
   /// 첫번쨰 인자인 LedgerID와 두번쨰 인자인 CreateAndUpdateLedgerRequestDTO를 통해 API을 요청합니다.
   var saveLedger: @Sendable (_ id: Int64, _ body: CreateAndUpdateLedgerRequestDTO) async throws -> CreateAndUpdateLedgerResponse
 
@@ -27,8 +27,8 @@ struct LedgerDetailEditNetwork {
 // MARK: DependencyKey
 
 extension LedgerDetailEditNetwork: DependencyKey {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  static var liveValue: LedgerDetailEditNetwork = .init(
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: LedgerDetailEditNetwork = .init(
     saveLedger: _saveLedger
   )
 

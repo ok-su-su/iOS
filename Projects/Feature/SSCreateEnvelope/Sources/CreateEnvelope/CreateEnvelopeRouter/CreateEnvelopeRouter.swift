@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/2/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import Foundation
@@ -13,12 +14,11 @@ import SSFirebase
 // MARK: - CreateEnvelopeRouter
 
 @Reducer
-struct CreateEnvelopeRouter {
+struct CreateEnvelopeRouter: @unchecked Sendable {
   @Dependency(\.createEnvelopeNetwork) var network
-  @Dependency(\.mainQueue) var queue
 
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var type: CreateEnvelopeInitialType
     var isOnAppear = false
     var path = StackState<CreateEnvelopePath.State>()
@@ -38,7 +38,7 @@ struct CreateEnvelopeRouter {
     }
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case path(StackActionOf<CreateEnvelopePath>)
     case header(HeaderViewFeature.Action)
@@ -54,14 +54,13 @@ struct CreateEnvelopeRouter {
     case none
   }
 
-  private enum CancelID {
+  private enum CancelID: Hashable, Sendable {
     case dismiss
     case publishNavigation
     case finishEnvelope
     case onAppearCancelID
   }
 
-  @Dependency(\.mainQueue) var mainQueue
   @Dependency(\.dismiss) var dismiss
 
   init() {}
@@ -133,6 +132,7 @@ struct CreateEnvelopeRouter {
     }
   }
 
+  @Dependency(\.mainQueue) var throttleQueue
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.header) {
       HeaderViewFeature()
@@ -188,7 +188,12 @@ struct CreateEnvelopeRouter {
           return .send(.dismiss(true))
         }
         return .send(.dismissScreen)
-          .throttle(id: CancelID.dismiss, for: 1, scheduler: mainQueue, latest: true)
+          .throttle(
+            id: CancelID.dismiss,
+            for: .seconds(1),
+            scheduler: throttleQueue,
+            latest: true
+          )
 
       case .dismissScreen:
         let createType = state.type.toCreateType

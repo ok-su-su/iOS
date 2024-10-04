@@ -9,7 +9,7 @@
 import Foundation
 
 public extension String {
-  private static var ISODateFormatter: DateFormatter = {
+  private static let ISODateFormatter: DateFormatter = {
     var dateFormatter = DateFormatter()
     dateFormatter.dateFormat = Constants.iso8601DateFormatWithoutMiliSeconds
     return dateFormatter

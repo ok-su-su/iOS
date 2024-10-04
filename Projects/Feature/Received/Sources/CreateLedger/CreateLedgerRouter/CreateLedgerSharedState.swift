@@ -13,7 +13,7 @@ import Foundation
 final class CreateLedgerSharedState {
   private var body = CreateAndUpdateLedgerRequest()
 
-  private static let shared: CreateLedgerSharedState = .init()
+  private nonisolated(unsafe) static let shared: CreateLedgerSharedState = .init()
 
   static func setTitle(_ title: String?) {
     shared.body.title = title

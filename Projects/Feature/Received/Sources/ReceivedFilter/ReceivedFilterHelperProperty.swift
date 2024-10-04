@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - FilterHelperProperty
 
-struct FilterHelperProperty: Equatable {
+struct FilterHelperProperty: Equatable, Sendable {
   var selectableLedgers: [FilterSelectableItemProperty] = []
   var selectedLedgers: [FilterSelectableItemProperty] = []
 

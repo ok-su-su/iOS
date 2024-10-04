@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct BoardModel: Equatable, Codable {
+public struct BoardModel: Equatable, Codable, Sendable {
   /// 카테고리 아이디
   public let id: Int64
   /// 카테고리 이름

@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - VotePathDestination
 
-@Reducer(state: .equatable, action: .equatable)
+@Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum VotePathDestination {
   case search(VoteSearch)
   case write(WriteVote)

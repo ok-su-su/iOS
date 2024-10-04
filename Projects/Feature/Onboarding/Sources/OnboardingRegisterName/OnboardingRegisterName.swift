@@ -12,9 +12,9 @@ import Foundation
 import SSRegexManager
 
 @Reducer
-struct OnboardingRegisterName {
+struct OnboardingRegisterName: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     @Shared var textFieldProperty: SSTextFieldReducerProperty
     var textField: SSTextFieldReducer.State
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(0.5)))
@@ -38,7 +38,7 @@ struct OnboardingRegisterName {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -47,22 +47,22 @@ struct OnboardingRegisterName {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable, Sendable {}
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case textField(SSTextFieldReducer.Action)
     case header(HeaderViewFeature.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.textField, action: \.scope.textField) {

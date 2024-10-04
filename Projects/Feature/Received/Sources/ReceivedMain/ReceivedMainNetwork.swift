@@ -14,7 +14,7 @@ import SSNetwork
 
 // MARK: - ReceivedMainNetwork
 
-struct ReceivedMainNetwork {
+struct ReceivedMainNetwork: Sendable {
   var getLedgers: @Sendable (_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty]
   @Sendable private static func _getLedgers(_ param: SearchLedgersRequestParameter) async throws -> [LedgerBoxProperty] {
     let dto: PageResponseDtoSearchLedgerResponse = try await provider.request(.searchLedgers(param))
@@ -38,8 +38,8 @@ extension DependencyValues {
 // MARK: - ReceivedMainNetwork + DependencyKey
 
 extension ReceivedMainNetwork: DependencyKey {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
-  static var liveValue: ReceivedMainNetwork = .init(
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  static let liveValue: ReceivedMainNetwork = .init(
     getLedgers: _getLedgers,
     getLedgerByID: _getLedgerByID
   )

@@ -11,9 +11,9 @@ import Foundation
 import SSFirebase
 
 @Reducer
-struct Envelope {
+struct Envelope: Sendable {
   @ObservableState
-  struct State: Identifiable {
+  struct State: Identifiable, Sendable {
     var id: Int64 { envelopeProperty.id }
     var envelopeProperty: EnvelopeProperty
     var showDetail: Bool = false
@@ -36,7 +36,7 @@ struct Envelope {
 
   @Dependency(\.envelopeNetwork) var network
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case tappedDetailButton
     case tappedFullContentOfEnvelopeButton
     case getEnvelopeDetail

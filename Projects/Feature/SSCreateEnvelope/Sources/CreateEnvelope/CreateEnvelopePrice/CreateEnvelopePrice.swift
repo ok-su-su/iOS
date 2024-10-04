@@ -5,7 +5,6 @@
 //  Created by MaraMincho on 5/2/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Combine
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -17,11 +16,9 @@ import SSToast
 // MARK: - CreateEnvelopePrice
 
 @Reducer
-public struct CreateEnvelopePrice {
+public struct CreateEnvelopePrice: Sendable {
   @ObservableState
-  public struct State: Equatable {
-    var subscriptions: Set<AnyCancellable> = .init()
-
+  public struct State: Equatable, Sendable {
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var isOnAppear = false
     var isFocused = false
@@ -48,7 +45,7 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum Action: Equatable, FeatureAction, BindableAction {
+  public enum Action: Equatable, FeatureAction, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case inner(InnerAction)
@@ -58,7 +55,7 @@ public struct CreateEnvelopePrice {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedGuidValue(Int64)
     case changeText(String)
@@ -91,7 +88,7 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case convertPrice(String)
     case push
     case addPrice(Int64)
@@ -122,14 +119,14 @@ public struct CreateEnvelopePrice {
     }
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case toast(SSToastReducer.Action)
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case dismissCreateFlow
   }
 

@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: - SentUpdatePublisher
 
-public final class SentUpdatePublisher {
+public final class SentUpdatePublisher: @unchecked Sendable {
   private init() {}
 
   private var _updatePublisher = PassthroughSubject<Void, Never>()
@@ -37,7 +37,7 @@ public final class SentUpdatePublisher {
 // MARK: DependencyKey
 
 extension SentUpdatePublisher: DependencyKey {
-  public static var liveValue: SentUpdatePublisher = .init()
+  public static let liveValue: SentUpdatePublisher = .init()
 }
 
 public extension DependencyValues {

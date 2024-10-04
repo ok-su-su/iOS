@@ -21,8 +21,8 @@ extension DependencyValues {
 
 // MARK: - LedgerDetailMainNetwork
 
-struct LedgerDetailMainNetwork {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+struct LedgerDetailMainNetwork: Sendable {
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   var getLedgerDetailByLedgerID: @Sendable (_ ledgerID: Int64) async throws -> LedgerDetailProperty
   @Sendable private static func _getLedgerDetailByLedgerID(_ ledgerID: Int64) async throws -> LedgerDetailProperty {
@@ -79,7 +79,7 @@ struct LedgerDetailMainNetwork {
 // MARK: DependencyKey
 
 extension LedgerDetailMainNetwork: DependencyKey {
-  static var liveValue: LedgerDetailMainNetwork = .init(
+  static let liveValue: LedgerDetailMainNetwork = .init(
     getLedgerDetailByLedgerID: _getLedgerDetailByLedgerID,
     deleteLedger: _deleteLedger,
     getCategories: _getCategories,

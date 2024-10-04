@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct FriendRelationshipModel: Codable, Equatable {
+public struct FriendRelationshipModel: Codable, Equatable, Sendable {
   /// 지인 ID
   public let id: Int64
   /// 지인 ID

@@ -16,9 +16,9 @@ import SwiftAsyncMutex
 // MARK: - VoteMain
 
 @Reducer
-struct VoteMain {
+struct VoteMain: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(title: "투표", type: .defaultType))
     var tabBar = SSTabBarFeature.State(tabbarType: .vote)
@@ -161,7 +161,7 @@ struct VoteMain {
 
     case let .voteItemOnAppear(property):
       if state.voteMainProperty.votePreviews.last == property {
-        return .send(.async(.getVoteItems)).throttle(id: CancelID.updateNextPage, for: 2, scheduler: RunLoop.main, latest: false)
+        return .send(.async(.getVoteItems)).throttle(id: CancelID.updateNextPage, for: 2, scheduler: mainQueue, latest: false)
       }
       return .none
 
@@ -237,6 +237,7 @@ struct VoteMain {
 
   @Dependency(\.voteMainNetwork) var network
   @Dependency(\.voteUpdatePublisher) var votePublisher
+  @Dependency(\.mainQueue) var mainQueue
   enum AsyncAction: Equatable {
     case getInitialVoteItems // initial상태의 투표 아이템을 불러옵니다.
     case getVoteItems // 더이상 보여줄 아이템이 없다면 새 아이템을 불러옵니다.

@@ -19,9 +19,9 @@ import SSToast
 // MARK: - MyPageEdit
 
 @Reducer
-struct MyPageEdit {
+struct MyPageEdit: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var userInfo: UserInfoResponse
     var selectedGender: Gender? { genderSectionProperty.selectedItem?.gender }
@@ -90,7 +90,7 @@ struct MyPageEdit {
   }
 
   @CasePathable
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -99,7 +99,7 @@ struct MyPageEdit {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case selectGender(Gender)
     case nameEdited(String)
@@ -107,17 +107,17 @@ struct MyPageEdit {
     case tappedEditConfirmButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     /// 초기 TextField, BirthField, GenderField를 설정합니다.
     case updateInitialProperty
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case updateUserInformation
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
     case toast(SSToastReducer.Action)
@@ -131,7 +131,7 @@ struct MyPageEdit {
     case dismiss
   }
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isOnAppear):
       if state.isOnAppear {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol SSSelectableItemable: Identifiable, Equatable {
+public protocol SSSelectableItemable: Identifiable, Equatable, Sendable {
   var title: String { get set }
   var id: Int { get }
 }

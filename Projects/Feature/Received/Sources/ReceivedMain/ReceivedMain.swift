@@ -18,9 +18,9 @@ import SwiftAsyncMutex
 // MARK: - ReceivedMain
 
 @Reducer
-struct ReceivedMain {
+struct ReceivedMain: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isLoading: Bool = true
     var isRefresh = false
     var isOnAppear: Bool = false
@@ -58,7 +58,7 @@ struct ReceivedMain {
   @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
 
   @CasePathable
-  enum Action: FeatureAction, Equatable {
+  enum Action: FeatureAction, Equatable, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -66,7 +66,7 @@ struct ReceivedMain {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case tappedAddLedgerButton
     case tappedFilterButton
     case tappedFilteredDateButton
@@ -79,7 +79,7 @@ struct ReceivedMain {
     case pullRefreshButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
     case updateLedgers([LedgerBoxProperty])
     case overwriteLedgers([LedgerBoxProperty])
@@ -95,13 +95,13 @@ struct ReceivedMain {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case presentDestination(PresentationAction<ReceivedMainPresentationDestination.Action>)
     case header(HeaderViewFeature.Action)
     case tabBar(SSTabBarFeature.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
@@ -184,7 +184,7 @@ struct ReceivedMain {
     }
   }
 
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .isLoading(val):
       state.isLoading = val

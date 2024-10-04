@@ -79,7 +79,7 @@ struct SentPeopleFilterHelper: Equatable {
 
 // MARK: - SentPerson
 
-struct SentPerson: Identifiable, Equatable, Hashable {
+struct SentPerson: Identifiable, Equatable, Hashable, Sendable {
   let id: Int64
   let name: String
   init(id: Int64, name: String) {

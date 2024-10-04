@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - CreateEnvelopeProperty
 
-public struct CreateEnvelopeProperty: Equatable {
+public struct CreateEnvelopeProperty: Equatable, Sendable {
   var additionalSectionHelper: CreateEnvelopeAdditionalSectionHelper = .init()
   var relationHelper: CreateEnvelopeRelationItemPropertyHelper = .init()
   var eventHelper: CreateEnvelopeCategoryPropertyHelper = .init()
@@ -33,7 +33,7 @@ public struct CreateEnvelopeProperty: Equatable {
 
 // MARK: - SearchFriendItem
 
-public struct SearchFriendItem: Equatable, Hashable {
+public struct SearchFriendItem: Equatable, Hashable, Sendable {
   let name: String
   let relationShip: String
   let eventName: String?

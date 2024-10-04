@@ -10,7 +10,7 @@ import Combine
 import Foundation
 
 struct OnboardingRouterPublisher {
-  static var shared = OnboardingRouterPublisher()
+  nonisolated(unsafe) static var shared = OnboardingRouterPublisher()
   private init() {}
   private var pathPublisher: PassthroughSubject<OnboardingRouterPath.State, Never> = .init()
 

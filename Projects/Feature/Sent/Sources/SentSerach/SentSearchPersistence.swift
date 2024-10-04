@@ -39,7 +39,7 @@ struct SentSearchPersistence {
 // MARK: DependencyKey
 
 extension SentSearchPersistence: DependencyKey {
-  static var liveValue: SentSearchPersistence = .init()
+  static let liveValue: SentSearchPersistence = .init()
 }
 
 extension DependencyValues {

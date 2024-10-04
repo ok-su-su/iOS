@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - SSButtonProperty
 
-public struct SSButtonProperty {
+public struct SSButtonProperty: Sendable {
   let size: Size
   let status: Status
   let style: Style
@@ -20,7 +20,7 @@ public struct SSButtonProperty {
   var buttonText: String
   let frame: SSButtonFrame
 
-  public struct SSButtonFrame {
+  public struct SSButtonFrame: Sendable {
     let minWidth: CGFloat?
     let idealWidth: CGFloat?
     let maxWidth: CGFloat?
@@ -97,7 +97,7 @@ public struct SSButtonProperty {
 
 public extension SSButtonProperty {
   // size: Button의 사이즈 입니다.
-  enum Size {
+  enum Size: Sendable {
     case lh62
     case lh54
     case lh46
@@ -228,18 +228,18 @@ public extension SSButtonProperty {
     }
   }
 
-  enum Status {
+  enum Status: Sendable {
     case inactive
     case active
   }
 
-  enum Style {
+  enum Style: Sendable {
     case filled
     case ghost
     case lined
   }
 
-  enum ButtonColor {
+  enum ButtonColor: Sendable {
     case black
     case orange
 
@@ -262,12 +262,12 @@ public extension SSButtonProperty {
     }
   }
 
-  enum LeftIcon {
+  enum LeftIcon: Sendable {
     case none
     case icon(Image)
   }
 
-  enum RightIcon {
+  enum RightIcon: Sendable {
     case none
     case icon(Image)
   }

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - TCATaskManager
 
-public struct TCATaskManager: Equatable {
+public struct TCATaskManager: Equatable, Sendable {
   private let originalTaskCount: Int
   private var taskCount: Int
   public init(taskCount: Int) {
@@ -52,7 +52,7 @@ public struct TCATaskManager: Equatable {
 
 // MARK: - SingleTaskState
 
-public enum SingleTaskState {
+public enum SingleTaskState: Sendable {
   case willRun
   case didFinish
 }

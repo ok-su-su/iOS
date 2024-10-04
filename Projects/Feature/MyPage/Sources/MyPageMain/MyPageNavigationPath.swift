@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - MyPageNavigationPath
 
-@Reducer(state: .equatable, action: .equatable)
+@Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum MyPageNavigationPath {
   case myPageInfo(MyPageInformation)
   case editMyPage(MyPageEdit)

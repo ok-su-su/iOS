@@ -152,3 +152,7 @@ private extension String {
     self.init(data: data, encoding: encoding)
   }
 }
+
+// MARK: - Moya.Response + Sendable
+
+extension Moya.Response: @unchecked @retroactive Sendable {}

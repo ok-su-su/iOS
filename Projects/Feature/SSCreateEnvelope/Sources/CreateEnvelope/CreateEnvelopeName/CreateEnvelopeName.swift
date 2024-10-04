@@ -16,9 +16,9 @@ import SSToast
 // MARK: - CreateEnvelopeName
 
 @Reducer
-public struct CreateEnvelopeName {
+public struct CreateEnvelopeName: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var textFieldText: String = ""
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
@@ -37,7 +37,7 @@ public struct CreateEnvelopeName {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -46,7 +46,7 @@ public struct CreateEnvelopeName {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedFilterItem(name: String)
     case changeText(String)
@@ -85,7 +85,7 @@ public struct CreateEnvelopeName {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case push
     case updateEnvelopes([SearchFriendItem])
     case emptyTextField
@@ -109,7 +109,7 @@ public struct CreateEnvelopeName {
     }
   }
 
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable, Sendable {
     case searchName(String)
   }
 
@@ -124,7 +124,7 @@ public struct CreateEnvelopeName {
   }
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case toast(SSToastReducer.Action)
   }
 
@@ -135,7 +135,7 @@ public struct CreateEnvelopeName {
     }
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable, Sendable {}
 
   private enum ThrottleID {
     case search

@@ -241,7 +241,7 @@ struct LedgerDetailMainView: View {
   }
 
   private enum Constants {
-    static let filterButtonProperty: SSButtonProperty = .init(
+    nonisolated(unsafe) static let filterButtonProperty: SSButtonProperty = .init(
       size: .sh32,
       status: .active,
       style: .ghost,
@@ -250,7 +250,7 @@ struct LedgerDetailMainView: View {
       buttonText: "필터"
     )
 
-    static let sortButtonProperty: SSButtonProperty = .init(
+    nonisolated(unsafe) static let sortButtonProperty: SSButtonProperty = .init(
       size: .sh32,
       status: .active,
       style: .ghost,

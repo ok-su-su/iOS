@@ -15,9 +15,9 @@ import SSLayout
 // MARK: - LedgerDetailFilter
 
 @Reducer
-struct LedgerDetailFilter {
+struct LedgerDetailFilter: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var textFieldText: String = ""
     @Shared var property: LedgerDetailFilterProperty
@@ -53,7 +53,7 @@ struct LedgerDetailFilter {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -62,7 +62,7 @@ struct LedgerDetailFilter {
   }
 
   @CasePathable
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedItem(LedgerFilterItemProperty)
     case changeTextField(String)
@@ -72,27 +72,28 @@ struct LedgerDetailFilter {
     case tappedSliderResetButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
     case updateItems([LedgerFilterItemProperty])
     case updateMaximumReceivedValue(Int64)
     case updateSliderPropertyItems
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case searchInitialFriends
     case searchFriendsBy(name: String)
     case getInitialMaxPriceValue
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   @Dependency(\.dismiss) var dismiss
+  @Dependency(\.mainQueue) var mainQueue
 
   private enum CancelID {
     case searchTextField
@@ -123,7 +124,7 @@ struct LedgerDetailFilter {
     case let .changeTextField(text):
       state.textFieldText = text
       return .send(.async(.searchFriendsBy(name: text)))
-        .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: RunLoop.main, latest: true)
+        .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: mainQueue, latest: true)
 
     case .closeButtonTapped:
       state.textFieldText = ""

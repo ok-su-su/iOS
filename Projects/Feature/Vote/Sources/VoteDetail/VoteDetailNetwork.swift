@@ -14,7 +14,7 @@ import SSNetwork
 
 // MARK: - VoteDetailNetwork
 
-struct VoteDetailNetwork {
+struct VoteDetailNetwork: Sendable {
   /// Vote Detail을 가져 옵니다.
   var voteDetail: @Sendable (_ id: Int64) async throws -> VoteDetailProperty
 
@@ -61,24 +61,24 @@ struct VoteDetailNetwork {
 // MARK: - VoteMainNetworkLiveFunction
 
 private enum VoteMainNetworkLiveFunction {
-  static var voteMainReportVote: @Sendable (_ boardID: Int64) async throws -> Void = VoteMainNetwork.liveValue.reportVote
-  private static var voteMainBlockUser: @Sendable (_ userID: Int64) async throws -> Void = VoteMainNetwork.liveValue.blockUser
+  static let voteMainReportVote: @Sendable (_ boardID: Int64) async throws -> Void = VoteMainNetwork.liveValue.reportVote
+  static let voteMainBlockUser: @Sendable (_ userID: Int64) async throws -> Void = VoteMainNetwork.liveValue.blockUser
 }
 
 // MARK: - VoteDetailNetwork + DependencyKey
 
 extension VoteDetailNetwork: DependencyKey {
   /// reportVote, blockUser는 VoteMain의 Network API를 활용합니다.
-  static var liveValue: VoteDetailNetwork = .init(
+  static let liveValue: VoteDetailNetwork = .init(
     voteDetail: _voteDetail,
     executeVote: _executeVote,
     cancelVote: _cancelVote,
     overwriteVote: _overwriteVote,
     deleteVote: _deleteVote,
     reportVote: VoteMainNetworkLiveFunction.voteMainReportVote,
-    blockUser: VoteMainNetworkLiveFunction.voteMainReportVote
+    blockUser: VoteMainNetworkLiveFunction.voteMainBlockUser
   )
-  static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider: MoyaProvider<Network> = .init(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case getVoteDetail(boardID: Int64)
@@ -165,19 +165,6 @@ struct CreateVoteHistoryRequest: Encodable {
   enum CodingKeys: CodingKey {
     case isCancel
     case optionId
-  }
-}
-
-// MARK: - UpdateVoteRequest
-
-struct UpdateVoteRequest: Encodable {
-  /// 보드 id
-  let boardId: Int64
-  ///   투표 내용
-  let content: String
-  enum CodingKeys: CodingKey {
-    case boardId
-    case content
   }
 }
 

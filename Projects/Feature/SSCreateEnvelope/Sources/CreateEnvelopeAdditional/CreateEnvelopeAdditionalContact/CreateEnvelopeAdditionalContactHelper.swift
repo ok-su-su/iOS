@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CreateEnvelopeAdditionalContactHelper: Equatable {
+struct CreateEnvelopeAdditionalContactHelper: Equatable, Sendable {
   var textFieldText: String = ""
   var isHighlight: Bool = false
 }

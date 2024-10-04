@@ -12,7 +12,7 @@ import Foundation
 /// Because this is not mutable function, so view will not render.
 final class SharedContainer {
   private init() {}
-  private static var shared = SharedContainer()
+  private nonisolated(unsafe) static let shared = SharedContainer()
   private var cache: [String: Any] = [:]
 
   /// Save value at memory

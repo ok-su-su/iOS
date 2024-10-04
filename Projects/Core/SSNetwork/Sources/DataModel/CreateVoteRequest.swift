@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CreateVoteRequest: Equatable, Encodable {
+public struct CreateVoteRequest: Equatable, Encodable, Sendable {
   /// 투표 컨텐트
   public let content: String
   /// 투표 옵션

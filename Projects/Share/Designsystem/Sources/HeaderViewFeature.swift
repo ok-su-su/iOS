@@ -16,7 +16,7 @@ public struct HeaderViewFeature {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var property: HeaderViewProperty
     var enableDismissAction: Bool
 
@@ -31,7 +31,7 @@ public struct HeaderViewFeature {
   }
 
   @Dependency(\.dismiss) var dismiss
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case onAppear
     case tappedDismissButton
     case tappedNotificationButton
@@ -40,7 +40,7 @@ public struct HeaderViewFeature {
     case tappedDoubleTextButton(DoubleTextButtonAction)
     case updateProperty(HeaderViewProperty)
 
-    public enum DoubleTextButtonAction {
+    public enum DoubleTextButtonAction: Sendable {
       case leading
       case trailing
     }
@@ -74,11 +74,11 @@ public struct HeaderViewFeature {
 
 // MARK: - HeaderViewProperty
 
-public struct HeaderViewProperty: Equatable {
+public struct HeaderViewProperty: Equatable, Sendable {
   let title: String
   let type: HeaderViewPropertyType
 
-  public enum IconType: Equatable {
+  public enum IconType: Equatable, Sendable {
     case `default`
     case singleSearch
     case reportIcon
@@ -95,7 +95,7 @@ public struct HeaderViewProperty: Equatable {
     }
   }
 
-  public enum HeaderViewPropertyType: Equatable {
+  public enum HeaderViewPropertyType: Equatable, Sendable {
     case defaultType
     case defaultNonIconType
     case depth2NonIconType

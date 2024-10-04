@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import SSNetwork
 
 // MARK: - TextFieldButtonWithTCAProperty
 
-struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
+/// Regex<Substring>이 sendable을 채택하지 않음
+struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable, @unchecked Sendable {
   static func == (lhs: TextFieldButtonWithTCAProperty, rhs: TextFieldButtonWithTCAProperty) -> Bool {
     if lhs.id == rhs.id,
        lhs.title == rhs.title,
@@ -54,21 +56,19 @@ struct TextFieldButtonWithTCAProperty: TextFieldButtonWithTCAPropertiable {
 }
 
 extension [TextFieldButtonWithTCAProperty] {
-  private static var defaultPropertyItemsCount: Int = 2
-  static func `default`() -> Self {
+  private static let defaultPropertyItemsCount: Int = 2
+  @Sendable static func `default`() -> Self {
     return (0 ..< defaultPropertyItemsCount).map { .init(id: $0, regexString: TextFieldButtonWithTCAProperty.defaultRegex) }
   }
 }
 
 extension TextFieldButtonWithTCAProperty {
-  private static var defaultRegexPattern: String = "^.{1,10}$"
-  static let defaultRegex: Regex<Substring> = try! .init(defaultRegexPattern)
+  private static let defaultRegexPattern: String = "^.{1,10}$"
+  nonisolated(unsafe) static let defaultRegex: Regex<Substring> = try! .init(defaultRegexPattern)
 }
 
-import SSNetwork
-
 extension TextFieldButtonWithTCAProperty {
-  static func convertFromVoteOptionCountModel(_ dto: VoteOptionCountModel) -> Self {
+  @Sendable static func convertFromVoteOptionCountModel(_ dto: VoteOptionCountModel) -> Self {
     return .init(
       id: Int(dto.id),
       title: dto.content,

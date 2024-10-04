@@ -41,7 +41,7 @@ struct GetSizeModifier: ViewModifier {
 
 final class SizePreferenceKey: PreferenceKey {
   typealias Value = CGSize
-  static var defaultValue: Value = .zero
+  static let defaultValue: Value = .zero
 
   static func reduce(value _: inout Value, nextValue: () -> Value) {
     _ = nextValue()

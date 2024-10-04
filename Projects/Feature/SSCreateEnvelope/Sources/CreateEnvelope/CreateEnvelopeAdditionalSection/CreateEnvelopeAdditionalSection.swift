@@ -11,9 +11,9 @@ import Foundation
 import SSSelectableItems
 
 @Reducer
-public struct CreateEnvelopeAdditionalSection {
+public struct CreateEnvelopeAdditionalSection: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     @Shared var createEnvelopeProperty: CreateEnvelopeProperty
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.State
@@ -50,7 +50,7 @@ public struct CreateEnvelopeAdditionalSection {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -58,23 +58,23 @@ public struct CreateEnvelopeAdditionalSection {
     case delegate(DelegateAction)
   }
 
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedNextButton
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case push
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeAdditionalSectionProperty>.Action)
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable, Sendable {}
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.createEnvelopeSelectionItems, action: \.scope.createEnvelopeSelectionItems) {

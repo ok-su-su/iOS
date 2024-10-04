@@ -16,8 +16,8 @@ import SSPersistancy
 
 // MARK: - OnboardingLoginNetworkHelper
 
-struct OnboardingLoginNetworkHelper {
-  private let provider: MoyaProvider<Network> = .init()
+struct OnboardingLoginNetworkHelper: Sendable {
+  private nonisolated(unsafe) let provider: MoyaProvider<Network> = .init()
   func loginWithKakao() async -> Bool {
     return await LoginWithKakao.loginWithKakao()
   }
@@ -56,7 +56,7 @@ struct OnboardingLoginNetworkHelper {
 // MARK: DependencyKey
 
 extension OnboardingLoginNetworkHelper: DependencyKey {
-  static var liveValue: OnboardingLoginNetworkHelper = .init()
+  static let liveValue: OnboardingLoginNetworkHelper = .init()
   private enum Network: SSNetworkTargetType {
     case isNewUser(LoginType, String)
     case loginWithSUSU(LoginType, Data)

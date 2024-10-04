@@ -12,9 +12,9 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
+public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, @unchecked Sendable {
     var isOnAppear = false
     fileprivate var initialSelectedID: Item.ID?
     @Shared var singleSelectButtonHelper: SingleSelectButtonProperty<Item>
@@ -35,7 +35,8 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable> {
     }
   }
 
-  public enum Action: Equatable {
+  /// uncheckedSendable because of Identifiable
+  public enum Action: Equatable, @unchecked Sendable {
     case onAppear(Bool)
     case tappedID(Item.ID?)
     case tappedAddCustomButton

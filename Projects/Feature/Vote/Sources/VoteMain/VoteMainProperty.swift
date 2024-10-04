@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - VoteMainProperty
 
-struct VoteMainProperty: Equatable {
+struct VoteMainProperty: Equatable, Sendable {
   var favoriteVoteItems: [PopularVoteItem] = []
   var selectedVoteSectionItem: VoteSectionHeaderItem? = .initialState
   var voteSectionItems: [VoteSectionHeaderItem] = [.initialState]

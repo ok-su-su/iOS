@@ -11,12 +11,12 @@ import Foundation
 import OSLog
 import SSPersistancy
 
-public final class LoginWithApple {
+public final class LoginWithApple: Sendable {
   private static let shared = LoginWithApple()
 
   static func loginWithApple() {}
 
-  public static var loginWithAppleOnRequest: (ASAuthorizationAppleIDRequest) -> Void = { auth in
+  public static let loginWithAppleOnRequest: @Sendable (ASAuthorizationAppleIDRequest) -> Void = { auth in
     // The request object is of the type ASAuthorizationOpenIDRequest and allows us to /
     // set up the contact information to be requested when authenticating /
     // the user by setting up the requested scope.
@@ -24,7 +24,7 @@ public final class LoginWithApple {
     return
   }
 
-  public static var loginWithAppleOnCompletion: (Result<ASAuthorization, any Error>) -> Void = { result in
+  public static let loginWithAppleOnCompletion: @Sendable (Result<ASAuthorization, any Error>) -> Void = { result in
     switch result {
     case let .success(authorization):
       shared.handleSuccessfulLogin(with: authorization)

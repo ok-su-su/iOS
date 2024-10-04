@@ -11,7 +11,7 @@ import Foundation
 
 // MARK: - AgreeToTermsAndConditionsHelper
 
-struct AgreeToTermsAndConditionsHelper: Equatable {
+struct AgreeToTermsAndConditionsHelper: Equatable, Sendable {
   @Shared var termItems: IdentifiedArrayOf<TermItem>
 
   var activeNextScreenButton: Bool {
@@ -54,7 +54,7 @@ struct AgreeToTermsAndConditionsHelper: Equatable {
 
 // MARK: - TermItem
 
-struct TermItem: Equatable, Identifiable {
+struct TermItem: Equatable, Identifiable, Sendable {
   let id: Int
   let title: String
   let isEssential: Bool

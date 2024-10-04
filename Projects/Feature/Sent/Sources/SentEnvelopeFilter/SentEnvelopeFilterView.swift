@@ -228,6 +228,5 @@ struct SentEnvelopeFilterView: View {
   private enum Constants {
     static let searchTextFieldTitle: String = "보낸 사람"
     static let progressTitleText: String = "전체 금액"
-    static let butonProperty: SSButtonPropertyState = .init(size: .sh48, status: .active, style: .filled, color: .orange, buttonText: "   ")
   }
 }

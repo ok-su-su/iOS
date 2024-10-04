@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - UserEnvelopeStatisticResponse
 
-public struct UserEnvelopeStatisticResponse: Equatable, Decodable {
+public struct UserEnvelopeStatisticResponse: Equatable, Decodable, Sendable {
   /// 최근 사용 금액
   public let recentSpent: [TitleValueModelLong]?
   /// 경조사를 가장 많이 쓴 달
@@ -26,19 +26,21 @@ public struct UserEnvelopeStatisticResponse: Equatable, Decodable {
 }
 
 public extension UserEnvelopeStatisticResponse {
-  static var emptyState: Self = .init(
-    recentSpent: nil,
-    mostSpentMonth: nil,
-    mostRelationship: nil,
-    mostCategory: nil,
-    highestAmountReceived: nil,
-    highestAmountSent: nil
-  )
+  static var emptyState: Self {
+    .init(
+      recentSpent: nil,
+      mostSpentMonth: nil,
+      mostRelationship: nil,
+      mostCategory: nil,
+      highestAmountReceived: nil,
+      highestAmountSent: nil
+    )
+  }
 }
 
 // MARK: - TitleValueModelLong
 
-public struct TitleValueModelLong: Equatable, Decodable {
+public struct TitleValueModelLong: Equatable, Decodable, Sendable {
   public let title: String
   public let value: Int64
 

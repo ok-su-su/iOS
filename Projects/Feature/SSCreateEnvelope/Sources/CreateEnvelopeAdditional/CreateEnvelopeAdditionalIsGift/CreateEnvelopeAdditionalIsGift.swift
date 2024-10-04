@@ -12,9 +12,9 @@ import SSRegexManager
 import SSToast
 
 @Reducer
-public struct CreateEnvelopeAdditionalIsGift {
+public struct CreateEnvelopeAdditionalIsGift: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var isHighlight = false
     var pushable = false
@@ -26,7 +26,7 @@ public struct CreateEnvelopeAdditionalIsGift {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -35,25 +35,25 @@ public struct CreateEnvelopeAdditionalIsGift {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case changedTextField(String)
     case changeIsHighlight(Bool)
     case tappedNextButton
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case push
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case toast(SSToastReducer.Action)
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable, Sendable {}
 
   public var body: some Reducer<State, Action> {
     Scope(state: \.toast, action: \.scope.toast) {

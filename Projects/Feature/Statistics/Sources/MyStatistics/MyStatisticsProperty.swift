@@ -9,7 +9,7 @@
 import Foundation
 import SSNetwork
 
-struct MyStatisticsProperty: Equatable {
+struct MyStatisticsProperty: Equatable, Sendable {
   var toDecimal: (Int64?) -> String? {
     CustomNumberFormatter.toDecimal
   }

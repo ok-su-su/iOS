@@ -102,5 +102,5 @@ struct CategoryRequestBody: Codable, Equatable {
 }
 
 extension JSONEncoder {
-  static var `default` = JSONEncoder()
+  static let `default` = JSONEncoder()
 }

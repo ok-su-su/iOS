@@ -10,7 +10,7 @@ import Combine
 import Foundation
 
 final class LedgerDetailRouterPublisher {
-  private static let shared = LedgerDetailRouterPublisher()
+  private nonisolated(unsafe) static let shared = LedgerDetailRouterPublisher()
 
   private var _publisher = PassthroughSubject<LedgerDetailPath.State, Never>()
 

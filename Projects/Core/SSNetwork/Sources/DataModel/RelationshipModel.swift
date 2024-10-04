@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchEnvelopeResponseRelationshipDTO
 
-public struct RelationshipModel: Codable, Equatable, Identifiable {
+public struct RelationshipModel: Codable, Equatable, Identifiable, Sendable {
   /// 관계 ID
   public let id: Int
   /// 관계 이름

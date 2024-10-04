@@ -15,7 +15,7 @@ import SSNetwork
 
 // MARK: - LedgerDetailFilterNetwork
 
-struct LedgerDetailFilterNetwork {
+struct LedgerDetailFilterNetwork: Sendable {
   var getInitialDataByLedgerID: @Sendable (_ id: Int64) async throws -> [LedgerFilterItemProperty]
   @Sendable private static func _getInitialDataByLedgerID(_ ledgerID: Int64) async throws -> [LedgerFilterItemProperty] {
     let param = GetEnvelopesRequestParameter(ledgerId: ledgerID, size: 150)
@@ -67,12 +67,12 @@ extension DependencyValues {
 // MARK: - LedgerDetailFilterNetwork + DependencyKey
 
 extension LedgerDetailFilterNetwork: DependencyKey {
-  static var liveValue: LedgerDetailFilterNetwork = .init(
+  static let liveValue: LedgerDetailFilterNetwork = .init(
     getInitialDataByLedgerID: _getInitialDataByLedgerID,
     findFriendsBy: _findFriendsBy,
     getMaximumSentValue: _getMaximumSentValue
   )
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case getEnvelopeFriends(GetEnvelopesRequestParameter)

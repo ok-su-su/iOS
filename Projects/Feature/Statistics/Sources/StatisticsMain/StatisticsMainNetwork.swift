@@ -16,7 +16,7 @@ import SSNetwork
 // MARK: - StatisticsMainNetwork
 
 @DependencyClient
-struct StatisticsMainNetwork {
+struct StatisticsMainNetwork: Sendable {
   var getMyStatistics: @Sendable () async throws -> UserEnvelopeStatisticResponse
   var getSUSUStatistics: @Sendable (_ val: SUSUStatisticsRequestProperty) async throws -> SUSUEnvelopeStatisticResponse
   var getRelationAndCategory: @Sendable () async throws -> ([RelationBottomSheetItem], [CategoryBottomSheetItem])
@@ -26,7 +26,7 @@ struct StatisticsMainNetwork {
 // MARK: StatisticsMainNetwork.Network
 
 extension StatisticsMainNetwork {
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   private enum Network: SSNetworkTargetType {
     case getMyStatistics
     case getSUSUStatistics(SUSUStatisticsRequestProperty)
@@ -68,7 +68,7 @@ extension StatisticsMainNetwork {
 // MARK: DependencyKey
 
 extension StatisticsMainNetwork: DependencyKey {
-  static var liveValue: StatisticsMainNetwork = .init(
+  static let liveValue: StatisticsMainNetwork = .init(
     getMyStatistics: {
       return try await provider.request(.getMyStatistics)
     },

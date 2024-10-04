@@ -33,7 +33,7 @@ struct ParticipantsAndDateView: View {
   }
 
   enum Constants {
-    static var participantsCountLabel: (Int64) -> String = { count in
+    static func participantsCountLabel(_ count: Int64) -> String {
       count.description + "명 참여"
     }
   }

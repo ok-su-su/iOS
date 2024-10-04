@@ -10,7 +10,7 @@ import Combine
 import Foundation
 
 final class MyPageRouterAndPathPublisher {
-  private static var shared = MyPageRouterAndPathPublisher()
+  private nonisolated(unsafe) static let shared = MyPageRouterAndPathPublisher()
   private init() {}
   private var _pathPublisher: PassthroughSubject<MyPageNavigationPath.State, Never> = .init()
   static var pathPublisher: AnyPublisher<MyPageNavigationPath.State, Never> {

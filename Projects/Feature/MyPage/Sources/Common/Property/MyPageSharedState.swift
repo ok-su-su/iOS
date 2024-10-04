@@ -9,20 +9,23 @@ import Foundation
 import SSNetwork
 import SSNotification
 
-final class MyPageSharedState {
+final class MyPageSharedState: @unchecked Sendable {
   private init() {
     addObserver()
   }
 
   func addObserver() {
-    NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
-      self.info = nil
+    NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { [weak self] _ in
+      self?.clearUserInfo()
     }
+  }
+
+  private func clearUserInfo() {
+    info = nil
   }
 
   static let shared = MyPageSharedState()
 
-  /// 저장된 UserInfoResponseDTO를 가져옵니다.
   func getMyUserInfoDTO() -> UserInfoResponse? {
     return info
   }

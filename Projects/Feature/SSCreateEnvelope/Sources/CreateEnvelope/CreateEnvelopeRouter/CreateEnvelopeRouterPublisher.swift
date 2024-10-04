@@ -13,9 +13,8 @@ import SSFirebase
 
 // MARK: - CreateEnvelopePath
 
-@CasePathable
-@Reducer(state: .equatable, action: .equatable)
-public enum CreateEnvelopePath {
+@Reducer(state: .sendable, .equatable, action: .equatable, .sendable)
+public enum CreateEnvelopePath: Sendable {
   case createEnvelopePrice(CreateEnvelopePrice)
   case createEnvelopeName(CreateEnvelopeName)
   case createEnvelopeRelation(CreateEnvelopeRelation)
@@ -31,7 +30,7 @@ public enum CreateEnvelopePath {
 // MARK: - CreateEnvelopeRouterPublisher
 
 public final class CreateEnvelopeRouterPublisher {
-  public static let shared = CreateEnvelopeRouterPublisher()
+  public nonisolated(unsafe) static let shared = CreateEnvelopeRouterPublisher()
   private init() {}
 
   private var _publisher: PassthroughSubject<CreateEnvelopePath.State, Never> = .init()

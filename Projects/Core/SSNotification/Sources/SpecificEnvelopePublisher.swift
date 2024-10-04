@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: - SpecificEnvelopePublisher
 
-public final class SpecificEnvelopePublisher {
+public final class SpecificEnvelopePublisher: @unchecked Sendable {
   private init() {}
 
   private let _updatePublisher: PassthroughSubject<Int64, Never> = .init()
@@ -24,7 +24,7 @@ public final class SpecificEnvelopePublisher {
     _updatePublisher.send(ID)
   }
 
-  private var _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
+  private let _deleteEnvelopePublisher: PassthroughSubject<Int64, Never> = .init()
   public var deleteEnvelopePublisher: AnyPublisher<Int64, Never> {
     _deleteEnvelopePublisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
@@ -37,7 +37,7 @@ public final class SpecificEnvelopePublisher {
 // MARK: DependencyKey
 
 extension SpecificEnvelopePublisher: DependencyKey {
-  public static var liveValue: SpecificEnvelopePublisher = .init()
+  public static let liveValue: SpecificEnvelopePublisher = .init()
 }
 
 public extension DependencyValues {

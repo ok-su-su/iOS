@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 6/26/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -15,9 +16,9 @@ import SSSearch
 // MARK: - SentSearch
 
 @Reducer
-struct SentSearch {
+struct SentSearch: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var path: StackState<SpecificEnvelopeHistoryRouterPath.State> = .init()
     @Shared var property: SentSearchProperty
@@ -44,7 +45,7 @@ struct SentSearch {
   @Dependency(\.sentSearchNetwork) var network
   @Dependency(\.sentSearchPersistence) var persistence
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case search(SSSearchReducer<SentSearchProperty>.Action)
     case path(StackActionOf<SpecificEnvelopeHistoryRouterPath>)
@@ -61,12 +62,13 @@ struct SentSearch {
     case searchThrottleID
   }
 
+  @Dependency(\.mainQueue) var mainQueue
   func searchAction(state: inout State, action: SSSearchReducer<SentSearchProperty>.Action) -> Effect<Action> {
     switch action {
     case let .changeTextField(textFieldText):
       if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
         return .send(.searchEnvelope)
-          .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: RunLoop.main, latest: true)
+          .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: mainQueue, latest: true)
       }
       return .none
 
@@ -167,7 +169,7 @@ extension Reducer where State == SentSearch.State, Action == SentSearch.Action {
 
 // MARK: - SentSearchProperty
 
-struct SentSearchProperty: SSSearchPropertiable {
+struct SentSearchProperty: SSSearchPropertiable, Sendable {
   typealias item = SentSearchItem
   var prevSearchedItem: [item]
   var nowSearchedItem: [item]
@@ -182,7 +184,7 @@ struct SentSearchProperty: SSSearchPropertiable {
 
 // MARK: - SentSearchItem
 
-struct SentSearchItem: SSSearchItemable, Hashable, Codable {
+struct SentSearchItem: SSSearchItemable, Hashable, Codable, Sendable {
   /// 친구의 아이디 입니다.
   var id: Int64
   /// 친구의 이름 입니다.

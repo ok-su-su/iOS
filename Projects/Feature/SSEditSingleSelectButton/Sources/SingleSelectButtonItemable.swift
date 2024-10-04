@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol SingleSelectButtonItemable: Identifiable, Equatable {
+public protocol SingleSelectButtonItemable: Identifiable, Equatable, Sendable {
   var id: Int { get }
   var title: String { get set }
 }

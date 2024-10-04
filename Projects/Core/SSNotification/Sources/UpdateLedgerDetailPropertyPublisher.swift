@@ -6,14 +6,14 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Combine
+@preconcurrency import Combine
 import ComposableArchitecture
 import Foundation
 
 // MARK: - UpdateLedgerDetailPublisher
 
-public struct UpdateLedgerDetailPublisher: DependencyKey {
-  public static var liveValue: UpdateLedgerDetailPublisher = .init()
+public struct UpdateLedgerDetailPublisher: DependencyKey, Sendable {
+  public static let liveValue: UpdateLedgerDetailPublisher = .init()
   private init() {}
 
   private var _updateLedgerDetailPublisher: PassthroughSubject<Void, Never> = .init()

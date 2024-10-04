@@ -15,9 +15,9 @@ import SSToast
 // MARK: - CreateEnvelopeCategory
 
 @Reducer
-public struct CreateEnvelopeCategory {
+public struct CreateEnvelopeCategory: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var nextButton = CreateEnvelopeBottomOfNextButton.State()
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>.State
@@ -43,7 +43,7 @@ public struct CreateEnvelopeCategory {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -51,7 +51,7 @@ public struct CreateEnvelopeCategory {
     case delegate(DelegateAction)
   }
 
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedNextButton
   }
@@ -69,7 +69,7 @@ public struct CreateEnvelopeCategory {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case push
     case isLoading(Bool)
     case update([CreateEnvelopeCategoryProperty])
@@ -100,14 +100,14 @@ public struct CreateEnvelopeCategory {
     }
   }
 
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable, Sendable {
     case getEventItems
   }
 
   func asyncAction(_: inout State, _ action: AsyncAction) -> Effect<Action> {
     switch action {
     case .getEventItems:
-      return .ssRun { send in
+      return .ssRun { [network] send in
         await send(.inner(.isLoading(true)))
         let data = try await network.getEventItems()
         await send(.inner(.update(data)))
@@ -117,7 +117,7 @@ public struct CreateEnvelopeCategory {
   }
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeCategoryProperty>.Action)
     case toast(SSToastReducer.Action)
   }
@@ -141,7 +141,7 @@ public struct CreateEnvelopeCategory {
     }
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable, Sendable {}
 
   @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
 

@@ -13,7 +13,7 @@ public final class UpdateEnvelopeDetailPropertyPublisher {
   private init() {}
   private var _publisher: PassthroughSubject<EnvelopeDetailProperty, Never> = .init()
 
-  private static let shared = UpdateEnvelopeDetailPropertyPublisher()
+  private nonisolated(unsafe) static let shared = UpdateEnvelopeDetailPropertyPublisher()
 
   public static func send(_ property: EnvelopeDetailProperty) {
     shared._publisher.send(property)

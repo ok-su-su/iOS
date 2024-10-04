@@ -15,7 +15,7 @@ import SSBottomSelectSheet
 // MARK: - ReceivedFilter
 
 @Reducer
-struct ReceivedFilter {
+struct ReceivedFilter: Sendable {
   @ObservableState
   struct State: Equatable {
     var isAppear = false
@@ -47,7 +47,7 @@ struct ReceivedFilter {
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -55,7 +55,7 @@ struct ReceivedFilter {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     /// 뷰가 나타날 경우
     case onAppear(Bool)
     /// 아이템 클릭할 경우
@@ -111,7 +111,7 @@ struct ReceivedFilter {
     }
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateSelectableItems([FilterSelectableItemProperty])
     case reset
     case isLoading(Bool)
@@ -133,7 +133,7 @@ struct ReceivedFilter {
   }
 
   @Dependency(\.receivedFilterNetwork) var network
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getSelectableItems
   }
 
@@ -150,7 +150,7 @@ struct ReceivedFilter {
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
     case header(HeaderViewFeature.Action)
   }
@@ -169,7 +169,7 @@ struct ReceivedFilter {
     }
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   @Dependency(\.dismiss) var dismiss
 

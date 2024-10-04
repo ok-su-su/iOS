@@ -34,7 +34,7 @@ public extension KeyboardReadable {
 
 // MARK: - KeyBoardReadablePublisher
 
-public final class KeyBoardReadablePublisher: KeyboardReadable {
+public final class KeyBoardReadablePublisher: KeyboardReadable, @unchecked Sendable {
   public static let shared: KeyBoardReadablePublisher = .init()
   private init() {}
 }

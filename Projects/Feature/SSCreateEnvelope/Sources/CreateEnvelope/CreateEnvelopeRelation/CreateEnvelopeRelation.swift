@@ -15,9 +15,9 @@ import SSToast
 // MARK: - CreateEnvelopeRelation
 
 @Reducer
-public struct CreateEnvelopeRelation {
+public struct CreateEnvelopeRelation: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var isLoading = false
     var createEnvelopeSelectionItems: SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>.State
@@ -43,7 +43,7 @@ public struct CreateEnvelopeRelation {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -51,7 +51,7 @@ public struct CreateEnvelopeRelation {
     case delegate(DelegateAction)
   }
 
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedNextButton
   }
@@ -75,7 +75,7 @@ public struct CreateEnvelopeRelation {
     }
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case push
     case isLoading(Bool)
     case update([CreateEnvelopeRelationItemProperty])
@@ -107,10 +107,10 @@ public struct CreateEnvelopeRelation {
     }
   }
 
-  public enum AsyncAction: Equatable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case createEnvelopeSelectionItems(SSSelectableItemsReducer<CreateEnvelopeRelationItemProperty>.Action)
     case toast(SSToastReducer.Action)
   }
@@ -134,7 +134,7 @@ public struct CreateEnvelopeRelation {
     }
   }
 
-  public enum DelegateAction: Equatable {}
+  public enum DelegateAction: Equatable, Sendable {}
 
   @Dependency(\.createEnvelopeRelationAndEventNetwork) var network
 

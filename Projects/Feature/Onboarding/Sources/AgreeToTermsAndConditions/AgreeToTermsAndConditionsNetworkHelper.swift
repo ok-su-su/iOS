@@ -6,15 +6,24 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
+import Dependencies
 import Foundation
 import Moya
 import SSNetwork
 
-// MARK: - AgreeToTermsAndConditionsNetworkHelper
+// MARK: - AgreeToTermsAndConditionsNetwork
 
-struct AgreeToTermsAndConditionsNetworkHelper: Equatable {
-  static func == (_: AgreeToTermsAndConditionsNetworkHelper, _: AgreeToTermsAndConditionsNetworkHelper) -> Bool {
-    return true
+struct AgreeToTermsAndConditionsNetwork: Sendable {
+  private nonisolated(unsafe) static let provider: MoyaProvider<TermsTarget> = .init()
+
+  var requestTermsInformation: @Sendable () async throws -> GetTermsInformationResponseDTO
+  private static func _requestTermsInformation() async throws -> GetTermsInformationResponseDTO {
+    return try await provider.request(.getTermsInformation)
+  }
+
+  var requestTermsInformationDetail: @Sendable (_ id: Int) async throws -> GetTermsInformationDetailResponseDTO
+  private static func _requestTermsInformationDetail(_ id: Int) async throws -> GetTermsInformationDetailResponseDTO {
+    return try await provider.request(.getTermsInformationDetail(id: id))
   }
 
   private enum TermsTarget: SSNetworkTargetType {
@@ -39,15 +48,21 @@ struct AgreeToTermsAndConditionsNetworkHelper: Equatable {
       return .requestPlain
     }
   }
+}
 
-  private let provider: MoyaProvider<TermsTarget> = .init()
+// MARK: DependencyKey
 
-  func requestTermsInformation() async throws -> GetTermsInformationResponseDTO {
-    return try await provider.request(.getTermsInformation)
-  }
+extension AgreeToTermsAndConditionsNetwork: DependencyKey {
+  static let liveValue: AgreeToTermsAndConditionsNetwork = .init(
+    requestTermsInformation: _requestTermsInformation,
+    requestTermsInformationDetail: _requestTermsInformationDetail
+  )
+}
 
-  func requestTermsInformationDetail(id: Int) async throws -> GetTermsInformationDetailResponseDTO {
-    return try await provider.request(.getTermsInformationDetail(id: id))
+extension DependencyValues {
+  var agreeToTermsAndConditionsNetwork: AgreeToTermsAndConditionsNetwork {
+    get { self[AgreeToTermsAndConditionsNetwork.self] }
+    set { self[AgreeToTermsAndConditionsNetwork.self] = newValue }
   }
 }
 
@@ -63,7 +78,7 @@ typealias GetTermsInformationResponseDTO = [GetTermsInformationResponseElement]
 
 // MARK: - GetTermsInformationDetailResponseDTO
 
-struct GetTermsInformationDetailResponseDTO: Codable {
+struct GetTermsInformationDetailResponseDTO: Codable, Sendable {
   let id: Int
   let title, description: String
   let isEssential: Bool

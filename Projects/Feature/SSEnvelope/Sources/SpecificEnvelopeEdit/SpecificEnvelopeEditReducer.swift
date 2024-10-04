@@ -18,9 +18,9 @@ import SSToast
 // MARK: - SpecificEnvelopeEditReducer
 
 @Reducer
-public struct SpecificEnvelopeEditReducer {
+public struct SpecificEnvelopeEditReducer: Sendable {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var header = HeaderViewFeature.State(.init(type: .depth2Default))
     var eventSection: TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.State
@@ -51,7 +51,7 @@ public struct SpecificEnvelopeEditReducer {
     }
   }
 
-  public enum Action: Equatable, FeatureAction {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -60,7 +60,7 @@ public struct SpecificEnvelopeEditReducer {
   }
 
   @CasePathable
-  public enum ViewAction: Equatable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case changePriceTextField(String)
     case changeNameTextField(String)
@@ -72,18 +72,18 @@ public struct SpecificEnvelopeEditReducer {
     case tappedDatePickerSaveButton
   }
 
-  public enum InnerAction: Equatable {
+  public enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
   }
 
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction: Equatable, Sendable {
     case editFriendsAndEnvelope
   }
 
   @Dependency(\.envelopeNetwork) var network
   @Dependency(\.dismiss) var dismiss
   @CasePathable
-  public enum ScopeAction: Equatable {
+  public enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
     case eventSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeEventProperty>.Action)
     case relationSection(TitleAndItemsWithSingleSelectButton<CreateEnvelopeRelationItemProperty>.Action)
@@ -92,7 +92,7 @@ public struct SpecificEnvelopeEditReducer {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-  public enum DelegateAction: Equatable {
+  public enum DelegateAction: Equatable, Sendable {
     case tappedSaveButton(envelopeID: Int64)
   }
 
@@ -217,40 +217,6 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
     }
   }
 
-  func updateEnvelope(_ state: State, friendID: Int64, send: Send<Action>) async throws {
-    guard let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem else {
-      return
-    }
-
-    let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
-      state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
-
-    let giftText: String = state.editHelper.giftEditProperty.gift
-    let queryGiftText: String? = giftText.isEmpty ? nil : giftText
-
-    let memoText: String = state.editHelper.memoEditProperty.memo
-    let queryMemoText: String? = memoText.isEmpty ? nil : memoText
-
-    let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
-      type: state.editHelper.envelopeDetailProperty.envelope.type,
-      friendId: friendID,
-      ledgerId: nil,
-      amount: state.editHelper.priceProperty.price,
-      gift: queryGiftText,
-      memo: queryMemoText,
-      hasVisited: state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited,
-      handedOverAt: CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date),
-      category: .init(id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0, customCategory: customCategory)
-    )
-
-    let envelopeID = state.editHelper.envelopeDetailProperty.envelope.id
-
-    let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
-    UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
-    await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
-    await dismiss()
-  }
-
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .editFriendsAndEnvelope:
@@ -268,10 +234,48 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       )
 
       let friendID = state.editHelper.envelopeDetailProperty.friend.id
-      return .ssRun { [state = state] send in
+
+      // Envelope Edit Body Properties
+      let envelopeType = state.editHelper.envelopeDetailProperty.envelope.type
+      let envelopePrice = state.editHelper.priceProperty.price
+      guard let selectedCategoryItem = state.editHelper.eventSectionButtonHelper.selectedItem else {
+        return .none
+      }
+      let hasVisited = state.editHelper.visitedSectionButtonHelper.selectedItem?.isVisited
+      let handOverAt = CustomDateFormatter.getFullDateString(from: state.editHelper.dateEditProperty.date)
+      let customCategory = selectedCategoryItem.id == state.editHelper.eventSectionButtonHelper.isCustomItem?.id ?
+        state.editHelper.eventSectionButtonHelper.isCustomItem?.title : nil
+
+      let giftText: String = state.editHelper.giftEditProperty.gift
+      let queryGiftText: String? = giftText.isEmpty ? nil : giftText
+
+      let memoText: String = state.editHelper.memoEditProperty.memo
+      let queryMemoText: String? = memoText.isEmpty ? nil : memoText
+      let category: CreateCategoryAssignmentRequest = .init(
+        id: state.editHelper.eventSectionButtonHelper.selectedItem?.id ?? 0,
+        customCategory: customCategory
+      )
+
+      let envelopeID = state.editHelper.envelopeDetailProperty.envelope.id
+      return .ssRun { send in
         await send(.inner(.isLoading(true)))
         let updatedFriendID = try await network.editFriends(friendID, friendRequestBody)
-        try await updateEnvelope(state, friendID: updatedFriendID, send: send)
+
+        let envelopeRequestBody = CreateAndUpdateEnvelopeRequest(
+          type: envelopeType,
+          friendId: updatedFriendID,
+          ledgerId: nil,
+          amount: envelopePrice,
+          gift: queryGiftText,
+          memo: queryMemoText,
+          hasVisited: hasVisited,
+          handedOverAt: handOverAt,
+          category: category
+        )
+        let envelopeProperty = try await network.editEnvelopes(envelopeID, envelopeRequestBody)
+        UpdateEnvelopeDetailPropertyPublisher.send(envelopeProperty)
+        await send(.delegate(.tappedSaveButton(envelopeID: envelopeID)))
+        await dismiss()
         await send(.inner(.isLoading(false)))
       }
     }
