@@ -9,7 +9,7 @@
 import Foundation
 import SSPersistancy
 
-enum LoginType: String, Equatable, Encodable {
+enum LoginType: String, Equatable, Encodable, Sendable {
   case KAKAO
   case APPLE
   case GOOGLE
