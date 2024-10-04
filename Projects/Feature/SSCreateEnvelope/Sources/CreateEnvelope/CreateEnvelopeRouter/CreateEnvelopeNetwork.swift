@@ -8,7 +8,7 @@
 
 import Dependencies
 import Foundation
-@preconcurrency import Moya
+import Moya
 import SSInterceptor
 import SSNetwork
 
@@ -52,7 +52,7 @@ extension CreateEnvelopeNetwork: DependencyKey {
     getFriendID: _getFriendID,
     createEnvelope: _createEnvelope
   )
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
   enum Network: SSNetworkTargetType {
     case createFriend(CreateFriendRequestBody)
     case findFriend(String)

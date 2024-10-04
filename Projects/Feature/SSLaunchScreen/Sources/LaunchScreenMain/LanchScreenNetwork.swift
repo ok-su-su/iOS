@@ -8,7 +8,7 @@
 
 import Dependencies
 import Foundation
-@preconcurrency import Moya
+import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
@@ -39,7 +39,7 @@ struct LaunchScreenNetwork: Sendable {
 extension LaunchScreenNetwork: DependencyKey {
   static let liveValue: LaunchScreenNetwork = .init(getIsMandatoryUpdate: _getIsMandatoryUpdate)
 
-  private static let provider: MoyaProvider<Network> = .init()
+  private nonisolated(unsafe) static let provider: MoyaProvider<Network> = .init()
   enum Network: SSNetworkTargetType {
     case checkVersion(version: String)
     var additionalHeader: [String: String]? { nil }

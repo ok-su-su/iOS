@@ -8,7 +8,7 @@
 
 import Dependencies
 import Foundation
-@preconcurrency import Moya
+import Moya
 import SSInterceptor
 import SSNetwork
 
@@ -36,7 +36,7 @@ extension CreateEnvelopeRelationAndEventNetwork: DependencyKey {
     getEventItems: _getEventItems
   )
 
-  private static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
+  private nonisolated(unsafe) static let provider = MoyaProvider<Network>(session: .init(interceptor: SSTokenInterceptor.shared))
 
   enum Network: SSNetworkTargetType {
     case getItems
