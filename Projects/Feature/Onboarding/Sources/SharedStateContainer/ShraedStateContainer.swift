@@ -12,7 +12,7 @@ import Foundation
 /// Because this is not mutable function, so view will not render.
 final class SharedStateContainer {
   private init() {}
-  private static var shared = SharedStateContainer()
+  private nonisolated(unsafe) static var shared = SharedStateContainer()
   private let cache: NSCache<NSString, AnyObject> = .init()
 
   /// Save value at memory

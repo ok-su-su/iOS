@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct OnboardingLoginHelper: Equatable {
+struct OnboardingLoginHelper: Equatable, Sendable {
   var displaySectorShapeDegree: Double = 0
   private var currentSectorShapeDegree: Double
 

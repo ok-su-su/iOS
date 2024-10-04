@@ -11,16 +11,16 @@ import Foundation
 
 // MARK: - SignUpBodyProperty
 
-final class SignUpBodyProperty: Equatable, Encodable {
+final class SignUpBodyProperty: Equatable, Encodable, @unchecked Sendable {
   static func == (lhs: SignUpBodyProperty, rhs: SignUpBodyProperty) -> Bool {
     return lhs === rhs
   }
 
-  private var loginType: LoginType? = nil
-  private var name: String? = nil
+  private var loginType: LoginType?
+  private var name: String?
   private var termAgreement: [Int] = []
-  private var gender: GenderType? = nil
-  private var birth: Int? = nil
+  private var gender: GenderType?
+  private var birth: Int?
 
   init() {}
 

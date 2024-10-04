@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 6/6/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import CommonExtension
 import ComposableArchitecture
 import Designsystem
 import FeatureAction
@@ -15,15 +16,15 @@ import SSNotification
 import SSPersistancy
 
 @Reducer
-struct OnboardingLogin {
+struct OnboardingLogin: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var helper: OnboardingLoginHelper = .init()
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -31,38 +32,38 @@ struct OnboardingLogin {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedKakaoLoginButton
     case successAppleLogin
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case showPieChart
     case showPercentageAndPriceText
     case navigateTermsView
     case initSignUpBodyPropertyInSharedStateContainer(LoginType)
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case loginWithKakaoTalk
     case checkIsNewUser(loginType: LoginType, token: String?)
     case loginWithSUSU(loginType: LoginType, token: String)
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable, Sendable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  private enum CancelID {
+  private enum CancelID: Sendable {
     case KakaoLogin
     case AppleLogin
   }
 
   @Dependency(\.onBoardingLoginNetwork) var network
   @Dependency(\.loginTokenManager) var persistence
-
+  @Dependency(\.mainQueue) var mainQueue
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -83,12 +84,12 @@ struct OnboardingLogin {
 
       case .view(.tappedKakaoLoginButton):
         return .send(.async(.loginWithKakaoTalk))
-          .throttle(id: CancelID.KakaoLogin, for: .seconds(4), scheduler: RunLoop.main, latest: false)
+          .throttle(id: CancelID.KakaoLogin, for: .seconds(4), scheduler: mainQueue, latest: false)
 
       case .view(.successAppleLogin):
         let appleToken = persistence.getToken(.APPLE)
         return .send(.async(.checkIsNewUser(loginType: .APPLE, token: appleToken)))
-          .throttle(id: CancelID.AppleLogin, for: .seconds(4), scheduler: RunLoop.main, latest: false)
+          .throttle(id: CancelID.AppleLogin, for: .seconds(4), scheduler: mainQueue, latest: false)
 
       case .async(.loginWithKakaoTalk):
         return .ssRun(priority: .high) { send in

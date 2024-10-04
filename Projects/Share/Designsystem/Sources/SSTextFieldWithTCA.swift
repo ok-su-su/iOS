@@ -106,18 +106,18 @@ public struct SSTextFieldReducerProperty: Equatable, Sendable {
 // MARK: - SSTextFieldReducer
 
 @Reducer
-public struct SSTextFieldReducer {
+public struct SSTextFieldReducer: Sendable {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Sendable {
     @Shared var property: SSTextFieldReducerProperty
     public init(property: Shared<SSTextFieldReducerProperty>) {
       _property = property
     }
   }
 
-  public enum Action: Equatable {
+  public enum Action: Equatable, Sendable {
     case changeTextField(String)
     case tappedCloseButton
     case checkValidation

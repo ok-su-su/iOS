@@ -10,7 +10,7 @@ import FeatureAction
 import Foundation
 
 @Reducer
-struct OnboardingVote {
+struct OnboardingVote: Sendable {
   @ObservableState
   struct State: Equatable {
     var isOnAppear = false
@@ -20,7 +20,7 @@ struct OnboardingVote {
     init() {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -28,25 +28,25 @@ struct OnboardingVote {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedButtonItem(OnboardingVoteItem)
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case updateVoteItems([OnboardingVoteItem])
 
     case saveVote
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getVoteItems
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable, Sendable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   enum CancelID {
     case getOnboardingVoteItems

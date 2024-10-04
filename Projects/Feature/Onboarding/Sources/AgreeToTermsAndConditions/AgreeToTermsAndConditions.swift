@@ -12,21 +12,22 @@ import Foundation
 import OSLog
 
 @Reducer
-struct AgreeToTermsAndConditions {
+struct AgreeToTermsAndConditions: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isLoading = true
     var isOnAppear = false
     var viewDidLoad: Bool = false
     var header = HeaderViewFeature.State(.init(title: "약관 동의", type: .depth2NonIconType))
     var helper: AgreeToTermsAndConditionsHelper
-    let networkHelper = AgreeToTermsAndConditionsNetworkHelper()
     init() {
       helper = .init()
     }
   }
 
-  enum Action: Equatable, FeatureAction {
+  @Dependency(\.agreeToTermsAndConditionsNetwork) var network
+
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -34,7 +35,7 @@ struct AgreeToTermsAndConditions {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case viewDidLoad(Bool)
     case onAppear(Bool)
     case tappedTermDetailButton(TermItem)
@@ -43,24 +44,24 @@ struct AgreeToTermsAndConditions {
     case tappedNextScreenButton
   }
 
-  enum InnerAction: Equatable {
+  enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
     case showTermItems([TermItem])
     case showDetailTerms(id: Int, description: String)
     case setSignUpBodyAtSharedStateContainer
   }
 
-  enum AsyncAction: Equatable {
+  enum AsyncAction: Equatable, Sendable {
     case getRequestTermsInformation
     case getRequestTermsInformationDetail(id: Int)
   }
 
   @CasePathable
-  enum ScopeAction: Equatable {
+  enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
   }
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -102,16 +103,16 @@ struct AgreeToTermsAndConditions {
           return .none
         }
 
-        return .ssRun { [helper = state.networkHelper, item] send in
-          let description = try await helper.requestTermsInformationDetail(id: item.id).description
+        return .ssRun { [item] send in
+          let description = try await network.requestTermsInformationDetail(item.id).description
           await send(.inner(.showDetailTerms(id: id, description: description)))
         }
 
       case .async(.getRequestTermsInformation):
-        return .ssRun(priority: .high) { [helper = state.networkHelper] send in
+        return .ssRun(priority: .high) { send in
           await send(.inner(.isLoading(true)))
           do {
-            let dto = try await helper.requestTermsInformation()
+            let dto = try await network.requestTermsInformation()
             await send(.inner(.showTermItems(.makeBy(dto: dto))))
           }
           await send(.inner(.isLoading(false)))

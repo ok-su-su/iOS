@@ -16,7 +16,7 @@ import SSNetwork
 
 // MARK: - OnBoardingAdditionalNetwork
 
-struct OnBoardingAdditionalNetwork {
+struct OnBoardingAdditionalNetwork: Sendable {
   enum Network: SSNetworkTargetType {
     case signupByKakao(SingUpBodyDTOData: Data, token: String)
     case signupByApple(SingUpBodyDTOData: Data, token: String)
@@ -55,7 +55,7 @@ struct OnBoardingAdditionalNetwork {
     }
   }
 
-  private static let provider: MoyaProvider<Network> = .init()
+  private nonisolated(unsafe) static let provider: MoyaProvider<Network> = .init()
 
   var requestSignUp: @Sendable (_ body: SignUpBodyProperty) async throws -> SignUpResponseDTO
   @Sendable private static func _requestSignUp(_ body: SignUpBodyProperty) async throws -> SignUpResponseDTO {
@@ -93,7 +93,7 @@ struct OnBoardingAdditionalNetwork {
 // MARK: DependencyKey
 
 extension OnBoardingAdditionalNetwork: DependencyKey {
-  static var liveValue: OnBoardingAdditionalNetwork = .init(
+  static let liveValue: OnBoardingAdditionalNetwork = .init(
     requestSignUp: _requestSignUp,
     requestUserID: _requestUserID
   )

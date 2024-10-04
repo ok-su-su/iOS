@@ -11,22 +11,22 @@ import Foundation
 // MARK: - OnboardingRouter
 
 @Reducer
-struct OnboardingRouter {
+struct OnboardingRouter: Sendable {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
     var path: StackState<OnboardingRouterPath.State> = .init([])
     var helper: OnboardingRouterProperty = .init()
     init() {}
   }
 
-  enum Action: Equatable {
+  enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case path(StackActionOf<OnboardingRouterPath>)
     case pushPath(OnboardingRouterPath.State)
   }
 
-  enum CancelID {
+  enum CancelID: Sendable {
     case observePush
   }
 
@@ -36,9 +36,7 @@ struct OnboardingRouter {
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         if state.path.isEmpty {
-          // 반드시 제거할 것
           state.path.append(.vote(.init()))
-//          state.path.append(state.helper.isInitialUser() ? .vote(.init()) : .login(.init()))
         }
         return .publisher {
           OnboardingRouterPublisher
@@ -59,18 +57,6 @@ struct OnboardingRouter {
     }
     .addFeatures0()
   }
-}
-
-// MARK: - OnboardingRouterPath
-
-@Reducer(state: .equatable, action: .equatable)
-enum OnboardingRouterPath {
-  case vote(OnboardingVote)
-  case login(OnboardingLogin)
-  case terms(AgreeToTermsAndConditions)
-  case termDetail(TermsAndConditionDetail)
-  case registerName(OnboardingRegisterName)
-  case additional(OnboardingAdditional)
 }
 
 extension Reducer where State == OnboardingRouter.State, Action == OnboardingRouter.Action {
