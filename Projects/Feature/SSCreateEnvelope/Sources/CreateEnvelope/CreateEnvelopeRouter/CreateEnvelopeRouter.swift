@@ -14,7 +14,7 @@ import SSFirebase
 // MARK: - CreateEnvelopeRouter
 
 @Reducer
-struct CreateEnvelopeRouter: @unchecked Sendable {
+struct CreateEnvelopeRouter: Sendable {
   @Dependency(\.createEnvelopeNetwork) var network
 
   @ObservableState
