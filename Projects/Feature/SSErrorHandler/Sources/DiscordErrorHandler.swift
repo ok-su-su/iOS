@@ -13,14 +13,14 @@ import SSNotification
 
 // MARK: - DiscordErrorHandler
 
-public final class DiscordErrorHandler: @unchecked Sendable {
-  public static let shared = DiscordErrorHandler()
+public final class DiscordErrorHandler {
+  public nonisolated(unsafe) static let shared = DiscordErrorHandler()
   var subscription: AnyCancellable?
   private init() {}
 
   public func registerDiscordLogSystem() {
     subscription = NotificationCenter.default.publisher(for: SSNotificationName.logError)
-      .sink { @Sendable errorObjectOutput in
+      .sink { errorObjectOutput in
         let errorObject = errorObjectOutput.object as? String
         Self.sendErrorToDiscord(errorMessage: errorObject)
       }
