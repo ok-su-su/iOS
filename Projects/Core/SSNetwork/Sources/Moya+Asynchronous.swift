@@ -48,14 +48,13 @@ public extension MoyaProvider {
           if 200 ..< 300 ~= response.statusCode {
             guard let res = try? JSONDecoder.default.decode(T.self, from: response.data) else {
               let data = String(data: response.data, encoding: .utf8) ?? ""
-              os_log("JSON mapping error occurred \n \(data)")
               continuation.resume(throwing: MoyaError.jsonMapping(response))
               return
             }
             continuation.resume(returning: res)
             return
           }
-          continuation.resume(with: .failure(MoyaError.statusCode(response)))
+          continuation.resume(throwing: SUSUError(error: MoyaError.statusCode(response), response: response))
 
         case let .failure(error):
           if let errorDescription = error.errorDescription {
@@ -65,11 +64,11 @@ public extension MoyaProvider {
           switch error {
           case let .statusCode(response):
             let requestData = String(data: response.request?.httpBody, encoding: .utf8)
-            willSendError = SUSUError(error: error, response: response, requestData: requestData)
+            willSendError = SUSUError(error: error, response: response)
 
           case let .underlying(error, response):
             let requestData = String(data: response?.request?.httpBody, encoding: .utf8)
-            willSendError = SUSUError(error: error, response: response, requestData: requestData)
+            willSendError = SUSUError(error: error, response: response)
 
           default:
             willSendError = error
@@ -126,14 +125,23 @@ public extension MoyaProvider {
 // MARK: - SUSUError
 
 public struct SUSUError<E: Error>: LocalizedError {
+  public var errorDescription: String?
   let error: E
   let response: Moya.Response?
+  let errorResponseMessage: String?
+  let statusCode: Int?
   let requestData: String?
+  let urlString: String?
+  let httpMethod: String?
 
-  public init(error: E, response: Moya.Response?, requestData: String?) {
+  public init(error: E, response: Moya.Response?) {
     self.error = error
     self.response = response
-    self.requestData = requestData
+    requestData = String(data: response?.request?.httpBody, encoding: .utf8)
+    statusCode = response?.statusCode
+    urlString = response?.request?.url?.absoluteString
+    httpMethod = response?.request?.method?.rawValue
+    errorResponseMessage = String(data: response?.data, encoding: .utf8)
   }
 }
 

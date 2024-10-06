@@ -117,7 +117,7 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
       return .ssRun { send in
         guard let property else {
           let errorMessage = "envelopeDetailProperty가 생성되지 않은 상태에서 edit화면으로 이동하려고 합니다."
-          throw SUSUError(error: NSError(), response: nil, requestData: errorMessage)
+          throw SUSUError(error: NSError(), response: nil)
         }
         await send(.delegate(.tappedEnvelopeEditButton(property)))
       }

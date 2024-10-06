@@ -22,7 +22,7 @@ public extension Effect {
     column: UInt = #column
   ) -> Self {
     // Show Default Network Alert
-    let defaultErrorHandler: (@Sendable (_ error: Error, _ send: Send<Action>) async -> Void) = { _, _ in
+    let defaultErrorHandler: @Sendable (_ error: Error, _ send: Send<Action>) async -> Void = { _, _ in
       NotificationCenter.default.post(name: SSNotificationName.showDefaultNetworkErrorAlert, object: nil)
     }
     return .run(priority: priority, operation: operation) { error, send in
