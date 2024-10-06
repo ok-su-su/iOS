@@ -134,11 +134,10 @@ public struct SUSUError<E: Error>: LocalizedError {
   let urlString: String?
   let httpMethod: String?
 
-
   public init(error: E, response: Moya.Response?) {
     self.error = error
     self.response = response
-    self.requestData = String(data: response?.request?.httpBody, encoding: .utf8)
+    requestData = String(data: response?.request?.httpBody, encoding: .utf8)
     statusCode = response?.statusCode
     urlString = response?.request?.url?.absoluteString
     httpMethod = response?.request?.method?.rawValue
