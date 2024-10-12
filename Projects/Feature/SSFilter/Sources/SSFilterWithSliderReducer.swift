@@ -20,9 +20,11 @@ public struct SSFilterWithSliderReducer: Sendable {
   @ObservableState
   public struct State: Equatable, Sendable {
     var isOnAppear: Bool = false
+    var titleLabel: String
     @Shared var sliderProperty: SliderFilterProperty
-    init() {
+    init(titleLabel: String) {
       _sliderProperty = .init(.init())
+      self.titleLabel = titleLabel
     }
   }
 
@@ -34,6 +36,7 @@ public struct SSFilterWithSliderReducer: Sendable {
   public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case updateSliderProperty
+    case resetSliderProperty
   }
 
   public enum DelegateAction: Equatable, Sendable {
@@ -59,14 +62,17 @@ public struct SSFilterWithSliderReducer: Sendable {
     case .updateSliderProperty:
       state.sliderProperty.updateSliderValueProperty()
       return .none
+    case .resetSliderProperty:
+      state.sliderProperty.reset()
+      return .none
     }
   }
 
   public var body: some ReducerOf<Self> {
-    Reduce { _, action in
+    Reduce { state, action in
       switch action {
       case let .view(currentAction):
-        return .none
+        return viewAction(&state, currentAction)
       case let .delegate(currentAction):
         return .none
       }
@@ -77,7 +83,7 @@ public struct SSFilterWithSliderReducer: Sendable {
 // MARK: - SliderFilterProperty
 
 struct SliderFilterProperty: Equatable, Sendable {
-  private var sliderProperty = CustomSlider()
+  var sliderProperty = CustomSlider()
   private var lowestAmount: Int64? = nil
   private var highestAmount: Int64? = nil
   private var sliderEndValue: Int64 = 0
@@ -113,5 +119,9 @@ struct SliderFilterProperty: Equatable, Sendable {
   mutating func updateSliderValueProperty() {
     minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
     maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
+  }
+
+  mutating func reset() {
+    sliderProperty.reset()
   }
 }

@@ -6,6 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 import ComposableArchitecture
+import Designsystem
 import FeatureAction
 import Foundation
 import SSBottomSelectSheet
@@ -19,11 +20,24 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     var isOnAppear = false
     var isLoading: Bool = true
     var textFieldText: String = ""
+
+    var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
+
     var ssFilterItemHelper: SSFilterItemHelper<Item> = .init(selectableItems: [], selectedItems: [])
     var dateReducer: SSFilterWithDateReducer.State? = nil
     var sliderReducer: SSFilterWithSliderReducer.State? = nil
+    var isSearchSection: Bool
     let type: InitialType
-    init(type: InitialType) {
+
+    var filterByTextField: [Item] {
+      guard let regex: Regex = try? .init("[\\w\\p{L}]*\(textFieldText)[\\w\\p{L}]*") else {
+        return []
+      }
+      return ssFilterItemHelper.selectableItems.filter { $0.title.contains(regex) }
+    }
+
+    init(type: InitialType, isSearchSection: Bool) {
+      self.isSearchSection = isSearchSection
       self.type = type
       switch type {
       case .withDate:
@@ -47,6 +61,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     case delegate(DelegateAction)
   }
 
+  @CasePathable
   public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
     case tappedItem(Item)
@@ -125,9 +140,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
       return .none
 
     case .tappedConfirmButton:
-      let selectedItems = state.ssFilterItemHelper.selectedItems
-
-      return .none
+      return confirmButtonAction(&state)
 
     case .reset:
       state.ssFilterItemHelper.reset()
@@ -162,6 +175,9 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     }
     .ifLet(\.dateReducer, action: \.scope.dateReducer) {
       SSFilterWithDateReducer()
+    }
+    .ifLet(\.sliderReducer, action: \.scope.sliderReducer) {
+      SSFilterWithSliderReducer()
     }
   }
 }

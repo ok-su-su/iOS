@@ -17,9 +17,6 @@ struct LedgerDetailFilterView: View {
   @Bindable
   var store: StoreOf<LedgerDetailFilter>
 
-  @State
-  var showSelectedSliderButton: Bool = false
-
   // MARK: Init
 
   init(store: StoreOf<LedgerDetailFilter>) {
@@ -84,7 +81,8 @@ struct LedgerDetailFilterView: View {
     }
   }
 
-  @ViewBuilder func makeTopNotFilteredTItems() -> some View {
+  @ViewBuilder
+  func makeTopNotFilteredTItems() -> some View {
     ForEach(store.property.selectableItems.prefix(20)) { item in
       let isSelected = store.property.isSelectedItems(id: item.id)
       SSButton(
