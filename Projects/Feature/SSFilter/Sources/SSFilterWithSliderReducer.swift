@@ -16,9 +16,9 @@ import SSLayout
 // MARK: - SSFilterWithSliderReducer
 
 @Reducer
-struct SSFilterWithSliderReducer: Sendable {
+public struct SSFilterWithSliderReducer: Sendable {
   @ObservableState
-  struct State: Equatable, Sendable {
+  public struct State: Equatable, Sendable {
     var isOnAppear: Bool = false
     @Shared var sliderProperty: SliderFilterProperty
     init() {
@@ -26,21 +26,21 @@ struct SSFilterWithSliderReducer: Sendable {
     }
   }
 
-  enum Action {
+  public enum Action: Equatable, Sendable {
     case view(ViewAction)
     case delegate(DelegateAction)
   }
 
-  enum ViewAction {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
   }
 
-  enum DelegateAction {
+  public enum DelegateAction: Equatable, Sendable {
     case updateHighestAmount(Int64)
     case updateLowestAmount(Int64)
   }
 
-  func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
+  private func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(val):
       if state.isOnAppear {
@@ -51,7 +51,7 @@ struct SSFilterWithSliderReducer: Sendable {
     }
   }
 
-  var body: some ReducerOf<Self> {
+  public var body: some ReducerOf<Self> {
     Reduce { _, action in
       switch action {
       case let .view(currentAction):

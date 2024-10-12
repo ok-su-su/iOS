@@ -21,6 +21,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     var textFieldText: String = ""
     var ssFilterItemHelper: SSFilterItemHelper<Item> = .init(selectableItems: [], selectedItems: [])
     var dateReducer: SSFilterWithDateReducer.State? = nil
+    var sliderReducer: SSFilterWithSliderReducer.State? = nil
     let type: InitialType
     init(type: InitialType) {
       self.type = type
@@ -65,6 +66,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
   @CasePathable
   public enum ScopeAction: Equatable, Sendable {
     case dateReducer(SSFilterWithDateReducer.Action)
+    case sliderReducer(SSFilterWithSliderReducer.Action)
   }
 
   public enum DelegateAction: Equatable, Sendable {
@@ -87,12 +89,14 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
         )
       )
     case .withSlide:
+      let sliderProperty = state.sliderReducer?.sliderProperty
+      let isInitialStateOfSlider = sliderProperty?.isInitialState
       return .send(
         .delegate(
           .tappedConfirmButtonWithSliderProperty(
             selectedItems: selectedItems,
-            minimumValue: <#T##Int64#>,
-            maximumValue: <#T##Int64#>
+            minimumValue: isInitialStateOfSlider == true ? nil : sliderProperty?.minimumTextValue,
+            maximumValue: isInitialStateOfSlider == true ? nil : sliderProperty?.maximumTextValue
           )
         )
       )
