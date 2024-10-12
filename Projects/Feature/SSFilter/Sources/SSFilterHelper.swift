@@ -9,11 +9,11 @@
 import Foundation
 import CommonExtension
 import SSLayout
+import Combine
 
 public struct SSFilterItemHelper<Item: SSFilterItemable>: Equatable, Sendable {
   var selectableItems: [Item]
   var selectedItems: [Item]
-
 
   mutating func select(_ id: Int) {
     // 이미 선택되었다면 제거
@@ -27,24 +27,56 @@ public struct SSFilterItemHelper<Item: SSFilterItemable>: Equatable, Sendable {
       selectedItems.append(ledger)
     }
   }
+
+  mutating func reset() {
+    selectedItems = []
+  }
 }
 
-public struct SSFilterSliderProperty: Equatable, Sendable {
+public struct SSFilterWithSliderProperty: Equatable, Sendable {
   var sliderProperty: CustomSlider = .init()
+
+  var sliderStartValue: Int64 = 0
+  var sliderEndValue: Int64 = 0
+
   var minimumTextValue: Int64 = 0
   var maximumTextValue: Int64 = 0
+
   var minimumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(minimumTextValue) ?? "0" }
   var maximumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(maximumTextValue) ?? "0" }
+  var sliderRangeText: String {
+    "\(minimumTextValueString)원 ~ \(maximumTextValueString)원"
+  }
+  var isInitialState: Bool {
+    return minimumTextValue == 0 && maximumTextValue == sliderEndValue
+  }
+
+  mutating func updateSliderValueProperty() {
+    minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
+    maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
+  }
+
+  var sliderPropertyWillChange: AnyPublisher<Void, Never> {
+    sliderProperty.objectWillChange.eraseToAnyPublisher()
+  }
+
+  var sliderPropertyTapped: AnyPublisher<Void, Never> {
+    sliderProperty.tapPublisher.eraseToAnyPublisher()
+  }
+
+  func reset() {
+    sliderProperty.reset()
+  }
 }
 
 
 
-public struct SSFilterWithDateHelper: Equatable, Sendable {
+struct SSFilterWithDateHelper: Equatable, Sendable {
+  init() {}
   var isInitialStateOfStartDate: Bool = true
   var startDate: Date = .now
   var isInitialStateOfEndDate: Bool = true
   var endDate: Date = .now
-
 
 
   var selectedFilterDateTextString: String? {

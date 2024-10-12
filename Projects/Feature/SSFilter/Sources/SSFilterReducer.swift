@@ -8,19 +8,38 @@
 import Foundation
 import ComposableArchitecture
 import FeatureAction
+import SSBottomSelectSheet
 
 @Reducer
-struct SSFilterReducer: Sendable {
+public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
+
+  public init() {}
 
   @ObservableState
-  struct State: Equatable, Sendable {
+  public struct State: Equatable, Sendable {
     var isOnAppear = false
     var isLoading: Bool = true
-    @Shared var property:
-    init () {}
+    var textFieldText: String = ""
+    var ssFilterItemHelper: SSFilterItemHelper<Item> = .init(selectableItems: [], selectedItems: [])
+    var dateReducer: SSFilterWithDateReducer.State? = nil
+    let type: InitialType
+    init(type: InitialType) {
+      self.type = type
+      switch type {
+      case .withDate:
+        dateReducer = .init()
+      case .withSlide:
+        break
+      }
+    }
+
+    enum InitialType {
+      case withDate
+      case withSlide
+    }
   }
 
-  enum Action: Equatable, FeatureAction, Sendable {
+  public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -28,20 +47,61 @@ struct SSFilterReducer: Sendable {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable, Sendable {
+  public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
+    case tappedItem(Item)
+    case changeTextField(String)
+    case closeButtonTapped
+    case tappedConfirmButton
+    case reset
   }
 
-  enum InnerAction: Equatable, Sendable {}
+  public enum InnerAction: Equatable, Sendable {
+    case updateItems([Item])
+    case isLoading(Bool)
+  }
 
-  enum AsyncAction: Equatable, Sendable {}
+  public enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable, Sendable {}
+  public enum ScopeAction: Equatable, Sendable {
+    case dateReducer(SSFilterWithDateReducer.Action)
+  }
 
-  enum DelegateAction: Equatable, Sendable {}
+  public enum DelegateAction: Equatable, Sendable {
+    case tappedConfirmButtonWithSliderProperty(selectedItems: [Item], minimumValue: Int64?, maximumValue: Int64?)
+    case tappedConfirmButtonWithDateProperty(selectedItems: [Item], startDate: Date?, endDate: Date?)
+  }
 
-  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>{
+  private func confirmButtonAction(_ state: inout State)  -> Effect<Action> {
+    let selectedItems = state.ssFilterItemHelper.selectedItems
+    switch state.type {
+    case .withDate:
+      let dateProperty = state.dateReducer?.dateProperty
+      return .send(
+        .delegate(
+          .tappedConfirmButtonWithDateProperty(
+            selectedItems: selectedItems,
+            startDate: dateProperty?.isInitialStateOfStartDate == true ? nil : dateProperty?.startDate,
+            endDate: dateProperty?.isInitialStateOfEndDate == true ? nil : dateProperty?.endDate
+          )
+        )
+      )
+    case .withSlide:
+      return .send(
+        .delegate(
+          .tappedConfirmButtonWithSliderProperty(
+            selectedItems: selectedItems,
+            minimumValue: <#T##Int64#>,
+            maximumValue: <#T##Int64#>
+          )
+        )
+      )
+    }
+  }
+
+
+  public func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>{
     switch action {
     case let .onAppear(isAppear) :
       if state.isOnAppear {
@@ -49,17 +109,59 @@ struct SSFilterReducer: Sendable {
       }
       state.isOnAppear = isAppear
       return .none
+
+    case let .tappedItem(item):
+      state.ssFilterItemHelper.select(item.id)
+      return .none
+
+    case let .changeTextField(text):
+      state.textFieldText = text
+      return .none
+
+    case .closeButtonTapped:
+      state.textFieldText = ""
+      return .none
+
+    case .tappedConfirmButton:
+      let selectedItems = state.ssFilterItemHelper.selectedItems
+
+      return .none
+
+    case .reset:
+      state.ssFilterItemHelper.reset()
+      return .none
     }
   }
 
-  var body: some Reducer<State, Action> {
+  func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
+    switch action {
+    case let .updateItems(item):
+      state.ssFilterItemHelper.selectableItems = item
+      return .none
+
+    case let .isLoading(val):
+      state.isLoading = val
+      return .none
+    }
+  }
+
+
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
+      case .scope:
+        return .none
+      case .delegate:
+        return .none
       }
+    }
+    .ifLet(\.dateReducer, action: \.scope.dateReducer) {
+      SSFilterWithDateReducer()
     }
   }
 }
 
-extension Reducer where Self.State == SSFilterReducer.State, Self.Action == SSFilterReducer.Action { }
