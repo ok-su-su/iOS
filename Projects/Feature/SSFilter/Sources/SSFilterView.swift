@@ -1,31 +1,31 @@
-// 
+//
 //  SSFilterView.swift
 //  SSfilter
 //
 //  Created by MaraMincho on 10/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import SwiftUI
 import ComposableArchitecture
 import Designsystem
+import SwiftUI
 
 struct SSFilterView: View {
-
   // MARK: Reducer
+
   @Bindable
   var store: StoreOf<SSFilterReducer>
 
-  //MARK: Init
+  // MARK: Init
+
   init(store: StoreOf<SSFilterReducer>) {
     self.store = store
   }
 
   // MARK: Content
+
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      
-    }
+    VStack(spacing: 0) {}
   }
 
   var body: some View {
@@ -38,16 +38,12 @@ struct SSFilterView: View {
       }
     }
     .navigationBarBackButtonHidden()
-    .onAppear{
+    .onAppear {
       store.send(.view(.onAppear(true)))
     }
   }
 
-  private enum Metrics {
+  private enum Metrics {}
 
-  }
-  
-  private enum Constants {
-    
-  }
+  private enum Constants {}
 }

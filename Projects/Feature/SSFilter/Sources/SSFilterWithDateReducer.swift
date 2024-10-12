@@ -6,14 +6,13 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
 import FeatureAction
+import Foundation
 import SSBottomSelectSheet
 
 @Reducer
 public struct SSFilterWithDateReducer: Sendable {
-
   public init() {}
 
   @ObservableState
@@ -44,8 +43,7 @@ public struct SSFilterWithDateReducer: Sendable {
     case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
   }
 
-
-  public func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action>{
+  public func viewAction(_ state: inout State, _ action: ViewAction) -> Effect<Action> {
     switch action {
     case .tappedLeftDateButton:
       // 만약 endDate를 골랐을 경우
@@ -66,7 +64,7 @@ public struct SSFilterWithDateReducer: Sendable {
       )
       return .none
 
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -76,10 +74,8 @@ public struct SSFilterWithDateReducer: Sendable {
     case .tappedResetButton:
       state.dateProperty.resetDate()
       return .none
-
     }
   }
-
 
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
@@ -92,4 +88,3 @@ public struct SSFilterWithDateReducer: Sendable {
     }
   }
 }
-

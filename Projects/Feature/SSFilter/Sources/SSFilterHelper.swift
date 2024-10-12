@@ -1,15 +1,17 @@
 //
-//  SSFilterHElper.swift
+//  SSFilterHelper.swift
 //  SSFilter
 //
 //  Created by MaraMincho on 10/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-import Foundation
-import CommonExtension
-import SSLayout
 import Combine
+import CommonExtension
+import Foundation
+import SSLayout
+
+// MARK: - SSFilterItemHelper
 
 public struct SSFilterItemHelper<Item: SSFilterItemable>: Equatable, Sendable {
   var selectableItems: [Item]
@@ -33,6 +35,8 @@ public struct SSFilterItemHelper<Item: SSFilterItemable>: Equatable, Sendable {
   }
 }
 
+// MARK: - SSFilterWithSliderProperty
+
 public struct SSFilterWithSliderProperty: Equatable, Sendable {
   var sliderProperty: CustomSlider = .init()
 
@@ -47,6 +51,7 @@ public struct SSFilterWithSliderProperty: Equatable, Sendable {
   var sliderRangeText: String {
     "\(minimumTextValueString)원 ~ \(maximumTextValueString)원"
   }
+
   var isInitialState: Bool {
     return minimumTextValue == 0 && maximumTextValue == sliderEndValue
   }
@@ -69,7 +74,7 @@ public struct SSFilterWithSliderProperty: Equatable, Sendable {
   }
 }
 
-
+// MARK: - SSFilterWithDateHelper
 
 struct SSFilterWithDateHelper: Equatable, Sendable {
   init() {}
@@ -77,7 +82,6 @@ struct SSFilterWithDateHelper: Equatable, Sendable {
   var startDate: Date = .now
   var isInitialStateOfEndDate: Bool = true
   var endDate: Date = .now
-
 
   var selectedFilterDateTextString: String? {
     if isInitialStateOfStartDate {
@@ -110,10 +114,11 @@ struct SSFilterWithDateHelper: Equatable, Sendable {
   mutating func setInitialState() {
     resetDate()
   }
-
 }
 
-public protocol SSFilterItemable: Equatable, Sendable, Identifiable where ID == Int{
+// MARK: - SSFilterItemable
+
+public protocol SSFilterItemable: Equatable, Sendable, Identifiable where ID == Int {
   var id: Int { get }
   var title: String { get set }
 }

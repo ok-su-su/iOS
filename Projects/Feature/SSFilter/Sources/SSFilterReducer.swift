@@ -1,18 +1,17 @@
-// 
+//
 //  SSFilter.swift
 //  SSfilter
 //
 //  Created by MaraMincho on 10/12/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
-import Foundation
 import ComposableArchitecture
 import FeatureAction
+import Foundation
 import SSBottomSelectSheet
 
 @Reducer
 public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
-
   public init() {}
 
   @ObservableState
@@ -73,7 +72,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     case tappedConfirmButtonWithDateProperty(selectedItems: [Item], startDate: Date?, endDate: Date?)
   }
 
-  private func confirmButtonAction(_ state: inout State)  -> Effect<Action> {
+  private func confirmButtonAction(_ state: inout State) -> Effect<Action> {
     let selectedItems = state.ssFilterItemHelper.selectedItems
     switch state.type {
     case .withDate:
@@ -100,10 +99,9 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     }
   }
 
-
-  public func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>{
+  public func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
-    case let .onAppear(isAppear) :
+    case let .onAppear(isAppear):
       if state.isOnAppear {
         return .none
       }
@@ -145,7 +143,6 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     }
   }
 
-
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
@@ -164,4 +161,3 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     }
   }
 }
-
