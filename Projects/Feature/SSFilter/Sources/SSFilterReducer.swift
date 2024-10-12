@@ -10,15 +10,17 @@ import ComposableArchitecture
 import FeatureAction
 
 @Reducer
-struct SSFilterReducer {
+struct SSFilterReducer: Sendable {
 
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     var isOnAppear = false
+    var isLoading: Bool = true
+    @Shared var property:
     init () {}
   }
 
-  enum Action: Equatable, FeatureAction {
+  enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
     case async(AsyncAction)
@@ -26,20 +28,20 @@ struct SSFilterReducer {
     case delegate(DelegateAction)
   }
 
-  enum ViewAction: Equatable {
+  enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable, Sendable {}
 
-  enum AsyncAction: Equatable {}
+  enum AsyncAction: Equatable, Sendable {}
 
   @CasePathable
-  enum ScopeAction: Equatable {}
+  enum ScopeAction: Equatable, Sendable {}
 
-  enum DelegateAction: Equatable {}
+  enum DelegateAction: Equatable, Sendable {}
 
-  var viewAction: (_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> = { state, action in
+  func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action>{
     switch action {
     case let .onAppear(isAppear) :
       if state.isOnAppear {
@@ -50,38 +52,14 @@ struct SSFilterReducer {
     }
   }
 
-  var scopeAction: (_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> = { state, action in
-    return .none
-  }
-
-  var innerAction: (_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> = { state, action in
-    return .none
-  }
-
-  var asyncAction: (_ state: inout State, _ action: Action.AsyncAction) -> Effect<Action> = { state, action in
-    return .none
-  }
-
-  var delegateAction: (_ state: inout State, _ action: Action.DelegateAction) -> Effect<Action> = { state, action in
-    return .none
-  }
-
   var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
-      case let .inner(currentAction):
-        return innerAction(&state, currentAction)
-      case let .async(currentAction):
-        return asyncAction(&state, currentAction)
-      case let .scope(currentAction) :
-        return scopeAction(&state, currentAction)
-      case let .delegate(currentAction) :
-        return delegateAction(&state, currentAction)
       }
     }
   }
 }
 
-extension Reducer where Self.State == SSFilter.State, Self.Action == SSFilter.Action { }
+extension Reducer where Self.State == SSFilterReducer.State, Self.Action == SSFilterReducer.Action { }
