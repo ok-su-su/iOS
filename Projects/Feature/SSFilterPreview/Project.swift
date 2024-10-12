@@ -3,13 +3,13 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "SSfilterPreview",
+  name: "SSFilterPreview",
   targets: .app(
-    name: "SSfilterPreview",
+    name: "SSFilterPreview",
     testingOptions: [
     ],
     dependencies: [
-      .feature(.sSfilter),
+      .feature(.sSFilter),
     ]
   )
 )

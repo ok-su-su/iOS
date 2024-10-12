@@ -3,11 +3,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "SSfilter",
+  name: "SSFilter",
   targets: .feature(
-    .sSfilter,
+    .sSFilter,
     testingOptions: [.unitTest],
-    dependencies: [],
+    dependencies: [
+      .share(.shareLayer),
+      .core(.coreLayers),
+    ],
     testDependencies: []
   )
 )
