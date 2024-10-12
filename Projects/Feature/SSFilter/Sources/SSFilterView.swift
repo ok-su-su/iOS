@@ -10,7 +10,7 @@ import Designsystem
 import SSLayout
 import SwiftUI
 
-struct SSFilterView<Item: SSFilterItemable>: View {
+public struct SSFilterView<Item: SSFilterItemable>: View {
   // MARK: Reducer
 
   @Bindable
@@ -20,7 +20,7 @@ struct SSFilterView<Item: SSFilterItemable>: View {
 
   // MARK: Init
 
-  init(
+  public init(
     store: StoreOf<SSFilterReducer<Item>>,
     topSectionTitle: String,
     textFieldPrompt: String
@@ -55,9 +55,13 @@ struct SSFilterView<Item: SSFilterItemable>: View {
         Spacer()
           .frame(width: 8)
 
-        TextField("", text: $store.textFieldText.sending(\.view.changeTextField), prompt: Text(textFieldPrompt))
-          .frame(maxWidth: .infinity)
-          .foregroundStyle(SSColor.gray100)
+        TextField(
+          "",
+          text: $store.textFieldText.sending(\.view.changeTextField),
+          prompt: Text(textFieldPrompt).foregroundStyle(SSColor.gray60)
+        )
+        .frame(maxWidth: .infinity)
+        .foregroundStyle(SSColor.gray100)
 
         Spacer()
           .frame(width: 8)
@@ -132,9 +136,10 @@ struct SSFilterView<Item: SSFilterItemable>: View {
     switch store.type {
     case .withDate:
       EmptyView()
-    case .withSlide:
+    case .withSlider:
       if let store = store.scope(state: \.sliderReducer, action: \.scope.sliderReducer) {
         SSFilterWithSliderView(store: store)
+          .padding(.horizontal, 16)
       }
     }
   }
@@ -185,7 +190,7 @@ struct SSFilterView<Item: SSFilterItemable>: View {
   @ViewBuilder
   private func makeSliderFilterButton() -> some View {
     if let sliderProperty = store.sliderReducer?.sliderProperty,
-       !sliderProperty.isInitialState {
+       sliderProperty.isInitialState == false {
       SSButton(
         .init(
           size: .xsh28,
@@ -202,30 +207,35 @@ struct SSFilterView<Item: SSFilterItemable>: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    VStack(spacing: 0) {
-      Spacer()
-        .frame(height: 24)
-      makeTopSection()
+    ScrollView(.vertical) {
+      VStack(spacing: 0) {
+        makeTopSection()
 
-      Spacer()
-        .frame(height: 48)
+        Spacer()
+          .frame(height: 48)
 
-      makeMiddleSection()
-
-      makeBottomButtonOfDeselectable()
-      makeBottom()
+        makeMiddleSection()
+      }
     }
+    .safeAreaPadding(.top, 24)
+    .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+    .scrollIndicators(.hidden)
+    .contentShape(Rectangle())
+    .whenTapDismissKeyboard()
   }
 
   @ViewBuilder
   private func makeBottom() -> some View {
-    HStack(spacing: 16) {
-      makeResetButton()
-      makeConfirmButton()
+    VStack(spacing: 0) {
+      makeBottomButtonOfDeselectable()
+      HStack(spacing: 16) {
+        makeResetButton()
+        makeConfirmButton()
+      }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 8)
+      .background(SSColor.gray10)
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 8)
-    .background(SSColor.gray10)
   }
 
   @ViewBuilder
@@ -252,19 +262,15 @@ struct SSFilterView<Item: SSFilterItemable>: View {
     }
   }
 
-  var body: some View {
-    ZStack {
-      SSColor
-        .gray15
-        .ignoresSafeArea()
-      VStack(spacing: 0) {
-        makeContentView()
+  public var body: some View {
+    makeContentView()
+      .navigationBarBackButtonHidden()
+      .onAppear {
+        store.send(.view(.onAppear(true)))
       }
-    }
-    .navigationBarBackButtonHidden()
-    .onAppear {
-      store.send(.view(.onAppear(true)))
-    }
+      .safeAreaInset(edge: .bottom) {
+        makeBottom()
+      }
   }
 
   private enum Metrics {}

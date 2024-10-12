@@ -30,7 +30,7 @@ public struct SSFilterWithSliderReducer: Sendable {
 
   public enum Action: Equatable, Sendable {
     case view(ViewAction)
-    case delegate(DelegateAction)
+    case inner(InnerAction)
   }
 
   public enum ViewAction: Equatable, Sendable {
@@ -39,7 +39,7 @@ public struct SSFilterWithSliderReducer: Sendable {
     case resetSliderProperty
   }
 
-  public enum DelegateAction: Equatable, Sendable {
+  public enum InnerAction: Equatable, Sendable {
     case updateHighestAmount(Int64)
     case updateLowestAmount(Int64)
   }
@@ -68,13 +68,24 @@ public struct SSFilterWithSliderReducer: Sendable {
     }
   }
 
+  private func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
+    switch action {
+    case let .updateHighestAmount(val):
+      state.sliderProperty.maximumTextValue = val
+      return .none
+    case let .updateLowestAmount(val):
+      state.sliderProperty.minimumTextValue = val
+      return .none
+    }
+  }
+
   public var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
-      case let .delegate(currentAction):
-        return .none
+      case let .inner(currentAction):
+        return innerAction(&state, currentAction)
       }
     }
   }
@@ -93,6 +104,11 @@ struct SliderFilterProperty: Equatable, Sendable {
     return sliderProperty
       .objectWillChange
       .eraseToAnyPublisher()
+  }
+
+  public mutating func updateSliderMaximumValue(_ val: Int64) {
+    sliderEndValue = val
+    updateSliderValueProperty()
   }
 
   var sliderUpdatePublisher: AnyPublisher<Void, Never> {
@@ -123,5 +139,6 @@ struct SliderFilterProperty: Equatable, Sendable {
 
   mutating func reset() {
     sliderProperty.reset()
+    updateSliderValueProperty()
   }
 }

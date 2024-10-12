@@ -7,6 +7,7 @@
 //
 import ComposableArchitecture
 import Designsystem
+import SSFilter
 import SSFirebase
 import SSLayout
 import SwiftUI
@@ -196,21 +197,17 @@ struct SentEnvelopeFilterView: View {
       VStack(spacing: 0) {
         HeaderView(store: store.scope(state: \.header, action: \.header))
           .padding(.bottom, 24)
-        ScrollView {
-          makeContentView()
-        }
-        .padding(.horizontal, 16)
-        // 스크롤 할 수 없다면 스크롤 스크롤을 불가하게 만듬
-        .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
-        .scrollIndicators(.hidden)
-        .contentShape(Rectangle())
-        .whenTapDismissKeyboard()
+        SSFilterView(
+          store: store.scope(
+            state: \.filterState,
+            action: \.filterAction
+          ),
+          topSectionTitle: "보낸사람",
+          textFieldPrompt: "보낸사람을검색해보세요"
+        )
       }
     }
     .navigationBarBackButtonHidden()
-    .safeAreaInset(edge: .bottom) {
-      makeBottom()
-    }
     .onAppear {
       store.send(.onAppear(true))
     }

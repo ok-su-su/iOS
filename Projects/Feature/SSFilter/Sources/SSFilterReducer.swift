@@ -21,8 +21,6 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     var isLoading: Bool = true
     var textFieldText: String = ""
 
-    var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default), enableDismissAction: false)
-
     var ssFilterItemHelper: SSFilterItemHelper<Item> = .init(selectableItems: [], selectedItems: [])
     var dateReducer: SSFilterWithDateReducer.State? = nil
     var sliderReducer: SSFilterWithSliderReducer.State? = nil
@@ -36,20 +34,20 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
       return ssFilterItemHelper.selectableItems.filter { $0.title.contains(regex) }
     }
 
-    init(type: InitialType, isSearchSection: Bool) {
+    public init(type: InitialType, isSearchSection: Bool) {
       self.isSearchSection = isSearchSection
       self.type = type
       switch type {
       case .withDate:
         dateReducer = .init()
-      case .withSlide:
-        break
+      case let .withSlider(titleLabel):
+        sliderReducer = .init(titleLabel: titleLabel)
       }
     }
 
-    enum InitialType {
+    public enum InitialType: Sendable, Equatable {
       case withDate
-      case withSlide
+      case withSlider(titleLabel: String)
     }
   }
 
@@ -74,6 +72,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
   public enum InnerAction: Equatable, Sendable {
     case updateItems([Item])
     case isLoading(Bool)
+    case updateSliderMaximumValue(Int64)
   }
 
   public enum AsyncAction: Equatable, Sendable {}
@@ -85,6 +84,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
   }
 
   public enum DelegateAction: Equatable, Sendable {
+    case changeTextField(String)
     case tappedConfirmButtonWithSliderProperty(selectedItems: [Item], minimumValue: Int64?, maximumValue: Int64?)
     case tappedConfirmButtonWithDateProperty(selectedItems: [Item], startDate: Date?, endDate: Date?)
   }
@@ -103,7 +103,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
           )
         )
       )
-    case .withSlide:
+    case .withSlider:
       let sliderProperty = state.sliderReducer?.sliderProperty
       let isInitialStateOfSlider = sliderProperty?.isInitialState
       return .send(
@@ -118,6 +118,17 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     }
   }
 
+  private func onAppearEffect(_ state: State) -> Effect<Action> {
+    let dateReducerAction: Effect<Action> = state.dateReducer == nil ? .none :
+      .send(.scope(.dateReducer(.view(.onAppear(true)))))
+    let sliderReducerAction: Effect<Action> = state.sliderReducer == nil ? .none :
+      .send(.scope(.sliderReducer(.view(.onAppear(true)))))
+    return .merge(
+      dateReducerAction,
+      sliderReducerAction
+    )
+  }
+
   public func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
@@ -125,7 +136,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
         return .none
       }
       state.isOnAppear = isAppear
-      return .none
+      return onAppearEffect(state)
 
     case let .tappedItem(item):
       state.ssFilterItemHelper.select(item.id)
@@ -133,7 +144,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
 
     case let .changeTextField(text):
       state.textFieldText = text
-      return .none
+      return .send(.delegate(.changeTextField(text)))
 
     case .closeButtonTapped:
       state.textFieldText = ""
@@ -144,6 +155,8 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
 
     case .reset:
       state.ssFilterItemHelper.reset()
+      state.dateReducer?.dateProperty.resetDate()
+      state.sliderReducer?.sliderProperty.reset()
       return .none
     }
   }
@@ -151,11 +164,15 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .updateItems(item):
-      state.ssFilterItemHelper.selectableItems = item
+      state.ssFilterItemHelper.selectableItems = (state.ssFilterItemHelper.selectableItems + item).uniqued()
       return .none
 
     case let .isLoading(val):
       state.isLoading = val
+      return .none
+
+    case let .updateSliderMaximumValue(value):
+      state.sliderReducer?.sliderProperty.updateSliderMaximumValue(value)
       return .none
     }
   }

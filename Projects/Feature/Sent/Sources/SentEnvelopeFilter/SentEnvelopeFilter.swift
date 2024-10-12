@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import OSLog
+import SSFilter
 import SSFirebase
 import SSLayout
 import SwiftUI
@@ -32,6 +33,8 @@ struct SentEnvelopeFilter: Sendable {
     var textFieldText: String = ""
     var sliderStartValue: Int64 = 0
     var sliderEndValue: Int64 = 0
+
+    var filterState = SSFilterReducer<SentPerson>.State(type: .withSlider(titleLabel: "전체금액"), isSearchSection: true)
 
     init(filterHelper: Shared<SentPeopleFilterHelper>) {
       _filterHelper = filterHelper
@@ -77,6 +80,7 @@ struct SentEnvelopeFilter: Sendable {
     case changedSliderProperty
     case tappedSliderValueResetButton
     case tappedSlider
+    case filterAction(SSFilterReducer<SentPerson>.Action)
   }
 
   @Dependency(\.dismiss) var dismiss
@@ -98,6 +102,10 @@ struct SentEnvelopeFilter: Sendable {
 
     Scope(state: \.customTextField, action: \.customTextField) {
       CustomTextField()
+    }
+
+    Scope(state: \.filterState, action: \.filterAction) {
+      SSFilterReducer()
     }
 
     Reduce { state, action in
@@ -145,9 +153,12 @@ struct SentEnvelopeFilter: Sendable {
           .ssRun { send in
             await send(.isLoading(true))
             let data = try await network.getInitialData()
-            await send(.update(data))
+            await send(.filterAction(.inner(.updateItems(data))))
+//            await send(.update(data))
+            let maximumValue = try await network.getMaximumSentValue()
+            await send(.filterAction(.inner(.updateSliderMaximumValue(maximumValue))))
 
-            await send(.getMaximumSentValue)
+//            await send(.getMaximumSentValue)
             await send(.isLoading(false))
           },
           .publisher {
@@ -201,14 +212,32 @@ struct SentEnvelopeFilter: Sendable {
           } else {
             try await network.getInitialData()
           }
-          await send(.update(data))
+          await send(.filterAction(.inner(.updateItems(data))))
+//          await send(.update(data))
           await send(.isLoading(false))
         }
 
       case .tappedSlider:
         ssLogEvent(.Sent(.filter), eventName: "금액 슬라이더", eventType: .tapped)
         return .none
+
+      case let .filterAction(currentAction):
+        return filterEffect(&state, currentAction)
       }
+    }
+  }
+
+  private func filterEffect(_: inout State, _ action: SSFilterReducer<SentPerson>.Action) -> Effect<Action> {
+    switch action {
+    case let .delegate(.changeTextField(text)):
+      if NameRegexManager.isValid(name: text) {
+        return .send(.getFriendsDataByName(text))
+      }
+      return .none
+    case .delegate:
+      return .none
+    default:
+      return .none
     }
   }
 

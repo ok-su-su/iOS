@@ -17,7 +17,7 @@ public struct SSFilterItemHelper<Item: SSFilterItemable>: Equatable, Sendable {
   var selectableItems: [Item]
   var selectedItems: [Item]
 
-  mutating func select(_ id: Int) {
+  mutating func select(_ id: Item.ID) {
     // 이미 선택되었다면 제거
     if let index = selectedItems.firstIndex(where: { $0.id == id }) {
       selectedItems.remove(at: index)
@@ -118,7 +118,7 @@ struct SSFilterWithDateHelper: Equatable, Sendable {
 
 // MARK: - SSFilterItemable
 
-public protocol SSFilterItemable: Equatable, Sendable, Identifiable where ID == Int {
-  var id: Int { get }
+public protocol SSFilterItemable: Equatable, Sendable, Identifiable, Hashable where ID == Int64 {
+  var id: Int64 { get }
   var title: String { get set }
 }
