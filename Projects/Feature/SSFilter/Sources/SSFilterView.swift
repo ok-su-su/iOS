@@ -9,15 +9,15 @@ import ComposableArchitecture
 import Designsystem
 import SwiftUI
 
-struct SSFilterView: View {
+struct SSFilterView<Item: SSFilterItemable>: View {
   // MARK: Reducer
 
   @Bindable
-  var store: StoreOf<SSFilterReducer>
+  var store: StoreOf<SSFilterReducer<Item>>
 
   // MARK: Init
 
-  init(store: StoreOf<SSFilterReducer>) {
+  init(store: StoreOf<SSFilterReducer<Item>>) {
     self.store = store
   }
 

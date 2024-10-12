@@ -6,7 +6,7 @@
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
 
-@preconcurrency import Combine
+import Combine
 import CommonExtension
 import ComposableArchitecture
 import FeatureAction
@@ -33,6 +33,7 @@ public struct SSFilterWithSliderReducer: Sendable {
 
   public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
+    case updateSliderProperty
   }
 
   public enum DelegateAction: Equatable, Sendable {
@@ -47,6 +48,16 @@ public struct SSFilterWithSliderReducer: Sendable {
         return .none
       }
       state.isOnAppear = val
+      return .merge(
+        .publisher {
+          state.sliderProperty
+            .sliderUpdatePublisher
+            .map { _ in .view(.updateSliderProperty) }
+        }
+      )
+
+    case .updateSliderProperty:
+      state.sliderProperty.updateSliderValueProperty()
       return .none
     }
   }
@@ -70,17 +81,12 @@ struct SliderFilterProperty: Equatable, Sendable {
   private var lowestAmount: Int64? = nil
   private var highestAmount: Int64? = nil
   private var sliderEndValue: Int64 = 0
-  private var subscription: AnyCancellable? = nil
-  init() {
-    subscription = sinkFilterPublisher()
-  }
+  init() {}
 
-  public mutating func sinkFilterPublisher() -> AnyCancellable {
+  public mutating func sinkFilterPublisher() -> AnyPublisher<Void, Never> {
     return sliderProperty
       .objectWillChange
-      .sink { _ in
-        updateSliderValueProperty()
-      }
+      .eraseToAnyPublisher()
   }
 
   var sliderUpdatePublisher: AnyPublisher<Void, Never> {
