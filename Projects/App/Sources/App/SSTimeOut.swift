@@ -12,9 +12,7 @@ import SSNotification
 
 final class SSTimeOut {
   private nonisolated(unsafe) static let shared = SSTimeOut()
-  // TODO: 반드시 지울 것
-  private var timeoutInterval: Int = 5
-  ///  private var timeoutInterval: Int = 60 * 10
+  private var timeoutInterval: Int = 60 * 10
   private var enteredBackgroundDate: Date?
 
   static func setTimeoutInterval(minute: Int, seconds: Int) {
