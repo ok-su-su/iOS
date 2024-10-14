@@ -78,6 +78,7 @@ struct SentEnvelopeFilter: Sendable {
         }
         state.isOnAppear = isAppear
         return .merge(
+          
           .ssRun { send in
             await send(.isLoading(true))
             let data = try await network.getInitialData()

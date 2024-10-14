@@ -73,7 +73,7 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     case updateItems([Item])
     case isLoading(Bool)
     case updateSliderMaximumValue(Int64)
-    case updatePrevSelectedFilteredItemsAndSlider(item: [Item], maximumValue: Int64?)
+    case updatePrevSelectedFilteredItemsAndSlider(item: [Item], minimumValue: Int64?, maximumValue: Int64?)
     case updatePrevSelectedFilterItemsAndDate(item: [Item], startDate: Date?, endDate: Date?)
   }
 
@@ -177,9 +177,12 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
       state.sliderReducer?.sliderProperty.updateSliderMaximumValue(value)
       return .none
 
-    case let .updatePrevSelectedFilteredItemsAndSlider(items, maximumValue):
+    case let .updatePrevSelectedFilteredItemsAndSlider(items, minimumValue, maximumValue):
       state.ssFilterItemHelper.selectedItems = items
-      state.sliderReducer?.sliderProperty.updateSliderMaximumValue(maximumValue)
+      state.sliderReducer?.sliderProperty.updateSliderPrevValue(
+        minimumValue: minimumValue,
+        maximumValue: maximumValue
+      )
       return .none
 
     case let .updatePrevSelectedFilterItemsAndDate(items, startDate, endDate):

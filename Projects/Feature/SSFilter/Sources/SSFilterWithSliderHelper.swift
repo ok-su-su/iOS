@@ -15,8 +15,6 @@ import SSLayout
 
 struct SSFilterWithSliderHelper: Equatable, Sendable {
   var sliderProperty = CustomSlider()
-  private var lowestAmount: Int64? = nil
-  private var highestAmount: Int64? = nil
   private var sliderEndValue: Int64 = 0
   init() {}
 
@@ -27,18 +25,29 @@ struct SSFilterWithSliderHelper: Equatable, Sendable {
   }
 
   public mutating func updateSliderMaximumValue(_ val: Int64?) {
+    let isInitialState = sliderProperty.isInitialState
     guard let val else { return }
     sliderEndValue = val
-    updateSliderValueProperty()
+    if isInitialState {
+      updateSliderValueProperty()
+    } else {
+      let lowPercentage = Double(minimumTextValue) / Double(val)
+      let highPercentage = Double(maximumTextValue) / Double(val)
+      sliderProperty.updatePercentage(low: lowPercentage, high: highPercentage)
+    }
+  }
+
+  public mutating func updateSliderPrevValue(minimumValue minVal: Int64?, maximumValue maxVal: Int64?) {
+    if let minVal {
+      minimumTextValue = minVal
+    }
+    if let maxVal {
+      maximumTextValue = maxVal
+    }
   }
 
   var sliderUpdatePublisher: AnyPublisher<Void, Never> {
     sliderProperty.objectWillChange.eraseToAnyPublisher()
-  }
-
-  mutating func deselectAmount() {
-    lowestAmount = nil
-    highestAmount = nil
   }
 
   var minimumTextValue: Int64 = 0

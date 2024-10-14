@@ -106,7 +106,13 @@ struct LedgerDetailFilter: Sendable {
         return .none
       }
       state.isOnAppear = isAppear
+      let prevSelectedItems = state.property.selectedItems
+      let prevMinimumValue = state.property.lowestAmount
+      let prevMaximumValue = state.property.highestAmount
       return .merge(
+        .send(.scope(.filterAction(.inner(
+          .updatePrevSelectedFilteredItemsAndSlider(item: prevSelectedItems, minimumValue: prevMinimumValue, maximumValue: prevMaximumValue)))
+        )),
         .send(.async(.searchInitialFriends)),
         .send(.async(.getInitialMaxPriceValue))
       )
