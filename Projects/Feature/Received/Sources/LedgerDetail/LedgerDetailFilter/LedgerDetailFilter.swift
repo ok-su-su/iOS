@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Designsystem
 import FeatureAction
 import Foundation
+import SSFilter
 import SSLayout
 
 // MARK: - LedgerDetailFilter
@@ -25,27 +26,7 @@ struct LedgerDetailFilter: Sendable {
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
     var isLoading = true
     var ledgerProperty = SharedContainer.getValue(LedgerDetailProperty.self)
-
-    var sliderProperty: CustomSlider = .init()
-    var sliderEndValue: Int64 = 100_000
-    var minimumTextValue: Int64 = 0
-    var maximumTextValue: Int64 = 0
-    var minimumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(minimumTextValue) ?? "0" }
-    var maximumTextValueString: String { CustomNumberFormatter.formattedByThreeZero(maximumTextValue) ?? "0" }
-    var sliderRangeText: String {
-      "\(minimumTextValueString)원 ~ \(maximumTextValueString)원"
-    }
-
-    var isInitialState: Bool {
-      return minimumTextValue == 0 && maximumTextValue == sliderEndValue
-    }
-
-    var filterByTextField: [LedgerFilterItemProperty] = []
-
-    mutating func updateSliderValueProperty() {
-      minimumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentLowHandlePercentage) / 10000 * 10000
-      maximumTextValue = Int64(Double(sliderEndValue) * sliderProperty.currentHighHandlePercentage) / 10000 * 10000
-    }
+    var filterState: SSFilterReducer<LedgerFilterItemProperty>.State = .init(type: .withSlider(titleLabel: "받은 봉투 금액"), isSearchSection: true)
 
     init(_ property: Shared<LedgerDetailFilterProperty>) {
       _property = property
@@ -64,19 +45,10 @@ struct LedgerDetailFilter: Sendable {
   @CasePathable
   enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
-    case tappedItem(LedgerFilterItemProperty)
-    case changeTextField(String)
-    case closeButtonTapped
-    case tappedConfirmButton
-    case reset
-    case tappedSliderResetButton
   }
 
   enum InnerAction: Equatable, Sendable {
     case isLoading(Bool)
-    case updateItems([LedgerFilterItemProperty])
-    case updateMaximumReceivedValue(Int64)
-    case updateSliderPropertyItems
   }
 
   enum AsyncAction: Equatable, Sendable {
@@ -88,9 +60,37 @@ struct LedgerDetailFilter: Sendable {
   @CasePathable
   enum ScopeAction: Equatable, Sendable {
     case header(HeaderViewFeature.Action)
+    case filterAction(SSFilterReducer<LedgerFilterItemProperty>.Action)
   }
 
-  enum DelegateAction: Equatable, Sendable {}
+  enum DelegateAction: Equatable, Sendable {
+    case tappedConfirmButton
+  }
+
+  func handleFilterAction(_ state: inout State, _ action: SSFilterReducer<LedgerFilterItemProperty>.Action) -> Effect<Action> {
+    switch action {
+    case let .delegate(.changeTextField(text)):
+      return .send(.async(.searchFriendsBy(name: text)))
+        .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: mainQueue, latest: true)
+
+    case let .delegate(.tappedConfirmButtonWithSliderProperty(selectedItems, minimumValue, maximumValue)):
+      state.property.selectItems(selectedItems)
+      if let minimumValue, let maximumValue {
+        state.property.lowestAmount = minimumValue
+        state.property.highestAmount = maximumValue
+      }
+      return .run { send in
+        await send(.delegate(.tappedConfirmButton))
+        await dismiss()
+      }
+
+    case .delegate:
+      return .none
+
+    default:
+      return .none
+    }
+  }
 
   @Dependency(\.dismiss) var dismiss
   @Dependency(\.mainQueue) var mainQueue
@@ -106,83 +106,32 @@ struct LedgerDetailFilter: Sendable {
         return .none
       }
       state.isOnAppear = isAppear
+      let prevSelectedItems = state.property.selectedItems
+      let prevMinimumValue = state.property.lowestAmount
+      let prevMaximumValue = state.property.highestAmount
       return .merge(
+        .send(.scope(.filterAction(.inner(
+          .updatePrevSelectedFilteredItemsAndSlider(item: prevSelectedItems, minimumValue: prevMinimumValue, maximumValue: prevMaximumValue)))
+        )),
         .send(.async(.searchInitialFriends)),
-        .send(.async(.getInitialMaxPriceValue)),
-        .publisher {
-          state
-            .sliderProperty
-            .objectWillChange
-            .map { _ in .inner(.updateSliderPropertyItems) }
-        }
+        .send(.async(.getInitialMaxPriceValue))
       )
-
-    case let .tappedItem(item):
-      state.property.select(item.id)
-      return .none
-
-    case let .changeTextField(text):
-      state.textFieldText = text
-      return .send(.async(.searchFriendsBy(name: text)))
-        .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: mainQueue, latest: true)
-
-    case .closeButtonTapped:
-      state.textFieldText = ""
-      return .none
-
-    case .tappedConfirmButton:
-      if !state.isInitialState {
-        state.property.lowestAmount = state.minimumTextValue
-        state.property.highestAmount = state.maximumTextValue
-      }
-      return .ssRun { _ in
-        await dismiss()
-      }
-
-    case .reset:
-      state.sliderProperty.reset()
-      state.property.reset()
-      return .none
-
-    case .tappedSliderResetButton:
-      state.sliderProperty.reset()
-      return .none
     }
   }
 
-  func scopeAction(_: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
     switch action {
+    case let .filterAction(currentAction):
+      return handleFilterAction(&state, currentAction)
     case .header:
       return .none
     }
-  }
-
-  private func filterItems(_ state: inout State) {
-    guard let regex: Regex = try? .init("[\\w\\p{L}]*\(state.textFieldText)[\\w\\p{L}]*") else {
-      return
-    }
-    state.filterByTextField = state.property.selectableItems.filter { $0.title.contains(regex) }
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .isLoading(val):
       state.isLoading = val
-      return .none
-
-    case let .updateItems(items):
-      let uniqueItem = (state.property.selectableItems + items).uniqued()
-      state.property.selectableItems = uniqueItem
-      filterItems(&state)
-      return .none
-
-    case let .updateMaximumReceivedValue(price):
-      state.sliderEndValue = price
-      state.updateSliderValueProperty()
-      return .none
-
-    case .updateSliderPropertyItems:
-      state.updateSliderValueProperty()
       return .none
     }
   }
@@ -198,7 +147,7 @@ struct LedgerDetailFilter: Sendable {
         await send(.inner(.isLoading(true)))
         // 초기 친구 검색
         let items = try await network.getInitialDataByLedgerID(id)
-        await send(.inner(.updateItems(items)))
+        await send(.scope(.filterAction(.inner(.updateItems(items)))))
         await send(.inner(.isLoading(false)))
       }
 
@@ -208,12 +157,13 @@ struct LedgerDetailFilter: Sendable {
       }
       return .ssRun { send in
         let items = try await network.findFriendsBy(.init(name: name, ledgerID: id))
-        await send(.inner(.updateItems(items)))
+        await send(.scope(.filterAction(.inner(.updateItems(items)))))
       }
+
     case .getInitialMaxPriceValue:
       return .ssRun { send in
         let price = try await network.getMaximumSentValue()
-        await send(.inner(.updateMaximumReceivedValue(price)))
+        await send(.scope(.filterAction(.inner(.updateSliderMaximumValue(price)))))
       }
     }
   }
@@ -221,6 +171,10 @@ struct LedgerDetailFilter: Sendable {
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+
+    Scope(state: \.filterState, action: \.scope.filterAction) {
+      SSFilterReducer()
     }
 
     Reduce { state, action in
@@ -233,6 +187,8 @@ struct LedgerDetailFilter: Sendable {
         return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
+      case .delegate:
+        return .none
       }
     }
   }

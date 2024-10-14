@@ -11,7 +11,8 @@ import SwiftUI
 
 public struct SentBuilderView: View {
   public init() {}
-  @State private var store: StoreOf<SentMain> = .init(initialState: .init()) {
+  @State
+  private var store: StoreOf<SentMain> = .init(initialState: .init()) {
     SentMain()
   }
 

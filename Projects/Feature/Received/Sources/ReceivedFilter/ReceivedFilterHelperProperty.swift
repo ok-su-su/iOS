@@ -11,19 +11,22 @@ import Foundation
 // MARK: - FilterHelperProperty
 
 struct FilterHelperProperty: Equatable, Sendable {
-  var selectableLedgers: [FilterSelectableItemProperty] = []
-  var selectedLedgers: [FilterSelectableItemProperty] = []
+  var selectableCategories: [FilterSelectableItemProperty] = []
+  var selectedCategories: [FilterSelectableItemProperty] = []
 
   var selectedFilterDateTextString: String? {
-    if isInitialStateOfStartDate {
-      return nil
-    }
-    let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
-    if isInitialStateOfEndDate {
-      return startDateString
-    }
     let endDateString = CustomDateFormatter.getString(from: endDate, dateFormat: "yyyy.MM.dd")
-    return startDateString + "~" + endDateString
+    let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
+    switch (isInitialStateOfStartDate, isInitialStateOfEndDate) {
+    case (true, true):
+      return nil
+    case (true, false):
+      return "~" + endDateString
+    case (false, true):
+      return startDateString
+    case (false, false):
+      return startDateString + "~" + endDateString
+    }
   }
 
   var isInitialStateOfStartDate: Bool = true
@@ -31,21 +34,38 @@ struct FilterHelperProperty: Equatable, Sendable {
   var isInitialStateOfEndDate: Bool = true
   var endDate: Date = .now
 
-  func isSelectedItems(id: Int) -> Bool {
-    return selectedLedgers.first(where: { $0.id == id }) != nil
+  mutating func updateDateOf(startDate: Date?, endDate: Date?) {
+    resetDate()
+    if let startDate {
+      self.startDate = startDate
+      isInitialStateOfStartDate = false
+    }
+
+    if let endDate {
+      self.endDate = endDate
+      isInitialStateOfEndDate = false
+    }
   }
 
-  mutating func select(_ id: Int) {
+  func isSelectedItems(id: FilterSelectableItemProperty.ID) -> Bool {
+    return selectedCategories.first(where: { $0.id == id }) != nil
+  }
+
+  mutating func select(_ id: FilterSelectableItemProperty.ID) {
     // 이미 선택되었다면 제거
-    if let index = selectedLedgers.firstIndex(where: { $0.id == id }) {
-      selectedLedgers.remove(at: index)
+    if let index = selectedCategories.firstIndex(where: { $0.id == id }) {
+      selectedCategories.remove(at: index)
       return
     }
 
     // 선택이 안되었다면 선택
-    if let ledger = selectableLedgers.first(where: { $0.id == id }) {
-      selectedLedgers.append(ledger)
+    if let category = selectableCategories.first(where: { $0.id == id }) {
+      selectedCategories.append(category)
     }
+  }
+
+  mutating func selectItems(_ items: [FilterSelectableItemProperty]) {
+    selectedCategories = items
   }
 
   mutating func setStartDate(_ date: Date) {
@@ -66,13 +86,20 @@ struct FilterHelperProperty: Equatable, Sendable {
 
   mutating func setInitialState() {
     resetDate()
-    selectedLedgers = []
+    selectedCategories = []
   }
 
-  mutating func deleteSelectedItem(id: Int) {
-    guard let index = selectedLedgers.firstIndex(where: { $0.id == id }) else {
+  mutating func getPrevSelectedDate() -> (Date?, Date?) {
+    let startDate = isInitialStateOfStartDate ? nil : startDate
+    let endDate = isInitialStateOfEndDate ? nil : endDate
+
+    return (startDate, endDate)
+  }
+
+  mutating func deleteSelectedItem(id: FilterSelectableItemProperty.ID) {
+    guard let index = selectedCategories.firstIndex(where: { $0.id == id }) else {
       return
     }
-    selectedLedgers.remove(at: index)
+    selectedCategories.remove(at: index)
   }
 }

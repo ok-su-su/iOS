@@ -3,19 +3,13 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-  name: "Sent",
+  name: "SSFilter",
   targets: .feature(
-    .sent,
+    .sSFilter,
     testingOptions: [.unitTest],
     dependencies: [
-      .core(.coreLayers),
       .share(.shareLayer),
-      .share(.sSLayout),
-      .feature(.sSSearch),
-      .feature(.sSSelectableItems),
-      .feature(.sSCreateEnvelope),
-      .feature(.sSEnvelope),
-      .feature(.sSFilter),
+      .core(.coreLayers),
     ],
     testDependencies: []
   )

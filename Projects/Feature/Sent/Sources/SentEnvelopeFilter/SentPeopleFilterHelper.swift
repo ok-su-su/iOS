@@ -5,6 +5,7 @@
 //  Created by MaraMincho on 5/10/24.
 //  Copyright © 2024 com.oksusu. All rights reserved.
 //
+import SSFilter
 import SwiftUI
 
 // MARK: - SentPeopleFilterHelper
@@ -56,6 +57,10 @@ struct SentPeopleFilterHelper: Equatable {
     }
   }
 
+  mutating func select(sentPeople: [SentPerson]) {
+    selectedPerson.append(contentsOf: sentPeople)
+  }
+
   mutating func select(selectedId: Int64) {
     if selectedPerson.contains(where: { $0.id == selectedId }) {
       selectedPerson.removeAll(where: { $0.id == selectedId })
@@ -81,9 +86,18 @@ struct SentPeopleFilterHelper: Equatable {
 
 struct SentPerson: Identifiable, Equatable, Hashable, Sendable {
   let id: Int64
-  let name: String
+  var name: String
   init(id: Int64, name: String) {
     self.id = id
     self.name = name
+  }
+}
+
+// MARK: SSFilterItemable
+
+extension SentPerson: SSFilterItemable {
+  var title: String {
+    get { name }
+    set { name = newValue }
   }
 }

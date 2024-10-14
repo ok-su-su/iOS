@@ -18,7 +18,18 @@ struct ReceivedFilterNetwork: Sendable {
   var requestFilterItems: @Sendable () async throws -> [FilterSelectableItemProperty]
   @Sendable private static func _requestFilterItems() async throws -> [FilterSelectableItemProperty] {
     let data: CreateEnvelopesConfigResponse = try await provider.request(.getFilterItems)
-    let res: [FilterSelectableItemProperty] = data.categories.sorted(by: { $0.seq < $1.seq })
+    let sortedCategories = data.categories.sorted(by: { $0.seq < $1.seq })
+    let res = sortedCategories.map {
+      FilterSelectableItemProperty(
+        id: Int64($0.id),
+        seq: $0.seq,
+        name: $0.name,
+        style: $0.style,
+        isActive: $0.isActive,
+        isCustom: $0.isCustom,
+        isMiscCategory: $0.isMiscCategory
+      )
+    }
     return res
   }
 }

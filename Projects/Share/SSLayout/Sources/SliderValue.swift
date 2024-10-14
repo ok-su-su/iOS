@@ -89,6 +89,11 @@ public class CustomSlider: ObservableObject, Equatable, @unchecked Sendable {
   var anyCancellableHigh: AnyCancellable?
   var anyCancellableLow: AnyCancellable?
 
+  public func updatePercentage(low: Double, high: Double) {
+    lowHandle.updateCurrentPercentage(low)
+    highHandle.updateCurrentPercentage(high)
+  }
+
   public init() {
     highHandle = SliderHandle(
       startPercentage: _highHandleStartPercentage

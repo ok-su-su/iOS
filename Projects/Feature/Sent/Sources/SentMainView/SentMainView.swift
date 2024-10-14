@@ -142,7 +142,7 @@ struct SentMainView: View {
             buttonText: person.name
           )
         ) {
-          store.sendViewAction(.tappedFilteredPersonButton(id: person.id))
+          store.sendViewAction(.tappedFilteredPersonButton(id: Int64(person.id)))
         }
       }
     }

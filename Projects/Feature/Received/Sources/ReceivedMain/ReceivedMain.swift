@@ -39,7 +39,7 @@ struct ReceivedMain: Sendable {
     var mutexManager = AsyncMutexManager()
 
     var isFilteredItem: Bool {
-      if (!filterProperty.selectedLedgers.isEmpty) ||
+      if (!filterProperty.selectedCategories.isEmpty) ||
         (filterProperty.selectedFilterDateTextString != nil) {
         return true
       }
@@ -70,7 +70,7 @@ struct ReceivedMain: Sendable {
     case tappedAddLedgerButton
     case tappedFilterButton
     case tappedFilteredDateButton
-    case tappedFilteredPersonButton(id: Int)
+    case tappedFilteredPersonButton(id: FilterSelectableItemProperty.ID)
     case onAppear(Bool)
     case onAppearedLedger(LedgerBoxProperty)
     case tappedSortButton
@@ -122,7 +122,7 @@ struct ReceivedMain: Sendable {
 
     case .tappedFilteredDateButton:
       state.filterProperty.resetDate()
-      return .none
+      return .send(.async(.getLedgersInitialPage))
 
     case .tappedFilterButton:
       state.presentDestination = .filter(.init(state.$filterProperty))
@@ -176,7 +176,7 @@ struct ReceivedMain: Sendable {
     case .presentDestination(.presented(.sort(.changedItem))):
       return .send(.async(.getLedgersInitialPage))
 
-    case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
+    case .presentDestination(.presented(.filter(.delegate(.tappedConfirmButton)))):
       return .send(.async(.getLedgersInitialPage))
 
     case .presentDestination:
@@ -236,7 +236,7 @@ struct ReceivedMain: Sendable {
     case .ledgersNetworkTask:
       let param = SearchLedgersRequestParameter(
         title: nil,
-        categoryIds: state.filterProperty.selectedLedgers.map(\.id),
+        categoryIds: state.filterProperty.selectedCategories.map { Int($0.id) },
         fromStartAt: state.filterProperty.isInitialStateOfStartDate ? nil : state.filterProperty.startDate,
         toStartAt: state.filterProperty.isInitialStateOfEndDate ? nil : state.filterProperty.endDate,
         page: state.page,
