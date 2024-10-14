@@ -15,12 +15,10 @@ public enum SSNotificationName {
   public static let tappedVote = Notification.Name("tappedVote")
   public static let tappedMyPage = Notification.Name("tappedMyPage")
   public static let goMainScene = Notification.Name("goMainScene")
-
+  public static let resetApp = Notification.Name("ResetApp")
   public static let logout = Notification.Name("logout")
-
   public static let goMyPageEditMyProfile = Notification.Name("goMyPageEditMyProfile")
   public static let goEditProfile = Notification.Name("goEditProfile")
-
   public static let showDefaultNetworkErrorAlert = Notification.Name("ShowDefaultNetworkErrorAlert")
   public static let logError = Notification.Name("ErrorLog")
 }

@@ -25,9 +25,17 @@ class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func sceneWillResignActive(_: UIScene) {}
 
-  func sceneWillEnterForeground(_: UIScene) {}
+  // MARK: - Tells the delegate that the scene is about to begin running in the foreground and become visible to the user.
 
-  func sceneDidEnterBackground(_: UIScene) {}
+  func sceneWillEnterForeground(_: UIScene) {
+    SSTimeOut.enterForegroundScreen()
+  }
+
+  // MARK: - Tells the delegate that the scene is running in the background and is no longer onscreen.
+
+  func sceneDidEnterBackground(_: UIScene) {
+    SSTimeOut.enterBackground()
+  }
 }
 
 // MARK: - KAKAO OAuth2.0 Extension
