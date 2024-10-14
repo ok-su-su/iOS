@@ -79,7 +79,10 @@ struct LedgerDetailFilter: Sendable {
         state.property.lowestAmount = minimumValue
         state.property.highestAmount = maximumValue
       }
-      return .send(.delegate(.tappedConfirmButton))
+      return .run { send in
+        await send(.delegate(.tappedConfirmButton))
+        await dismiss()
+      }
 
     case .delegate:
       return .none

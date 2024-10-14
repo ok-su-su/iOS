@@ -82,6 +82,7 @@ public struct SSFilterWithDateReducer: Sendable {
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
+
       case .scope:
         return .none
       }

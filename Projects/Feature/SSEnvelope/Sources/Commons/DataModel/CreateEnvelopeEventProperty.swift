@@ -16,7 +16,7 @@ public typealias CreateEnvelopeEventProperty = CategoryModel
 
 // MARK: SingleSelectButtonItemable
 
-extension CreateEnvelopeEventProperty: SingleSelectButtonItemable {
+extension CreateEnvelopeEventProperty: @retroactive SingleSelectButtonItemable {
   public var title: String {
     get { name }
     set { name = newValue }

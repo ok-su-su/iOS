@@ -135,7 +135,10 @@ public struct SSFilterView<Item: SSFilterItemable>: View {
   private func makeMiddleSection() -> some View {
     switch store.type {
     case .withDate:
-      EmptyView()
+      if let store = store.scope(state: \.dateReducer, action: \.scope.dateReducer) {
+        SSFilterWithDateView(store: store)
+          .padding(.horizontal, 16)
+      }
     case .withSlider:
       if let store = store.scope(state: \.sliderReducer, action: \.scope.sliderReducer) {
         SSFilterWithSliderView(store: store)

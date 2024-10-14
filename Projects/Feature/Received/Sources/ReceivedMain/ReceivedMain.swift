@@ -176,7 +176,7 @@ struct ReceivedMain: Sendable {
     case .presentDestination(.presented(.sort(.changedItem))):
       return .send(.async(.getLedgersInitialPage))
 
-    case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
+    case .presentDestination(.presented(.filter(.delegate(.tappedConfirmButton)))):
       return .send(.async(.getLedgersInitialPage))
 
     case .presentDestination:
@@ -236,7 +236,7 @@ struct ReceivedMain: Sendable {
     case .ledgersNetworkTask:
       let param = SearchLedgersRequestParameter(
         title: nil,
-        categoryIds: state.filterProperty.selectedLedgers.map(\.id),
+        categoryIds: state.filterProperty.selectedLedgers.map { Int($0.id) },
         fromStartAt: state.filterProperty.isInitialStateOfStartDate ? nil : state.filterProperty.startDate,
         toStartAt: state.filterProperty.isInitialStateOfEndDate ? nil : state.filterProperty.endDate,
         page: state.page,

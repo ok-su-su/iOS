@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import SSBottomSelectSheet
+import SSFilter
 
 // MARK: - ReceivedFilter
 
@@ -22,6 +23,8 @@ struct ReceivedFilter: Sendable {
     var isLoading: Bool = true
     @Shared var property: FilterHelperProperty
     var header: HeaderViewFeature.State = .init(.init(title: "필터", type: .depth2Default))
+
+    var filterState = SSFilterReducer<FilterSelectableItemProperty>.State(type: .withDate, isSearchSection: false)
 
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State?
     init(_ property: Shared<FilterHelperProperty>) {
@@ -58,13 +61,6 @@ struct ReceivedFilter: Sendable {
   enum ViewAction: Equatable, Sendable {
     /// 뷰가 나타날 경우
     case onAppear(Bool)
-    /// 아이템 클릭할 경우
-    case tappedItem(FilterSelectableItemProperty)
-    case tappedConfirmButton
-    case tappedResetButton
-    case tappedLeftDateButton
-    case tappedRightDateButton
-    case tappedSelectedFilterDateItem
   }
 
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
@@ -72,60 +68,15 @@ struct ReceivedFilter: Sendable {
     case let .onAppear(bool):
       state.isAppear = bool
       return .send(.async(.getSelectableItems))
-
-    case let .tappedItem(filterSelectableItemProperty):
-      state.property.select(filterSelectableItemProperty.id)
-      return .none
-
-    case .tappedConfirmButton:
-      return .ssRun { _ in
-        await dismiss()
-      }
-
-    case .tappedResetButton:
-      state.property.setInitialState()
-      return .none
-
-    case .tappedLeftDateButton:
-      // 만약 endDate를 골랐을 경우
-      let restrictEndDate: Date? = state.property.isInitialStateOfEndDate ? nil : state.property.startDate
-      state.datePicker = .init(
-        selectedDate: state.$property.startDate,
-        isInitialStateOfDate: state.$property.isInitialStateOfStartDate,
-        restrictEndDate: restrictEndDate
-      )
-      return .none
-    case .tappedRightDateButton:
-      // 만약 startDate를 골랐을 경우
-      let restrictStartDate: Date? = state.property.isInitialStateOfStartDate ? nil : state.property.startDate
-      state.datePicker = .init(
-        selectedDate: state.$property.endDate,
-        isInitialStateOfDate: state.$property.isInitialStateOfEndDate,
-        restrictStartDate: restrictStartDate
-      )
-      return .none
-
-    case .tappedSelectedFilterDateItem:
-      state.property.resetDate()
-      return .none
     }
   }
 
   enum InnerAction: Equatable, Sendable {
-    case updateSelectableItems([FilterSelectableItemProperty])
-    case reset
     case isLoading(Bool)
   }
 
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
-    case let .updateSelectableItems(items):
-      state.property.selectableLedgers = items
-      return .none
-
-    case .reset:
-      return .none
-
     case let .isLoading(val):
       state.isLoading = val
       return .none
@@ -143,7 +94,7 @@ struct ReceivedFilter: Sendable {
       state.isLoading = true
       return .ssRun { send in
         let items = try await network.requestFilterItems().filter { $0.isCustom == false }
-        await send(.inner(.updateSelectableItems(items)))
+        await send(.scope(.filterAction(.inner(.updateItems(items)))))
         await send(.inner(.isLoading(false)))
       }
     }
@@ -151,31 +102,50 @@ struct ReceivedFilter: Sendable {
 
   @CasePathable
   enum ScopeAction: Equatable, Sendable {
-    case datePicker(PresentationAction<SSDateSelectBottomSheetReducer.Action>)
     case header(HeaderViewFeature.Action)
+    case filterAction(SSFilterReducer<FilterSelectableItemProperty>.Action)
   }
 
-  func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+  private func handleFilterAction(_: inout State, _ action: SSFilterReducer<FilterSelectableItemProperty>.Action) -> Effect<Action> {
     switch action {
-    case .datePicker:
-      return .none
+    case let .delegate(.tappedConfirmButtonWithDateProperty(selectedItems, startDate, endDate)):
+      return .run { send in
+        await send(.delegate(.tappedConfirmButton))
+        await dismiss()
+      }
 
-    case .header(.tappedDismissButton):
-      state.property.setInitialState()
+    case .delegate:
       return .none
-
-    case .header:
+    default:
       return .none
     }
   }
 
-  enum DelegateAction: Equatable, Sendable {}
+  private func scopeAction(_ state: inout State, _ action: Action.ScopeAction) -> Effect<Action> {
+    switch action {
+    case .header(.tappedDismissButton):
+      return .none
+
+    case .header:
+      return .none
+
+    case let .filterAction(currentAction):
+      return handleFilterAction(&state, currentAction)
+    }
+  }
+
+  enum DelegateAction: Equatable, Sendable {
+    case tappedConfirmButton
+  }
 
   @Dependency(\.dismiss) var dismiss
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
+    }
+    Scope(state: \.filterState, action: \.scope.filterAction) {
+      SSFilterReducer()
     }
 
     Reduce { state, action in
@@ -191,16 +161,12 @@ struct ReceivedFilter: Sendable {
 
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
+
+      case .delegate:
+        return .none
       }
     }
-    .addFeatures()
   }
 }
 
-extension Reducer where State == ReceivedFilter.State, Action == ReceivedFilter.Action {
-  func addFeatures() -> some ReducerOf<Self> {
-    ifLet(\.$datePicker, action: \.scope.datePicker) {
-      SSDateSelectBottomSheetReducer()
-    }
-  }
-}
+extension Reducer where State == ReceivedFilter.State, Action == ReceivedFilter.Action {}
