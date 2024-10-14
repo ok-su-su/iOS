@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SSFilter
 
 // MARK: - LedgerDetailFilterProperty
 
@@ -26,6 +27,10 @@ struct LedgerDetailFilterProperty: Equatable {
       return nil
     }
     return "\(lowVal)~\(highVal)"
+  }
+
+  mutating func selectItems(_ items: [LedgerFilterItemProperty]) {
+    selectedItems = items
   }
 
   func isSelectedItems(id: Int64) -> Bool {
@@ -66,7 +71,7 @@ struct LedgerDetailFilterProperty: Equatable {
 
 // MARK: - LedgerFilterItemProperty
 
-struct LedgerFilterItemProperty: Equatable, Identifiable, Hashable {
+struct LedgerFilterItemProperty: Equatable, Identifiable, Hashable, SSFilterItemable {
   /// 친구 아이디
   var id: Int64
   /// 친구 이름

@@ -318,8 +318,9 @@ struct LedgerDetailMain {
       state.presentCreateEnvelope = present
       return .none
 
-    case .presentDestination(.presented(.filter(.view(.tappedConfirmButton)))):
+    case .presentDestination(.presented(.filter(.delegate(.tappedConfirmButton)))):
       return .send(.inner(.getEnvelopesInitialPage))
+
     case .presentDestination(.presented(.sort(.tapped))):
       return .send(.inner(.getEnvelopesInitialPage))
 
