@@ -73,6 +73,8 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     case updateItems([Item])
     case isLoading(Bool)
     case updateSliderMaximumValue(Int64)
+    case updatePrevSelectedFilteredItemsAndSlider(item: [Item], maximumValue: Int64?)
+    case updatePrevSelectedFilterItemsAndDate(item: [Item], startDate: Date?, endDate: Date?)
   }
 
   public enum AsyncAction: Equatable, Sendable {}
@@ -173,6 +175,16 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
 
     case let .updateSliderMaximumValue(value):
       state.sliderReducer?.sliderProperty.updateSliderMaximumValue(value)
+      return .none
+
+    case let .updatePrevSelectedFilteredItemsAndSlider(items, maximumValue):
+      state.ssFilterItemHelper.selectedItems = items
+      state.sliderReducer?.sliderProperty.updateSliderMaximumValue(maximumValue)
+      return .none
+
+    case let .updatePrevSelectedFilterItemsAndDate(items, startDate, endDate):
+      state.ssFilterItemHelper.selectedItems = items
+      state.dateReducer?.dateProperty.updateDateOf(startDate: startDate, endDate: endDate)
       return .none
     }
   }

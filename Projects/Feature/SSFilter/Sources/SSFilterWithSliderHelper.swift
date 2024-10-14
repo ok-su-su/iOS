@@ -26,7 +26,8 @@ struct SSFilterWithSliderHelper: Equatable, Sendable {
       .eraseToAnyPublisher()
   }
 
-  public mutating func updateSliderMaximumValue(_ val: Int64) {
+  public mutating func updateSliderMaximumValue(_ val: Int64?) {
+    guard let val else { return }
     sliderEndValue = val
     updateSliderValueProperty()
   }

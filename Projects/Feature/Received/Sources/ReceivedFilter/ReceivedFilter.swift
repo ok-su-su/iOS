@@ -67,7 +67,14 @@ struct ReceivedFilter: Sendable {
     switch action {
     case let .onAppear(bool):
       state.isAppear = bool
-      return .send(.async(.getSelectableItems))
+      let prevSelectedItems = state.property.selectedCategories
+      let (startDate, endDate) = state.property.getPrevSelectedDate()
+      return .merge(
+        .send(.async(.getSelectableItems)),
+        .send(.scope(.filterAction(.inner(
+          .updatePrevSelectedFilterItemsAndDate(item: prevSelectedItems, startDate: startDate, endDate: endDate)
+        ))))
+      )
     }
   }
 

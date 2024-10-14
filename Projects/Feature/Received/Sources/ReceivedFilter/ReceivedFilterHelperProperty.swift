@@ -89,6 +89,13 @@ struct FilterHelperProperty: Equatable, Sendable {
     selectedCategories = []
   }
 
+  mutating func getPrevSelectedDate() -> (Date?, Date?) {
+    let startDate = isInitialStateOfStartDate ? nil : startDate
+    let endDate = isInitialStateOfEndDate ? nil : endDate
+
+    return (startDate, endDate)
+  }
+
   mutating func deleteSelectedItem(id: FilterSelectableItemProperty.ID) {
     guard let index = selectedCategories.firstIndex(where: { $0.id == id }) else {
       return
