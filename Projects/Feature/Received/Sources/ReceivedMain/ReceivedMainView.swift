@@ -131,8 +131,8 @@ struct ReceivedMainView: View {
           }
 
           // 사람 버튼에 대한 표시
-          let filtered = store.filterProperty.selectedLedgers
-          ForEach(filtered) { property in
+          let filtered = store.filterProperty.selectedCategories
+          ForEach(filtered) { category in
             SSButton(
               .init(
                 size: .sh32,
@@ -140,10 +140,10 @@ struct ReceivedMainView: View {
                 style: .filled,
                 color: .black,
                 rightIcon: .icon(SSImage.commonDeleteWhite),
-                buttonText: property.title
+                buttonText: category.title
               )
             ) {
-              store.sendViewAction(.tappedFilteredPersonButton(id: property.id))
+              store.sendViewAction(.tappedFilteredPersonButton(id: category.id))
             }
           }
         }

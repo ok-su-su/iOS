@@ -87,5 +87,8 @@ public struct SSFilterWithDateReducer: Sendable {
         return .none
       }
     }
+    .ifLet(\.$datePicker, action: \.scope.datePicker) {
+      SSDateSelectBottomSheetReducer()
+    }
   }
 }

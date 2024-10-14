@@ -106,9 +106,15 @@ struct ReceivedFilter: Sendable {
     case filterAction(SSFilterReducer<FilterSelectableItemProperty>.Action)
   }
 
-  private func handleFilterAction(_: inout State, _ action: SSFilterReducer<FilterSelectableItemProperty>.Action) -> Effect<Action> {
+  private func handleFilterAction(_ state: inout State, _ action: SSFilterReducer<FilterSelectableItemProperty>.Action) -> Effect<Action> {
     switch action {
     case let .delegate(.tappedConfirmButtonWithDateProperty(selectedItems, startDate, endDate)):
+      state.property.selectItems(selectedItems)
+      if let startDate, let endDate {
+        state.property.startDate = startDate
+        state.property.endDate = endDate
+      }
+
       return .run { send in
         await send(.delegate(.tappedConfirmButton))
         await dismiss()
