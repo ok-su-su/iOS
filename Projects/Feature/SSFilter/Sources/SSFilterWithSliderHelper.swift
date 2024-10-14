@@ -25,7 +25,7 @@ struct SSFilterWithSliderHelper: Equatable, Sendable {
   }
 
   public mutating func updateSliderMaximumValue(_ val: Int64?) {
-    let isInitialState = sliderProperty.isInitialState
+    let isInitialState = minimumTextValue == 0 && maximumTextValue == 0
     guard let val else { return }
     sliderEndValue = val
     if isInitialState {
