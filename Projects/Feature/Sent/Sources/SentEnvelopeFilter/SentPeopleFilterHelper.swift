@@ -57,6 +57,10 @@ struct SentPeopleFilterHelper: Equatable {
     }
   }
 
+  mutating func select(sentPeople: [SentPerson]) {
+    selectedPerson.append(contentsOf: sentPeople)
+  }
+
   mutating func select(selectedId: Int64) {
     if selectedPerson.contains(where: { $0.id == selectedId }) {
       selectedPerson.removeAll(where: { $0.id == selectedId })

@@ -190,11 +190,7 @@ struct SentEnvelopeFilter: Sendable {
         return .none
 
       case .tappedConfirmButton:
-        if !state.isInitialState {
-          state.filterHelper.lowestAmount = state.minimumTextValue
-          state.filterHelper.highestAmount = state.maximumTextValue
-        }
-        return .ssRun { _ in await dismiss() }
+        return .none
 
       case let .isLoading(loading):
         state.isLoading = loading
@@ -227,15 +223,28 @@ struct SentEnvelopeFilter: Sendable {
     }
   }
 
-  private func filterEffect(_: inout State, _ action: SSFilterReducer<SentPerson>.Action) -> Effect<Action> {
+  private func filterEffect(_ state: inout State, _ action: SSFilterReducer<SentPerson>.Action) -> Effect<Action> {
     switch action {
     case let .delegate(.changeTextField(text)):
       if NameRegexManager.isValid(name: text) {
         return .send(.getFriendsDataByName(text))
       }
       return .none
+
+    case let .delegate(.tappedConfirmButtonWithSliderProperty(selectedItems, minimumValue, maximumValue)):
+      state.filterHelper.select(sentPeople: selectedItems)
+      if let minimumValue, let maximumValue {
+        state.filterHelper.lowestAmount = minimumValue
+        state.filterHelper.highestAmount = maximumValue
+      }
+      return .run { send in
+        await send(.tappedConfirmButton)
+        await dismiss()
+      }
+
     case .delegate:
       return .none
+
     default:
       return .none
     }
