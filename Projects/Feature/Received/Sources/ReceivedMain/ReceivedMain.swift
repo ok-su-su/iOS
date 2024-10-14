@@ -122,7 +122,7 @@ struct ReceivedMain: Sendable {
 
     case .tappedFilteredDateButton:
       state.filterProperty.resetDate()
-      return .none
+      return .send(.async(.getLedgersInitialPage))
 
     case .tappedFilterButton:
       state.presentDestination = .filter(.init(state.$filterProperty))

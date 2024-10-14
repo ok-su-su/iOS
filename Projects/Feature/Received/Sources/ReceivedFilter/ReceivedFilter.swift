@@ -110,10 +110,7 @@ struct ReceivedFilter: Sendable {
     switch action {
     case let .delegate(.tappedConfirmButtonWithDateProperty(selectedItems, startDate, endDate)):
       state.property.selectItems(selectedItems)
-      if let startDate, let endDate {
-        state.property.startDate = startDate
-        state.property.endDate = endDate
-      }
+      state.property.updateDateOf(startDate: startDate, endDate: endDate)
 
       return .run { send in
         await send(.delegate(.tappedConfirmButton))

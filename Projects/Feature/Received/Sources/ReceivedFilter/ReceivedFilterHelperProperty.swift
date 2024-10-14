@@ -15,21 +15,37 @@ struct FilterHelperProperty: Equatable, Sendable {
   var selectedCategories: [FilterSelectableItemProperty] = []
 
   var selectedFilterDateTextString: String? {
-    if isInitialStateOfStartDate {
-      return nil
-    }
-    let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
-    if isInitialStateOfEndDate {
-      return startDateString
-    }
     let endDateString = CustomDateFormatter.getString(from: endDate, dateFormat: "yyyy.MM.dd")
-    return startDateString + "~" + endDateString
+    let startDateString = CustomDateFormatter.getString(from: startDate, dateFormat: "yyyy.MM.dd")
+    switch (isInitialStateOfStartDate, isInitialStateOfEndDate) {
+    case (true, true):
+      return nil
+    case (true, false):
+      return "~" + endDateString
+    case (false, true):
+      return startDateString
+    case (false, false):
+      return startDateString + "~" + endDateString
+    }
   }
 
   var isInitialStateOfStartDate: Bool = true
   var startDate: Date = .now
   var isInitialStateOfEndDate: Bool = true
   var endDate: Date = .now
+
+  mutating func updateDateOf(startDate: Date?, endDate: Date?) {
+    resetDate()
+    if let startDate {
+      self.startDate = startDate
+      isInitialStateOfStartDate = false
+    }
+
+    if let endDate {
+      self.endDate = endDate
+      isInitialStateOfEndDate = false
+    }
+  }
 
   func isSelectedItems(id: FilterSelectableItemProperty.ID) -> Bool {
     return selectedCategories.first(where: { $0.id == id }) != nil
