@@ -77,8 +77,13 @@ struct SentEnvelopeFilter: Sendable {
           return .none
         }
         state.isOnAppear = isAppear
+        let prevSelectedItems = state.filterHelper.selectedPerson
+        let prevMinimumValue = state.filterHelper.lowestAmount
+        let prevMaximumValue = state.filterHelper.highestAmount
         return .merge(
-          
+          .send(.filterAction(.inner(
+            .updatePrevSelectedFilteredItemsAndSlider(item: prevSelectedItems, minimumValue: prevMinimumValue, maximumValue: prevMaximumValue)
+          ))),
           .ssRun { send in
             await send(.isLoading(true))
             let data = try await network.getInitialData()
