@@ -49,8 +49,9 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
   public static let shared: SSTokenInterceptor = .init(helper: TokenInterceptHelper())
 
   var helper: TokenInterceptHelpable
+  var statusActor: TokenRequestActor = .init(requestProgressStatus: .notProgress)
 
-  public init(helper: TokenInterceptHelpable) {
+  private init(helper: TokenInterceptHelpable) {
     self.helper = helper
   }
 
@@ -92,6 +93,13 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
   }
 
   public func refreshTokenResponse(result: Result<Response, MoyaError>, completion: @escaping (RetryResult) -> Void) {
+    // 현재 토큰 재발급중인지 확인
+    if statusActor.getProgressStatus() == .progress {
+      completion(.doNotRetry)
+      return
+    }
+    // progressStatus 변경
+    statusActor.setProgressStatus(.progress)
     do {
       switch result {
       case let .success(response):
@@ -103,6 +111,8 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
           refreshTokenExp: responseDTO.refreshTokenExp
         ))
         os_log("토큰 재발급에 성공했습니다. 이천 요청을 수행합니다.")
+        // progressStatus 변경
+        statusActor.setProgressStatus(.notProgress)
         completion(.retry)
       case let .failure(error):
         completion(.doNotRetryWithError(error))
@@ -157,4 +167,33 @@ public extension SSTokenInterceptor {
 
 private struct UserInfoResponse: Decodable {
   let id: Int64
+}
+
+final class TokenRequestActor: @unchecked Sendable {
+
+  private var requestProgressStatus: TokenRequestActorStatus
+
+  func getProgressStatus() -> TokenRequestActorStatus {
+    requestProgressStatus
+  }
+
+  init(requestProgressStatus: TokenRequestActorStatus) {
+    self.requestProgressStatus = requestProgressStatus
+  }
+
+  func setProgressStatus(_ status: TokenRequestActorStatus) {
+    switch status {
+    case .progress:
+      self.requestProgressStatus = status
+    case .notProgress:
+      DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+        self.requestProgressStatus = status
+      }
+    }
+
+  }
+}
+enum TokenRequestActorStatus: Equatable, Sendable, CaseIterable {
+  case progress
+  case notProgress
 }
