@@ -169,8 +169,9 @@ private struct UserInfoResponse: Decodable {
   let id: Int64
 }
 
-final class TokenRequestActor: @unchecked Sendable {
+// MARK: - TokenRequestActor
 
+final class TokenRequestActor: @unchecked Sendable {
   private var requestProgressStatus: TokenRequestActorStatus
 
   func getProgressStatus() -> TokenRequestActorStatus {
@@ -190,9 +191,11 @@ final class TokenRequestActor: @unchecked Sendable {
         self.requestProgressStatus = status
       }
     }
-
   }
 }
+
+// MARK: - TokenRequestActorStatus
+
 enum TokenRequestActorStatus: Equatable, Sendable, CaseIterable {
   case progress
   case notProgress

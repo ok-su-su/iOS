@@ -8,6 +8,7 @@
 
 import Foundation
 import OSLog
+import SSNotification
 
 // MARK: - SSTokenManager
 
@@ -72,8 +73,8 @@ public final class SSTokenManager: Sendable {
       }
       return Date.now > refreshTokenExp
     } catch {
-      os_log("\(error.localizedDescription)")
-      return false
+      NotificationCenter.default.post(name: SSNotificationName.logError, object: error)
+      return true
     }
   }
 

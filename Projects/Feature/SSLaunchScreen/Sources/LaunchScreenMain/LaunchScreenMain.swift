@@ -33,6 +33,9 @@ struct LaunchScreenMain {
     Reduce { state, action in
       switch action {
       case let .onAppear(isAppear):
+        if state.isOnAppear {
+          return .none
+        }
         state.isOnAppear = isAppear
         routingPublisher.send(.launchTaskWillRun)
         let appVersion = InfoPlistConstants.appVersion
