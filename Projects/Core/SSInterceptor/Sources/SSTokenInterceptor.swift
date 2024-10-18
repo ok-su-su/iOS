@@ -185,7 +185,7 @@ final class TokenRequestActor: @unchecked Sendable {
   func setProgressStatus(_ status: TokenRequestActorStatus) {
     switch status {
     case .progress:
-      self.requestProgressStatus = status
+      requestProgressStatus = status
     case .notProgress:
       DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
         self.requestProgressStatus = status
