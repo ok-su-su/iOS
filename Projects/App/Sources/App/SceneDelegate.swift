@@ -28,13 +28,13 @@ class MySceneDelegate: UIResponder, UIWindowSceneDelegate {
   // MARK: - Tells the delegate that the scene is about to begin running in the foreground and become visible to the user.
 
   func sceneWillEnterForeground(_: UIScene) {
-    SSTimeOut.enterForegroundScreen()
+//    SSTimeOut.enterForegroundScreen()
   }
 
   // MARK: - Tells the delegate that the scene is running in the background and is no longer onscreen.
 
   func sceneDidEnterBackground(_: UIScene) {
-    SSTimeOut.enterBackground()
+//    SSTimeOut.enterBackground()
   }
 }
 
