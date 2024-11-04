@@ -91,6 +91,7 @@ struct CreateEnvelopeRouter: Sendable {
     fromState state: CreateEnvelopePath.State,
     createEnvelopeProperty: Shared<CreateEnvelopeProperty>
   ) {
+    executeFirebaseLogger(type, fromState: state)
     switch state {
     case .createEnvelopePrice:
       switch type {
@@ -187,6 +188,7 @@ struct CreateEnvelopeRouter: Sendable {
         if state.path.isEmpty {
           return .send(.dismiss(true))
         }
+
         return .send(.dismissScreen)
           .throttle(
             id: CancelID.dismiss,
@@ -285,5 +287,86 @@ struct CreateEnvelopeRouter: Sendable {
 extension Reducer where State == CreateEnvelopeRouter.State, Action == CreateEnvelopeRouter.Action {
   func addFeatures() -> some ReducerOf<Self> {
     forEach(\.path, action: \.path)
+  }
+}
+
+extension CreateEnvelopeRouter {
+  private func executeFirebaseLogger(_ type: CreateEnvelopeInitialType, fromState: CreateEnvelopePath.State) {
+    switch fromState {
+    case .createEnvelopePrice:
+      switch type {
+      case .sentWithFriendID,
+          .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .price))
+      case .received:
+        break
+      }
+
+    case .createEnvelopeName:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .name))
+      case .received:
+        break
+      }
+
+    case .createEnvelopeRelation:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .relation))
+      case .received:
+        break
+      }
+
+    case .createEnvelopeEvent:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .category))
+      case .received:
+        break
+      }
+    case .createEnvelopeDate:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .date))
+      case .received:
+        break
+      }
+    case .createEnvelopeAdditionalSection:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .selectAdditional))
+      case .received:
+        break
+      }
+    case .createEnvelopeAdditionalMemo:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: .memo))
+      case .received:
+        break
+      }
+    case .createEnvelopeAdditionalContact:
+      switch type {
+      case .sentWithFriendID, .sent:
+        ssLogEvent( SentEvents.tappedNextButtonAtCreateEnvelope(type: .phoneNumber))
+      case .received:
+        break
+      }
+    case .createEnvelopeAdditionalIsGift:
+      switch type {
+      case .sentWithFriendID, .sent :
+        ssLogEvent( SentEvents.tappedNextButtonAtCreateEnvelope(type: .gift))
+      case .received:
+        break
+      }
+    case .createEnvelopeAdditionalIsVisitedEvent:
+      switch type {
+      case .sentWithFriendID, .sent :
+        ssLogEvent( SentEvents.tappedNextButtonAtCreateEnvelope(type: .isVisited))
+      case .received:
+        break
+      }
+    }
   }
 }
