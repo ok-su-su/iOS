@@ -39,7 +39,7 @@ public extension TargetScript {
     basedOnDependencyAnalysis: false
   )
   
-  static var swiftLint: Self = .post(
+  static let swiftLint: Self = .post(
     script: """
       export PATH="$PATH:/opt/homebrew/bin"
       if which swiftlint > /dev/null; then

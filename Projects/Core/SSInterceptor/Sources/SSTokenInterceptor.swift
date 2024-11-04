@@ -75,7 +75,6 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
       completion(.doNotRetryWithError(error))
       return
     }
-    os_log("401에러가 발생했습니다. Token 재발급을 실행합니다.")
     refreshTokenWithNetworking(completion)
   }
 
@@ -110,15 +109,14 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
           refreshToken: responseDTO.refreshToken,
           refreshTokenExp: responseDTO.refreshTokenExp
         ))
-        os_log("토큰 재발급에 성공했습니다. 이천 요청을 수행합니다.")
         // progressStatus 변경
         statusActor.setProgressStatus(.notProgress)
         completion(.retry)
       case let .failure(error):
-        completion(.doNotRetryWithError(error))
+        completion(.doNotRetryWithError(SSTokenRetryError.failedRetryTokenRequest(error)))
       }
     } catch {
-      completion(.doNotRetryWithError(error))
+      completion(.doNotRetryWithError(SSTokenRetryError.failedRetryTokenRequest(error)))
     }
   }
 }
@@ -192,6 +190,10 @@ final class TokenRequestActor: @unchecked Sendable {
       }
     }
   }
+}
+
+enum SSTokenRetryError: Error, Sendable {
+  case failedRetryTokenRequest(Error)
 }
 
 // MARK: - TokenRequestActorStatus
