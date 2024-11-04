@@ -15,9 +15,9 @@ public enum TabBarEvents: FireBaseSelectContentable {
   case MyPage
   case Vote
 
-  public var eventName: String {"tab_view"}
-  public var eventParameters: [String : Any] {
-    let currentEventName =  switch self {
+  public var eventName: String { "tab_view" }
+  public var eventParameters: [String: Any] {
+    let currentEventName = switch self {
     case .Received:
       "받아요"
     case .Sent:
@@ -31,5 +31,4 @@ public enum TabBarEvents: FireBaseSelectContentable {
     }
     return ["tab_name": currentEventName]
   }
-
 }

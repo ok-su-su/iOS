@@ -192,6 +192,8 @@ final class TokenRequestActor: @unchecked Sendable {
   }
 }
 
+// MARK: - SSTokenRetryError
+
 enum SSTokenRetryError: Error, Sendable {
   case failedRetryTokenRequest(Error)
 }

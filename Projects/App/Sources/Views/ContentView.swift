@@ -25,6 +25,7 @@ final class ContentViewObject: ObservableObject, @unchecked Sendable {
 
   func setup() {
     // MARK: EnvelopeView
+
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
       ssLogEvent(TabBarEvents.Sent)
       self.type = .envelope

@@ -32,6 +32,7 @@ public func ssLogEvent(
 public func ssLogEvent(eventName: String, extraParameters: [String: Any] = [:]) {
   Analytics.logEvent(eventName, parameters: extraParameters)
 }
+
 public func ssLogEvent(_ content: FireBaseSelectContentable) {
   Analytics.logEvent(content.eventName, parameters: content.eventParameters)
 }

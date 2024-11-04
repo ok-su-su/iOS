@@ -9,6 +9,6 @@
 import Foundation
 
 public protocol FireBaseSelectContentable {
-  var eventParameters: [String: Any] { get}
+  var eventParameters: [String: Any] { get }
   var eventName: String { get }
 }
