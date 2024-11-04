@@ -8,6 +8,7 @@
 
 import Foundation
 import OSLog
+import SSInterceptor
 import SSNotification
 
 final class SSTimeOut {

@@ -72,8 +72,7 @@ public final class SSTokenManager: Sendable {
       }
       return Date.now > refreshTokenExp
     } catch {
-      os_log("\(error.localizedDescription)")
-      return false
+      return true
     }
   }
 

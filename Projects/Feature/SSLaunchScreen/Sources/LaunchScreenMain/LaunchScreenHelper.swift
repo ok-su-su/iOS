@@ -8,9 +8,11 @@
 
 import Dependencies
 import Foundation
+import Moya
 import OSLog
 import SSInterceptor
 import SSNetwork
+import SSNotification
 import SSPersistancy
 
 // MARK: - LaunchScreenTokenNetwork
@@ -27,23 +29,23 @@ struct LaunchScreenTokenNetwork: Sendable {
     if SSTokenManager.shared.isRefreshTokenExpired() {
       return newUserRoutine()
     }
-
+    // 토큰을 리프래시 합니다.
     do {
-      try await SSTokenInterceptor.shared.isValidToken()
       try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
       os_log("토큰 갱신에 성공하였습니다.")
 
-      await prevUserNewFeature105()
+      // 버전이 추가되면서 새로운 로직입니다.
+      await prevUserNewFeature1_0_5()
 
       return .prevUser
     } catch {
-      os_log("\(error.localizedDescription)")
+      NotificationCenter.default.post(name: SSNotificationName.logError, object: error)
       return newUserRoutine()
     }
   }
 
   /// 1.0.5 버전에 ACCESSTOKEN에 관한 로직입니다.
-  @Sendable private static func prevUserNewFeature105() async {
+  @Sendable private static func prevUserNewFeature1_0_5() async {
     // 만약 USERID가 없을 경우에 로직을 실행합니다.
     if SSTokenManager.shared.getUserID() == nil {
       try? await SSTokenInterceptor.shared.setUserNameByAccessToken()
