@@ -92,6 +92,7 @@ struct CreateEnvelopeRouter: Sendable {
     createEnvelopeProperty: Shared<CreateEnvelopeProperty>
   ) {
     // MARK: FireBase Logger
+
     pushButtonLogEvent(type, lastPathState: state)
 
     switch state {
@@ -200,18 +201,21 @@ struct CreateEnvelopeRouter: Sendable {
           )
 
       case .dismissScreen:
-        let createType = state.type.toCreateType
         let lastPath = state.path.popLast()
+
         // MARK: FireBase Logger
+
         backButtonLogEvent(state.type, lastPathState: lastPath)
-        
+
         return .send(.changeProgress, animation: .easeIn(duration: 0.8))
 
       case .header:
         return .none
 
       case let .pushAdditionalScreen(screenType):
+
         // MARK: FireBase Logger
+
         pushButtonLogEvent(state.type, lastPathState: state.path.last)
 
         switch screenType {
@@ -234,12 +238,10 @@ struct CreateEnvelopeRouter: Sendable {
         // MARK: Additional Section 분기
 
       case .pushCreateEnvelopeAdditional:
-        let createType = state.type
-        let lastPath = state.path.last
 
-        // API통신 작업
+        // 봉투 생성 API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
-          ssLogEvent(createType.toCreateType, lastPathState: lastPath, eventType: .none)
+          finishCreateEnvelopeLogEvent(state.type)
           return requestCreateEnvelope()
         }
 

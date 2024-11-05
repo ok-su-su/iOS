@@ -1,5 +1,5 @@
 //
-//  SentEvents.swift
+//  CreateEnvelopeSentEvents.swift
 //  SSCreateEnvelope
 //
 //  Created by MaraMincho on 11/5/24.
@@ -9,26 +9,28 @@
 import Foundation
 import SSFirebase
 
-// MARK: - SentEvents
+// MARK: - CreateEnvelopeSentEvents
 
-public enum SentEvents: FireBaseSelectContentable {
+enum CreateEnvelopeSentEvents: FireBaseSelectContentable {
   case tappedCreateEnvelope
   case tappedNextButtonAtCreateEnvelope(type: CreateEnvelopeViewTypes)
   case tappedBackButtonAtCreateEnvelope(type: CreateEnvelopeViewTypes)
   case finishCreateEnvelope
 
-  public var eventParameters: [String: Any] {
+  var eventParameters: [String: Any] {
     switch self {
     case let .tappedNextButtonAtCreateEnvelope(type):
       ["field_name": type.description]
     case let .tappedBackButtonAtCreateEnvelope(type):
       ["field_name": type.description]
+    case .finishCreateEnvelope:
+      ["tap_name": "보내요"]
     default:
       [:]
     }
   }
 
-  public var eventName: String {
+  var eventName: String {
     switch self {
     case .tappedCreateEnvelope:
       "send_envelope_creation_start"

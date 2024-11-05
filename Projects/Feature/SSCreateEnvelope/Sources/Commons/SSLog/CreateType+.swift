@@ -23,9 +23,8 @@ extension CreateType {
 extension CreateEnvelopeInitialType {
   func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
     switch self {
-    case let .sentWithFriendID(int64):
-      .Sent(.createEnvelope(viewType))
-    case .sent:
+    case .sent,
+         .sentWithFriendID:
       .Sent(.createEnvelope(viewType))
     case .received:
       .Received(.createEnvelope(viewType))
@@ -52,7 +51,17 @@ func pushButtonLogEvent(_ createType: CreateEnvelopeInitialType, lastPathState s
   }
   switch createType {
   case .sent:
-    ssLogEvent(SentEvents.tappedNextButtonAtCreateEnvelope(type: getViewType(state)))
+    ssLogEvent(CreateEnvelopeSentEvents.tappedNextButtonAtCreateEnvelope(type: getViewType(state)))
+  case .received:
+    break
+  }
+}
+
+func finishCreateEnvelopeLogEvent(_ createType: CreateEnvelopeInitialType) {
+  switch createType {
+  case .sent,
+       .sentWithFriendID:
+    ssLogEvent(CreateEnvelopeSentEvents.finishCreateEnvelope)
   case .received:
     break
   }
@@ -68,12 +77,13 @@ func backButtonLogEvent(_ createType: CreateEnvelopeInitialType, lastPathState s
   }
   switch createType {
   case .sent:
-    ssLogEvent(SentEvents.tappedBackButtonAtCreateEnvelope(type: getViewType(state)))
+    ssLogEvent(CreateEnvelopeSentEvents.tappedBackButtonAtCreateEnvelope(type: getViewType(state)))
   case .received:
     break
   }
 }
 
+@available(*, deprecated, renamed: "backButtonLogEvent(CreateInitailType:lastPathState:)", message: "use anthoer moethod")
 func ssLogEvent(
   _ createType: CreateType,
   eventName: String = "",

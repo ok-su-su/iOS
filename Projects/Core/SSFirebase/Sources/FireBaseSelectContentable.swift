@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol FireBaseSelectContentable {
+public protocol FireBaseSelectContentable: Sendable {
   var eventParameters: [String: Any] { get }
   var eventName: String { get }
 }
