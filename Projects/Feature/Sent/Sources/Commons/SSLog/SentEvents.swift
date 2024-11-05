@@ -1,5 +1,5 @@
 //
-//  Logger.swift
+//  SentEvents.swift
 //  Sent
 //
 //  Created by MaraMincho on 11/5/24.
