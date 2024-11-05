@@ -29,6 +29,14 @@ public func ssLogEvent(
   Analytics.logEvent(viewType.eventLogName(eventName), parameters: extraParameters)
 }
 
+public func ssLogEvent(eventName: String, extraParameters: [String: Any] = [:]) {
+  Analytics.logEvent(eventName, parameters: extraParameters)
+}
+
+@Sendable public func ssLogEvent(_ content: FireBaseSelectContentable) {
+  Analytics.logEvent(content.eventName, parameters: content.eventParameters)
+}
+
 public func ssErrorLogEvent(
   eventName: String = "ErrorEvent",
   parameters: [String: Any]

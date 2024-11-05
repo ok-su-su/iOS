@@ -122,7 +122,9 @@ struct SentMain: Sendable {
     case .finishedCreateEnvelopes:
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
+    // create Envelope
     case .tappedFloatingButton:
+      ssLogEvent(SentEvents.tappedCreateEnvelope)
       return .send(.inner(.showCreateEnvelopRouter))
 
     case .pullRefreshButton:

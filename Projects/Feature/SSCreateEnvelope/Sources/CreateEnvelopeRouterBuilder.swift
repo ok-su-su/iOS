@@ -75,7 +75,7 @@ public enum CreateEnvelopeInitialType: Equatable, Sendable {
 
 // MARK: - CreateType
 
-enum CreateType: Equatable, CaseIterable {
+enum CreateType: Equatable, CaseIterable, CustomStringConvertible {
   case sent
   case received
 
@@ -93,5 +93,14 @@ enum CreateType: Equatable, CaseIterable {
       return nil
     }
     return CreateType.allCases.first { $0.key == val }
+  }
+
+  var description: String {
+    switch self {
+    case .sent:
+      "보내요"
+    case .received:
+      "받아요"
+    }
   }
 }

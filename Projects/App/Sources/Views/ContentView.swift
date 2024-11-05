@@ -24,19 +24,26 @@ final class ContentViewObject: ObservableObject, @unchecked Sendable {
   @Published var type: SSTabType = .envelope
 
   func setup() {
+    // MARK: EnvelopeView
+
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedEnveloped, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.Sent)
       self.type = .envelope
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedInventory, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.Received)
       self.type = .received
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.Statistics)
       self.type = .statistics
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedVote, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.Vote)
       self.type = .vote
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedMyPage, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.MyPage)
       self.type = .mypage
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.goMainScene, object: nil, queue: .main) { _ in
@@ -46,6 +53,7 @@ final class ContentViewObject: ObservableObject, @unchecked Sendable {
       self.nowScreenType = .loginAndRegister
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.goMyPageEditMyProfile, object: nil, queue: .main) { _ in
+      ssLogEvent(TabBarEvents.MyPage)
       self.type = .mypage
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
         NotificationCenter.default.post(name: SSNotificationName.goEditProfile, object: nil)
