@@ -10,6 +10,7 @@ import Foundation
 import OSLog
 import SSInterceptor
 import SSNotification
+import SSNotification
 
 final class SSTimeOut {
   private nonisolated(unsafe) static let shared = SSTimeOut()
@@ -27,6 +28,22 @@ final class SSTimeOut {
 
   static func enterForegroundScreen() {
     os_log("포그라운드 진입")
+    reloadToken()
+//    resetApp()
+  }
+
+  private static func reloadToken() {
+    Task {
+      do {
+        try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
+      } catch {
+        let errorMessage = "Token refresh error with switching app\n" + error.localizedDescription
+        NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
+      }
+    }
+  }
+
+  private static func resetApp() {
     defer {
       shared.enteredBackgroundDate = nil
     }

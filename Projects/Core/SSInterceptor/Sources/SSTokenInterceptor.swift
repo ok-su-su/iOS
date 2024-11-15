@@ -70,7 +70,7 @@ public struct SSTokenInterceptor: RequestInterceptor, Sendable {
   public func retry(_ request: Request, for _: Session, dueTo error: any Error, completion: @escaping (RetryResult) -> Void) {
     guard
       let response = request.task?.response as? HTTPURLResponse,
-      response.statusCode == 401
+      response.statusCode == 500
     else {
       completion(.doNotRetryWithError(error))
       return
