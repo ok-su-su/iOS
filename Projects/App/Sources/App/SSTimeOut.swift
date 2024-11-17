@@ -11,6 +11,7 @@ import OSLog
 import SSInterceptor
 import SSNotification
 import SSNotification
+import SSPersistancy
 
 final class SSTimeOut {
   private nonisolated(unsafe) static let shared = SSTimeOut()
@@ -29,16 +30,18 @@ final class SSTimeOut {
   static func enterForegroundScreen() {
     os_log("포그라운드 진입")
     reloadToken()
-//    resetApp()
   }
 
   private static func reloadToken() {
-    Task {
-      do {
-        try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
-      } catch {
-        let errorMessage = "Token refresh error with switching app\n" + error.localizedDescription
-        NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
+    // 이전에 로그인한 이력이 있다면 토큰 리프레시 로직을 진행합니다. 
+    if SSTokenManager.shared.getUserID() != nil {
+      Task {
+        do {
+          try await SSTokenInterceptor.shared.refreshTokenWithNetwork()
+        } catch {
+          let errorMessage = "Token refresh error with switching app\n" + error.localizedDescription
+          NotificationCenter.default.post(name: SSNotificationName.logError, object: errorMessage)
+        }
       }
     }
   }
