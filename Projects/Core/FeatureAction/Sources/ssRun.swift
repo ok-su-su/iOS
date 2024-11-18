@@ -27,7 +27,7 @@ public extension Effect {
     }
     return .run(priority: priority, operation: operation) { error, send in
 
-      var errorDescription = String(customDumping: error)
+      let errorDescription = String(customDumping: error)
 
       // LogError
       let errorMessage =
