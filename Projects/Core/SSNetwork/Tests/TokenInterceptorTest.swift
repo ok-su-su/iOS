@@ -10,33 +10,33 @@ import Moya
 @testable import SSNetwork
 import XCTest
 
-final class TokenInterceptorTest: XCTestCase {
-  struct MockHelper: TokenInterceptHelpable {
-    func getToken() -> (accessToken: String, refreshToken: String)? {
-      return ("AccessToken", "RefreshToken")
-    }
-
-    func getTokenData() throws -> Data {
-      Data()
-    }
-
-    var accessTokenString: String = "AccessToken"
-    var refreshTokenString: String = "RefreshToken"
-  }
-
-  struct TokenInterceptorTestTarget: TargetType {
-    var baseURL: URL = .init(string: "www.susu.com")!
-    var path: String = ""
-    var method: Moya.Method = .get
-    var task: Moya.Task = .requestPlain
-    var headers: [String: String]?
-  }
-
-  var helper = MockHelper()
-
-  override func setUpWithError() throws {}
-
-  override func tearDownWithError() throws {}
+//final class TokenInterceptorTest: XCTestCase {
+//  struct MockHelper: TokenInterceptHelpable {
+//    func getToken() -> (accessToken: String, refreshToken: String)? {
+//      return ("AccessToken", "RefreshToken")
+//    }
+//
+//    func getTokenData() throws -> Data {
+//      Data()
+//    }
+//
+//    var accessTokenString: String = "AccessToken"
+//    var refreshTokenString: String = "RefreshToken"
+//  }
+//
+//  struct TokenInterceptorTestTarget: TargetType {
+//    var baseURL: URL = .init(string: "www.susu.com")!
+//    var path: String = ""
+//    var method: Moya.Method = .get
+//    var task: Moya.Task = .requestPlain
+//    var headers: [String: String]?
+//  }
+//
+//  var helper = MockHelper()
+//
+//  override func setUpWithError() throws {}
+//
+//  override func tearDownWithError() throws {}
 
   // TODO: 테스트 할 방법 생각해보기
 //  func test_Interceptor() async {
@@ -56,4 +56,4 @@ final class TokenInterceptorTest: XCTestCase {
 //      session: .init(interceptor: interceptor)
 //    )
 //  }
-}
+//}

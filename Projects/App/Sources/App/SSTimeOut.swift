@@ -10,7 +10,6 @@ import Foundation
 import OSLog
 import SSInterceptor
 import SSNotification
-import SSNotification
 import SSPersistancy
 
 final class SSTimeOut {
@@ -33,7 +32,7 @@ final class SSTimeOut {
   }
 
   private static func reloadToken() {
-    // 이전에 로그인한 이력이 있다면 토큰 리프레시 로직을 진행합니다. 
+    // 이전에 로그인한 이력이 있다면 토큰 리프레시 로직을 진행합니다.
     if SSTokenManager.shared.getUserID() != nil {
       Task {
         do {
