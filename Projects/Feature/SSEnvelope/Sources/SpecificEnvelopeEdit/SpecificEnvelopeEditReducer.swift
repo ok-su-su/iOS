@@ -30,20 +30,21 @@ public struct SpecificEnvelopeEditReducer: Sendable {
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     var isLoading = false
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State? = nil
-    let isShowCategory: Bool
+    let type: SpecificEnvelopeType
 
-    init(editHelper: SpecificEnvelopeEditHelper, isShowCategory: Bool = true) {
-      self.isShowCategory = isShowCategory
+    init(editHelper: SpecificEnvelopeEditHelper, envelopeType type: SpecificEnvelopeType) {
       _editHelper = .init(editHelper)
+      self.type = type
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
       visitedSection = .init(singleSelectButtonHelper: _editHelper.visitedSectionButtonHelper)
     }
 
-    public init(envelopeID: Int64, isShowCategory: Bool = true) async throws {
+    public init(envelopeID: Int64) async throws {
       let network = EnvelopeNetwork.liveValue
       let helper = try await network.getSpecificEnvelopeHistoryEditHelperBy(envelopeID)
-      self.init(editHelper: helper, isShowCategory: isShowCategory)
+      let envelopeType = helper.envelopeType
+      self.init(editHelper: helper, envelopeType: envelopeType)
     }
 
     var isValidToSave: Bool {
@@ -280,6 +281,7 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       }
     }
   }
+
 }
 
 extension Reducer where State == SpecificEnvelopeEditReducer.State, Action == SpecificEnvelopeEditReducer.Action {

@@ -76,9 +76,10 @@ public struct SpecificEnvelopeEditView: View {
 
   @ViewBuilder
   private func makeSubContents() -> some View {
+    let envelopeType = store.type
     VStack(spacing: 0) {
       // Section
-      if store.isShowCategory {
+      if Constants.categoryAvailableType.contains(envelopeType) {
         makeEventEditableSection()
       }
 
@@ -262,5 +263,7 @@ public struct SpecificEnvelopeEditView: View {
     static let itemVerticalSpacing: CGFloat = 16
   }
 
-  private enum Constants {}
+  private enum Constants: Sendable {
+    static let categoryAvailableType: [SpecificEnvelopeEditReducer.EnvelopeType] = [.sent]
+  }
 }

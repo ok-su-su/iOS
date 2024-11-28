@@ -13,6 +13,19 @@ import SSRegexManager
 // MARK: - SpecificEnvelopeEditHelper
 
 public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
+
+  var envelopeType: SpecificEnvelopeType {
+    let typeString = envelopeDetailProperty.envelope.type
+    switch typeString {
+    case "SENT" :
+      return .sent
+    case "RECEIVED":
+      return .received
+    default:
+      return .sent
+    }
+  }
+  
   var envelopeEditProperties: [EnvelopeEditPropertiable] {
     [
       priceProperty,
@@ -58,9 +71,10 @@ public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
     customRelationItem: CreateEnvelopeRelationItemProperty
   ) {
     self.envelopeDetailProperty = envelopeDetailProperty
-
+    // Price 관련
     priceProperty = .init(price: envelopeDetailProperty.envelope.amount)
 
+    // 만약 현재 이벤트에 default 이벤트에 존재 하지 않는다면
     eventSectionButtonCustomItem = customEventItem
     eventSectionButtonCustomItem.name = envelopeDetailProperty.category.customCategory ?? ""
     eventSectionButtonHelper = .init(
