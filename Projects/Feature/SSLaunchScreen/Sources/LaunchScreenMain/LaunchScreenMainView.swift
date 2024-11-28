@@ -37,7 +37,9 @@ struct LaunchScreenMainView: View {
     }
     .navigationBarBackButtonHidden()
     .onAppear {
-      store.send(.onAppear(true))
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        store.send(.onAppear(true))
+      }
     }
     .sSAlert(
       isPresented: $store.showMandatoryUpdateAlert.sending(\.mandatoryUpdateAlert),

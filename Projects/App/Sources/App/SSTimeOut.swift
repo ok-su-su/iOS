@@ -16,6 +16,7 @@ final class SSTimeOut {
   private nonisolated(unsafe) static let shared = SSTimeOut()
   private var timeoutInterval: Int = 60 * 10
   private var enteredBackgroundDate: Date?
+  private var initialLoading: Bool = false
 
   static func setTimeoutInterval(minute: Int, seconds: Int) {
     shared.timeoutInterval = minute * 60 + seconds
@@ -23,6 +24,10 @@ final class SSTimeOut {
 
   static func enterBackground() {
     os_log("백그라운드 진입")
+    if shared.initialLoading == false {
+      shared.initialLoading = true
+      return
+    }
     shared.enteredBackgroundDate = Date.now
   }
 

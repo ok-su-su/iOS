@@ -38,8 +38,15 @@ public extension MoyaProvider {
     }.eraseToAnyPublisher()
   }
 
+  private func makeReport(_ target: Target) -> String {
+    var report = String()
+    dump(target, to: &report)
+    return report
+  }
+
   /// Async Await용 MoyaProvider
   func request<T: Decodable>(_ target: Target) async throws -> T {
+    let report = makeReport(target)
     return try await withCheckedThrowingContinuation { continuation in
       self.request(target) { result in
         switch result {
@@ -47,7 +54,6 @@ public extension MoyaProvider {
           // statusCode 검사
           if 200 ..< 300 ~= response.statusCode {
             guard let res = try? JSONDecoder.default.decode(T.self, from: response.data) else {
-              let data = String(data: response.data, encoding: .utf8) ?? ""
               continuation.resume(throwing: MoyaError.jsonMapping(response))
               return
             }
@@ -58,20 +64,17 @@ public extension MoyaProvider {
 
         case let .failure(error):
           if let errorDescription = error.errorDescription {
-            os_log("errorDescription: \(errorDescription) \n localizedDescription: \(error.localizedDescription)")
+            os_log("report: \(report) \n, errorDescription: \(errorDescription) \n localizedDescription: \(error.localizedDescription)")
           }
-          let willSendError: Error
-          switch error {
+          let willSendError: Error = switch error {
           case let .statusCode(response):
-            let requestData = String(data: response.request?.httpBody, encoding: .utf8)
-            willSendError = SUSUError(error: error, response: response)
+            SUSUError(error: error, response: response)
 
           case let .underlying(error, response):
-            let requestData = String(data: response?.request?.httpBody, encoding: .utf8)
-            willSendError = SUSUError(error: error, response: response)
+            SUSUError(error: error, response: response)
 
           default:
-            willSendError = error
+            error
           }
           continuation.resume(throwing: willSendError)
         }
