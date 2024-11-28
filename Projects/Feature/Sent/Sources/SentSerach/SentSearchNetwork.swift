@@ -20,7 +20,6 @@ struct SentSearchNetwork {
   var searchFriendsByName: @Sendable (_ name: String) async throws -> [SentSearchItem]
   @Sendable private static func _searchFriendByName(name: String) async throws -> [SentSearchItem] {
     let data: PageResponseDtoSearchFriendResponse = try await provider.request(.searchFriend(name: name))
-    dump(data)
     return data.data.compactMap { dto -> SentSearchItem? in
       let targetDate = CustomDateFormatter.getYearAndMonthDateString(from: dto.recentEnvelope?.handedOverAt)
       return .init(

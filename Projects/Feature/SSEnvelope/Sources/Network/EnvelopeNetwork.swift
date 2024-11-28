@@ -74,8 +74,8 @@ struct EnvelopeNetwork {
 
   private static func getCategoryAndRelationItem() async throws -> ([CreateEnvelopeEventProperty], [CreateEnvelopeRelationItemProperty]) {
     let dto: CreateEnvelopesConfigResponse = try await provider.request(.getEditItems)
-    let categories = dto.categories.sorted(by: { $0.seq < $1.seq })
-    let relationships = dto.relationships.sorted(by: { $0.id < $1.id })
+    let categories = dto.categories.map { CreateEnvelopeEventProperty($0) }.sorted(by: { $0.seq < $1.seq })
+    let relationships = dto.relationships.map { CreateEnvelopeRelationItemProperty($0) }.sorted(by: { $0.id < $1.id })
     return (categories, relationships)
   }
 }
