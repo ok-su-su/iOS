@@ -49,6 +49,8 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     self.initialSelectedID = initialSelectedID
     self.customTextFieldPrompt = customTextFieldPrompt
     self.isEssentialProperty = isEssentialProperty
+
+    selectedItem = items.filter { $0.id == initialSelectedID }.first
   }
 
   public mutating func updateCustomItem(_ item: Item) {

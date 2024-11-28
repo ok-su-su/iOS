@@ -53,7 +53,7 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
           return .none
         }
         state.isOnAppear = isAppear
-        return .send(.tappedID(state.initialSelectedID))
+        return .none
 
       case let .tappedID(id):
         state.singleSelectButtonHelper.selectItem(by: id)

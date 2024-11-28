@@ -264,6 +264,6 @@ public struct SpecificEnvelopeEditView: View {
   }
 
   private enum Constants: Sendable {
-    static let categoryAvailableType: [SpecificEnvelopeEditReducer.EnvelopeType] = [.sent]
+    static let categoryAvailableType: [SpecificEnvelopeType] = [.sent]
   }
 }

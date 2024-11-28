@@ -13,11 +13,10 @@ import SSRegexManager
 // MARK: - SpecificEnvelopeEditHelper
 
 public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
-
   var envelopeType: SpecificEnvelopeType {
     let typeString = envelopeDetailProperty.envelope.type
     switch typeString {
-    case "SENT" :
+    case "SENT":
       return .sent
     case "RECEIVED":
       return .received
@@ -25,7 +24,7 @@ public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
       return .sent
     }
   }
-  
+
   var envelopeEditProperties: [EnvelopeEditPropertiable] {
     [
       priceProperty,
@@ -183,6 +182,7 @@ public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
 
   func isValidToSave() -> Bool {
     let isChanged = !envelopeEditProperties.filter(\.isChanged).isEmpty
+    print(eventSectionButtonHelper)
     let isValid = envelopeEditProperties.filter { $0.isValid == false }.isEmpty
     return isValid && isChanged
   }
@@ -209,7 +209,7 @@ extension SingleSelectButtonHelper: EnvelopeEditPropertiable {
     if let initialCustomTitle = initialSelectedCustomTitle, isCustomItemSelected {
       return initialCustomTitle != selectedItem?.title
     }
-    // 커스텀 아이템이 선택되지 않았다면
+    // 커스텀 아이템이 존재하지 않았다면 선택되지 않았다면
     return initialSelectedID != selectedItem?.id
   }
 }
