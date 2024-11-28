@@ -30,7 +30,7 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
     private mutating func setCustomTextField() {
       if initialSelectedID == singleSelectButtonHelper.isCustomItem?.id {
         customTextFieldText = singleSelectButtonHelper.isCustomItem?.title ?? ""
-        singleSelectButtonHelper.saveCustomTextField(title: customTextFieldText)
+        singleSelectButtonHelper.saveInitialCustomTextField(title: customTextFieldText)
       }
     }
   }

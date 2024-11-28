@@ -50,7 +50,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
     self.customTextFieldPrompt = customTextFieldPrompt
     self.isEssentialProperty = isEssentialProperty
 
-    selectedItem = items.filter { $0.id == initialSelectedID }.first
+    selectItem(by: initialSelectedID)
   }
 
   public mutating func updateCustomItem(_ item: Item) {
@@ -98,6 +98,12 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
 
   public mutating func saveCustomTextField(title: String) {
     selectedItem = nil
+    isStartedAddingNewCustomItem = false
+    isCustomItem?.title = title
+    isSaved = true
+  }
+
+  public mutating func saveInitialCustomTextField(title: String) {
     isStartedAddingNewCustomItem = false
     isCustomItem?.title = title
     isSaved = true

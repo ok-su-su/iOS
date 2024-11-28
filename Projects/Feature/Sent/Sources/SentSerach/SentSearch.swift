@@ -154,5 +154,3 @@ extension Reducer where State == SentSearch.State, Action == SentSearch.Action {
     forEach(\.path, action: \.path)
   }
 }
-
-

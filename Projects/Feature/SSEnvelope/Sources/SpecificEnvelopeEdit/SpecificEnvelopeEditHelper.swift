@@ -182,7 +182,6 @@ public struct SpecificEnvelopeEditHelper: Equatable, Sendable {
 
   func isValidToSave() -> Bool {
     let isChanged = !envelopeEditProperties.filter(\.isChanged).isEmpty
-    print(eventSectionButtonHelper)
     let isValid = envelopeEditProperties.filter { $0.isValid == false }.isEmpty
     return isValid && isChanged
   }

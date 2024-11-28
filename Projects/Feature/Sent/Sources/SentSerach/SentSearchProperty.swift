@@ -8,6 +8,7 @@
 
 import Foundation
 import SSSearch
+
 // MARK: - SentSearchProperty
 
 struct SentSearchProperty: SSSearchPropertiable, Sendable {
@@ -39,7 +40,6 @@ extension SentSearchProperty {
   }
 }
 
-
 // MARK: - SentSearchItem
 
 struct SentSearchItem: SSSearchItemable, Hashable, Codable, Sendable {
@@ -52,4 +52,3 @@ struct SentSearchItem: SSSearchItemable, Hashable, Codable, Sendable {
   /// 날짜 이름 입니다.
   var secondContentDescription: String?
 }
-
