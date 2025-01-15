@@ -22,19 +22,19 @@ public enum RegexPatternString {
   public var regexString: String {
     switch self {
     case .name:
-      "^.{1,10}$"
+      "^\\S(?:.{0,8}\\S)?$"
     case .price:
       "^[\\d]{1,10}$"
     case .relationship:
-      "^.{1,10}$"
+      "^\\S(?:.{0,8}\\S)?$"
     case .category:
-      "^.{1,10}$"
+      "^\\S(?:.{0,8}\\S)?$"
     case .ledger:
-      "^.{1,10}$"
+      "^\\S(?:.{0,8}\\S)?$"
     case .gift:
-      "^.{1,30}$"
+      "^\\S(?:.{0,28}\\S)?$"
     case .memo:
-      "^.{1,30}$"
+      "^\\S(?:.{0,28}\\S)?$"
     case .contacts:
       "^[\\d]{11}$"
     case .voteContents:
