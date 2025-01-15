@@ -22,17 +22,17 @@ public enum RegexPatternString {
   public var regexString: String {
     switch self {
     case .name:
-      "^[가-힣|a-z|A-Z|0-9| |.]{1,10}$"
+      "^.{1,10}$"
     case .price:
       "^[\\d]{1,10}$"
     case .relationship:
-      "^[가-힣|a-z|A-Z| ]{1,10}$"
+      "^.{1,10}$"
     case .category:
-      "^[가-힣|a-z|A-Z| ]{1,10}$"
+      "^.{1,10}$"
     case .ledger:
-      "^[가-힣|a-z|A-Z| ]{1,10}$"
+      "^.{1,10}$"
     case .gift:
-      "^[가-힣|a-z|A-Z|0-9| ]{1,30}$"
+      "^.{1,30}$"
     case .memo:
       "^.{1,30}$"
     case .contacts:
