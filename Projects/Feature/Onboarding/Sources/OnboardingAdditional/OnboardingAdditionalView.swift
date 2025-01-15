@@ -125,6 +125,7 @@ struct OnboardingAdditionalView: View {
     .safeAreaInset(edge: .bottom) {
       makeNextScreenButton()
     }
+    .ssLoading(store.isLoading)
     .selectableBottomSheetWithBottomView(
       store: $store.scope(state: \.bottomSheet, action: \.scope.bottomSheet),
       cellCount: 6,

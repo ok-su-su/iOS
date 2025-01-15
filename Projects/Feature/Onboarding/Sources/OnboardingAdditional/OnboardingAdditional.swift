@@ -23,6 +23,7 @@ struct OnboardingAdditional {
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
     var helper: OnboardingAdditionalProperty
+    var isLoading: Bool = false
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<BottomSheetYearItem>.State? = nil
 
     init() {
@@ -45,7 +46,9 @@ struct OnboardingAdditional {
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case isLoading(Bool)
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -93,7 +96,8 @@ struct OnboardingAdditional {
         body.setGender(state.helper.selectedGenderItem)
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
-        return .ssRun { _ in
+        return .ssRun { send in
+          await send(.inner(.isLoading(true)))
           // 화면 전환
           defer {
             NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
@@ -103,9 +107,15 @@ struct OnboardingAdditional {
 
           let userID = try await network.requestUserID()
           try await OnboardingAdditionalPersistence.saveUserID(userID)
+          await send(.inner(.isLoading(false)))
         }
       case .scope(.bottomSheet):
         return .none
+
+      case let .inner(.isLoading(val)) :
+        state.isLoading = val
+        return .none
+
       }
     }
     .addFeatures0()
