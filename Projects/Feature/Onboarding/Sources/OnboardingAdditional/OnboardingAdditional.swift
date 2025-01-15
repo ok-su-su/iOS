@@ -62,6 +62,17 @@ struct OnboardingAdditional {
 
   @Dependency(\.onboardingAdditionalNetwork) var network
 
+  private func handleSignup(send _: Send<Action>) async throws {
+    guard let body = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
+      return
+    }
+    let response = try await network.requestSignUp(body)
+    try OnboardingAdditionalPersistence.saveToken(response)
+
+    let userID = try await network.requestUserID()
+    try await OnboardingAdditionalPersistence.saveUserID(userID)
+  }
+
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
       HeaderViewFeature()
@@ -98,24 +109,20 @@ struct OnboardingAdditional {
 
         return .ssRun { send in
           await send(.inner(.isLoading(true)))
-          // 화면 전환
-          defer {
+          do {
+            try await handleSignup(send: send)
             NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
+          } catch {
+            throw error
           }
-          let response = try await network.requestSignUp(body)
-          try OnboardingAdditionalPersistence.saveToken(response)
-
-          let userID = try await network.requestUserID()
-          try await OnboardingAdditionalPersistence.saveUserID(userID)
           await send(.inner(.isLoading(false)))
         }
       case .scope(.bottomSheet):
         return .none
 
-      case let .inner(.isLoading(val)) :
+      case let .inner(.isLoading(val)):
         state.isLoading = val
         return .none
-
       }
     }
     .addFeatures0()
