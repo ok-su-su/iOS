@@ -23,6 +23,7 @@ struct OnboardingAdditional {
     var header: HeaderViewFeature.State = .init(.init(type: .depthProgressBar(1)))
     var presentBirthBottomSheet: Bool = false
     var helper: OnboardingAdditionalProperty
+    var isLoading: Bool = false
     @Presents var bottomSheet: SSSelectableBottomSheetReducer<BottomSheetYearItem>.State? = nil
 
     init() {
@@ -45,7 +46,9 @@ struct OnboardingAdditional {
     case tappedNextButton
   }
 
-  enum InnerAction: Equatable {}
+  enum InnerAction: Equatable {
+    case isLoading(Bool)
+  }
 
   enum AsyncAction: Equatable {}
 
@@ -58,6 +61,17 @@ struct OnboardingAdditional {
   enum DelegateAction: Equatable {}
 
   @Dependency(\.onboardingAdditionalNetwork) var network
+
+  private func handleSignup(send _: Send<Action>) async throws {
+    guard let body = SharedStateContainer.getValue(SignUpBodyProperty.self) else {
+      return
+    }
+    let response = try await network.requestSignUp(body)
+    try OnboardingAdditionalPersistence.saveToken(response)
+
+    let userID = try await network.requestUserID()
+    try await OnboardingAdditionalPersistence.saveUserID(userID)
+  }
 
   var body: some Reducer<State, Action> {
     Scope(state: \.header, action: \.scope.header) {
@@ -93,18 +107,21 @@ struct OnboardingAdditional {
         body.setGender(state.helper.selectedGenderItem)
         body.setBirth(state.helper.selectedBirthItemToBodyString())
 
-        return .ssRun { _ in
-          // 화면 전환
-          defer {
+        return .ssRun { send in
+          await send(.inner(.isLoading(true)))
+          do {
+            try await handleSignup(send: send)
             NotificationCenter.default.post(name: SSNotificationName.goMainScene, object: nil)
+          } catch {
+            throw error
           }
-          let response = try await network.requestSignUp(body)
-          try OnboardingAdditionalPersistence.saveToken(response)
-
-          let userID = try await network.requestUserID()
-          try await OnboardingAdditionalPersistence.saveUserID(userID)
+          await send(.inner(.isLoading(false)))
         }
       case .scope(.bottomSheet):
+        return .none
+
+      case let .inner(.isLoading(val)):
+        state.isLoading = val
         return .none
       }
     }

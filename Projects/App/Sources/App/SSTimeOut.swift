@@ -24,14 +24,14 @@ final class SSTimeOut {
 
   static func enterBackground() {
     os_log("백그라운드 진입")
-    if shared.initialLoading == false {
-      shared.initialLoading = true
-      return
-    }
     shared.enteredBackgroundDate = Date.now
   }
 
   static func enterForegroundScreen() {
+    if shared.initialLoading == false {
+      shared.initialLoading = true
+      return
+    }
     os_log("포그라운드 진입")
     reloadToken()
   }
