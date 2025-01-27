@@ -159,7 +159,7 @@ struct OtherStatisticsView: View {
   private func makeHistoryView() -> some View {
     HistoryVerticalChartView(
       property: store.helper.chartProperty,
-      chartLeadingLabel: "올해 쓴 금액",
+      chartLeadingLabel: "최근 6개월 간 쓴 금액",
       chartTrailingLabel: store.helper.chartTotalPrice.description + "만원",
       animationDuration: animationDuration
     )
