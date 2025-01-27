@@ -12,6 +12,7 @@ import OSLog
 import SSFilter
 import SSFirebase
 import SSLayout
+import SSRegexManager
 import SwiftUI
 
 // MARK: - SentEnvelopeFilter
@@ -126,7 +127,7 @@ struct SentEnvelopeFilter: Sendable {
   private func filterEffect(_ state: inout State, _ action: SSFilterReducer<SentPerson>.Action) -> Effect<Action> {
     switch action {
     case let .delegate(.changeTextField(text)):
-      if NameRegexManager.isValid(name: text) {
+      if RegexManager.isValidName(text) {
         return .send(.getFriendsDataByName(text))
       }
       return .none

@@ -11,6 +11,7 @@ import Designsystem
 import FeatureAction
 import Foundation
 import OSLog
+import SSRegexManager
 import SSSearch
 
 // MARK: - SentSearch
@@ -54,7 +55,7 @@ struct SentSearch: Sendable {
   func searchAction(state: inout State, action: SSSearchReducer<SentSearchProperty>.Action) -> Effect<Action> {
     switch action {
     case let .changeTextField(textFieldText):
-      if NameRegexManager.isValid(name: textFieldText) || Int64(textFieldText) != nil {
+      if RegexManager.isValidName(textFieldText) || Int64(textFieldText) != nil {
         return .send(.searchEnvelope)
           .throttle(id: ThrottleID.searchThrottleID, for: .seconds(0.5), scheduler: mainQueue, latest: true)
       }
@@ -127,8 +128,6 @@ struct SentSearch: Sendable {
       case .searchEnvelope:
         let currentTextFieldName = state.property.textFieldText
         return .ssRun { send in
-          os_log("검색 시작합니다. \(currentTextFieldName)")
-          // 이름을 통해 검색
           async let searchedEnvelopes = network.searchFriendsByName(currentTextFieldName)
           let amount = Int64(currentTextFieldName)
           async let searchedEnvelopesByAmount = amount != nil ? network.requestSearchFriendsByAmount(amount!) : []
