@@ -67,6 +67,7 @@ public struct CreateEnvelopeName: Sendable {
       return .none
 
     case let .changeText(text):
+      let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
       state.textFieldText = text
       let pushable = RegexManager.isValidName(text)
       state.isPushable = pushable

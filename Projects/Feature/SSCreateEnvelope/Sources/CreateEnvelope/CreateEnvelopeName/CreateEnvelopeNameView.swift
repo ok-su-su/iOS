@@ -67,6 +67,7 @@ public struct CreateEnvelopeNameView: View {
     }
   }
 
+  @State private var currentTextFieldText: String = ""
   @ViewBuilder
   private func makeContentView() -> some View {
     let titleText = store.createType == .sent ? Constants.sentTitleText : Constants.receivedTitleText
@@ -88,15 +89,22 @@ public struct CreateEnvelopeNameView: View {
 
       TextField(
         "",
-        text: $store.textFieldText.sending(\.view.changeText),
+        text: $currentTextFieldText,
+//        text: $store.textFieldText.sending(\.view.changeText),
         prompt: Text("이름을 입력해 주세요").foregroundStyle(SSColor.gray30),
         axis: .vertical
       )
+
       .onReturnKeyPressed(textFieldText: store.textFieldText) { text in
         isFocused = false
         store.sendViewAction(.changeText(text))
       }
       .submitLabel(.done)
+      .onChange(of: currentTextFieldText) { _, newValue in
+
+        currentTextFieldText = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        store.sendViewAction(.changeText(currentTextFieldText))
+      }
       .foregroundStyle(SSColor.gray100)
       .modifier(SSTypoModifier(.title_xl))
       .focused($isFocused)
@@ -114,6 +122,7 @@ public struct CreateEnvelopeNameView: View {
       SSColor
         .gray15
         .ignoresSafeArea()
+        .contentShape(Rectangle())
         .whenTapDismissKeyboard()
       makeContentView()
         .showToast(store: store.scope(state: \.toast, action: \.scope.toast))
