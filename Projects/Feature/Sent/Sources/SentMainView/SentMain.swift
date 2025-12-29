@@ -348,6 +348,7 @@ enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
   case oldest
   case highestAmount
   case lowestAmount
+  case alphabet
 
   var description: String {
     switch self {
@@ -359,6 +360,8 @@ enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
       "금액 높은 순"
     case .lowestAmount:
       "금액 낮은 순"
+    case .alphabet:
+      "가나다순"
     }
   }
 
@@ -374,6 +377,8 @@ enum FilterDialItem: Int, SSSelectBottomSheetPropertyItemable {
       "amount,desc"
     case .lowestAmount:
       "amount,asc"
+    case .alphabet:
+      "alphabet"
     }
   }
 }
@@ -385,6 +390,7 @@ extension [FilterDialItem] {
       .oldest,
       .highestAmount,
       .lowestAmount,
+      .alphabet,
     ]
   }
 
