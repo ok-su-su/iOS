@@ -29,7 +29,7 @@ struct LedgerDetailProperty: Equatable {
   /// 장부 종료 날짜
   let endDate: Date
   /// CustomCategory
-  var customCategory: String? = nil
+  var customCategory: String?
   /// 봉투 갯수
   let totalCounts: Int64
 

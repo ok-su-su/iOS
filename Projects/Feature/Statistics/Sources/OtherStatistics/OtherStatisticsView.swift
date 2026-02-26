@@ -110,7 +110,7 @@ struct OtherStatisticsView: View {
               .applySSFont(.title_s)
           } else {
             CustomNumericNumberView(
-              descriptionSlice: $store.helper.nowSentPriceSlice,
+              descriptionSlice: .constant(store.helper.nowSentPriceSlice),
               animationDuration: animationDuration,
               isEmptyState: false,
               height: 30,
@@ -139,7 +139,7 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeRelationAverage() -> some View {
     StatisticsType2CardWithAnimation(
-      property: $store.helper.relationProperty,
+      property: .constant(store.helper.relationProperty),
       textColor: SSColor.gray100,
       emptyStateTextColor: SSColor.gray40
     )
@@ -148,7 +148,7 @@ struct OtherStatisticsView: View {
   @ViewBuilder
   private func makeEventAverage() -> some View {
     StatisticsType2CardWithAnimation(
-      property: $store.helper.categoryProperty,
+      property: .constant(store.helper.categoryProperty),
       animationDuration: animationDuration,
       textColor: SSColor.gray100,
       emptyStateTextColor: SSColor.gray40

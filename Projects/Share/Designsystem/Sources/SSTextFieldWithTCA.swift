@@ -128,17 +128,16 @@ public struct SSTextFieldReducer: Sendable {
     Reduce { state, action in
       switch action {
       case let .changeTextField(text):
-        state.property.text = text
+        state.$property.text.withLock { $0 = text }
         return .send(.checkValidation)
-
       case .tappedCloseButton:
         return .send(.changeTextField(""))
       case .checkValidation:
         let isValid = state.property.isValidation()
-        state.property.status = isValid ? .active : .error
+        state.$property.status.withLock { $0 = isValid ? .active : .error }
         return .none
       case let .changedOnFocused(focused):
-        state.property.isFocus = focused
+        state.$property.isFocus.withLock { $0 = focused }
         return .none
       }
     }

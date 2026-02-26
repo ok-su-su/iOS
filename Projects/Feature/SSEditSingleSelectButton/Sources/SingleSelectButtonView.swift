@@ -14,7 +14,7 @@ import SwiftUI
 public struct SingleSelectButtonView<Item: SingleSelectButtonItemable>: View {
   // MARK: Reducer
 
-  var ssButtonFrame: SSButtonProperty.SSButtonFrame? = nil
+  var ssButtonFrame: SSButtonProperty.SSButtonFrame?
   var isOneLine: Bool = false
   var titleTextColor: Color
 

@@ -23,9 +23,9 @@ struct VoteDetailReducer: Sendable {
     var id: Int64
     var isOnAppear = false
     /// 과어에 투표한 VoteID입니다.
-    var isPrevVoteID: Int64? = nil
+    var isPrevVoteID: Int64?
     /// 현재 선택한 VoteID입니다.
-    var selectedVotedID: Int64? = nil
+    var selectedVotedID: Int64?
     var header: HeaderViewFeature.State = .init(.init(title: "", type: .depth2CustomIcon(.reportIcon)))
     var presentReportAlert: Bool = false
 
@@ -35,7 +35,7 @@ struct VoteDetailReducer: Sendable {
       return (voteDetailProperty?.count ?? 0) + myVoteWeight
     }
 
-    var voteDetailProperty: VoteDetailProperty? = nil
+    var voteDetailProperty: VoteDetailProperty?
     var isLoading: Bool { voteDetailProperty == nil }
     var voteDetailProgressProperty: VoteDetailProgressProperty = .init(selectedVotedID: nil, items: [])
     var presentDeleteAlert: Bool = false
@@ -60,6 +60,8 @@ struct VoteDetailReducer: Sendable {
     case patchVote
     case report
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -119,7 +121,6 @@ struct VoteDetailReducer: Sendable {
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .updateVoteDetail(property):
-
       // updateIsSelectedVoteProperty
       if let votedItem = property.options.filter(\.isVoted).first {
         state.selectedVotedID = votedItem.id

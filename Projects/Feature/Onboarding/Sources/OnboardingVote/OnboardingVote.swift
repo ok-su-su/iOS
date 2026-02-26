@@ -67,6 +67,7 @@ struct OnboardingVote: Sendable {
           await send(.inner(.saveVote))
           OnboardingRouterPublisher.shared.send(.login(.init()))
         }
+
       case .async(.getVoteItems):
         return .ssRun { [helper = state.networkHelper] send in
           let items = await helper.getOnboardingVoteItems()

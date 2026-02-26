@@ -15,7 +15,7 @@ import SSSelectableItems
 struct CreateEnvelopeRelationItemPropertyHelper: Equatable, Sendable {
   var selectedID: [Int] = []
   var defaultRelations: [CreateEnvelopeRelationItemProperty] = []
-  var customRelation: CreateEnvelopeRelationItemProperty? = nil
+  var customRelation: CreateEnvelopeRelationItemProperty?
 
   mutating func resetSelectedItems() {
     selectedID.removeAll()
@@ -48,7 +48,7 @@ struct CreateEnvelopeRelationItemPropertyHelper: Equatable, Sendable {
 
 public typealias CreateEnvelopeRelationItemProperty = RelationshipModel
 
-// MARK: SSSelectableItemable
+// MARK: - CreateEnvelopeRelationItemProperty + @retroactive SSSelectableItemable
 
 extension CreateEnvelopeRelationItemProperty: @retroactive SSSelectableItemable {
   public var title: String {

@@ -18,8 +18,8 @@ struct SentPeopleFilterHelper: Equatable {
   var sentPeople: [SentPerson]
   var selectedPerson: [SentPerson] = []
 
-  var lowestAmount: Int64? = nil
-  var highestAmount: Int64? = nil
+  var lowestAmount: Int64?
+  var highestAmount: Int64?
 
   var isFilteredAmount: Bool {
     return lowestAmount != nil && highestAmount != nil

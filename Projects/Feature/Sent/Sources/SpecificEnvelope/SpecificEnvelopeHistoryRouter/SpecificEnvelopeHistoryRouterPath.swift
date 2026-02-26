@@ -12,6 +12,7 @@ import SSEnvelope
 
 // MARK: - SpecificEnvelopeHistoryRouterPath
 
+@CasePathable
 @Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum SpecificEnvelopeHistoryRouterPath {
   case specificEnvelopeHistoryList(SpecificEnvelopeHistoryList)

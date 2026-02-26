@@ -26,7 +26,7 @@ struct OnboardingRegisterName: Sendable {
 
     init() {
       _textFieldProperty = .init(
-        SSTextFieldReducerProperty(
+        value: SSTextFieldReducerProperty(
           text: "",
           maximumTextLength: 10,
           regexPattern: RegexPatternString.name.regexString,
@@ -37,6 +37,8 @@ struct OnboardingRegisterName: Sendable {
       textField = .init(property: _textFieldProperty)
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)

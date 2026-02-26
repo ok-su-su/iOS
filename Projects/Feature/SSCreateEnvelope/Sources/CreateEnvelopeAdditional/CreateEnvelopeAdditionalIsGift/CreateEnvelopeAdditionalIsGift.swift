@@ -26,6 +26,8 @@ public struct CreateEnvelopeAdditionalIsGift: Sendable {
     }
   }
 
+  @CasePathable
+
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -72,7 +74,7 @@ public struct CreateEnvelopeAdditionalIsGift: Sendable {
         return .send(.inner(.push))
 
       case let .view(.changedTextField(newText)):
-        state.textFieldText = newText
+        state.$textFieldText.withLock { $0 = newText }
         let pushable = RegexManager.isValidGift(newText)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByGift(newText) ?

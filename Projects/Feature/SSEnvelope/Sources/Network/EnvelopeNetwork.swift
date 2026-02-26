@@ -147,6 +147,7 @@ extension EnvelopeNetwork: DependencyKey {
 
       case .getEditItems:
         return .requestPlain
+
       case let .editFriends(_, property):
         return .requestData(encode(property))
 

@@ -17,6 +17,6 @@ extension VoteDetailProperty {
   var createdAtLabel: String { createdAt.subtractFromNowAndMakeLabel() }
 }
 
-// MARK: - VoteOptionCountModel + Identifiable
+// MARK: - VoteOptionCountModel + @retroactive Identifiable
 
 extension VoteOptionCountModel: @retroactive Identifiable {}

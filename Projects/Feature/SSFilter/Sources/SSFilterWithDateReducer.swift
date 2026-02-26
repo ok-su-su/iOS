@@ -22,7 +22,7 @@ public struct SSFilterWithDateReducer: Sendable {
     @Shared var dateProperty: SSFilterWithDateHelper
     @Presents var datePicker: SSDateSelectBottomSheetReducer.State?
     init() {
-      _dateProperty = .init(.init())
+      _dateProperty = .init(value: .init())
     }
   }
 
@@ -54,6 +54,7 @@ public struct SSFilterWithDateReducer: Sendable {
         restrictEndDate: restrictEndDate
       )
       return .none
+
     case .tappedRightDateButton:
       // 만약 startDate를 골랐을 경우
       let restrictStartDate: Date? = state.dateProperty.isInitialStateOfStartDate ? nil : state.dateProperty.startDate
@@ -72,7 +73,7 @@ public struct SSFilterWithDateReducer: Sendable {
       return .none
 
     case .tappedResetButton:
-      state.dateProperty.resetDate()
+      state.$dateProperty.withLock { $0.resetDate() }
       return .none
     }
   }

@@ -24,7 +24,7 @@ struct CreateEnvelopeAdditionalSectionHelper: Equatable, Sendable {
     defaultItems = val
   }
 
-  var currentSection: CreateEnvelopeAdditionalSectionSceneType? = nil
+  var currentSection: CreateEnvelopeAdditionalSectionSceneType?
 
   mutating func removeItem(_ id: Int) {
     selectedID = selectedID.filter { $0 != id }

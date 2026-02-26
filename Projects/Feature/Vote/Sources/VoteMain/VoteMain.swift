@@ -35,8 +35,8 @@ struct VoteMain: Sendable {
     fileprivate var taskManager: AsyncMutexManager = .init(mutexCount: 3)
     fileprivate var hasNext: Bool = false
     fileprivate var currentPage: Int32 = 0
-    fileprivate var reportTargetUserID: Int64? = nil
-    fileprivate var reportTargetBoardID: Int64? = nil
+    fileprivate var reportTargetUserID: Int64?
+    fileprivate var reportTargetBoardID: Int64?
 
     fileprivate var voteRequestParam: GetVoteRequestQueryParameter {
       // 만약 InitialState 즉 전체를 선택할 경우에는 boardId를 0으로 해서 네트워크 통신블 보내야 합니다.
@@ -52,6 +52,8 @@ struct VoteMain: Sendable {
 
     init() {}
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
@@ -304,6 +306,7 @@ struct VoteMain: Sendable {
         VoteMemoryCache.save(value: response)
         await send(.inner(.updateVoteHeaderCategory(response)))
       }
+
     case let .reportVote(boardID):
       guard let boardID else {
         return .none
@@ -353,6 +356,7 @@ struct VoteMain: Sendable {
     switch action {
     case let .votePath(.publisherAction(currentAction)):
       return voteDetailPathAction(&state, currentAction)
+
     case .votePath:
       return .none
 

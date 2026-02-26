@@ -45,7 +45,7 @@ public extension MoyaProvider {
   }
 
   /// Async Await용 MoyaProvider
-  func request<T: Decodable>(_ target: Target) async throws -> T {
+  func request<T: Decodable & Sendable>(_ target: Target) async throws -> T {
     let report = makeReport(target)
     return try await withCheckedThrowingContinuation { continuation in
       self.request(target) { result in
@@ -164,6 +164,6 @@ private extension String {
   }
 }
 
-// MARK: - Moya.Response + Sendable
+// MARK: - Moya.Response + @unchecked @retroactive Sendable
 
 extension Moya.Response: @unchecked @retroactive Sendable {}

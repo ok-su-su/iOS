@@ -23,10 +23,12 @@ struct VoteSearch: Sendable {
     var searchReducer: SSSearchReducer<VoteSearchProperty>.State
 
     init() {
-      _helper = Shared(.init())
+      _helper = Shared(value: .init())
       searchReducer = .init(helper: _helper)
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -49,7 +51,7 @@ struct VoteSearch: Sendable {
       state.isOnAppear = isAppear
 
       // set PrevItems
-      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
+      state.$helper.withLock { $0.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems() }
       return .none
     }
   }
@@ -61,7 +63,7 @@ struct VoteSearch: Sendable {
   func innerAction(_ state: inout State, _ action: Action.InnerAction) -> Effect<Action> {
     switch action {
     case let .updateVoteSearchItem(items):
-      state.helper.nowSearchedItem = items
+      state.$helper.withLock { $0.nowSearchedItem = items }
       return .none
     }
   }
@@ -102,6 +104,7 @@ struct VoteSearch: Sendable {
     switch action {
     case let .onAppear(bool):
       return .none
+
     case .tappedCloseButton:
       return .none
 
@@ -114,7 +117,7 @@ struct VoteSearch: Sendable {
 
     case let .tappedDeletePrevItem(id):
       VoteSearchPersistence.deletePrevVoteSearchItemsByID(id)
-      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
+      state.$helper.withLock { $0.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems() }
       return .none
 
     case let .tappedSearchItem(id):
@@ -122,7 +125,7 @@ struct VoteSearch: Sendable {
         VoteSearchPersistence.setPrevVoteSearchItems(targetItem)
       }
       VotePathPublisher.shared.push(.detail(.init(id: id)))
-      state.helper.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems()
+      state.$helper.withLock { $0.prevSearchedItem = VoteSearchPersistence.getPrevVoteSearchItems() }
       return .none
     }
   }

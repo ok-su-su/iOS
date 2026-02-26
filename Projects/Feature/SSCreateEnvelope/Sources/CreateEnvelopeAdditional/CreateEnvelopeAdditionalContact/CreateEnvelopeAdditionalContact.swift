@@ -26,6 +26,8 @@ public struct CreateEnvelopeAdditionalContact: Sendable {
     }
   }
 
+  @CasePathable
+
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -66,14 +68,14 @@ public struct CreateEnvelopeAdditionalContact: Sendable {
         return .none
 
       case let .view(.changedTextField(text)):
-        state.contactHelper.textFieldText = text
+        state.$contactHelper.withLock { $0.textFieldText = text }
         let pushable = RegexManager.isValidContacts(text)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByContacts(text) ?
           .send(.scope(.toast(.showToastMessage(DefaultToastMessage.contact.description)))) : .none
 
       case let .view(.changeIsHighlight(isHighlight)):
-        state.contactHelper.isHighlight = isHighlight
+        state.$contactHelper.withLock { $0.isHighlight = isHighlight }
         return .none
 
       case .inner(.push):

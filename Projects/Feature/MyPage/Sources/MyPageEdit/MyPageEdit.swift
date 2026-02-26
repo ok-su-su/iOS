@@ -58,10 +58,10 @@ struct MyPageEdit: Sendable {
     init() {
       let userInfo = MyPageSharedState.shared.getMyUserInfoDTO() ?? .init(id: 0, name: "", gender: nil, birth: nil)
       self.userInfo = userInfo
-      _selectedBottomSheetItem = .init(nil)
+      _selectedBottomSheetItem = .init(value: nil)
       let initialSelectedGenderItem = Gender.getGenderByKey(userInfo.gender)
       _genderSectionProperty = .init(
-        .init(
+        value: .init(
           titleText: "성별",
           items: .default,
           isCustomItem: nil,
@@ -74,10 +74,10 @@ struct MyPageEdit: Sendable {
 
     init(_ userInfo: UserInfoResponse) {
       self.userInfo = userInfo
-      _selectedBottomSheetItem = .init(nil)
+      _selectedBottomSheetItem = .init(value: nil)
       let initialSelectedGenderItem = Gender.getGenderByKey(userInfo.gender)
       _genderSectionProperty = .init(
-        .init(
+        value: .init(
           titleText: "성별",
           items: .default,
           isCustomItem: nil,
@@ -141,7 +141,7 @@ struct MyPageEdit: Sendable {
       return .send(.inner(.updateInitialProperty))
 
     case let .selectGender(gender):
-      state.genderSectionProperty.selectItem(by: gender.id)
+      state.$genderSectionProperty.withLock { $0.selectItem(by: gender.id) }
       return .none
 
     case let .nameEdited(text):
@@ -197,7 +197,7 @@ struct MyPageEdit: Sendable {
 
       case let .scope(.bottomSheet(.presented(.changedItem(item)))):
         if item == .notSelectedItem {
-          state.selectedBottomSheetItem = nil
+          state.$selectedBottomSheetItem.withLock { $0 = nil }
         }
         return .none
 
@@ -206,7 +206,7 @@ struct MyPageEdit: Sendable {
 
       case .inner(.updateInitialProperty):
         if let birth = state.userInfo.birth {
-          state.selectedBottomSheetItem = .init(description: birth.description + "년", id: birth)
+          state.$selectedBottomSheetItem.withLock { $0 = .init(description: birth.description + "년", id: birth) }
         }
 
         let genderString = state.userInfo.gender

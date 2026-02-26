@@ -39,9 +39,11 @@ public struct CreateEnvelopeRelation: Sendable {
     }
 
     func resetSelected() {
-      createEnvelopeProperty.relationHelper.resetSelectedItems()
+      $createEnvelopeProperty.withLock { $0.relationHelper.resetSelectedItems() }
     }
   }
+
+  @CasePathable
 
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -102,7 +104,7 @@ public struct CreateEnvelopeRelation: Sendable {
       return .none
 
     case let .update(items):
-      state.createEnvelopeProperty.relationHelper.updateItems(items)
+      state.$createEnvelopeProperty.withLock { $0.relationHelper.updateItems(items) }
       return .none
     }
   }

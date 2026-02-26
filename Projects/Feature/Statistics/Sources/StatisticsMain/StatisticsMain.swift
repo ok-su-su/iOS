@@ -23,6 +23,8 @@ struct StatisticsMain: Sendable {
     init() {}
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -79,11 +81,14 @@ struct StatisticsMain: Sendable {
       case let .view(.onAppear(isAppear)):
         state.isOnAppear = isAppear
         return .none
+
       case let .view(.tappedStepper(type)):
         state.helper.selectedStepperType = type
         return .none
+
       case .scope(.header):
         return .none
+
       case .scope(.tabBar):
         return .none
 

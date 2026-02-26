@@ -26,13 +26,15 @@ struct SentSearch: Sendable {
     var search: SSSearchReducer<SentSearchProperty>.State
     var header: HeaderViewFeature.State = .init(.init(type: .depth2Default))
     init() {
-      _property = .init(.default())
+      _property = .init(value: .default())
       search = .init(helper: _property)
     }
   }
 
   @Dependency(\.sentSearchNetwork) var network
   @Dependency(\.sentSearchPersistence) var persistence
+
+  @CasePathable
 
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
@@ -69,8 +71,9 @@ struct SentSearch: Sendable {
 
     case let .tappedDeletePrevItem(id: id):
       persistence.deleteSearchItem(id: id)
-      state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
+      state.$property.withLock { $0.prevSearchedItem = persistence.getPrevSentSearchItems() }
       return .none
+
     case let .tappedSearchItem(id: id):
       let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
       return .ssRun { _ in
@@ -82,6 +85,7 @@ struct SentSearch: Sendable {
         SpecificEnvelopeHistoryRouterPublisher
           .push(.specificEnvelopeHistoryList(.init(envelopeProperty: envelopeProperty)))
       }
+
     default:
       return .none
     }
@@ -110,6 +114,7 @@ struct SentSearch: Sendable {
           },
           .send(.updatePrevSearchedItems)
         )
+
       case .path:
         return .none
 
@@ -136,11 +141,11 @@ struct SentSearch: Sendable {
         }
 
       case let .updateSearchResult(results):
-        state.property.nowSearchedItem = results
+        state.$property.withLock { $0.nowSearchedItem = results }
         return .none
 
       case .updatePrevSearchedItems:
-        state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
+        state.$property.withLock { $0.prevSearchedItem = persistence.getPrevSentSearchItems() }
         return .none
       }
     }

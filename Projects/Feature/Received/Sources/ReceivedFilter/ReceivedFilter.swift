@@ -50,6 +50,8 @@ struct ReceivedFilter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -68,7 +70,7 @@ struct ReceivedFilter: Sendable {
     case let .onAppear(bool):
       state.isAppear = bool
       let prevSelectedItems = state.property.selectedCategories
-      let (startDate, endDate) = state.property.getPrevSelectedDate()
+      let (startDate, endDate) = state.$property.withLock { $0.getPrevSelectedDate() }
       return .merge(
         .send(.async(.getSelectableItems)),
         .send(.scope(.filterAction(.inner(
@@ -116,8 +118,10 @@ struct ReceivedFilter: Sendable {
   private func handleFilterAction(_ state: inout State, _ action: SSFilterReducer<FilterSelectableItemProperty>.Action) -> Effect<Action> {
     switch action {
     case let .delegate(.tappedConfirmButtonWithDateProperty(selectedItems, startDate, endDate)):
-      state.property.selectItems(selectedItems)
-      state.property.updateDateOf(startDate: startDate, endDate: endDate)
+      state.$property.withLock {
+        $0.selectItems(selectedItems)
+        $0.updateDateOf(startDate: startDate, endDate: endDate)
+      }
 
       return .run { send in
         await send(.delegate(.tappedConfirmButton))
@@ -126,6 +130,7 @@ struct ReceivedFilter: Sendable {
 
     case .delegate:
       return .none
+
     default:
       return .none
     }

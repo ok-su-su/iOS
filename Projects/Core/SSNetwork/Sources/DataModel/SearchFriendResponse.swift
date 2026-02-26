@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchFriendResponse
 
-public struct SearchFriendResponse: Equatable, Codable {
+public struct SearchFriendResponse: Equatable, Codable, Sendable {
   public let friend: FriendModel
   public let relationship: RelationshipInfoModel
   public let recentEnvelope: RecentEnvelopeModel?

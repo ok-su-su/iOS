@@ -22,7 +22,7 @@ struct EditMyVote {
     var header: HeaderViewFeature.State = .init(.init(title: "투표 편집", type: .defaultType))
     var voteDetailProperty: VoteDetailProperty
     var headerSectionItem: [VoteSectionHeaderItem] = []
-    var selectedHeaderSectionItem: VoteSectionHeaderItem? = nil
+    var selectedHeaderSectionItem: VoteSectionHeaderItem?
     var textFieldText: String = ""
     var isLoading: Bool = true
     var toast: SSToastReducer.State = .init(.init(toastMessage: DefaultToastMessage.voteContent.message, trailingType: .none))
@@ -38,6 +38,8 @@ struct EditMyVote {
       selectedHeaderSectionItem = headerSectionItem.first(where: { $0.id == voteDetailProperty.board.id })
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
@@ -76,6 +78,7 @@ struct EditMyVote {
     case let .tappedSection(item):
       state.selectedHeaderSectionItem = item
       return .none
+
     case .tappedEditConfirmButton:
       return .ssRun { _ in
         await dismiss()

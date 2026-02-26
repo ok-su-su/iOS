@@ -142,21 +142,18 @@ public extension SSButtonPropertyState {
         20
       case .lh46:
         16
-
       case .mh60:
         24
       case .mh52:
         20
       case .mh44:
         16
-
       case .sh48:
         16
       case .sh40:
         12
       case .sh32:
         8
-
       case .xsh44:
         16
       case .xsh36:
@@ -174,21 +171,18 @@ public extension SSButtonPropertyState {
         12
       case .lh46:
         8
-
       case .mh60:
         16
       case .mh52:
         12
       case .mh44:
         8
-
       case .sh48:
         12
       case .sh40:
         8
       case .sh32:
         4
-
       case .xsh44:
         12
       case .xsh36:

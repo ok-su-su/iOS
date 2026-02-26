@@ -11,6 +11,7 @@ import Foundation
 
 // MARK: - MyPageNavigationPath
 
+@CasePathable
 @Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum MyPageNavigationPath {
   case myPageInfo(MyPageInformation)

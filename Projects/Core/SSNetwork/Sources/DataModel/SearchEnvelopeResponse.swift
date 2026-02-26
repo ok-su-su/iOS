@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SearchEnvelopeResponse: Codable, Equatable {
+public struct SearchEnvelopeResponse: Codable, Equatable, Sendable {
   public let envelope: EnvelopeModel
   public let category: CategoryWithCustomModel?
   public let friend: FriendModel?

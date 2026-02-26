@@ -77,7 +77,6 @@ struct OnboardingVoteView: View {
   var body: some View {
     // for animation
     GeometryReader { geometry in
-
       ZStack {
         SSColor
           .gray15

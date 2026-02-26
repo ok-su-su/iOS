@@ -34,6 +34,8 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
     }
   }
 
+  @CasePathable
+
   public enum Action: Equatable, FeatureAction, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)
@@ -51,7 +53,6 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
   public func viewAction(_ state: inout State, _ action: ViewAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
-
       if state.isOnAppear {
         return .none
       }
@@ -106,12 +107,12 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
   public func asyncAction(_ state: inout State, _ action: AsyncAction) -> ComposableArchitecture.Effect<Action> {
     switch action {
     case .deleteEnvelope:
-
       return .ssRun { [id = state.envelopeID, network, specificEnvelopePublisher, dismiss] _ in
         try await network.deleteEnvelope(id)
         specificEnvelopePublisher.sendDeleteEnvelopeBy(ID: id)
         await dismiss()
       }
+
     case .pushEditing:
       let property = state.envelopeDetailProperty
       return .ssRun { send in
@@ -144,6 +145,7 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
         specificEnvelopePublisher.sendUpdateEnvelopeBy(ID: state.envelopeID)
       }
       return .none
+
     case let .header(.tappedDoubleTextButton(buttonPosition)):
       switch buttonPosition {
       case .leading:
@@ -186,7 +188,6 @@ public struct SpecificEnvelopeDetailReducer: Sendable {
         return delegateAction(&state, currentAction)
       case let .async(currentAction):
         return asyncAction(&state, currentAction)
-
       case .binding:
         return .none
       }

@@ -47,12 +47,12 @@ struct ReceivedMain: Sendable {
     }
 
     init() {
-      _sortProperty = .init(.init())
-      _filterProperty = .init(.init())
+      _sortProperty = .init(value: .init())
+      _filterProperty = .init(value: .init())
     }
   }
 
-  public init() {}
+  init() {}
 
   @Dependency(\.receivedMainNetwork) var network
   @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher
@@ -121,7 +121,7 @@ struct ReceivedMain: Sendable {
       return .none
 
     case .tappedFilteredDateButton:
-      state.filterProperty.resetDate()
+      state.$filterProperty.withLock { $0.resetDate() }
       return .send(.async(.getLedgersInitialPage))
 
     case .tappedFilterButton:
@@ -129,7 +129,7 @@ struct ReceivedMain: Sendable {
       return .none
 
     case let .tappedFilteredPersonButton(id: id):
-      state.filterProperty.deleteSelectedItem(id: id)
+      state.$filterProperty.withLock { $0.deleteSelectedItem(id: id) }
       return .send(.async(.getLedgersInitialPage))
 
     case .tappedSortButton:

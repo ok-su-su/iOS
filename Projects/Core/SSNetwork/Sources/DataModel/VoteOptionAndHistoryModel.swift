@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct VoteOptionAndHistoryModel: Equatable, Decodable {
+public struct VoteOptionAndHistoryModel: Equatable, Decodable, Sendable {
   /// 투표 옵션 id
   public let id: Int64
   /// 투표 id

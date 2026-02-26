@@ -33,7 +33,7 @@ public struct SpecificEnvelopeEditReducer: Sendable {
     let type: SpecificEnvelopeType
 
     init(editHelper: SpecificEnvelopeEditHelper, envelopeType type: SpecificEnvelopeType) {
-      _editHelper = .init(editHelper)
+      _editHelper = .init(value: editHelper)
       self.type = type
       eventSection = .init(singleSelectButtonHelper: _editHelper.eventSectionButtonHelper)
       relationSection = .init(singleSelectButtonHelper: _editHelper.relationSectionButtonHelper)
@@ -51,6 +51,8 @@ public struct SpecificEnvelopeEditReducer: Sendable {
       return editHelper.isValidToSave()
     }
   }
+
+  @CasePathable
 
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -171,27 +173,27 @@ extension SpecificEnvelopeEditReducer: FeatureViewAction, FeatureInnerAction, Fe
       return .none
 
     case let .changeNameTextField(text):
-      state.editHelper.changeName(text)
+      state.$editHelper.withLock { $0.changeName(text) }
       return state.editHelper.isShowToastByName() ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.name.message)))) : .none
 
     case let .changeGiftTextField(text):
-      state.editHelper.changeGift(text)
+      state.$editHelper.withLock { $0.changeGift(text) }
       return state.editHelper.isShowToastByGift() ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.gift.message)))) : .none
 
     case let .changeContactTextField(text):
-      state.editHelper.changeContact(text)
+      state.$editHelper.withLock { $0.changeContact(text) }
       return state.editHelper.isShowToastByContact() ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.contact.message)))) : .none
 
     case let .changeMemoTextField(text):
-      state.editHelper.changeMemo(text)
+      state.$editHelper.withLock { $0.changeMemo(text) }
       return state.editHelper.isShowToastByContact() ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.memo.message)))) : .none
 
     case let .changePriceTextField(text):
-      state.editHelper.changePrice(text)
+      state.$editHelper.withLock { $0.changePrice(text) }
       return state.editHelper.isShowToastByPrice() ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.price.message)))) : .none
 

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchLedgerResponse
 
-public struct SearchLedgerResponse: Codable {
+public struct SearchLedgerResponse: Codable, Sendable {
   public let ledger: LedgerModel
   public let category: CategoryWithCustomModel
   /// 총 금액

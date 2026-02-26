@@ -30,9 +30,9 @@ struct CreateLedgerCategory: Sendable {
     }
 
     init() {
-      _selectableItems = .init([])
-      _selectedItemsID = .init([])
-      _customItems = .init(nil)
+      _selectableItems = .init(value: [])
+      _selectedItemsID = .init(value: [])
+      _customItems = .init(value: nil)
       selection = SSSelectableItemsReducer<CreateLedgerCategoryItem>.State(
         items: _selectableItems,
         selectedID: _selectedItemsID,
@@ -41,6 +41,8 @@ struct CreateLedgerCategory: Sendable {
       )
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -75,8 +77,8 @@ struct CreateLedgerCategory: Sendable {
       let customItem = items.first { $0.isMiscCategory }
       let items = items.filter { $0.isMiscCategory == false }
 
-      state.selectableItems = items
-      state.customItems = customItem
+      state.$selectableItems.withLock { $0 = items }
+      state.$customItems.withLock { $0 = customItem }
       return .none
     }
   }

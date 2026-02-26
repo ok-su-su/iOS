@@ -57,7 +57,7 @@ struct WriteVote: Sendable {
       selectableItems = .init(uniqueElements: [])
       helper.updateHeaderSectionItem(items: sectionHeaderItems, selectedID: selectedHeaderItemID)
       helper.voteTextContent = content
-      helper.selectableItem = .init(uniqueElements: selectableItemsProperty)
+      helper.$selectableItem.withLock { $0 = .init(uniqueElements: selectableItemsProperty) }
       setSelectableItemsState()
     }
 
@@ -76,9 +76,11 @@ struct WriteVote: Sendable {
         return
       }
       selectableItems = selectableItems.filter { $0.id != id }
-      helper.selectableItem = helper.selectableItem.filter { $0.id != id }
+      helper.$selectableItem.withLock { $0 = helper.selectableItem.filter { $0.id != id } }
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -127,6 +129,7 @@ struct WriteVote: Sendable {
            .editOnlyContent:
         return .send(.async(.updateVote))
       }
+
     case .tappedUnavailableEditSectionItem:
       return .send(.scope(.toast(.showToastMessage(Constants.unavailableButtonToastMessage))))
     }
@@ -186,7 +189,6 @@ struct WriteVote: Sendable {
       return .none
     case .header:
       return .none
-
     case let .selectableItems(.element(id: id, action: .deleteComponent)):
       state.deleteSelectableItemsState(id: id)
       return .none

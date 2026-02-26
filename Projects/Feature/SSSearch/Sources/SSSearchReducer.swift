@@ -37,10 +37,10 @@ public struct SSSearchReducer<item: SSSearchPropertiable>: Sendable {
         state.isOnAppear = isAppear
         return .none
       case .tappedCloseButton:
-        state.helper.textFieldText = ""
+        state.$helper.withLock { $0.textFieldText = "" }
         return .none
       case let .changeTextField(text):
-        state.helper.textFieldText = text
+        state.$helper.withLock { $0.textFieldText = text }
         return .none
       case .tappedPrevItem(id: _):
         return .none

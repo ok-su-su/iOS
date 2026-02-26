@@ -29,10 +29,12 @@ struct ReceivedSearch: Sendable {
     var header: HeaderViewFeature.State = .init(.init(type: .depth2NonIconType))
     var toast: SSToastReducer.State = .init(.init(toastMessage: "", trailingType: .none))
     init() {
-      _searchProperty = .init(.default)
+      _searchProperty = .init(value: .default)
       search = .init(helper: _searchProperty)
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -96,6 +98,7 @@ struct ReceivedSearch: Sendable {
 
         .send(.async(.searchLedgerByName(text)))
       )
+
     case let .search(.tappedPrevItem(id)):
       let ledgerMainState = LedgerDetailMain.State(ledgerID: id)
       state.path.append(.main(ledgerMainState))
@@ -132,11 +135,11 @@ struct ReceivedSearch: Sendable {
       return .none
 
     case .prevSearchItems:
-      state.searchProperty.prevSearchedItem = persistence.getPrevSearchItems()
+      state.$searchProperty.withLock { $0.prevSearchedItem = persistence.getPrevSearchItems() }
       return .none
 
     case let .updateSearchItems(items):
-      state.searchProperty.nowSearchedItem = items
+      state.$searchProperty.withLock { $0.nowSearchedItem = items }
       return .none
     }
   }

@@ -47,8 +47,8 @@ public struct SSSelectableItemsView<Item: SSSelectableItemable>: View {
     }
   }
 
-  @ViewBuilder
   /// 만약 커스텀 아이템이 존재 하면
+  @ViewBuilder
   private func makeCustomItem() -> some View {
     // CustomItem을 Edit하는 상황이면
     if store.isAddingNewItem,

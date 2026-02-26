@@ -23,6 +23,8 @@ struct SpecificEnvelopeHistoryRouter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case push(SpecificEnvelopeHistoryRouterPath.State)

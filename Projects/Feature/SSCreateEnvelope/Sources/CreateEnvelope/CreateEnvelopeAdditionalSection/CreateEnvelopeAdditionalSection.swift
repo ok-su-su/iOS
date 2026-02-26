@@ -24,7 +24,7 @@ public struct CreateEnvelopeAdditionalSection: Sendable {
       createEnvelopeSelectionItems = .init(
         items: createEnvelopeProperty.additionalSectionHelper.defaultItems,
         selectedID: createEnvelopeProperty.additionalSectionHelper.selectedID,
-        isCustomItem: .init(nil),
+        isCustomItem: .init(value: nil),
         multipleSelectionCount: 20
       )
       // Set View Defaults Item
@@ -32,7 +32,9 @@ public struct CreateEnvelopeAdditionalSection: Sendable {
     }
 
     private mutating func updateDefaultsItem(_ createType: CreateType) {
-      createEnvelopeProperty.additionalSectionHelper.updateAdditionalSectionItems(createType.toCreateEnvelopeAdditionalSectionProperty)
+      $createEnvelopeProperty.withLock { property in
+        property.additionalSectionHelper.updateAdditionalSectionItems(createType.toCreateEnvelopeAdditionalSectionProperty)
+      }
     }
 
     public enum CreateType: Equatable {
@@ -49,6 +51,8 @@ public struct CreateEnvelopeAdditionalSection: Sendable {
       }
     }
   }
+
+  @CasePathable
 
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -86,6 +90,7 @@ public struct CreateEnvelopeAdditionalSection: Sendable {
       case .view(.onAppear):
         CreateEnvelopeRequestShared.resetAdditional()
         return .none
+
       case .view(.tappedNextButton):
         return .send(.inner(.push))
 

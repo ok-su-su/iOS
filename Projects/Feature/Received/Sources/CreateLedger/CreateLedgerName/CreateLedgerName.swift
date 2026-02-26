@@ -25,6 +25,8 @@ struct CreateLedgerName: Sendable {
     init() {}
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -66,6 +68,7 @@ struct CreateLedgerName: Sendable {
 
       return ToastRegexManager.isShowToastByCustomCategory(text) ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.category.message)))) : .none
+
     case .tappedNextButton:
       CreateLedgerSharedState.setTitle(state.textFieldText)
       CreateLedgerRouterPathPublisher.push(.date(.init()))

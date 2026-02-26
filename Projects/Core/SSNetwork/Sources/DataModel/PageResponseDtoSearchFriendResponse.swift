@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PageResponseDtoSearchFriendResponse: Equatable, Codable {
+public struct PageResponseDtoSearchFriendResponse: Equatable, Codable, Sendable {
   public let data: [SearchFriendResponse]
   public let page: Int?
   public let size: Int?

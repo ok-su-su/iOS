@@ -131,7 +131,7 @@ struct SpecificEnvelopeHistoryListView: View {
     }
     .fullScreenCover(isPresented: $store.isPresentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(
-        currentType: .sentWithFriendID(friendID: store.envelopeProperty.id, friendName: store.envelopeProperty.envelopeTargetUserNameText)
+        currentType: .SentWithFriendID(friendID: store.envelopeProperty.id, friendName: store.envelopeProperty.envelopeTargetUserNameText)
       ) { data in
         store.sendViewAction(.finishedCreateEnvelopes(data))
       }

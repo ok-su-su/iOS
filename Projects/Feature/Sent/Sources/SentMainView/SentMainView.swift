@@ -233,7 +233,7 @@ private struct DestinationsModifier: ViewModifier {
     content
       .fullScreenCover(isPresented: $store.presentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
         CreateEnvelopeRouterBuilder(
-          currentType: .sent
+          currentType: .Sent
         ) { data in
           store.sendViewAction(.finishedCreateEnvelopes(data))
         }

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - PageResponseDtoSearchLedgerResponse
 
-public struct PageResponseDtoSearchLedgerResponse: Codable {
+public struct PageResponseDtoSearchLedgerResponse: Codable, Sendable {
   public let data: [SearchLedgerResponse]
   public let page: Int?
   public let size: Int?

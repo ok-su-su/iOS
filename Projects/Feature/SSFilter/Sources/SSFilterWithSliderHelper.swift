@@ -18,13 +18,13 @@ struct SSFilterWithSliderHelper: Equatable, Sendable {
   private var sliderEndValue: Int64 = 0
   init() {}
 
-  public mutating func sinkFilterPublisher() -> AnyPublisher<Void, Never> {
+  mutating func sinkFilterPublisher() -> AnyPublisher<Void, Never> {
     return sliderProperty
       .objectWillChange
       .eraseToAnyPublisher()
   }
 
-  public mutating func updateSliderMaximumValue(_ val: Int64?) {
+  mutating func updateSliderMaximumValue(_ val: Int64?) {
     let isInitialState = minimumTextValue == 0 && maximumTextValue == 0
     guard let val else { return }
     sliderEndValue = val
@@ -37,7 +37,7 @@ struct SSFilterWithSliderHelper: Equatable, Sendable {
     }
   }
 
-  public mutating func updateSliderPrevValue(minimumValue minVal: Int64?, maximumValue maxVal: Int64?) {
+  mutating func updateSliderPrevValue(minimumValue minVal: Int64?, maximumValue maxVal: Int64?) {
     if let minVal {
       minimumTextValue = minVal
     }

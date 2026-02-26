@@ -43,14 +43,14 @@ public struct CreateEnvelopeDate: Sendable {
 
     public init(_ createEnvelopeProperty: Shared<CreateEnvelopeProperty>) {
       _createEnvelopeProperty = createEnvelopeProperty
-      _selectedDate = .init(.now)
-      _isInitialStateOfDate = .init(true)
+      _selectedDate = .init(value: .now)
+      _isInitialStateOfDate = .init(value: true)
       envelopeTargetName = CreateFriendRequestShared.getName() ?? "김수수"
     }
 
     func resetDatePicker() {
-      isInitialStateOfDate = true
-      selectedDate = .now
+      $isInitialStateOfDate.withLock { $0 = true }
+      $selectedDate.withLock { $0 = .now }
     }
   }
 
@@ -103,6 +103,7 @@ public struct CreateEnvelopeDate: Sendable {
           .send(.scope(.datePicker(.dismiss))),
           .send(.inner(.push))
         )
+
       case .inner(.push):
         CreateEnvelopeRequestShared.setDate(state.selectedDate)
         CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopeDate(state))

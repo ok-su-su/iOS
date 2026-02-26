@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SliceResponseDtoVoteAndOptionsWithCountResponse: Equatable, Decodable {
+public struct SliceResponseDtoVoteAndOptionsWithCountResponse: Equatable, Decodable, Sendable {
   public let data: [VoteAndOptionsWithCountResponse]
   public let page: Int32?
   public let size: Int32?

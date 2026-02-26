@@ -23,7 +23,7 @@ public struct SliderValue {
 
 public class SliderHandle: ObservableObject {
   var isLeftHandle = false
-  weak var otherSlide: SliderHandle? = nil
+  weak var otherSlide: SliderHandle?
 
   /// Slider Range
   let sliderValueStart: Double = 0

@@ -127,6 +127,7 @@ struct OnboardingLogin: Sendable {
           // 만약 이전에 가입한 유저라면
           await send(.async(.loginWithSUSU(loginType: loginType, token: token)))
         }
+
       case let .async(.loginWithSUSU(loginType: loginType, token: token)):
         return .ssRun { _ in
           await network.loginWithSUSU(loginType: loginType, token: token)

@@ -39,9 +39,11 @@ public struct CreateEnvelopeCategory: Sendable {
     }
 
     func resetSelectedItems() {
-      createEnvelopeProperty.eventHelper.resetSelectedItems()
+      $createEnvelopeProperty.withLock { $0.eventHelper.resetSelectedItems() }
     }
   }
+
+  @CasePathable
 
   public enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -95,7 +97,7 @@ public struct CreateEnvelopeCategory: Sendable {
       return .none
 
     case let .update(events):
-      state.createEnvelopeProperty.eventHelper.updateItems(events)
+      state.$createEnvelopeProperty.withLock { $0.eventHelper.updateItems(events) }
       return .none
     }
   }
@@ -163,7 +165,6 @@ public struct CreateEnvelopeCategory: Sendable {
         return scopeAction(&state, currentAction)
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
-
       case .delegate:
         return .none
       }

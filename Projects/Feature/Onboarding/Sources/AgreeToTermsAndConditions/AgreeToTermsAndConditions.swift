@@ -27,6 +27,8 @@ struct AgreeToTermsAndConditions: Sendable {
 
   @Dependency(\.agreeToTermsAndConditionsNetwork) var network
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)
@@ -82,6 +84,7 @@ struct AgreeToTermsAndConditions: Sendable {
 
       case .scope(.header):
         return .none
+
       case let .view(.tappedCheckBox(item)):
         state.helper.check(item)
         return .none
@@ -119,7 +122,11 @@ struct AgreeToTermsAndConditions: Sendable {
         }
 
       case let .inner(.showTermItems(items)):
-        items.forEach { item in state.helper.termItems.append(item) }
+        state.helper.$termItems.withLock { termItems in
+          items.forEach { item in
+            termItems.append(item)
+          }
+        }
         return .none
 
       case let .inner(.showDetailTerms(id: id, description: description)):
@@ -129,6 +136,7 @@ struct AgreeToTermsAndConditions: Sendable {
 
         OnboardingRouterPublisher.shared.send(.termDetail(.init(item: item, detailDescription: description)))
         return .none
+
       case let .view(.viewDidLoad(value)):
         if state.viewDidLoad {
           return .none

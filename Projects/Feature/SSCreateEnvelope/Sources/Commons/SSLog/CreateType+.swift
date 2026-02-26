@@ -12,9 +12,9 @@ import SSFirebase
 extension CreateType {
   func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
     switch self {
-    case .received:
+    case .Received:
       .Received(.createEnvelope(viewType))
-    case .sent:
+    case .Sent:
       .Sent(.createEnvelope(viewType))
     }
   }
@@ -23,10 +23,10 @@ extension CreateType {
 extension CreateEnvelopeInitialType {
   func convertMarktingModuleName(viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
     switch self {
-    case .sent,
-         .sentWithFriendID:
+    case .Sent,
+         .SentWithFriendID:
       .Sent(.createEnvelope(viewType))
-    case .received:
+    case .Received:
       .Received(.createEnvelope(viewType))
     }
   }
@@ -34,51 +34,51 @@ extension CreateEnvelopeInitialType {
 
 func convertMarketingModuleName(_ createType: CreateType, viewType: CreateEnvelopeMarketingModule) -> MarketingModulesMain {
   switch createType {
-  case .sent:
+  case .Sent:
     .Sent(.createEnvelope(viewType))
-  case .received:
+  case .Received:
     .Received(.createEnvelope(viewType))
   }
 }
 
 func pushButtonLogEvent(_ createType: CreateEnvelopeInitialType, lastPathState state: CreateEnvelopePath.State?) {
   let createType: CreateType = switch createType {
-  case .sent,
-       .sentWithFriendID:
-    .sent
-  case .received:
-    .received
+  case .Sent,
+       .SentWithFriendID:
+    .Sent
+  case .Received:
+    .Received
   }
   switch createType {
-  case .sent:
+  case .Sent:
     ssLogEvent(CreateEnvelopeSentEvents.tappedNextButtonAtCreateEnvelope(type: getViewType(state)))
-  case .received:
+  case .Received:
     break
   }
 }
 
 func finishCreateEnvelopeLogEvent(_ createType: CreateEnvelopeInitialType) {
   switch createType {
-  case .sent,
-       .sentWithFriendID:
+  case .Sent,
+       .SentWithFriendID:
     ssLogEvent(CreateEnvelopeSentEvents.finishCreateEnvelope)
-  case .received:
+  case .Received:
     break
   }
 }
 
 func backButtonLogEvent(_ createType: CreateEnvelopeInitialType, lastPathState state: CreateEnvelopePath.State?) {
   let createType: CreateType = switch createType {
-  case .sent,
-       .sentWithFriendID:
-    .sent
-  case .received:
-    .received
+  case .Sent,
+       .SentWithFriendID:
+    .Sent
+  case .Received:
+    .Received
   }
   switch createType {
-  case .sent:
+  case .Sent:
     ssLogEvent(CreateEnvelopeSentEvents.tappedBackButtonAtCreateEnvelope(type: getViewType(state)))
-  case .received:
+  case .Received:
     break
   }
 }

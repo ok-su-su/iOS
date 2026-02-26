@@ -53,22 +53,22 @@ public struct SSDateSelectBottomSheetReducer: Sendable {
     Reduce { state, action in
       switch action {
       case .reset:
-        state.isInitialStateOfDate = true
-        state.selectedDate = .now
+        state.$isInitialStateOfDate.withLock { $0 = true }
+        state.$selectedDate.withLock { $0 = .now }
         return .none
       case .didTapConfirmButton:
-        state.isInitialStateOfDate = false
+        state.$isInitialStateOfDate.withLock { $0 = false }
         return .run { [dismiss = dismiss] _ in
           await dismiss()
         }
       case let .didSelectedStartDate(date):
-        state.isInitialStateOfDate = false
-        state.selectedDate = date
+        state.$isInitialStateOfDate.withLock { $0 = false }
+        state.$selectedDate.withLock { $0 = date }
         return .none
       case let .onAppear(appear):
         if !state.isOnAppear {
           state.isOnAppear = appear
-          state.isInitialStateOfDate = true
+          state.$isInitialStateOfDate.withLock { $0 = true }
         }
         return .none
       case let .changeDatePickerProperty(nextState):

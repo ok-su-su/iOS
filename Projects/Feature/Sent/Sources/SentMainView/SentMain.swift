@@ -48,7 +48,7 @@ struct SentMain: Sendable {
     }
 
     init() {
-      _sentMainProperty = Shared(.init())
+      _sentMainProperty = Shared(value: .init())
     }
   }
 
@@ -59,6 +59,8 @@ struct SentMain: Sendable {
   @Dependency(\.sentMainNetwork) var network
   @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
   @Dependency(\.mainQueue) var mainQueue
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
@@ -108,11 +110,11 @@ struct SentMain: Sendable {
       )
 
     case let .tappedFilteredPersonButton(id):
-      state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.select(selectedId: id) }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case .tappedFilteredAmountButton:
-      state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.deselectAmount() }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .presentCreateEnvelope(present):
@@ -323,7 +325,6 @@ struct SentMain: Sendable {
         return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-
       case .delegate:
         return .none
       }
