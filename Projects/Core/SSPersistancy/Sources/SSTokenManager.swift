@@ -135,7 +135,7 @@ enum SSTokenManagerError: LocalizedError {
 
 // MARK: - SSToken
 
-public struct SSToken: Codable {
+public struct SSToken: Codable, Sendable {
   public let accessToken: String
   public let accessTokenExp: String
   public let refreshToken: String
