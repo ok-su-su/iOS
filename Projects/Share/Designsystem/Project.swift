@@ -10,6 +10,7 @@ let project = Project.makeModule(
     dependencies: [
       .thirdParty(.ComposableArchitecture),
       .thirdParty(.Lottie),
+      .core(.sSNotification)
     ],
     infoPlist: [
       "UIAppFonts": [
