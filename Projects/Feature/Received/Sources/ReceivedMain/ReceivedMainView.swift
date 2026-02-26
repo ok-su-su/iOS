@@ -175,6 +175,12 @@ struct ReceivedMainView: View {
   }
 
   var body: some View {
+    let searchDestinationStore = $store.scope(state: \.presentDestination?.search, action: \.scope.presentDestination.search)
+    let detailDestinationStore = $store.scope(state: \.presentDestination?.detail, action: \.scope.presentDestination.detail)
+    let createLedgerDestinationStore = $store.scope(state: \.presentDestination?.createLedger, action: \.scope.presentDestination.createLedger)
+    let sortDestinationStore = $store.scope(state: \.presentDestination?.sort, action: \.scope.presentDestination.sort)
+    let filterDestinationStore = $store.scope(state: \.presentDestination?.filter, action: \.scope.presentDestination.filter)
+
     ZStack(alignment: .bottomTrailing) {
       SSColor
         .gray15
@@ -192,18 +198,18 @@ struct ReceivedMainView: View {
     .onAppear {
       store.sendViewAction(.onAppear(true))
     }
-    .fullScreenCover(item: $store.scope(state: \.presentDestination?.search, action: \.scope.presentDestination.search)) { store in
-      ReceivedSearchView(store: store)
+    .fullScreenCover(item: searchDestinationStore) { destinationStore in
+      ReceivedSearchView(store: destinationStore)
     }
-    .fullScreenCover(item: $store.scope(state: \.presentDestination?.detail, action: \.scope.presentDestination.detail)) { store in
-      LedgerDetailRouterView(store: store)
+    .fullScreenCover(item: detailDestinationStore) { destinationStore in
+      LedgerDetailRouterView(store: destinationStore)
     }
-    .fullScreenCover(item: $store.scope(state: \.presentDestination?.createLedger, action: \.scope.presentDestination.createLedger)) { store in
-      CreateLedgerRouterView(store: store)
+    .fullScreenCover(item: createLedgerDestinationStore) { destinationStore in
+      CreateLedgerRouterView(store: destinationStore)
     }
-    .selectableBottomSheet(store: $store.scope(state: \.presentDestination?.sort, action: \.scope.presentDestination.sort), cellCount: 4)
-    .fullScreenCover(item: $store.scope(state: \.presentDestination?.filter, action: \.scope.presentDestination.filter)) { store in
-      ReceivedFilterView(store: store)
+    .selectableBottomSheet(store: sortDestinationStore, cellCount: 4)
+    .fullScreenCover(item: filterDestinationStore) { destinationStore in
+      ReceivedFilterView(store: destinationStore)
     }
     .navigationBarBackButtonHidden()
     .ssAnalyticsScreen(moduleName: .Received(.main))
