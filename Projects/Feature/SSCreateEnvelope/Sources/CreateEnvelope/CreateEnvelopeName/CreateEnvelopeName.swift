@@ -99,12 +99,13 @@ public struct CreateEnvelopeName: Sendable {
       return .none
 
     case let .updateEnvelopes(prevEnvelopes):
-      let target = state.createEnvelopeProperty.prevEnvelopes + prevEnvelopes
-      state.createEnvelopeProperty.prevEnvelopes = target.uniqued()
+      state.$createEnvelopeProperty.withLock {
+        $0.prevEnvelopes = ($0.prevEnvelopes + prevEnvelopes).uniqued()
+      }
       return .none
 
     case .emptyTextField:
-      state.createEnvelopeProperty.prevEnvelopes.removeAll()
+      state.$createEnvelopeProperty.withLock { $0.prevEnvelopes.removeAll() }
       return .none
     }
   }

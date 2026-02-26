@@ -103,6 +103,7 @@ public struct CreateEnvelopeDate: Sendable {
           .send(.scope(.datePicker(.dismiss))),
           .send(.inner(.push))
         )
+
       case .inner(.push):
         CreateEnvelopeRequestShared.setDate(state.selectedDate)
         CreateEnvelopeRouterPublisher.shared.next(from: .createEnvelopeDate(state))

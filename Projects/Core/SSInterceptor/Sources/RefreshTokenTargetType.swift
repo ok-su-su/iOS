@@ -20,7 +20,7 @@ public struct RefreshTokenTargetType: SSNetworkTargetType {
 
   public let bodyData: Data
 
-  public var additionalHeader: [String: String]? = nil
+  public var additionalHeader: [String: String]?
 
   public var path: String = "auth/token/refresh"
 

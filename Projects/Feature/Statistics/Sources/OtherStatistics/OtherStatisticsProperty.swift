@@ -65,7 +65,7 @@ struct OtherStatisticsProperty: Equatable, Sendable {
   var selectedAgeItem: Age? = .TWENTY
 
   var relationItems: [RelationBottomSheetItem] = []
-  var selectedRelationItem: RelationBottomSheetItem? = nil
+  var selectedRelationItem: RelationBottomSheetItem?
   var selectedRelationshipID: Int? { selectedRelationItem?.id }
 
   mutating func updateRelationItem(_ items: [RelationBottomSheetItem]) {
@@ -74,7 +74,7 @@ struct OtherStatisticsProperty: Equatable, Sendable {
   }
 
   var categoryItems: [CategoryBottomSheetItem] = []
-  var selectedCategoryItem: CategoryBottomSheetItem? = nil
+  var selectedCategoryItem: CategoryBottomSheetItem?
   var selectedCategoryID: Int? { selectedCategoryItem?.id }
 
   mutating func updateCategoryItem(_ items: [CategoryBottomSheetItem]) {

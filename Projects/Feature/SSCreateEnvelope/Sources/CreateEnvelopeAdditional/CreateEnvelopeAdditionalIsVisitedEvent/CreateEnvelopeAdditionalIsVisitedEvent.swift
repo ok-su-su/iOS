@@ -26,13 +26,13 @@ public struct CreateEnvelopeAdditionalIsVisitedEvent: Sendable {
       createEnvelopeSelectionItems = .init(
         items: isVisitedEventHelper.items,
         selectedID: isVisitedEventHelper.selectedID,
-        isCustomItem: .init(nil)
+        isCustomItem: .init(value: nil)
       )
       reset()
     }
 
     mutating func reset() {
-      isVisitedEventHelper.reset()
+      $isVisitedEventHelper.withLock { $0.reset() }
     }
   }
 

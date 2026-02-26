@@ -117,17 +117,17 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable>: Sendable {
 
       // 사용자가 버튼을 눌렀을 경우에
       case let .view(.tappedItem(id)):
-
         // 이미 선택된 버튼일 때
         if state.selectedID.contains(id) {
-          state.selectedID = state.selectedID.filter { $0 != id }
-          return .send(.delegate(.selected(id: state.selectedID)))
+          let updatedSelection = state.selectedID.filter { $0 != id }
+          state.$selectedID.withLock { $0 = updatedSelection }
+          return .send(.delegate(.selected(id: updatedSelection)))
         }
 
         // 한개의 버튼을 선택하는 화면일 때
         else if state.multipleSelectionCount == 1 {
-          state.selectedID = [id]
-          let curSelection = state.selectedID
+          let curSelection = [id]
+          state.$selectedID.withLock { $0 = curSelection }
           return .send(.delegate(.selected(id: curSelection)))
         }
 
@@ -135,10 +135,14 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable>: Sendable {
         return .send(.inner(.multipleSelection(id: id)))
 
       case let .inner(.multipleSelection(id)):
-        if state.selectedID.count + 1 <= state.multipleSelectionCount {
-          state.selectedID.append(id)
+        var curSelection: [Int] = []
+        state.$selectedID.withLock {
+          if $0.count + 1 <= state.multipleSelectionCount {
+            $0.append(id)
+          }
+          curSelection = $0
         }
-        return .run { [curSelection = state.selectedID] send in
+        return .run { [curSelection] send in
           await send(.delegate(.selected(id: curSelection)))
         }
 
@@ -157,11 +161,15 @@ public struct SSSelectableItemsReducer<Item: SSSelectableItemable>: Sendable {
 
       case .view(.tappedTextFieldSaveAndEditButton):
         state.customItemSaved.toggle()
-        state.isCustomItem?.title = state.customTitleText
+        state.$isCustomItem.withLock {
+          guard var item = $0 else { return }
+          item.title = state.customTitleText
+          $0 = item
+        }
         return .none
 
       case .inner(.startAddCustomRelation):
-        state.selectedID = []
+        state.$selectedID.withLock { $0 = [] }
         state.isAddingNewItem = true
         state.customTitleText = ""
         state.customItemSaved = false

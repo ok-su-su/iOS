@@ -46,7 +46,7 @@ struct OnboardingAdditionalProperty: Equatable {
 
   init() {
     genderItems = GenderType.allCases
-    _selectedBirth = .init(nil)
+    _selectedBirth = .init(value: nil)
     selectedGenderItem = nil
   }
 }

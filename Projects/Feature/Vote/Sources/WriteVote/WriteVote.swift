@@ -127,6 +127,7 @@ struct WriteVote: Sendable {
            .editOnlyContent:
         return .send(.async(.updateVote))
       }
+
     case .tappedUnavailableEditSectionItem:
       return .send(.scope(.toast(.showToastMessage(Constants.unavailableButtonToastMessage))))
     }
@@ -186,7 +187,6 @@ struct WriteVote: Sendable {
       return .none
     case .header:
       return .none
-
     case let .selectableItems(.element(id: id, action: .deleteComponent)):
       state.deleteSelectableItemsState(id: id)
       return .none

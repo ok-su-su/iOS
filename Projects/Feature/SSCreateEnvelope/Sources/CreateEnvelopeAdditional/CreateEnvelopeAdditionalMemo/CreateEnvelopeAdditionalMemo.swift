@@ -78,14 +78,14 @@ public struct CreateEnvelopeAdditionalMemo: Sendable {
         return .none
 
       case let .view(.textFieldChange(text)):
-        state.memoHelper.textFieldText = text
+        state.$memoHelper.withLock { $0.textFieldText = text }
         let pushable = RegexManager.isValidMemo(text)
         state.pushable = pushable
         return ToastRegexManager.isShowToastByMemo(text) ?
           .send(.scope(.toast(.showToastMessage(DefaultToastMessage.memo.message)))) : .none
 
       case let .view(.isHighlightChanged(highlight)):
-        state.memoHelper.isHighlight = highlight
+        state.$memoHelper.withLock { $0.isHighlight = highlight }
         return .none
 
       case .scope(.toast):

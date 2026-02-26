@@ -108,11 +108,11 @@ struct SentMain: Sendable {
       )
 
     case let .tappedFilteredPersonButton(id):
-      state.sentMainProperty.sentPeopleFilterHelper.select(selectedId: id)
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.select(selectedId: id) }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case .tappedFilteredAmountButton:
-      state.sentMainProperty.sentPeopleFilterHelper.deselectAmount()
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.deselectAmount() }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .presentCreateEnvelope(present):

@@ -102,7 +102,7 @@ public struct CreateEnvelopeRelation: Sendable {
       return .none
 
     case let .update(items):
-      state.createEnvelopeProperty.relationHelper.updateItems(items)
+      state.$createEnvelopeProperty.withLock { $0.relationHelper.updateItems(items) }
       return .none
     }
   }

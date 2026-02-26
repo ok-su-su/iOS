@@ -14,7 +14,7 @@ import SSSelectableItems
 
 public typealias CreateEnvelopeCategoryProperty = CategoryModel
 
-// MARK: SSSelectableItemable
+// MARK: - CreateEnvelopeCategoryProperty + @retroactive SSSelectableItemable
 
 extension CreateEnvelopeCategoryProperty: @retroactive SSSelectableItemable {
   public var title: String {
@@ -30,7 +30,7 @@ struct CreateEnvelopeCategoryPropertyHelper: Equatable {
   private var defaultEventStrings: [String] = []
   var defaultEvent: [CreateEnvelopeCategoryProperty] = []
 
-  var customEvent: CreateEnvelopeCategoryProperty? = nil
+  var customEvent: CreateEnvelopeCategoryProperty?
 
   func getSelectedItemID() -> Int? {
     selectedID.first

@@ -16,7 +16,7 @@ private extension UIApplication {
 }
 
 public extension TextField {
-  func onReturnKeyPressed(textFieldText text: String, _ action: @escaping (String) -> Void) -> some View {
+  @MainActor func onReturnKeyPressed(textFieldText text: String, _ action: @escaping (String) -> Void) -> some View {
     modifier(ReturnKeyHandler(text: text, action: action))
   }
 }

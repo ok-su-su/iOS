@@ -41,18 +41,20 @@ struct TextFieldButtonWithTCA<Item: TextFieldButtonWithTCAPropertiable>: Sendabl
       case let .onAppear(isAppear):
         state.isOnAppear = isAppear
         return .none
+
       case let .changedTextfield(text):
-        state.item.title = text
+        state.$item.withLock { $0.title = text }
         return .none
+
       case .tappedCloseButton:
         if !state.item.isSaved && state.item.title != "" {
-          state.item.title = ""
+          state.$item.withLock { $0.title = "" }
           return .none
         }
         return .send(.deleteComponent)
 
       case .tappedSavedAndEditButton:
-        state.item.isSaved.toggle()
+        state.$item.withLock { $0.isSaved.toggle() }
         return .none
 
       case .tappedTextFieldButton:

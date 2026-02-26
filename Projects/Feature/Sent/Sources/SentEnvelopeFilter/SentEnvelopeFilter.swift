@@ -133,10 +133,12 @@ struct SentEnvelopeFilter: Sendable {
       return .none
 
     case let .delegate(.tappedConfirmButtonWithSliderProperty(selectedItems, minimumValue, maximumValue)):
-      state.filterHelper.select(sentPeople: selectedItems)
-      if let minimumValue, let maximumValue {
-        state.filterHelper.lowestAmount = minimumValue
-        state.filterHelper.highestAmount = maximumValue
+      state.$filterHelper.withLock {
+        $0.select(sentPeople: selectedItems)
+        if let minimumValue, let maximumValue {
+          $0.lowestAmount = minimumValue
+          $0.highestAmount = maximumValue
+        }
       }
       return .run { send in
         await send(.tappedConfirmButton)

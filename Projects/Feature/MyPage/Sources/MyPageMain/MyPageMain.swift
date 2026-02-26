@@ -39,7 +39,7 @@ struct MyPageMain {
       = .init(uniqueElements: BottomPageSection.allCases.map { MyPageMainItemListCell<BottomPageSection>.State(property: $0) })
 
     var isShowExcelActivityView: Bool = false
-    var downloadedExcelFileURL: URL? = nil
+    var downloadedExcelFileURL: URL?
 
     var pathState: MyPageRouterAndPathReducer.State = .init()
 
@@ -224,6 +224,7 @@ struct MyPageMain {
     // MiddleSectionList
     case .middleSectionList:
       return .none
+
     case let .bottomSectionList(.element(id: id, action: .tapped)):
       if let currentSection = BottomPageSection(rawValue: id) {
         return handleBottomSection(&state, section: currentSection)

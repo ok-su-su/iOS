@@ -86,6 +86,7 @@ public struct CreateEnvelopeAdditionalSection: Sendable {
       case .view(.onAppear):
         CreateEnvelopeRequestShared.resetAdditional()
         return .none
+
       case .view(.tappedNextButton):
         return .send(.inner(.push))
 

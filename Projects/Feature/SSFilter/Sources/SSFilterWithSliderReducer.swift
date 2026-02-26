@@ -23,7 +23,7 @@ public struct SSFilterWithSliderReducer: Sendable {
     var titleLabel: String
     @Shared var sliderProperty: SSFilterWithSliderHelper
     init(titleLabel: String) {
-      _sliderProperty = .init(.init())
+      _sliderProperty = .init(value: .init())
       self.titleLabel = titleLabel
     }
   }
@@ -60,10 +60,11 @@ public struct SSFilterWithSliderReducer: Sendable {
       )
 
     case .updateSliderProperty:
-      state.sliderProperty.updateSliderValueProperty()
+      state.$sliderProperty.withLock { $0.updateSliderValueProperty() }
       return .none
+
     case .resetSliderProperty:
-      state.sliderProperty.reset()
+      state.$sliderProperty.withLock { $0.reset() }
       return .none
     }
   }
@@ -71,10 +72,10 @@ public struct SSFilterWithSliderReducer: Sendable {
   private func innerAction(_ state: inout State, _ action: InnerAction) -> Effect<Action> {
     switch action {
     case let .updateHighestAmount(val):
-      state.sliderProperty.maximumTextValue = val
+      state.$sliderProperty.withLock { $0.maximumTextValue = val }
       return .none
     case let .updateLowestAmount(val):
-      state.sliderProperty.minimumTextValue = val
+      state.$sliderProperty.withLock { $0.minimumTextValue = val }
       return .none
     }
   }

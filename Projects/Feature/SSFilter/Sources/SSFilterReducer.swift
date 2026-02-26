@@ -22,8 +22,8 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
     var textFieldText: String = ""
 
     var ssFilterItemHelper: SSFilterItemHelper<Item> = .init(selectableItems: [], selectedItems: [])
-    var dateReducer: SSFilterWithDateReducer.State? = nil
-    var sliderReducer: SSFilterWithSliderReducer.State? = nil
+    var dateReducer: SSFilterWithDateReducer.State?
+    var sliderReducer: SSFilterWithSliderReducer.State?
     var isSearchSection: Bool
     let type: InitialType
 

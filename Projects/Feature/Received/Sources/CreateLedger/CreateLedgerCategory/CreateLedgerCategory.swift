@@ -75,8 +75,8 @@ struct CreateLedgerCategory: Sendable {
       let customItem = items.first { $0.isMiscCategory }
       let items = items.filter { $0.isMiscCategory == false }
 
-      state.selectableItems = items
-      state.customItems = customItem
+      state.$selectableItems.withLock { $0 = items }
+      state.$customItems.withLock { $0 = customItem }
       return .none
     }
   }

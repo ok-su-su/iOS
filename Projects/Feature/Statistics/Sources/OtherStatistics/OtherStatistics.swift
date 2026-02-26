@@ -125,20 +125,23 @@ struct OtherStatistics: Sendable {
       return .none
 
     case let .updateRelationItems(val):
-      state.helper.updateRelationItem(val)
+      state.$helper.withLock { $0.updateRelationItem(val) }
       return .none
 
     case let .updateCategoryItems(val):
-      state.helper.updateCategoryItem(val)
+      state.$helper.withLock { $0.updateCategoryItem(val) }
       return .none
 
     case let .updateAged(val):
-      state.helper.selectedAgeItem = .aged(birthYear: val)
+      state.$helper.withLock { $0.selectedAgeItem = .aged(birthYear: val) }
       return .none
 
     case let .updateSUSUStatistics(val):
-      state.helper.updateSUSUStatistics(val)
-      if state.helper.isNowSentPriceEmpty {
+      let isNowSentPriceEmpty = state.$helper.withLock {
+        $0.updateSUSUStatistics(val)
+        return $0.isNowSentPriceEmpty
+      }
+      if isNowSentPriceEmpty {
         return .send(.scope(.toast(.onAppear(true))))
       }
       return .none

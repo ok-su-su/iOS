@@ -117,6 +117,7 @@ struct OnboardingAdditional {
           }
           await send(.inner(.isLoading(false)))
         }
+
       case .scope(.bottomSheet):
         return .none
 

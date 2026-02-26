@@ -80,7 +80,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       return .none
 
     case let .changeNameTextField(name):
-      state.editProperty.changeNameTextField(name)
+      state.$editProperty.withLock { $0.changeNameTextField(name) }
       return .none
     case .tappedStartDatePickerButton:
       let restrictEndDate = state.editProperty.dateEditProperty.isShowEndDate ?
@@ -99,7 +99,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       )
       return .none
     case .tappedDateToggleButton:
-      state.editProperty.dateEditProperty.toggleShowEndDate()
+      state.$editProperty.withLock { $0.dateEditProperty.toggleShowEndDate() }
       return .none
 
     case .tappedSaveButton:

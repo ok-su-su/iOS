@@ -63,6 +63,7 @@ struct MyPageRouterAndPathReducer {
     case .logout:
       state.presentLogoutAlert = true
       return .none
+
     case .resign:
       state.presentResignAlert = true
       return .none

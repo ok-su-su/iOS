@@ -74,10 +74,12 @@ struct LedgerDetailFilter: Sendable {
         .throttle(id: CancelID.searchTextField, for: 0.1, scheduler: mainQueue, latest: true)
 
     case let .delegate(.tappedConfirmButtonWithSliderProperty(selectedItems, minimumValue, maximumValue)):
-      state.property.selectItems(selectedItems)
-      if let minimumValue, let maximumValue {
-        state.property.lowestAmount = minimumValue
-        state.property.highestAmount = maximumValue
+      state.$property.withLock {
+        $0.selectItems(selectedItems)
+        if let minimumValue, let maximumValue {
+          $0.lowestAmount = minimumValue
+          $0.highestAmount = maximumValue
+        }
       }
       return .run { send in
         await send(.delegate(.tappedConfirmButton))

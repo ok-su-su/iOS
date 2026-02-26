@@ -27,7 +27,7 @@ public struct SingleSelectButtonProperty<Item: SingleSelectButtonItemable>: Equa
   public let initialSelectedID: Item.ID?
 
   public var allItems: [Item] {
-    return (items + [isCustomItem]).compactMap { $0 }
+    return (items + [isCustomItem]).compactMap(\.self)
   }
 
   public var isCustomItemSelected: Bool {

@@ -164,6 +164,6 @@ private extension String {
   }
 }
 
-// MARK: - Moya.Response + Sendable
+// MARK: - Moya.Response + @unchecked @retroactive Sendable
 
 extension Moya.Response: @unchecked @retroactive Sendable {}

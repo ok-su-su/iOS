@@ -69,7 +69,7 @@ struct SentSearch: Sendable {
 
     case let .tappedDeletePrevItem(id: id):
       persistence.deleteSearchItem(id: id)
-      state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
+      state.$property.withLock { $0.prevSearchedItem = persistence.getPrevSentSearchItems() }
       return .none
     case let .tappedSearchItem(id: id):
       let searchedItem = state.property.nowSearchedItem.first(where: { $0.id == id })
@@ -135,15 +135,15 @@ struct SentSearch: Sendable {
           await send(.updateSearchResult(envelopesItem.uniqued()))
         }
 
-      case let .updateSearchResult(results):
-        state.property.nowSearchedItem = results
-        return .none
+    case let .updateSearchResult(results):
+      state.$property.withLock { $0.nowSearchedItem = results }
+      return .none
 
-      case .updatePrevSearchedItems:
-        state.property.prevSearchedItem = persistence.getPrevSentSearchItems()
-        return .none
-      }
+    case .updatePrevSearchedItems:
+      state.$property.withLock { $0.prevSearchedItem = persistence.getPrevSentSearchItems() }
+      return .none
     }
+  }
     .addFeatures()
   }
 }

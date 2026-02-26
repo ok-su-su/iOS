@@ -95,7 +95,7 @@ public struct CreateEnvelopeCategory: Sendable {
       return .none
 
     case let .update(events):
-      state.createEnvelopeProperty.eventHelper.updateItems(events)
+      state.$createEnvelopeProperty.withLock { $0.eventHelper.updateItems(events) }
       return .none
     }
   }
@@ -163,7 +163,6 @@ public struct CreateEnvelopeCategory: Sendable {
         return scopeAction(&state, currentAction)
       case let .inner(currentAction):
         return innerAction(&state, currentAction)
-
       case .delegate:
         return .none
       }

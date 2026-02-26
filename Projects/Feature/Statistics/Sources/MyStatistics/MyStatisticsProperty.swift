@@ -31,7 +31,7 @@ struct MyStatisticsProperty: Equatable, Sendable {
   var historyVerticalChartTotalPrice: Int64 = 0
   var historyVerticalChartProperty: HistoryVerticalChartViewProperty = .emptyState
 
-  var myStatisticsResponse: UserEnvelopeStatisticResponse? = nil
+  var myStatisticsResponse: UserEnvelopeStatisticResponse?
 
   var emptyStatisticsResponse: UserEnvelopeStatisticResponse = .emptyState
 

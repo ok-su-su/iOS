@@ -213,23 +213,24 @@ struct CreateEnvelopeRouter: Sendable {
         return .none
 
       case let .pushAdditionalScreen(screenType):
-
         // MARK: FireBase Logger
 
         pushButtonLogEvent(state.type, lastPathState: state.path.last)
 
         switch screenType {
         case .selectSection:
-          state.createEnvelopeProperty.additionalSectionHelper.startPush()
-          state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: nil)
+          state.$createEnvelopeProperty.withLock {
+            $0.additionalSectionHelper.startPush()
+            $0.additionalSectionHelper.pushNextSection(from: nil)
+          }
         case .contact:
-          state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .contacts)
+          state.$createEnvelopeProperty.withLock { $0.additionalSectionHelper.pushNextSection(from: .contacts) }
         case .gift:
-          state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .gift)
+          state.$createEnvelopeProperty.withLock { $0.additionalSectionHelper.pushNextSection(from: .gift) }
         case .isVisitedEvent:
-          state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .isVisited)
+          state.$createEnvelopeProperty.withLock { $0.additionalSectionHelper.pushNextSection(from: .isVisited) }
         case .memo:
-          state.createEnvelopeProperty.additionalSectionHelper.pushNextSection(from: .memo)
+          state.$createEnvelopeProperty.withLock { $0.additionalSectionHelper.pushNextSection(from: .memo) }
         }
         return .ssRun { send in
           await send(.pushCreateEnvelopeAdditional, animation: .default)
@@ -238,7 +239,6 @@ struct CreateEnvelopeRouter: Sendable {
         // MARK: Additional Section 분기
 
       case .pushCreateEnvelopeAdditional:
-
         // 봉투 생성 API통신 작업
         guard let currentSection = state.createEnvelopeProperty.additionalSectionHelper.currentSection else {
           finishCreateEnvelopeLogEvent(state.type)
@@ -257,6 +257,7 @@ struct CreateEnvelopeRouter: Sendable {
         case .memo:
           CreateEnvelopeRouterPublisher.shared
             .push(.createEnvelopeAdditionalMemo(.init(memoHelper: state.$createEnvelopeProperty.memoHelper)))
+
         case .contacts:
           CreateEnvelopeRouterPublisher.shared
             .push(.createEnvelopeAdditionalContact(.init(contactHelper: state.$createEnvelopeProperty.contactHelper)))

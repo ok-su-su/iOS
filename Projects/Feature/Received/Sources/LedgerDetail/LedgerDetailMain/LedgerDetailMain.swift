@@ -146,11 +146,11 @@ struct LedgerDetailMain {
       }
 
     case .tappedFilteredAmountButton:
-      state.filterProperty.resetAmountFilter()
+      state.$filterProperty.withLock { $0.resetAmountFilter() }
       return .send(.inner(.getEnvelopesInitialPage))
 
     case let .tappedFilteredPersonButton(id: id):
-      state.filterProperty.select(id)
+      state.$filterProperty.withLock { $0.select(id) }
       return .send(.inner(.getEnvelopesInitialPage))
 
     case let .appearedEnvelope(envelope):

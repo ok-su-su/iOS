@@ -132,11 +132,11 @@ struct ReceivedSearch: Sendable {
       return .none
 
     case .prevSearchItems:
-      state.searchProperty.prevSearchedItem = persistence.getPrevSearchItems()
+      state.$searchProperty.withLock { $0.prevSearchedItem = persistence.getPrevSearchItems() }
       return .none
 
     case let .updateSearchItems(items):
-      state.searchProperty.nowSearchedItem = items
+      state.$searchProperty.withLock { $0.nowSearchedItem = items }
       return .none
     }
   }

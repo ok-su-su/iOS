@@ -52,6 +52,7 @@ public struct HeaderViewFeature {
       case let .updateProperty(property):
         state.updateProperty(property)
         return .none
+
       case .tappedDismissButton:
         return .none
 
@@ -63,8 +64,10 @@ public struct HeaderViewFeature {
 
       case .onAppear:
         return .none
+
       case .tappedTextButton:
         return .none
+
       case .tappedDoubleTextButton:
         return .none
       }

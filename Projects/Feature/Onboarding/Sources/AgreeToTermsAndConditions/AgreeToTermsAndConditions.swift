@@ -82,6 +82,7 @@ struct AgreeToTermsAndConditions: Sendable {
 
       case .scope(.header):
         return .none
+
       case let .view(.tappedCheckBox(item)):
         state.helper.check(item)
         return .none
@@ -129,6 +130,7 @@ struct AgreeToTermsAndConditions: Sendable {
 
         OnboardingRouterPublisher.shared.send(.termDetail(.init(item: item, detailDescription: description)))
         return .none
+
       case let .view(.viewDidLoad(value)):
         if state.viewDidLoad {
           return .none

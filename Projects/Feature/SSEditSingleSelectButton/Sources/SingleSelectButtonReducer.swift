@@ -28,9 +28,15 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
     }
 
     private mutating func setCustomTextField() {
-      if initialSelectedID == singleSelectButtonHelper.isCustomItem?.id {
-        customTextFieldText = singleSelectButtonHelper.isCustomItem?.title ?? ""
-        singleSelectButtonHelper.saveInitialCustomTextField(title: customTextFieldText)
+      var initialTitle: String?
+      $singleSelectButtonHelper.withLock { helper in
+        if initialSelectedID == helper.isCustomItem?.id {
+          initialTitle = helper.isCustomItem?.title ?? ""
+          helper.saveInitialCustomTextField(title: initialTitle ?? "")
+        }
+      }
+      if let initialTitle {
+        customTextFieldText = initialTitle
       }
     }
   }
@@ -56,11 +62,11 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
         return .none
 
       case let .tappedID(id):
-        state.singleSelectButtonHelper.selectItem(by: id)
+        state.$singleSelectButtonHelper.withLock { $0.selectItem(by: id) }
         return .none
 
       case .tappedAddCustomButton:
-        state.singleSelectButtonHelper.startAddCustomSection()
+        state.$singleSelectButtonHelper.withLock { $0.startAddCustomSection() }
         return .none
 
       case let .changedText(text):
@@ -69,16 +75,16 @@ public struct SingleSelectButtonReducer<Item: SingleSelectButtonItemable>: Senda
 
       case .tappedCloseButton:
         if state.singleSelectButtonHelper.isSaved || state.customTextFieldText == "" {
-          state.singleSelectButtonHelper.resetCustomTextField()
+          state.$singleSelectButtonHelper.withLock { $0.resetCustomTextField() }
           return .none
         }
         return .send(.changedText(""))
 
       case .tappedSaveAndEditButton:
         if state.singleSelectButtonHelper.isSaved {
-          state.singleSelectButtonHelper.editCustomSection()
+          state.$singleSelectButtonHelper.withLock { $0.editCustomSection() }
         } else {
-          state.singleSelectButtonHelper.saveCustomTextField(title: state.customTextFieldText)
+          state.$singleSelectButtonHelper.withLock { $0.saveCustomTextField(title: state.customTextFieldText) }
         }
         return .none
       }

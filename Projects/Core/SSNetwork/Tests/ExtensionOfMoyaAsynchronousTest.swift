@@ -25,7 +25,7 @@ final class ExtensionOfMoyaAsynchronousTest: XCTestCase {
     var path: String = ""
     var method: Moya.Method = .get
     var task: Moya.Task = .requestPlain
-    var headers: [String: String]? = nil
+    var headers: [String: String]?
 
     var sampleData: Data {
       try! jsonEncoder.encode(FakeDTO(message: "Hi"))

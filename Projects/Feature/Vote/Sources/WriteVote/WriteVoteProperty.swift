@@ -33,8 +33,9 @@ struct WriteVoteProperty: Equatable {
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)
   private var _headerSectionItems: [VoteSectionHeaderItem] = []
   var headerSectionItems: [VoteSectionHeaderItem] { _headerSectionItems }
-  var selectedSection: VoteSectionHeaderItem? = nil
+  var selectedSection: VoteSectionHeaderItem?
 
+    
   mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem], selectedID: Int? = nil) {
     _headerSectionItems = items.filter { $0.id != VoteSectionHeaderItem.initialState.id }
     if let selectedID {
@@ -59,10 +60,10 @@ struct WriteVoteProperty: Equatable {
   }
 
   var isTextFieldValid: Bool { RegexManager.isValidVoteContent(voteTextContent) }
-  var isItemValid: Bool { selectableItem.filter { $0.isSaved == true }.count >= 2 }
+  var isItemValid: Bool { selectableItem.count(where: { $0.isSaved == true }) >= 2 }
 
   init() {
-    _selectableItem = .init(.init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
+      _selectableItem = .init(value: .init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
     selectableItemID = selectableItem.count
   }
 }

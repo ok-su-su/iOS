@@ -26,7 +26,6 @@ public extension Effect {
       NotificationCenter.default.post(name: SSNotificationName.showDefaultNetworkErrorAlert, object: nil)
     }
     return .run(priority: priority, operation: operation) { error, send in
-
       let errorDescription = String(customDumping: error)
 
       // LogError

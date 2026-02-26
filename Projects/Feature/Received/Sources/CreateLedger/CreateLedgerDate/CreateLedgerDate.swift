@@ -91,7 +91,7 @@ struct CreateLedgerDate: Sendable {
       return .send(.view(.tappedStartDatePicker))
 
     case .tappedStartDatePicker:
-      state.isInitialStateOfStartDate = true
+      state.$isInitialStateOfStartDate.withLock { $0 = true }
       state.datePicker = .init(
         selectedDate: state.$startSelectedDate,
         isInitialStateOfDate: state.$isInitialStateOfStartDate,
@@ -110,8 +110,8 @@ struct CreateLedgerDate: Sendable {
     case .tappedChangeDisplayTypeButton:
       // toggle the state
       state.displayType = state.displayType == .startAndEndDate ? .startDate : .startAndEndDate
-      state.isInitialStateOfEndDate = true
-      state.endSelectedDate = .now
+      state.$isInitialStateOfEndDate.withLock { $0 = true }
+      state.$endSelectedDate.withLock { $0 = .now }
       return .none
 
     case .tappedNextButton:

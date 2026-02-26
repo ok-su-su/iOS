@@ -84,7 +84,6 @@ struct VotePathReducer: Sendable {
         }
         state.path.append(pathState)
         return .none
-
       case .path:
         return .none
       case let .publisherAction(currentAction):
