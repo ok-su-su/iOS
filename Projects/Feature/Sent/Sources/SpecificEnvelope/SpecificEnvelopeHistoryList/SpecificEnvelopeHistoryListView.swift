@@ -70,15 +70,15 @@ struct SpecificEnvelopeHistoryListView: View {
 
   @ViewBuilder
   private func makeDetailContentView(_ property: EnvelopeContent) -> some View {
-    let textColor = property.envelopeType == .sent ? SSColor.gray90 : SSColor.gray40
+    let textColor = property.envelopeType == .Sent ? SSColor.gray90 : SSColor.gray40
     HStack(spacing: 0) {
       HStack(spacing: 12) {
-        property.envelopeType == .sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
+        property.envelopeType == .Sent ? SSImage.envelopeBackArrow : SSImage.envelopeForwardArrow
         SSBadge(property:
           .init(
             size: .small,
             badgeString: property.eventName,
-            badgeColor: property.envelopeType == .sent ? .gray90 : .gray40
+            badgeColor: property.envelopeType == .Sent ? .gray90 : .gray40
           )
         )
 
@@ -131,7 +131,7 @@ struct SpecificEnvelopeHistoryListView: View {
     }
     .fullScreenCover(isPresented: $store.isPresentCreateEnvelope.sending(\.view.presentCreateEnvelope)) {
       CreateEnvelopeRouterBuilder(
-        currentType: .sentWithFriendID(friendID: store.envelopeProperty.id, friendName: store.envelopeProperty.envelopeTargetUserNameText)
+        currentType: .SentWithFriendID(friendID: store.envelopeProperty.id, friendName: store.envelopeProperty.envelopeTargetUserNameText)
       ) { data in
         store.sendViewAction(.finishedCreateEnvelopes(data))
       }
@@ -158,6 +158,6 @@ struct SpecificEnvelopeHistoryListView: View {
   }
 
   var sentSubReceivedTitleText: String {
-    CustomNumberFormatter.formattedByThreeZero(store.envelopeProperty.receivedSubSentValue, subFixString: "원") ?? ""
+    CustomNumberFormatter.formattedByThreeZero(store.envelopeProperty.ReceivedSubSentValue, subFixString: "원") ?? ""
   }
 }

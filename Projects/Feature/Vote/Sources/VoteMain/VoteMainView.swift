@@ -42,7 +42,7 @@ struct VoteMainView: View {
           .id("LazyVStack")
         }
       }
-      .onChange(of: store.voteMainProperty.selectedVoteSectionItem) { _, _ in
+      .onChange(of: store.VoteMainProperty.selectedVoteSectionItem) { _, _ in
         proxy.scrollTo("LazyVStack", anchor: .top)
       }
     }
@@ -54,9 +54,9 @@ struct VoteMainView: View {
   @ViewBuilder
   private func makeVoteList() -> some View {
     // 만약 VotePreviews가 값이 있을 경우
-    if !store.voteMainProperty.votePreviews.isEmpty {
+    if !store.VoteMainProperty.VotePreviews.isEmpty {
       LazyVStack(alignment: .leading, spacing: 12) {
-        ForEach(store.voteMainProperty.votePreviews) { item in
+        ForEach(store.VoteMainProperty.VotePreviews) { item in
           makeVotePreview(item: item)
         }
       }
@@ -69,7 +69,7 @@ struct VoteMainView: View {
       VStack(spacing: 0) {
         Spacer()
           .frame(height: 200)
-        Text(Constants.votePreviewEmptyStateLabel)
+        Text(Constants.VotePreviewEmptyStateLabel)
           .foregroundStyle(SSColor.gray50)
           .applySSFont(.text_s)
           .frame(maxWidth: .infinity, alignment: .center)
@@ -93,7 +93,7 @@ struct VoteMainView: View {
                 .foregroundStyle(SSColor.orange60)
 
               SSImage
-                .voteMainRightArrow
+                .VoteMainRightArrow
             }
 
             Spacer()
@@ -115,7 +115,7 @@ struct VoteMainView: View {
         // Middle Section
 
         VStack(spacing: 4) {
-          let buttonTitles = item.voteItemsTitle
+          let buttonTitles = item.VoteItemsTitle
           ForEach(0 ..< buttonTitles.count, id: \.self) { index in
             if let currentTitle = buttonTitles[safe: index] {
               SSButton(
@@ -146,7 +146,7 @@ struct VoteMainView: View {
             store.sendViewAction(.tappedReportButton(boardID: item.id, userID: item.userID))
           } label: {
             SSImage
-              .voteWarning
+              .VoteWarning
           }
         }
         .frame(maxWidth: .infinity)
@@ -160,14 +160,14 @@ struct VoteMainView: View {
       store.send(.view(.tappedVoteItem(id: item.id)))
     }
     .onAppear {
-      store.sendViewAction(.voteItemOnAppear(item))
+      store.sendViewAction(.VoteItemOnAppear(item))
     }
   }
 
   @ViewBuilder
   private func makeBottomVoteListFilter() -> some View {
     HStack(alignment: .center, spacing: 0) {
-      let isPopular = store.voteMainProperty.sortByPopular
+      let isPopular = store.VoteMainProperty.sortByPopular
       // 투표 많은 순
       HStack(alignment: .center, spacing: 8) {
         Circle()
@@ -185,7 +185,7 @@ struct VoteMainView: View {
       Spacer()
 
       // 내 글 보기
-      let isOnlyMyPostFilter = store.voteMainProperty.onlyMineVoteFilter
+      let isOnlyMyPostFilter = store.VoteMainProperty.onlyMineVoteFilter
       HStack(spacing: 4) {
         if isOnlyMyPostFilter {
           SSImage.commonMainCheckBox
@@ -216,8 +216,8 @@ struct VoteMainView: View {
   private func makeHeaderSection() -> some View {
     ScrollView(.horizontal) {
       HStack(alignment: .top, spacing: 4) {
-        ForEach(store.voteMainProperty.voteSectionItems) { item in
-          let isSelected = store.voteMainProperty.selectedVoteSectionItem == item
+        ForEach(store.VoteMainProperty.VoteSectionItems) { item in
+          let isSelected = store.VoteMainProperty.selectedVoteSectionItem == item
           SSButton(
             .init(
               size: .xsh28,
@@ -249,7 +249,7 @@ struct VoteMainView: View {
 
       ScrollView(.horizontal) {
         LazyHStack(spacing: 16) {
-          ForEach(store.voteMainProperty.favoriteVoteItems) { item in
+          ForEach(store.VoteMainProperty.favoriteVoteItems) { item in
             makeFavoriteSectionItem(item)
           }
         }
@@ -273,7 +273,7 @@ struct VoteMainView: View {
             .foregroundStyle(SSColor.gray60)
 
           SSImage
-            .voteRightArrow
+            .VoteRightArrow
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -287,7 +287,7 @@ struct VoteMainView: View {
       // Button Content
       HStack(alignment: .center, spacing: 8) {
         SSImage
-          .voteSystemLogo
+          .VoteSystemLogo
 
         Text("\(item.participantCount)명 참여 중")
           .modifier(SSTypoModifier(.title_xxxs))
@@ -322,7 +322,7 @@ struct VoteMainView: View {
           .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 8)
 
         SSImage
-          .voteWrite
+          .VoteWrite
       }
       .padding(.all, 20)
     }
@@ -330,7 +330,7 @@ struct VoteMainView: View {
 
   @ViewBuilder
   private func makeVoteNavigationStackView(@ViewBuilder rootView: () -> some View) -> some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.scope.votePath.path)) {
+    NavigationStack(path: $store.scope(state: \.path, action: \.scope.VotePath.path)) {
       rootView()
     } destination: { store in
       switch store.case {

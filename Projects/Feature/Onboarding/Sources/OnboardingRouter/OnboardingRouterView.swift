@@ -31,7 +31,7 @@ struct OnboardingRouterView: View {
         }
     } destination: { store in
       switch store.case {
-      case let .vote(store):
+      case let .Vote(store):
         OnboardingVoteView(store: store)
           .ssAnalyticsScreen(moduleName: .Onboarding(.initialVote))
       case let .login(store):

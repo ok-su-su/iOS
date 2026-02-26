@@ -22,12 +22,14 @@ struct WriteVoteProperty: Equatable {
     guard selectableItem.count < 5 else {
       return
     }
-    selectableItem.append(.init(id: selectableItemID, regexString: TextFieldButtonWithTCAProperty.defaultRegex))
+    $selectableItem.withLock {
+      $0.append(.init(id: selectableItemID, regexString: TextFieldButtonWithTCAProperty.defaultRegex))
+    }
     selectableItemID += 1
   }
 
   mutating func delete(item: TextFieldButtonWithTCAProperty) {
-    selectableItem = selectableItem.filter { $0 != item }
+    $selectableItem.withLock { $0 = $0.filter { $0 != item } }
   }
 
   /// 전체보기를 제외한 (결혼식, 장례식, 돌잔치, 생일기념일, 자유)

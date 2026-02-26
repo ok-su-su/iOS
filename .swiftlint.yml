@@ -17,6 +17,7 @@ only_rules:
   - trailing_comma
   - line_length
 
+
 excluded:
   - Carthage
   - Pods
@@ -32,6 +33,7 @@ trailing_comma:
 
 line_length:
   warning: 150
+
 
 custom_rules:
   no_objcMembers:
