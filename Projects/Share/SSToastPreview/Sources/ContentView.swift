@@ -61,6 +61,8 @@ struct ContentReducer {
     var toast: SSToastReducer.State = .init(.init(toastMessage: "TestToast", trailingType: .none, duration: 3))
   }
 
+  @CasePathable
+
   enum Action: Equatable {
     case toast(SSToastReducer.Action)
   }

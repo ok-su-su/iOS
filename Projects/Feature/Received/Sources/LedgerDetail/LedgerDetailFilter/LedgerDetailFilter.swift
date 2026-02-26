@@ -34,6 +34,8 @@ struct LedgerDetailFilter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)

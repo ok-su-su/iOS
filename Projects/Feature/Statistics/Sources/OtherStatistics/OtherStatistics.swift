@@ -30,11 +30,13 @@ struct OtherStatistics: Sendable {
     @Presents var categoryBottomSheet: SSSelectableBottomSheetReducer<CategoryBottomSheetItem>.State? = nil
     var toast: SSToastReducer.State = .init(.init(toastMessage: "아직 데이터가 충분하지 않아 금액을 표시할 수 없어요", trailingType: .none))
     init() {
-      _helper = .init(.init())
+      _helper = .init(value: .init())
     }
 
     var presentMyPageEditAlert: Bool = false
   }
+
+  @CasePathable
 
   enum Action: BindableAction, Equatable, FeatureAction, Sendable {
     case binding(BindingAction<State>)

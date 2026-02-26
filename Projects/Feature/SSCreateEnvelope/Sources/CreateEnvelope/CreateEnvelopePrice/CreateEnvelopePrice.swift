@@ -45,6 +45,8 @@ public struct CreateEnvelopePrice: Sendable {
     }
   }
 
+  @CasePathable
+
   public enum Action: Equatable, FeatureAction, BindableAction, Sendable {
     case binding(BindingAction<State>)
     case view(ViewAction)

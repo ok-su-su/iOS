@@ -157,8 +157,8 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
 
     case .reset:
       state.ssFilterItemHelper.reset()
-      state.dateReducer?.dateProperty.resetDate()
-      state.sliderReducer?.sliderProperty.reset()
+      state.dateReducer?.$dateProperty.withLock { $0.resetDate() }
+      state.sliderReducer?.$sliderProperty.withLock { $0.reset() }
       return .none
     }
   }
@@ -174,20 +174,24 @@ public struct SSFilterReducer<Item: SSFilterItemable>: Sendable {
       return .none
 
     case let .updateSliderMaximumValue(value):
-      state.sliderReducer?.sliderProperty.updateSliderMaximumValue(value)
+      state.sliderReducer?.$sliderProperty.withLock { $0.updateSliderMaximumValue(value) }
       return .none
 
     case let .updatePrevSelectedFilteredItemsAndSlider(items, minimumValue, maximumValue):
       state.ssFilterItemHelper.selectedItems = items
-      state.sliderReducer?.sliderProperty.updateSliderPrevValue(
-        minimumValue: minimumValue,
-        maximumValue: maximumValue
-      )
+      state.sliderReducer?.$sliderProperty.withLock { sliderProperty in
+        sliderProperty.updateSliderPrevValue(
+          minimumValue: minimumValue,
+          maximumValue: maximumValue
+        )
+      }
       return .none
 
     case let .updatePrevSelectedFilterItemsAndDate(items, startDate, endDate):
       state.ssFilterItemHelper.selectedItems = items
-      state.dateReducer?.dateProperty.updateDateOf(startDate: startDate, endDate: endDate)
+      state.dateReducer?.$dateProperty.withLock { dateProperty in
+        dateProperty.updateDateOf(startDate: startDate, endDate: endDate)
+      }
       return .none
     }
   }

@@ -24,6 +24,8 @@ struct LedgerDetailRouter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case ledgerDetailMain(LedgerDetailMain.Action)

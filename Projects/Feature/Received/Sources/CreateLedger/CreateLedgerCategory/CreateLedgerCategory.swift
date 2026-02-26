@@ -42,6 +42,8 @@ struct CreateLedgerCategory: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)

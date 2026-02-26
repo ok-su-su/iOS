@@ -36,6 +36,8 @@ struct SentEnvelopeFilter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, Sendable {
     case isLoading(Bool)
     case onAppear(Bool)

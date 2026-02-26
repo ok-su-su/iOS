@@ -24,7 +24,7 @@ public struct CreateEnvelopeDateView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    let descriptionText = store.createType == .sent ? Constants.sentNameDescriptionText : Constants.receivedNameDescriptionText
+    let descriptionText = store.createType == .Sent ? Constants.sentNameDescriptionText : Constants.receivedNameDescriptionText
     VStack(alignment: .leading) {
       Spacer()
         .frame(height: 20)

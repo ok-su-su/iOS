@@ -28,17 +28,21 @@ struct AgreeToTermsAndConditionsHelper: Equatable, Sendable {
   }
 
   mutating func check(_ currentItem: TermItem) {
-    termItems[id: currentItem.id]?.check()
+    $termItems.withLock { termItems in
+      termItems[id: currentItem.id]?.check()
+    }
   }
 
   mutating func checkAllItems() {
-    if isAllCheckedItems {
-      for ind in 0 ..< termItems.count {
-        termItems[ind].isCheck = false
-      }
-    } else {
-      for ind in 0 ..< termItems.count {
-        termItems[ind].isCheck = true
+    $termItems.withLock { termItems in
+      if termItems.filter({ $0.isCheck == false }).isEmpty {
+        for ind in 0 ..< termItems.count {
+          termItems[ind].isCheck = false
+        }
+      } else {
+        for ind in 0 ..< termItems.count {
+          termItems[ind].isCheck = true
+        }
       }
     }
   }
@@ -48,7 +52,7 @@ struct AgreeToTermsAndConditionsHelper: Equatable, Sendable {
   }
 
   init() {
-    _termItems = .init(.init(uniqueElements: [TermItem].makeLocalItems()))
+    _termItems = .init(value: .init(uniqueElements: [TermItem].makeLocalItems()))
   }
 }
 

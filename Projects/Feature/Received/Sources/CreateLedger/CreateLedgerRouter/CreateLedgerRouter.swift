@@ -30,6 +30,8 @@ struct CreateLedgerRouter: Sendable {
     }
   }
 
+  @CasePathable
+
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case header(HeaderViewFeature.Action)

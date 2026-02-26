@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Foundation
 import SSEnvelope
 
+@CasePathable
 @Reducer(state: .equatable, action: .equatable)
 enum LedgerDetailPath {
   case main(LedgerDetailMain)

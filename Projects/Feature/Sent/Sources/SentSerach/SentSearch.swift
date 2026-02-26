@@ -34,6 +34,8 @@ struct SentSearch: Sendable {
   @Dependency(\.sentSearchNetwork) var network
   @Dependency(\.sentSearchPersistence) var persistence
 
+  @CasePathable
+
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
     case search(SSSearchReducer<SentSearchProperty>.Action)

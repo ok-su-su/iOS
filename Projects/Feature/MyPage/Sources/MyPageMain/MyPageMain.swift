@@ -46,6 +46,8 @@ struct MyPageMain {
     init() {}
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)

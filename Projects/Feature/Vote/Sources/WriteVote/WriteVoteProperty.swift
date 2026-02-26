@@ -37,7 +37,6 @@ struct WriteVoteProperty: Equatable {
   var headerSectionItems: [VoteSectionHeaderItem] { _headerSectionItems }
   var selectedSection: VoteSectionHeaderItem?
 
-    
   mutating func updateHeaderSectionItem(items: [VoteSectionHeaderItem], selectedID: Int? = nil) {
     _headerSectionItems = items.filter { $0.id != VoteSectionHeaderItem.initialState.id }
     if let selectedID {
@@ -65,7 +64,7 @@ struct WriteVoteProperty: Equatable {
   var isItemValid: Bool { selectableItem.count(where: { $0.isSaved == true }) >= 2 }
 
   init() {
-      _selectableItem = .init(value: .init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
+    _selectableItem = .init(value: .init(uniqueElements: [TextFieldButtonWithTCAProperty].default()))
     selectableItemID = selectableItem.count
   }
 }

@@ -69,7 +69,7 @@ public struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeContentView() -> some View {
-    let titleText = store.createType == .sent ? Constants.sentTitleText : Constants.receivedTitleText
+    let titleText = store.createType == .Sent ? Constants.sentTitleText : Constants.receivedTitleText
     VStack(alignment: .leading, spacing: 0) {
       Spacer()
         .frame(height: 34)

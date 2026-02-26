@@ -61,6 +61,8 @@ struct VoteDetailReducer: Sendable {
     case report
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)

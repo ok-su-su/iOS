@@ -51,6 +51,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
   @Dependency(\.ledgerDetailEditNetwork) var network
   @Dependency(\.updateLedgerDetailPublisher) var updateLedgerDetailPublisher
   @Dependency(\.dismiss) var dismiss
+  @CasePathable
   enum Action: Equatable, FeatureAction {
     case view(ViewAction)
     case inner(InnerAction)

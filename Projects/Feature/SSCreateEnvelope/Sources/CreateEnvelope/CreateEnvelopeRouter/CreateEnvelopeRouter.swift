@@ -33,10 +33,12 @@ struct CreateEnvelopeRouter: Sendable {
 
     init(type: CreateEnvelopeInitialType) {
       self.type = type
-      _createEnvelopeProperty = Shared(.init())
+      _createEnvelopeProperty = Shared(value: .init())
       createPrice = .init(createEnvelopeProperty: _createEnvelopeProperty)
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, Sendable {
     case onAppear(Bool)
@@ -98,10 +100,10 @@ struct CreateEnvelopeRouter: Sendable {
     switch state {
     case .createEnvelopePrice:
       switch type {
-      case .sentWithFriendID:
+      case .SentWithFriendID:
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(createEnvelopeProperty)))
-      case .received,
-           .sent:
+      case .Received,
+           .Sent:
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeName(.init(createEnvelopeProperty)))
       }
 
@@ -110,11 +112,11 @@ struct CreateEnvelopeRouter: Sendable {
 
     case .createEnvelopeRelation:
       switch type {
-      case .sent,
-           .sentWithFriendID:
+      case .Sent,
+           .SentWithFriendID:
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(createEnvelopeProperty)))
 
-      case .received:
+      case .Received:
         CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeDate(.init(createEnvelopeProperty)))
       }
 
@@ -123,10 +125,10 @@ struct CreateEnvelopeRouter: Sendable {
 
     case .createEnvelopeDate:
       let nextPathState: CreateEnvelopeAdditionalSection.State = switch type {
-      case .sentWithFriendID:
+      case .SentWithFriendID:
         .init(createEnvelopeProperty, createType: .items([.isVisited, .gift, .memo]))
-      case .received,
-           .sent:
+      case .Received,
+           .Sent:
         .init(createEnvelopeProperty, createType: .default)
       }
       CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeAdditionalSection(nextPathState))

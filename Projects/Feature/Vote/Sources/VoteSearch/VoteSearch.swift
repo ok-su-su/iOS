@@ -23,10 +23,12 @@ struct VoteSearch: Sendable {
     var searchReducer: SSSearchReducer<VoteSearchProperty>.State
 
     init() {
-      _helper = Shared(.init())
+      _helper = Shared(value: .init())
       searchReducer = .init(helper: _helper)
     }
   }
+
+  @CasePathable
 
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)

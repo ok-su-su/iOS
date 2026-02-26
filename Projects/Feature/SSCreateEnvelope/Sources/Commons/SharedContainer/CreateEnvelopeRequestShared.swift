@@ -101,7 +101,7 @@ enum CreateEnvelopeRequestShared {
     }
     // 매개변수로 CreateType을 받기 땨문에 error가 발생하지 않습니다.
     os_log(.error, "CreateType이 지정되어지지 않았습니다. 생성자를 확인해주세요")
-    return .sent
+    return .Sent
   }
 
   static func setLedger(id: Int64) {

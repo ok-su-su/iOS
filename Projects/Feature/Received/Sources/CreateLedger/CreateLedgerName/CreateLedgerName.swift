@@ -25,6 +25,8 @@ struct CreateLedgerName: Sendable {
     init() {}
   }
 
+  @CasePathable
+
   enum Action: Equatable, FeatureAction, Sendable {
     case view(ViewAction)
     case inner(InnerAction)

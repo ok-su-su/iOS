@@ -37,15 +37,15 @@ public struct CreateEnvelopeRouterBuilder: View {
 
     CreateEnvelopeRequestShared.setBody(.init(type: currentType.toCreateType))
     switch currentType {
-    case let .sentWithFriendID(friendID, friendName):
+    case let .SentWithFriendID(friendID, friendName):
       CreateEnvelopeRequestShared.setFriendID(id: friendID)
       CreateFriendRequestShared.setName(friendName)
 
-    case let .received(ledgerID, categoryName):
+    case let .Received(ledgerID, categoryName):
       CreateEnvelopeRequestShared.setCategoryName(categoryName)
       CreateEnvelopeRequestShared.setLedger(id: ledgerID)
 
-    case .sent:
+    case .Sent:
       break
     }
   }
@@ -58,17 +58,17 @@ public struct CreateEnvelopeRouterBuilder: View {
 // MARK: - CreateEnvelopeInitialType
 
 public enum CreateEnvelopeInitialType: Equatable, Sendable {
-  case sentWithFriendID(friendID: Int64, friendName: String)
-  case sent
-  case received(ledgerID: Int64, categoryName: String)
+  case SentWithFriendID(friendID: Int64, friendName: String)
+  case Sent
+  case Received(ledgerID: Int64, categoryName: String)
 
   var toCreateType: CreateType {
     switch self {
-    case .sent,
-         .sentWithFriendID:
-      .sent
-    case .received:
-      .received
+    case .Sent,
+         .SentWithFriendID:
+      .Sent
+    case .Received:
+      .Received
     }
   }
 }
@@ -76,14 +76,14 @@ public enum CreateEnvelopeInitialType: Equatable, Sendable {
 // MARK: - CreateType
 
 enum CreateType: Equatable, CaseIterable, CustomStringConvertible {
-  case sent
-  case received
+  case Sent
+  case Received
 
   var key: String {
     switch self {
-    case .sent:
+    case .Sent:
       return "SENT"
-    case .received:
+    case .Received:
       return "RECEIVED"
     }
   }
@@ -97,9 +97,9 @@ enum CreateType: Equatable, CaseIterable, CustomStringConvertible {
 
   var description: String {
     switch self {
-    case .sent:
+    case .Sent:
       "보내요"
-    case .received:
+    case .Received:
       "받아요"
     }
   }

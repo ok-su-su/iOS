@@ -11,6 +11,7 @@ import Foundation
 
 // MARK: - OnboardingRouterPath
 
+@CasePathable
 @Reducer(state: .equatable, .sendable, action: .equatable, .sendable)
 enum OnboardingRouterPath {
   case vote(OnboardingVote)
