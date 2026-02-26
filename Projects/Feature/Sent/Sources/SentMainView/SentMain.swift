@@ -44,11 +44,11 @@ struct SentMain: Sendable {
     var envelopes: IdentifiedArrayOf<Envelope.State> = []
 
     var isFilteredHeaderButtonItem: Bool {
-      return !(sentMainProperty.SentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.SentPeopleFilterHelper.isFilteredAmount)
+      return !(sentMainProperty.sentPeopleFilterHelper.selectedPerson.isEmpty && !sentMainProperty.sentPeopleFilterHelper.isFilteredAmount)
     }
 
     init() {
-      _sentMainProperty = Shared(.init())
+      _sentMainProperty = Shared(value: .init())
     }
   }
 
@@ -56,8 +56,8 @@ struct SentMain: Sendable {
     case refresh
   }
 
-  @Dependency(\.SentMainNetwork) var network
-  @Dependency(\.SentUpdatePublisher) var sentUpdatePublisher
+  @Dependency(\.sentMainNetwork) var network
+  @Dependency(\.sentUpdatePublisher) var sentUpdatePublisher
   @Dependency(\.mainQueue) var mainQueue
 
   @CasePathable
@@ -93,7 +93,7 @@ struct SentMain: Sendable {
 
     case .tappedFilterButton:
       ssLogEvent(.Sent(.main), eventName: "필터 버튼", eventType: .tapped)
-      state.presentDestination = .filter(.init(filterHelper: state.$sentMainProperty.SentPeopleFilterHelper))
+      state.presentDestination = .filter(.init(filterHelper: state.$sentMainProperty.sentPeopleFilterHelper))
       return .none
 
     case .tappedEmptyEnvelopeButton:
@@ -110,11 +110,11 @@ struct SentMain: Sendable {
       )
 
     case let .tappedFilteredPersonButton(id):
-      state.$sentMainProperty.withLock { $0.SentPeopleFilterHelper.select(selectedId: id) }
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.select(selectedId: id) }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case .tappedFilteredAmountButton:
-      state.$sentMainProperty.withLock { $0.SentPeopleFilterHelper.deselectAmount() }
+      state.$sentMainProperty.withLock { $0.sentPeopleFilterHelper.deselectAmount() }
       return .send(.async(.updateEnvelopesByFilterInitialPage))
 
     case let .presentCreateEnvelope(present):
@@ -198,11 +198,11 @@ struct SentMain: Sendable {
       let page = state.page
       state.page += 1
       let urlParameter = SearchFriendsParameter(
-        friendIds: state.SentMainProperty.SentPeopleFilterHelper.selectedPerson.map(\.id),
-        fromTotalAmounts: state.SentMainProperty.SentPeopleFilterHelper.lowestAmount,
-        toTotalAmounts: state.SentMainProperty.SentPeopleFilterHelper.highestAmount,
+        friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+        fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+        toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
         page: page,
-        sort: state.SentMainProperty.selectedFilterDial ?? .highestAmount
+        sort: state.sentMainProperty.selectedFilterDial ?? .highestAmount
       )
       return .ssRun { send in
         await send(.inner(.isLoading(true)))
@@ -214,15 +214,15 @@ struct SentMain: Sendable {
     case .updateEnvelopesByFilterInitialPage:
       state.page = 1
       state.isEndOfPage = false
-      let currentState = state.SentMainProperty.selectedFilterDial?.sortString
+      let currentState = state.sentMainProperty.selectedFilterDial?.sortString
       os_log("current Selected Section \(currentState ?? "nil")")
       state.envelopes = .init(uniqueElements: [])
       let urlParameter = SearchFriendsParameter(
-        friendIds: state.SentMainProperty.SentPeopleFilterHelper.selectedPerson.map(\.id),
-        fromTotalAmounts: state.SentMainProperty.SentPeopleFilterHelper.lowestAmount,
-        toTotalAmounts: state.SentMainProperty.SentPeopleFilterHelper.highestAmount,
+        friendIds: state.sentMainProperty.sentPeopleFilterHelper.selectedPerson.map(\.id),
+        fromTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.lowestAmount,
+        toTotalAmounts: state.sentMainProperty.sentPeopleFilterHelper.highestAmount,
         page: 0,
-        sort: state.SentMainProperty.selectedFilterDial ?? .latest
+        sort: state.sentMainProperty.selectedFilterDial ?? .latest
       )
 
       // isLoading
@@ -269,7 +269,7 @@ struct SentMain: Sendable {
       return .none
 
     case .presentDestination(.presented(.filterBottomSheet(.tapped))):
-      let description = "정렬" + (state.SentMainProperty.selectedFilterDial?.description ?? "") + "버튼"
+      let description = "정렬" + (state.sentMainProperty.selectedFilterDial?.description ?? "") + "버튼"
       ssLogEvent(.Sent(.main), eventName: description, eventType: .tapped)
 
       return .send(.async(.updateEnvelopesByFilterInitialPage))
@@ -325,7 +325,6 @@ struct SentMain: Sendable {
         return asyncAction(&state, currentAction)
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
-
       case .delegate:
         return .none
       }

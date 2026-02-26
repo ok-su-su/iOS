@@ -30,9 +30,9 @@ struct CreateLedgerCategory: Sendable {
     }
 
     init() {
-      _selectableItems = .init([])
-      _selectedItemsID = .init([])
-      _customItems = .init(nil)
+      _selectableItems = .init(value: [])
+      _selectedItemsID = .init(value: [])
+      _customItems = .init(value: nil)
       selection = SSSelectableItemsReducer<CreateLedgerCategoryItem>.State(
         items: _selectableItems,
         selectedID: _selectedItemsID,

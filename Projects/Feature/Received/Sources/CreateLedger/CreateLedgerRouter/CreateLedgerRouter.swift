@@ -109,6 +109,7 @@ struct CreateLedgerRouter: Sendable {
 
       case .root:
         return .none
+
       case .updateHeader:
         let currentProgress = Double(state.path.count + 1) / 3
         state.header.updateProperty(.init(type: .depthProgressBar(currentProgress)))

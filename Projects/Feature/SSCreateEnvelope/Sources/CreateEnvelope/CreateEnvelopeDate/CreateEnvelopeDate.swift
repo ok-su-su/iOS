@@ -124,7 +124,7 @@ public struct CreateEnvelopeDate: Sendable {
 extension Reducer where State == CreateEnvelopeDate.State, Action == CreateEnvelopeDate.Action {
   func addFeatures() -> some ReducerOf<Self> {
     ifLet(\.$datePicker, action: \.scope.datePicker) {
-      SSDateSelectBottomSheetReducer() as! Reducer
+      SSDateSelectBottomSheetReducer()
     }
   }
 }

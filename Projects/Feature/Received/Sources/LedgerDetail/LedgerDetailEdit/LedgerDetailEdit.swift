@@ -41,7 +41,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       ledgerDetailEditProperty: LedgerDetailEditProperty
     ) {
       self.ledgerProperty = ledgerProperty
-      _editProperty = .init(ledgerDetailEditProperty)
+      _editProperty = .init(value: ledgerDetailEditProperty)
       categorySection = .init(
         singleSelectButtonHelper: _editProperty.categoryEditProperty
       )
@@ -83,6 +83,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
     case let .changeNameTextField(name):
       state.$editProperty.withLock { $0.changeNameTextField(name) }
       return .none
+
     case .tappedStartDatePickerButton:
       let restrictEndDate = state.editProperty.dateEditProperty.isShowEndDate ?
         state.editProperty.dateEditProperty.endDate : nil
@@ -92,6 +93,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
         restrictEndDate: restrictEndDate
       )
       return .none
+
     case .tappedEndDatePickerButton:
       state.datePicker = .init(
         selectedDate: state.$editProperty.dateEditProperty.endDate,
@@ -99,6 +101,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
         restrictStartDate: state.editProperty.dateEditProperty.startDate
       )
       return .none
+
     case .tappedDateToggleButton:
       state.$editProperty.withLock { $0.dateEditProperty.toggleShowEndDate() }
       return .none
@@ -148,7 +151,7 @@ struct LedgerDetailEdit: FeatureViewAction, FeatureAsyncAction, FeatureInnerActi
       )
       return .ssRun { _ in
         let response = try await network.saveLedger(id, body)
-        let updatedLedgerID = response.ledger.id
+        _ = response.ledger.id
         updateLedgerDetailPublisher.updateLedgerDetail()
         await dismiss()
       }

@@ -101,7 +101,7 @@ struct SentMainView: View {
       style: .ghost,
       color: .black,
       leftIcon: .icon(SSImage.commonOrder),
-      buttonText: store.SentMainProperty.selectedFilterDial?.description ?? ""
+      buttonText: store.sentMainProperty.selectedFilterDial?.description ?? ""
     )) {
       store.sendViewAction(.tappedSortButton)
     }
@@ -109,7 +109,7 @@ struct SentMainView: View {
 
   @ViewBuilder // amount Range Button
   private func makeAmountRangeButtonView() -> some View {
-    if let amountRangeBadgeText = store.SentMainProperty.SentPeopleFilterHelper.amountFilterBadgeText {
+    if let amountRangeBadgeText = store.sentMainProperty.sentPeopleFilterHelper.amountFilterBadgeText {
       SSButton(
         .init(
           size: .sh32,
@@ -128,7 +128,7 @@ struct SentMainView: View {
   @ViewBuilder
   private func makeFilteredPeopleView() -> some View {
     // 사람 버튼에 대한 표시
-    let filtered = store.SentMainProperty.SentPeopleFilterHelper.selectedPerson
+    let filtered = store.sentMainProperty.sentPeopleFilterHelper.selectedPerson
     ForEach(0 ..< filtered.count, id: \.self) { index in
       if index < filtered.count {
         let person = filtered[index]

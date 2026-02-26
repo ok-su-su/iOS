@@ -47,12 +47,12 @@ struct ReceivedMain: Sendable {
     }
 
     init() {
-      _sortProperty = .init(.init())
-      _filterProperty = .init(.init())
+      _sortProperty = .init(value: .init())
+      _filterProperty = .init(value: .init())
     }
   }
 
-  public init() {}
+  init() {}
 
   @Dependency(\.receivedMainNetwork) var network
   @Dependency(\.receivedMainUpdatePublisher) var receivedMainUpdatePublisher

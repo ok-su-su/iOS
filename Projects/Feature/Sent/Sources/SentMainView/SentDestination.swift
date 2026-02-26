@@ -36,11 +36,11 @@ final class SentPublisher {
   }
 
   private var _publisher: PassthroughSubject<SentDestination.State, Never> = .init()
-  public func publisher() -> AnyPublisher<SentDestination.State, Never> {
+  func publisher() -> AnyPublisher<SentDestination.State, Never> {
     return _publisher.receive(on: RunLoop.main).eraseToAnyPublisher()
   }
 
-  public func push(_ val: SentDestination.State) {
+  func push(_ val: SentDestination.State) {
     _publisher.send(val)
   }
 }

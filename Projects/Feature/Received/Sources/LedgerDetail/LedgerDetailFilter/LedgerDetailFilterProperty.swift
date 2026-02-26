@@ -15,8 +15,8 @@ struct LedgerDetailFilterProperty: Equatable {
   var selectableItems: [LedgerFilterItemProperty] = []
   var selectedItems: [LedgerFilterItemProperty] = []
 
-  var highestAmount: Int64? = nil
-  var lowestAmount: Int64? = nil
+  var highestAmount: Int64?
+  var lowestAmount: Int64?
 
   var amountFilterBadgeText: String? {
     guard let highestAmount,

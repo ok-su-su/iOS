@@ -70,7 +70,7 @@ struct ReceivedFilter: Sendable {
     case let .onAppear(bool):
       state.isAppear = bool
       let prevSelectedItems = state.property.selectedCategories
-      let (startDate, endDate) = state.property.getPrevSelectedDate()
+      let (startDate, endDate) = state.$property.withLock { $0.getPrevSelectedDate() }
       return .merge(
         .send(.async(.getSelectableItems)),
         .send(.scope(.filterAction(.inner(
@@ -130,6 +130,7 @@ struct ReceivedFilter: Sendable {
 
     case .delegate:
       return .none
+
     default:
       return .none
     }

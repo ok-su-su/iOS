@@ -123,6 +123,7 @@ extension EnvelopeNetwork {
           ],
           encoding: URLEncoding.queryString
         )
+
       case let .deleteFriend(friendID: friendID):
         .requestParameters(parameters: ["ids": friendID], encoding: URLEncoding.queryString)
 

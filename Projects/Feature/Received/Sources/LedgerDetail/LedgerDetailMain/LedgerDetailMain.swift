@@ -49,10 +49,10 @@ struct LedgerDetailMain {
     }
 
     init(ledgerID: Int64) {
-      _sortProperty = .init(.init())
+      _sortProperty = .init(value: .init())
       ledgerProperty = .initial
       self.ledgerID = ledgerID
-      _filterProperty = .init(.init())
+      _filterProperty = .init(value: .init())
     }
   }
 
@@ -268,6 +268,7 @@ struct LedgerDetailMain {
         let envelopes = try await network.getEnvelopes(parameter)
         await send(.inner(.updateEnvelopes(envelopes)))
       }
+
     case let .updateEnvelope(envelopeID):
       state.isUpdateLedgerDetail = true
       return .ssRun { send in
@@ -311,6 +312,7 @@ struct LedgerDetailMain {
         receivedMainUpdatePublisher.editLedger(ledgerID: ledgerID)
       }
       return .none
+
     case .header:
       return .none
 

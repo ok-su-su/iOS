@@ -39,10 +39,10 @@ struct CreateLedgerDate: Sendable {
       // 장례식일경우 displayType을 바꿉니다.
       displayType = body.categoryId == 3 ? .startAndEndDate : .startDate
 
-      _startSelectedDate = .init(.now)
-      _isInitialStateOfStartDate = .init(true)
-      _endSelectedDate = .init(.now)
-      _isInitialStateOfEndDate = .init(true)
+      _startSelectedDate = .init(value: .now)
+      _isInitialStateOfStartDate = .init(value: true)
+      _endSelectedDate = .init(value: .now)
+      _isInitialStateOfEndDate = .init(value: true)
     }
   }
 
@@ -115,7 +115,6 @@ struct CreateLedgerDate: Sendable {
       return .none
 
     case .tappedNextButton:
-
       return .send(.inner(.pushNextScreen))
         .throttle(id: CancelID.throttleID, for: .seconds(2), scheduler: mainQueue, latest: false)
 
@@ -157,6 +156,7 @@ struct CreateLedgerDate: Sendable {
       switch action {
       case let .view(currentAction):
         return viewAction(&state, currentAction)
+
       case let .scope(currentAction):
         return scopeAction(&state, currentAction)
 

@@ -68,6 +68,7 @@ struct CreateLedgerName: Sendable {
 
       return ToastRegexManager.isShowToastByCustomCategory(text) ?
         .send(.scope(.toast(.showToastMessage(DefaultToastMessage.category.message)))) : .none
+
     case .tappedNextButton:
       CreateLedgerSharedState.setTitle(state.textFieldText)
       CreateLedgerRouterPathPublisher.push(.date(.init()))

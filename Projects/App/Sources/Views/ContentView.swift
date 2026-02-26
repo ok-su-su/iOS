@@ -32,15 +32,15 @@ final class ContentViewObject: ObservableObject, @unchecked Sendable {
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedInventory, object: nil, queue: .main) { _ in
       ssLogEvent(TabBarEvents.Received)
-      self.type = .Received
+      self.type = .received
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedStatistics, object: nil, queue: .main) { _ in
       ssLogEvent(TabBarEvents.Statistics)
-      self.type = .Statistics
+      self.type = .statistics
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedVote, object: nil, queue: .main) { _ in
       ssLogEvent(TabBarEvents.Vote)
-      self.type = .Vote
+      self.type = .vote
     }
     NotificationCenter.default.addObserver(forName: SSNotificationName.tappedMyPage, object: nil, queue: .main) { _ in
       ssLogEvent(TabBarEvents.MyPage)
@@ -113,10 +113,10 @@ public struct ContentView: View {
 
   @State var sectionViews: [SSTabType: AnyView] = [
     .envelope: AnyView(SentBuilderView()),
-    .Received: AnyView(ReceivedBuilderView()),
-    .Vote: AnyView(VoteBuilder()),
+    .received: AnyView(ReceivedBuilderView()),
+    .vote: AnyView(VoteBuilder()),
     .mypage: AnyView(MyPageBuilderView()),
-    .Statistics: AnyView(StatisticsBuilderView()),
+    .statistics: AnyView(StatisticsBuilderView()),
   ]
 
   public var body: some View {
@@ -125,10 +125,10 @@ public struct ContentView: View {
         if oldValue == .loginAndRegister, newValue == .main {
           sectionViews = [
             .envelope: AnyView(SentBuilderView()),
-            .Received: AnyView(ReceivedBuilderView()),
-            .Vote: AnyView(VoteBuilder()),
+            .received: AnyView(ReceivedBuilderView()),
+            .vote: AnyView(VoteBuilder()),
             .mypage: AnyView(MyPageBuilderView()),
-            .Statistics: AnyView(StatisticsBuilderView()),
+            .statistics: AnyView(StatisticsBuilderView()),
           ]
           contentViewObject.type = .envelope
         }
