@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SortObject
 
-public struct SortObject: Codable, Equatable {
+public struct SortObject: Codable, Equatable, Sendable {
   public let empty, unsorted, sorted: Bool?
   enum CodingKeys: CodingKey {
     case empty

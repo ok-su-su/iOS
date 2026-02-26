@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct VoteWithCountResponse: Equatable, Codable {
+public struct VoteWithCountResponse: Equatable, Codable, Sendable {
   // 투표 아이디
   public let id: Int64
   public let board: BoardModel

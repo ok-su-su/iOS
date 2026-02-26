@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - LedgerModel
 
-public struct LedgerModel: Codable {
+public struct LedgerModel: Codable, Sendable {
   /// Ledger ID
   public let id: Int64
   /// 장부 이름

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ReportCreateResponse {
+public struct ReportCreateResponse: Sendable {
   /// 신고 히스토리 id (History ID)
   public let historyId: Int64
   /// 신고 메타데이터 id (Metadata ID)

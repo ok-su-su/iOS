@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - LedgerDetailResponse
 
-public struct LedgerDetailResponse: Decodable {
+public struct LedgerDetailResponse: Decodable, Sendable {
   public let ledger: LedgerModel
   public let category: CategoryWithCustomModel
   public let totalAmounts: Int64

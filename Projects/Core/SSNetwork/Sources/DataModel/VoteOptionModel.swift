@@ -9,7 +9,7 @@
 import Foundation
 
 /// 투표 옵션 모델
-public struct VoteOptionModel: Equatable, Codable {
+public struct VoteOptionModel: Equatable, Codable, Sendable {
   /// 투표 옵션 아이디
   public let id: Int64
   /// 투표 id

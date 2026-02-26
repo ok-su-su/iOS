@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - SearchFriendsResponseDTO
 
-public struct PageResponseDtoGetFriendStatisticsResponse: Codable, Equatable {
+public struct PageResponseDtoGetFriendStatisticsResponse: Codable, Equatable, Sendable {
   public let data: [GetFriendStatisticsResponse]
   public let page: Int?
   public let size: Int?

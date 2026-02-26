@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - RecentEnvelopeModel
 
-public struct RecentEnvelopeModel: Equatable, Codable {
+public struct RecentEnvelopeModel: Equatable, Codable, Sendable {
   public let category, handedOverAt: String
   enum CodingKeys: CodingKey {
     case category

@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - PageResponseDtoSearchEnvelopeResponse
 
-public struct PageResponseDtoSearchEnvelopeResponse: Equatable, Codable {
+public struct PageResponseDtoSearchEnvelopeResponse: Equatable, Codable, Sendable {
   public let data: [SearchEnvelopeResponse]
   public let page: Int?
   public let size: Int?

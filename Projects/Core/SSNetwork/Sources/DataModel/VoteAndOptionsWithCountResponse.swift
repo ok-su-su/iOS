@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct VoteAndOptionsWithCountResponse: Equatable, Decodable {
+public struct VoteAndOptionsWithCountResponse: Equatable, Decodable, Sendable {
   /// 투표 id
   public let id: Int64
   /// 투표 생성자 id

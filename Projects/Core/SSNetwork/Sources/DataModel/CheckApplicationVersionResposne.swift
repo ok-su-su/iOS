@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CheckApplicationVersionResponse: Decodable {
+public struct CheckApplicationVersionResponse: Decodable, Sendable {
   public let needForceUpdate: Bool
 
   enum CodingKeys: CodingKey {

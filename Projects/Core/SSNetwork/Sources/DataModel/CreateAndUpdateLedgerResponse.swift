@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CreateAndUpdateLedgerResponse: Decodable {
+public struct CreateAndUpdateLedgerResponse: Decodable, Sendable {
   public let ledger: LedgerModel
   public let category: CategoryWithCustomModel
 

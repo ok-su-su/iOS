@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - RelationshipInfoModel
 
-public struct RelationshipInfoModel: Equatable, Codable {
+public struct RelationshipInfoModel: Equatable, Codable, Sendable {
   public let id: Int
   public let relation: String
   public let customRelation: String?

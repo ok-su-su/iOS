@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CreateAndUpdateEnvelopeResponse: Decodable {
+public struct CreateAndUpdateEnvelopeResponse: Decodable, Sendable {
   public let envelope: EnvelopeModel
   public let friend: FriendModel
   public let friendRelationship: FriendRelationshipModel

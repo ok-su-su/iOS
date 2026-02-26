@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SearchFilterEnvelopeResponse: Decodable {
+public struct SearchFilterEnvelopeResponse: Decodable, Sendable {
   public let minReceivedAmount: Int64
   public let maxReceivedAmount: Int64
   public let minSentAmount: Int64

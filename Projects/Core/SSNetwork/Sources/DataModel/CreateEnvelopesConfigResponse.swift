@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - CreateEnvelopesConfigResponse
 
-public struct CreateEnvelopesConfigResponse: Decodable {
+public struct CreateEnvelopesConfigResponse: Decodable, Sendable {
   public var categories: [CategoryModel]
   public var relationships: [RelationshipModel]
   enum CodingKeys: CodingKey {
