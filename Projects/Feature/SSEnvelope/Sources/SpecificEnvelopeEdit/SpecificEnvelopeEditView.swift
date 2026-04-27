@@ -40,6 +40,7 @@ public struct SpecificEnvelopeEditView: View {
       }
     }
     .contentShape(Rectangle())
+    .scrollDismissesKeyboard(.interactively)
     .whenTapDismissKeyboard()
     .scrollIndicators(.hidden)
   }
@@ -67,9 +68,7 @@ public struct SpecificEnvelopeEditView: View {
       .contentShape(Rectangle())
       .frame(maxWidth: .infinity, maxHeight: 46)
       .background(SSColor.gray10)
-      .onTapGesture {
-        focus = true
-      }
+      .allowsHitTesting(false)
     }
     .frame(height: 44)
   }
