@@ -15,7 +15,7 @@ extension Settings {
     .settings(
       base: [
         "SWIFT_VERSION": "6.0",
-        "DEVELOPMENT_TEAM": "2G5Z92682P",
+        "DEVELOPMENT_TEAM": "QTUUTLPDYQ",
         "ENABLE_USER_SCRIPT_SANDBOXING": "No", // SandBoxingError
         "ENABLE_MODULE_VERIFIER": "No", // Enable module Verifier
         "MODULE_VERIFIER_SUPPORTED_LANGUAGES": "No",

@@ -68,6 +68,29 @@ struct ReceivedSearch: Sendable {
 
   enum DelegateAction: Equatable, Sendable {}
 
+  func handlePath(state: inout State, action: StackActionOf<LedgerDetailPath>) -> Effect<Action> {
+    switch action {
+    case let .element(id: _, action: .envelopeDetail(.delegate(currentAction))):
+      return handleEnvelopeDetailDelegateAction(state: &state, action: currentAction)
+    case .element(id: _, action: _):
+      return .none
+    case .popFrom(id: _):
+      return .none
+    case .push(id: _, state: _):
+      return .none
+    }
+  }
+
+  func handleEnvelopeDetailDelegateAction(state _: inout State, action: SpecificEnvelopeDetailReducer.Action.DelegateAction) -> Effect<Action> {
+    switch action {
+    case let .tappedEnvelopeEditButton(property):
+      return .ssRun { [id = property.envelope.id] _ in
+        let editState = try await SpecificEnvelopeEditReducer.State(envelopeID: id)
+        LedgerDetailRouterPublisher.send(.envelopeEdit(editState))
+      }
+    }
+  }
+
   func viewAction(_ state: inout State, _ action: Action.ViewAction) -> Effect<Action> {
     switch action {
     case let .onAppear(isAppear):
@@ -117,8 +140,8 @@ struct ReceivedSearch: Sendable {
     case .search:
       return .none
 
-    case .path:
-      return .none
+    case let .path(currentAction):
+      return handlePath(state: &state, action: currentAction)
 
     case .header:
       return .none

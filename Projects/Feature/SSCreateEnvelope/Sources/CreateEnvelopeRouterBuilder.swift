@@ -30,10 +30,6 @@ public struct CreateEnvelopeRouterBuilder: View {
   ) {
     self.currentType = currentType.toCreateType
     self.completion = completion
-    store = .init(
-      initialState: .init(type: currentType)) {
-        CreateEnvelopeRouter()
-      }
 
     CreateEnvelopeRequestShared.setBody(.init(type: currentType.toCreateType))
     switch currentType {
@@ -48,6 +44,11 @@ public struct CreateEnvelopeRouterBuilder: View {
     case .Sent:
       break
     }
+
+    store = .init(
+      initialState: .init(type: currentType)) {
+        CreateEnvelopeRouter()
+      }
   }
 
   public var body: some View {
