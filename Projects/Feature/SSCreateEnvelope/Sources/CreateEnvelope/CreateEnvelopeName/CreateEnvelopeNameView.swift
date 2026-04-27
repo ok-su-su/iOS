@@ -37,34 +37,36 @@ public struct CreateEnvelopeNameView: View {
 
   @ViewBuilder
   private func makeSearchFriendView(_ current: SearchFriendItem) -> some View {
-    HStack(alignment: .top, spacing: 8) {
-      Text(current.name)
-        .modifier(SSTypoModifier(.title_xs))
-        .foregroundStyle(SSColor.gray100)
+    Button {
+      store.send(.view(.tappedFilterItem(current)))
+    } label: {
+      HStack(alignment: .top, spacing: 8) {
+        Text(current.name)
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray100)
 
-      Text(current.relationShip)
-        .modifier(SSTypoModifier(.title_xs))
-        .foregroundStyle(SSColor.gray60)
+        Text(current.relationShip)
+          .modifier(SSTypoModifier(.title_xs))
+          .foregroundStyle(SSColor.gray60)
 
-      if let eventName = current.eventName {
-        Text(eventName)
-          .modifier(SSTypoModifier(.text_xs))
-          .foregroundStyle(SSColor.gray40)
+        if let eventName = current.eventName {
+          Text(eventName)
+            .modifier(SSTypoModifier(.text_xs))
+            .foregroundStyle(SSColor.gray40)
+        }
+
+        if let eventDate = current.eventDate {
+          Text(CustomDateFormatter.getString(from: eventDate, dateFormat: "yyyy.MM.dd"))
+            .modifier(SSTypoModifier(.text_xs))
+            .foregroundStyle(SSColor.gray40)
+        }
+        Spacer()
       }
-
-      if let eventDate = current.eventDate {
-        Text(CustomDateFormatter.getString(from: eventDate, dateFormat: "yyyy.MM.dd"))
-          .modifier(SSTypoModifier(.text_xs))
-          .foregroundStyle(SSColor.gray40)
-      }
-      Spacer()
+      .padding(.horizontal, 24)
+      .padding(.vertical, 12)
+      .contentShape(Rectangle())
     }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 12)
-    .contentShape(Rectangle())
-    .onTapGesture {
-      store.send(.view(.tappedFilterItem(name: current.name)))
-    }
+    .buttonStyle(.plain)
   }
 
   @ViewBuilder

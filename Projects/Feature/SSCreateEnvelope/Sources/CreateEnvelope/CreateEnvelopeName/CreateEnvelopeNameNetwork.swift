@@ -25,6 +25,7 @@ struct CreateEnvelopeNameNetwork {
         return nil
       }
       return .init(
+        friendID: dto.friend.id,
         name: dto.friend.name,
         relationShip: dto.relationship.relation,
         eventName: recentEnvelope.category,

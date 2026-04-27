@@ -50,7 +50,7 @@ public struct CreateEnvelopeName: Sendable {
   @CasePathable
   public enum ViewAction: Equatable, Sendable {
     case onAppear(Bool)
-    case tappedFilterItem(name: String)
+    case tappedFilterItem(SearchFriendItem)
     case changeText(String)
     case tappedNextButton
   }
@@ -64,8 +64,10 @@ public struct CreateEnvelopeName: Sendable {
       state.isOnAppear = isAppear
       return .none
 
-    case let .tappedFilterItem(name):
-      state.textFieldText = name
+    case let .tappedFilterItem(item):
+      CreateEnvelopeRequestShared.setFriendID(id: item.friendID)
+      CreateFriendRequestShared.setName(item.name)
+      CreateEnvelopeRouterPublisher.shared.push(.createEnvelopeEvent(.init(state.$createEnvelopeProperty)))
       return .none
 
     case let .changeText(text):

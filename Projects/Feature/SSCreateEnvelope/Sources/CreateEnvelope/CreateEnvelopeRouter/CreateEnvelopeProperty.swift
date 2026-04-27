@@ -34,6 +34,7 @@ public struct CreateEnvelopeProperty: Equatable, Sendable {
 // MARK: - SearchFriendItem
 
 public struct SearchFriendItem: Equatable, Hashable, Sendable {
+  let friendID: Int64
   let name: String
   let relationShip: String
   let eventName: String?
